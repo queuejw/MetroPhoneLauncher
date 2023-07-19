@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tile_scale_menu"
+        android:title="Размер" >
+        <menu >
+            <item android:title="Маленькая"
+                android:id="@+id/tile_small"/>
+
+            <item android:title="Средняя"
+                android:id="@+id/tile_medium"/>
+
+            <item android:title="Большая"
+                android:id="@+id/tile_big"/>
+        </menu>
+    </item>
+    <item android:title="Убрать"
+    android:id="@+id/remove_tile"/>
+</menu>
