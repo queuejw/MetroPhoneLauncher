@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.dimon6018.metrolauncher.R;
+import ru.dimon6018.metrolauncher.content.data.App;
+import ru.dimon6018.metrolauncher.content.data.Prefs;
 
 public class AllApps extends Fragment {
 
-    private List<Apps> appsList;
+    private List<App> appsList;
 
     public AllApps(){
         super(R.layout.all_apps_screen);
@@ -53,7 +56,7 @@ public class AllApps extends Fragment {
         List<ResolveInfo> allApps = pManager.queryIntentActivities(i, 0);
 
         for (ResolveInfo ri : allApps) {
-            Apps app = new Apps();
+            App app = new App();
             app.app_label = ri.loadLabel(pManager);
             app.app_package = ri.activityInfo.packageName;
 
@@ -64,9 +67,9 @@ public class AllApps extends Fragment {
     public class AppAdapter extends RecyclerView.Adapter<AppAdapter.AppHolder> {
 
         private final LayoutInflater inflater;
-        private static List<Apps> appsList;
+        private static List<App> appsList;
 
-        AppAdapter(Context context, List<Apps> apps) {
+        AppAdapter(Context context, List<App> apps) {
             appsList = apps;
             this.inflater = LayoutInflater.from(context);
         }
@@ -78,7 +81,7 @@ public class AllApps extends Fragment {
         }
         @Override
         public void onBindViewHolder(AppAdapter.AppHolder holder, int position) {
-            Apps apps = appsList.get(position);
+            App apps = appsList.get(position);
             Drawable icon = apps.getDrawable();
             icon.setBounds(0, 0, getResources().getDimensionPixelSize(R.dimen.app_icon_size), getResources().getDimensionPixelSize(R.dimen.app_icon_size));
             holder.icon.setImageDrawable(icon);
@@ -89,16 +92,24 @@ public class AllApps extends Fragment {
                 startActivity(intent);
             });
             holder.itemView.setOnLongClickListener(view -> {
-                showMenu(holder.itemView, R.menu.app_menu_list);
+                showMenu(holder.itemView, R.menu.app_menu_list, holder, position);
                 return true;
             });
         }
-        private void showMenu(View v, @MenuRes int menuRes) {
+        private void showMenu(View v, @MenuRes int menuRes, AppAdapter.AppHolder holder, int pos) {
             PopupMenu popup = new PopupMenu(getContext(), v);
             popup.getMenuInflater().inflate(menuRes, popup.getMenu());
             popup.setOnMenuItemClickListener(
                     menuItem -> {
                         if(menuItem.getItemId() == R.id.add_to_start) {
+                            App app = appsList.get(pos);
+                            List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
+                            int iCount = mPrevData.size();
+                            int newCount;
+                            new Prefs(getContext()).addApp((String) app.getPackagel(), (String) app.getLabel());
+                            new Prefs(getContext()).setPos((String) app.getPackagel(), iCount);
+                            Log.i("AllApps", "Add new app. Pos: " + iCount);
+                            Log.i("AllApps", "Add new app. Label: " + app.getLabel());
                         }
                         else if(menuItem.getItemId() == R.id.delete_app) {
                         }
