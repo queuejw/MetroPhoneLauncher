@@ -241,36 +241,15 @@ public class Start extends Fragment {
                 lp.height = itemHeight;
                 holder.itemView.setLayoutParams(lp);
             }
-            holder.mContainer.setOnLongClickListener(view -> {
-                mRecyclerViewDragDropManager.cancelDrag();
-                Log.i("Holder", "Long Click");
-                showMenuAdapter(holder.itemView, R.menu.tile_menu_start, holder, position, item);
-                return true;
-            });
-            holder.mContainer.setOnClickListener(view -> {
-                Log.i("Holder", "Click");
-                Intent intent = context.getPackageManager().getLaunchIntentForPackage((String) item.getPackage());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getActivity().startActivity(intent);
-            });
             // set background resource (target view ID: container)
             final DraggableItemState dragState = holder.getDragState();
 
             if (dragState.isUpdated()) {
-                int bgResId;
-
                 if (dragState.isActive()) {
-                    bgResId = R.drawable.bg_item_dragging_active_state;
-
-                    // need to clear drawable state here to get correct appearance of the dragging item.
-                    DrawableUtils.clearState(holder.mContainer.getForeground());
                 } else if (dragState.isDragging()) {
-                    bgResId = R.drawable.bg_item_dragging_state;
                 } else {
-                    bgResId = R.drawable.bg_item_normal_state;
                 }
-
-                holder.mContainer.setBackgroundResource(bgResId);
+                holder.mDragHandle.setOnClickListener(view -> showMenuAdapter(holder.itemView, R.menu.tile_menu_start, holder, position, item));
             }
         }
         private void showMenuAdapter(View v, @MenuRes int menuRes, NormalItemViewHolder holder, int pos, AbstractDataProvider.Data item) {

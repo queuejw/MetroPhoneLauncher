@@ -17,6 +17,9 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_weight="1"
-        android:fontFamily="@font/opensans_light"
+        android:layout_marginStart="4dp"
+        android:textSize="22sp"
+        android:text="placeholder"
+        android:fontFamily="@font/opensans_medium"
         android:gravity="center|start" />
 </LinearLayout>

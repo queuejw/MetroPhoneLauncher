@@ -10,6 +10,7 @@ public class App {
     public boolean tilebig = false;
     public boolean tilemedium = false;
     public boolean tilesmall = false;
+    public boolean isSection = false;
     public CharSequence getLabel() {
         return this.app_label;
     }

@@ -17,11 +17,16 @@
 <!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="96dp"
     android:layout_margin="4dp">
-
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="?attr/colorPrimary">
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -40,11 +45,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|left"
             android:gravity="center"
+            android:textColor="@android:color/white"
             tools:ignore="RtlHardcoded"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:id="@+id/drag_handle"/>
     </FrameLayout>
-
+    </com.google.android.material.card.MaterialCardView>
 </FrameLayout>

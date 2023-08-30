@@ -64,8 +64,11 @@ public class DataProvider extends AbstractDataProvider {
         while (end != 0) {
             ConcreteData item = mData.get(end - 1);
             mData.remove(item);
+            Log.i("Data", "remove " + item.getText() + " from pos " + (end - 1));
             mData.add(item.getTilePos(), item);
+            Log.i("Data", "add " + item.getText() + " to pos " + (item.getTilePos()));
             end = end - 1;
+
         }
         Log.i("Data", "done");
     }

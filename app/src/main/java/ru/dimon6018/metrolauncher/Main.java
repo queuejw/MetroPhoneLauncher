@@ -17,6 +17,7 @@ import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
 public class Main extends AppCompatActivity {
     private static final String FRAGMENT_TAG_DATA_PROVIDER = "data provider";
     private static final String FRAGMENT_LIST_VIEW = "list view";
+    private static final String FRAGMENT_ALL_APPS = "all apps";
 
     @Override
     protected void onResume() {
@@ -53,7 +54,7 @@ public class Main extends AppCompatActivity {
             } else if (item.getItemId() == R.id.start_apps) {
                 removeStart();
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.pager, new AllApps())
+                        .add(R.id.pager, new AllApps(), FRAGMENT_ALL_APPS)
                         .commit();
                 return true;
             } else {
@@ -62,10 +63,13 @@ public class Main extends AppCompatActivity {
         });
     }
     private void removeStart() {
-        getSupportFragmentManager().beginTransaction().remove(new Start()).commit();
+        Fragment fragment1 = getSupportFragmentManager().findFragmentByTag(FRAGMENT_LIST_VIEW);
+        Fragment fragment2 = getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_DATA_PROVIDER);
+        getSupportFragmentManager().beginTransaction().remove(fragment1).remove(fragment2).commitAllowingStateLoss();
     }
     private void removeSearch() {
-        getSupportFragmentManager().beginTransaction().remove(new AllApps()).commit();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_ALL_APPS);
+        getSupportFragmentManager().beginTransaction().remove(fragment).commitAllowingStateLoss();
     }
     @Override
     public void onBackPressed() {
