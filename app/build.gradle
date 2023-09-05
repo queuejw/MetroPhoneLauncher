@@ -15,7 +15,7 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 1
-        versionName "pre alpha 2"
+        versionName "1.0 Developer Preview 1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,7 +45,8 @@ dependencies {
     implementation 'androidx.gridlayout:gridlayout:1.1.0-beta01'
 
     implementation project(path: ':AdvancedRecyclerView')
-    
+    implementation project(path: ':SpannedGridLayoutManager')
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

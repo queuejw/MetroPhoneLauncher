@@ -8,8 +8,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,8 +16,8 @@ import ru.dimon6018.metrolauncher.Application;
 import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
 
 public class DataProvider extends AbstractDataProvider {
-    private final List<ConcreteData> mData;
-    private final LinkedList mPrevData;
+    public final List<ConcreteData> mData;
+    private final LinkedList<App> mPrevData;
     private ConcreteData mLastRemovedData;
     private int mLastRemovedPosition = -1;
 
@@ -32,38 +30,36 @@ public class DataProvider extends AbstractDataProvider {
         i.addCategory(Intent.CATEGORY_LAUNCHER);
         int end = mPrevData.size();
         Log.i("Data", "size " + end);
-        final int swipeReaction = RecyclerViewSwipeManager.REACTION_CAN_SWIPE_UP | RecyclerViewSwipeManager.REACTION_CAN_SWIPE_DOWN;
         while (end != 0) {
             final int id = mPrevData.size();
             final int viewType = 0;
-            App app;
-            app = (App) mPrevData.get(end - 1);
-            app.CurrentPosition = new Prefs(context).getPos((String) app.app_package);
-            int pos = new Prefs(context).getPos((String) app.app_package);
+            App app = mPrevData.get(end - 1);
+            app.CurrentPosition = new Prefs(context).getPos(app.app_package);
+            int pos = new Prefs(context).getPos(app.app_package);
             Log.i("Data", "current id size mData: " + mData.size());
             Log.i("Data", "current item pos: " + app.getCurrentPosition());
             Log.i("Data", "current item label: " + app.app_label);
             Log.i("Data", "current item package: " + app.app_package);
-            final String text = (String) app.app_label;
-            final String packag = (String) app.app_package;
+            final String text = app.app_label;
+            final String packag = app.app_package;
+            final int size = app.tilesize;
             final Drawable icon;
             try {
-                icon = pManager.getApplicationIcon((String) app.app_package);
+                icon = pManager.getApplicationIcon(app.app_package);
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
             end = end - 1;
-            mData.add(new ConcreteData(id, viewType, text, swipeReaction, icon, pos, packag));
+            mData.add(new ConcreteData(id, viewType, text, icon, pos, packag, size));
         }
-       after(context);
+       after();
     }
 
-    private void after(Context context) {
+    private void after() {
         Log.i("Data", "Run tasks after init load");
         int end = mPrevData.size();
         while (end != 0) {
-            ConcreteData item = mData.get(end - 1);
-            mData.remove(item);
+            ConcreteData item = mData.remove(end - 1);
             Log.i("Data", "remove " + item.getText() + " from pos " + (end - 1));
             mData.add(item.getTilePos(), item);
             Log.i("Data", "add " + item.getText() + " to pos " + (item.getTilePos()));
@@ -72,7 +68,6 @@ public class DataProvider extends AbstractDataProvider {
         }
         Log.i("Data", "done");
     }
-
     @Override
     public int getCount() {
         return mData.size();
@@ -125,9 +120,6 @@ public class DataProvider extends AbstractDataProvider {
         mData.add(fromPosition, item2);
         Log.d("move", "Add " + item2.getText() + " to pos " + fromPosition);
         Log.d("move", "Add " + item1.getText() + " to pos " + toPosition);
-        new Prefs(Application.getAppContext()).setPos(item1.getPackage(), toPosition);
-        new Prefs(Application.getAppContext()).setPos(item2.getPackage(), fromPosition);
-
         mLastRemovedPosition = -1;
     }
 
@@ -159,18 +151,19 @@ public class DataProvider extends AbstractDataProvider {
         private final Drawable mIco;
         private final int mViewType;
         private boolean mPinned;
-        private int mPos;
-
-        ConcreteData(long id, int viewType, @NonNull String text, int swipeReaction, @NonNull Drawable ico, int pos, String packag) {
+        private final int mPos;
+        private final int mSize;
+        ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size) {
             mId = id;
             mViewType = viewType;
             mIco = ico;
             mPos = pos;
             mPackage = packag;
-            mText = makeText(text, swipeReaction);
+            mSize = size;
+            mText = makeText(text);
         }
 
-        private static String makeText(String text, int swipeReaction) {
+        private static String makeText(String text) {
             return text;
         }
 
@@ -190,25 +183,16 @@ public class DataProvider extends AbstractDataProvider {
         }
 
         @Override
+        public int getTileSize() {
+            return mSize;
+        }
+
+        @Override
         public long getId() {
             return mId;
         }
         public Drawable getDrawable() {
             return mIco;
-        }
-        @Override
-        public boolean isTileBig() {
-            return false;
-        }
-
-        @Override
-        public boolean isTileMedium() {
-            return false;
-        }
-
-        @Override
-        public boolean isTileSmall() {
-            return false;
         }
 
         @NonNull
@@ -231,7 +215,6 @@ public class DataProvider extends AbstractDataProvider {
         public boolean isPinned() {
             return mPinned;
         }
-
         @Override
         public void setPinned(boolean pinned) {
             mPinned = pinned;

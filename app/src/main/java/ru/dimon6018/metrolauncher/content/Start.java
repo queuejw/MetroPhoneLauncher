@@ -1,7 +1,7 @@
 package ru.dimon6018.metrolauncher.content;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.NinePatchDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,17 +11,16 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.arasthel.spannedgridlayoutmanager.SpanSize;
+import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager;
 import com.h6ah4i.android.widget.advrecyclerview.animator.DraggableItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.animator.GeneralItemAnimator;
 import com.h6ah4i.android.widget.advrecyclerview.draggable.DraggableItemAdapter;
@@ -31,14 +30,10 @@ import com.h6ah4i.android.widget.advrecyclerview.draggable.RecyclerViewDragDropM
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractDraggableItemViewHolder;
 import com.h6ah4i.android.widget.advrecyclerview.utils.WrapperAdapterUtils;
 
-import java.util.LinkedList;
-
 import ru.dimon6018.metrolauncher.Main;
 import ru.dimon6018.metrolauncher.R;
-import ru.dimon6018.metrolauncher.content.data.App;
 import ru.dimon6018.metrolauncher.content.data.Prefs;
 import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
-import ru.dimon6018.metrolauncher.helpers.DrawableUtils;
 
 public class Start extends Fragment {
     private RecyclerView mRecyclerView;
@@ -76,7 +71,25 @@ public class Start extends Fragment {
         //adapter
         final StartAdapter myItemAdapter = new StartAdapter(getDataProvider());
         mAdapter = myItemAdapter;
-
+        SpannedGridLayoutManager mSpannedLayoutManager = new SpannedGridLayoutManager(SpannedGridLayoutManager.Orientation.VERTICAL, 3);
+        mSpannedLayoutManager.setSpanSizeLookup(new SpannedGridLayoutManager.SpanSizeLookup(position -> {
+            Log.i("LM", "pos" + position);
+            int size = getDataProvider().getCount();
+            if(position != size) {
+                AbstractDataProvider.Data item = getDataProvider().getItem(position);
+                Log.i("LM", "item pos" + item.getTilePos());
+                Log.i("LM", "item pack" + item.getPackage());
+                Log.i("LM", "item size" + item.getTileSize());
+                return switch (item.getTileSize()) {
+                    case 0 -> new SpanSize(1, 1);
+                    case 1 -> new SpanSize(2, 2);
+                    case 2 -> new SpanSize(3, 2);
+                    default -> new SpanSize(1, 1);
+                };
+            } else {
+                return new SpanSize(1, 1);
+            }
+        }));
         mWrappedAdapter = mRecyclerViewDragDropManager.createWrappedAdapter(myItemAdapter);      // wrap for dragging
 
         final GeneralItemAnimator animator = new DraggableItemAnimator();
@@ -130,24 +143,18 @@ public class Start extends Fragment {
         private static final String TAG = "adapter";
         private static final int ITEM_VIEW_TYPE_HEADER = 0;
         private static final int ITEM_VIEW_TYPE_NORMAL_ITEM_OFFSET = 1;
-
         private static final boolean USE_DUMMY_HEADER = true;
-        private static final boolean RANDOMIZE_ITEM_SIZE = false;
-
         private final AbstractDataProvider mProvider;
-
         public static class BaseViewHolder extends AbstractDraggableItemViewHolder {
             public BaseViewHolder(View v) {
                 super(v);
             }
         }
-
         public static class HeaderItemViewHolder extends BaseViewHolder {
             public HeaderItemViewHolder(View v) {
                 super(v);
             }
         }
-
         public static class NormalItemViewHolder extends BaseViewHolder {
             public FrameLayout mContainer;
             public View mDragHandle;
@@ -225,67 +232,21 @@ public class Start extends Fragment {
             lp.setFullSpan(true);
         }
 
+        @SuppressLint("ResourceType")
         private void onBindNormalItemViewHolder(NormalItemViewHolder holder, int position) {
 
             final AbstractDataProvider.Data item = mProvider.getItem(position);
-
             // set text
             holder.mTextView.setText(item.getText());
             holder.mAppIcon.setImageDrawable(item.getDrawable());
 
-            // set item view height
-            Context context = holder.itemView.getContext();
-            int itemHeight = calcItemHeight(context, item);
-            ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-            if (lp.height != itemHeight) {
-                lp.height = itemHeight;
-                holder.itemView.setLayoutParams(lp);
-            }
-            // set background resource (target view ID: container)
             final DraggableItemState dragState = holder.getDragState();
-
             if (dragState.isUpdated()) {
                 if (dragState.isActive()) {
                 } else if (dragState.isDragging()) {
                 } else {
                 }
-                holder.mDragHandle.setOnClickListener(view -> showMenuAdapter(holder.itemView, R.menu.tile_menu_start, holder, position, item));
             }
-        }
-        private void showMenuAdapter(View v, @MenuRes int menuRes, NormalItemViewHolder holder, int pos, AbstractDataProvider.Data item) {
-            LinkedList mPrevData = new Prefs(getContext()).getAppsPackage();
-            PopupMenu popup = new PopupMenu(getActivity(), v);
-            popup.getMenuInflater().inflate(menuRes, popup.getMenu());
-            App app = (App) mPrevData.get(pos);
-            popup.setOnMenuItemClickListener(
-                    menuItem -> {
-                        if(menuItem.getItemId() == R.id.remove_tile) {
-                            new Prefs(getContext()).removeApp((String) app.app_package);
-                            mProvider.removeItem(item.getTilePos());
-                            Toast.makeText(getContext(), "Removed", Toast.LENGTH_SHORT);
-                            notifyDataSetChanged();
-                        }
-                        else if(menuItem.getItemId() == R.id.tile_small) {
-                            app.tilesmall = true;
-                            app.tilemedium = false;
-                            app.tilebig = false;
-                            notifyDataSetChanged();
-                        }
-                        else if(menuItem.getItemId() == R.id.tile_medium) {
-                            app.tilesmall = false;
-                            app.tilemedium = true;
-                            app.tilebig = false;
-                            notifyDataSetChanged();
-                        }
-                        else if(menuItem.getItemId() == R.id.tile_big) {
-                            app.tilesmall = false;
-                            app.tilemedium = false;
-                            app.tilebig = true;
-                            notifyDataSetChanged();
-                        }
-                        return true;
-                    });
-            popup.show();
         }
         @Override
         public int getItemCount() {
@@ -296,11 +257,13 @@ public class Start extends Fragment {
 
         @Override
         public void onMoveItem(int fromPosition, int toPosition) {
-            Log.d(TAG, "onMoveItem(fromPosition = " + fromPosition + ", toPosition = " + toPosition + ")");
-
+            Log.i(TAG, "onMoveItem(fromPosition = " + fromPosition + ", toPosition = " + toPosition + ")");
             fromPosition = toNormalItemPosition(fromPosition);
             toPosition = toNormalItemPosition(toPosition);
-
+            AbstractDataProvider.Data item1 = getDataProvider().getItem(fromPosition);
+            AbstractDataProvider.Data item2 = getDataProvider().getItem(toPosition);
+            new Prefs(getContext()).setPos(item1.getPackage(), toPosition);
+            new Prefs(getContext()).setPos(item2.getPackage(), fromPosition);
             mProvider.moveItem(fromPosition, toPosition);
         }
 
@@ -341,43 +304,6 @@ public class Start extends Fragment {
 
         static int toNormalItemPosition(int position) {
             return position - getHeaderItemCount();
-        }
-
-        static int calcItemHeight(Context context, AbstractDataProvider.Data item) {
-            float density = context.getResources().getDisplayMetrics().density;
-            if (RANDOMIZE_ITEM_SIZE) {
-                int s = (int) item.getId();
-                s = swapBit(s, 2, 2);
-                s = swapBit(s, 4,  4);
-                s = swapBit(s, 6, 4);
-                return (int) ((8 + (s % 13)) * 10 * density);
-            } else {
-                int s = (int) item.getId();
-                if(item.isTileBig()) {
-                    return (int) (150 * density);
-                } else if(item.isTileMedium()) {
-                    return (int) (100 * density);
-                } else if(item.isTileSmall()) {
-                    return (int) (50 * density);
-                } else {
-                    return (int) (100 * density);
-                }
-            }
-        }
-
-        static int swapBit(int x, int pos1, int pos2) {
-            int m1 = 1 << pos1;
-            int m2 = 1 << pos2;
-            int y = x & ~(m1 | m2);
-
-            if ((x & m1) != 0) {
-                y |= m2;
-            }
-            if ((x & m2) != 0) {
-                y |= m1;
-            }
-
-            return y;
         }
     }
 }

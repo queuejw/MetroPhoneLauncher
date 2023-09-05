@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.content;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,22 +9,28 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.lang.ref.WeakReference;
@@ -38,8 +45,11 @@ import ru.dimon6018.metrolauncher.content.data.Prefs;
 
 public class AllApps extends Fragment {
 
-    private List<App> appsList;
+    private static List<App> appsList;
     private List<App> mApps;
+    DialogFragment pinAppDialog;
+
+    public static int positionCurrent;
 
     public AllApps(){
         super(R.layout.all_apps_screen);
@@ -48,6 +58,7 @@ public class AllApps extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setUpApps();
+        pinAppDialog = new PinAppDialog();
         RecyclerView recyclerView = view.findViewById(R.id.app_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mApps = new ArrayList<>();
@@ -65,7 +76,7 @@ public class AllApps extends Fragment {
 
         for (ResolveInfo ri : allApps) {
             App app = new App();
-            app.app_label = ri.loadLabel(pManager);
+            app.app_label = (String) ri.loadLabel(pManager);
             app.app_package = ri.activityInfo.packageName;
             app.isSection = false;
             app.app_icon = ri.activityInfo.loadIcon(pManager);
@@ -98,6 +109,33 @@ public class AllApps extends Fragment {
             }
             mApps.add(app);
         }
+    }
+    public static class PinAppDialog extends DialogFragment {
+
+        @NonNull
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Context context = new ContextThemeWrapper(getContext(), R.style.PinAppStyle);
+            View view = LayoutInflater.from(context).inflate(R.layout.pin_app_dialog, null);
+            MaterialTextView pin = view.findViewById(R.id.pin_app);
+            pin.setOnClickListener(view1 -> {
+                App app = appsList.get(positionCurrent);
+                List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
+                int iCount = mPrevData.size();
+                new Prefs(getContext()).addApp(app.getPackagel(), app.getLabel());
+                new Prefs(getContext()).setPos(app.getPackagel(), iCount);
+                new Prefs(getContext()).setTileSize(app.getPackagel(), 0);
+                Log.i("AllApps", "Add new app. Pos: " + iCount);
+                Log.i("AllApps", "Add new app. Label: " + app.getLabel());
+                dismiss();
+            });
+            MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getActivity());
+            return builder
+                    .setView(view)
+                    .create();
+        }
+    }
+    public static void CurrentPos(int pos) {
+        positionCurrent = pos;
     }
     public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private static List<App> appsList;
@@ -137,7 +175,19 @@ public class AllApps extends Fragment {
                 startActivity(intent);
             });
             holder1.itemView.setOnLongClickListener(view -> {
-                showMenu(holder.itemView, R.menu.app_menu_list, holder1, position);
+                View v = LayoutInflater.from(getContext()).inflate(R.layout.pin_app_dialog, null);
+                MaterialTextView pin = v.findViewById(R.id.pin_app);
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.CustomDialog);
+                pin.setOnClickListener(view1 -> {
+                            List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
+                            int iCount = mPrevData.size();
+                            new Prefs(getContext()).addApp(apps.getPackagel(), apps.getLabel());
+                            new Prefs(getContext()).setPos(apps.getPackagel(), iCount);
+                            new Prefs(getContext()).setTileSize(apps.getPackagel(), 0);
+                            Log.i("AllApps", "Add new app. Pos: " + iCount);
+                            Log.i("AllApps", "Add new app. Label: " + apps.getLabel());
+                        });
+                builder.setView(v).show();
                 return true;
             });
         }
@@ -148,26 +198,6 @@ public class AllApps extends Fragment {
             } else {
                 return CONTENT_VIEW;
             }
-        }
-        private void showMenu(View v, @MenuRes int menuRes, AppAdapter.AppHolder holder, int pos) {
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(menuRes, popup.getMenu());
-            App app = appsList.get(pos);
-            popup.setOnMenuItemClickListener(
-                    menuItem -> {
-                        if(menuItem.getItemId() == R.id.add_to_start) {
-                            List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
-                            int iCount = mPrevData.size();
-                            new Prefs(getContext()).addApp((String) app.getPackagel(), (String) app.getLabel());
-                            new Prefs(getContext()).setPos((String) app.getPackagel(), iCount);
-                            Log.i("AllApps", "Add new app. Pos: " + iCount);
-                            Log.i("AllApps", "Add new app. Label: " + app.getLabel());
-                        }
-                        else if(menuItem.getItemId() == R.id.delete_app) {
-                        }
-                        return true;
-                    });
-            popup.show();
         }
         @Override
         public int getItemCount() {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="PinAppStyle" parent="MaterialAlertDialog.Material3">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- No backgrounds, titles or window float -->
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="dialogCornerRadius">0dp</item>
+    </style>
+    <style name="CustomDialog" parent="@style/Base.Theme">
+        <item name="android:windowAnimationStyle">@style/dialogWindowAnim</item>
+    </style>
+    <style name="Base.Theme" parent="@android:style/Theme.Holo.Light.Dialog" >
+        <item name="android:windowFrame">@null</item><!--边框-->
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:backgroundDimEnabled">false</item><!--模糊-->
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:background">#00000000</item>
+        <item name="cornerRadius">0dp</item>
+    </style>
+    <style name="dialogWindowAnim" parent="android:Animation" mce_bogus="1">
+        <item name="android:windowEnterAnimation">@anim/d_enter</item>
+        <item name="android:windowExitAnimation">@anim/d_exit</item>
+    </style>
+</resources>

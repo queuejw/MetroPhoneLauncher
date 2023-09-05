@@ -35,7 +35,7 @@ public class RecyclerViewRecyclerEventDistributor extends BaseRecyclerViewEventD
     protected void onRecyclerViewAttached(@NonNull RecyclerView rv) {
         super.onRecyclerViewAttached(rv);
 
-        rv.addRecyclerListener(mInternalRecyclerListener);
+        rv.setRecyclerListener(mInternalRecyclerListener);
     }
 
     @Override

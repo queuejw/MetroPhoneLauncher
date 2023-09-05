@@ -15,16 +15,19 @@
        limitations under the License.
 -->
 <!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="96dp"
-    android:layout_margin="4dp">
+    android:layout_margin="4dp"
+    android:orientation="vertical">
+
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="96dp"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
         app:cardCornerRadius="0dp"
         app:cardBackgroundColor="?attr/colorPrimary">
     <FrameLayout
@@ -52,5 +55,30 @@
             android:layout_height="24dp"
             android:id="@+id/drag_handle"/>
     </FrameLayout>
+        <LinearLayout
+            android:id="@+id/contextGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end|center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/unPinApp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_unpin"
+                android:scaleX="1.1"
+                android:scaleY="1.1"
+                app:tint="?attr/colorOnSurfaceInverse" />
+
+            <ImageView
+                android:id="@+id/resizeApp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_arrow"
+                app:tint="?attr/colorOnSurfaceInverse"/>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-</FrameLayout>
+</RelativeLayout>

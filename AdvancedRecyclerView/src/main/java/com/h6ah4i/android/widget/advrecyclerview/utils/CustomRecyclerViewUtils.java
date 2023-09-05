@@ -196,7 +196,7 @@ public class CustomRecyclerViewUtils {
 
     public static int getSynchronizedPosition(@NonNull RecyclerView.ViewHolder holder) {
         int pos1 = holder.getLayoutPosition();
-        int pos2 = holder.getAbsoluteAdapterPosition();
+        int pos2 = holder.getAdapterPosition();
         if (pos1 == pos2) {
             return pos1;
         } else {
@@ -271,7 +271,7 @@ public class CustomRecyclerViewUtils {
     }
 
     public static int safeGetAdapterPosition(@Nullable RecyclerView.ViewHolder holder) {
-        return (holder != null) ? holder.getAbsoluteAdapterPosition() : RecyclerView.NO_POSITION;
+        return (holder != null) ? holder.getAdapterPosition() : RecyclerView.NO_POSITION;
     }
 
     public static int safeGetLayoutPosition(@Nullable RecyclerView.ViewHolder holder) {

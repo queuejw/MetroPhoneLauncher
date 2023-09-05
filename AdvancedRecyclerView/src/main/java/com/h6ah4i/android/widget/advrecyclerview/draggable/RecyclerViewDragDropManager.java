@@ -1004,7 +1004,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
         final RecyclerView.Adapter rootAdapter = mRecyclerView.getAdapter();
         final AdapterPath path = new AdapterPath();
 
-        final int wrappedItemPosition = WrapperAdapterUtils.unwrapPosition(rootAdapter, mWrapperAdapter, null, holder.getAbsoluteAdapterPosition(), path);
+        final int wrappedItemPosition = WrapperAdapterUtils.unwrapPosition(rootAdapter, mWrapperAdapter, null, holder.getAdapterPosition(), path);
         ItemDraggableRange range = mWrapperAdapter.getItemDraggableRange(holder, wrappedItemPosition);
 
         if (range == null) {
@@ -1025,7 +1025,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean canStartDrag(RecyclerView.ViewHolder holder, int touchX, int touchY) {
-        final int origRootPosition = holder.getAbsoluteAdapterPosition();
+        final int origRootPosition = holder.getAdapterPosition();
         final int wrappedItemPosition = WrapperAdapterUtils.unwrapPosition(mRecyclerView.getAdapter(), mWrapperAdapter, null, origRootPosition);
 
         if (wrappedItemPosition == RecyclerView.NO_POSITION) {
@@ -1040,7 +1040,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
 
         if (mWrapperAdapter.canStartDrag(holder, wrappedItemPosition, viewX, viewY)) {
             // NOTE: notifyXXX method might be called inside of the user implemented code. that is not acceptable.
-            return (holder.getAbsoluteAdapterPosition() == origRootPosition);
+            return (holder.getAdapterPosition() == origRootPosition);
         } else {
             return false;
         }
@@ -1833,7 +1833,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
             final RecyclerView.ViewHolder vh2 = CustomRecyclerViewUtils.findChildViewHolderUnderWithoutTranslation(fc.rv, cx2, cy2);
 
             if (vh2 != null) {
-                final int pos = vh2.getAbsoluteAdapterPosition();
+                final int pos = vh2.getAdapterPosition();
 
                 if ((pos != RecyclerView.NO_POSITION) && pos >= rangeStartIndex && pos <= rangeEndIndex) {
                     return vh2;
@@ -1853,7 +1853,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
         }
 
         if (!fc.checkCanSwap && !alternative) {
-            final int draggingItemPosition = fc.draggingItem.getAbsoluteAdapterPosition();
+            final int draggingItemPosition = fc.draggingItem.getAdapterPosition();
             final int draggingViewOrigin = (fc.vertical) ? fc.draggingItem.itemView.getTop() : fc.draggingItem.itemView.getLeft();
             final int overlayItemOrigin = (fc.vertical) ? fc.overlayItemTop : fc.overlayItemLeft;
 
@@ -2089,7 +2089,7 @@ public class RecyclerViewDragDropManager implements DraggableItemConstants {
         if (vh == null) {
             return RecyclerView.NO_POSITION;
         }
-        return WrapperAdapterUtils.unwrapPosition(mRecyclerView.getAdapter(), mWrapperAdapter, mComposedAdapterTag, vh.getAbsoluteAdapterPosition());
+        return WrapperAdapterUtils.unwrapPosition(mRecyclerView.getAdapter(), mWrapperAdapter, mComposedAdapterTag, vh.getAdapterPosition());
     }
 
     private ItemDraggableRange convertToRootAdapterRange(AdapterPath path, ItemDraggableRange src) {
