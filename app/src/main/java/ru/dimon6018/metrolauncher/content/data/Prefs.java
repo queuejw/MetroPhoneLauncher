@@ -52,12 +52,6 @@ public class Prefs implements SharedPreferences.OnSharedPreferenceChangeListener
                 .remove(APP_PREFIX + packag)
                 .apply();
     }
-    public boolean isPlaceholdersAdded() {
-        return prefs.getBoolean(PLACEHOLDERS_ADDED, false);
-    }
-    public void disablePlaceholderAdd(boolean bool) {
-        prefs.edit().putBoolean(PLACEHOLDERS_ADDED, bool).apply();
-    }
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String s) {
     }

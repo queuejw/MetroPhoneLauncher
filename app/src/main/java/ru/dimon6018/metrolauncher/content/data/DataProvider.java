@@ -42,6 +42,7 @@ public class DataProvider extends AbstractDataProvider {
             Log.i("Data", "current item package: " + app.app_package);
             final String text = app.app_label;
             final String packag = app.app_package;
+            app.tilesize = new Prefs(context).getTileSize(app.app_package);
             final int size = app.tilesize;
             final Drawable icon;
             try {
@@ -52,16 +53,16 @@ public class DataProvider extends AbstractDataProvider {
             end = end - 1;
             mData.add(new ConcreteData(id, viewType, text, icon, pos, packag, size));
         }
-       after();
+       after(context);
     }
 
-    private void after() {
+    private void after(Context context) {
         Log.i("Data", "Run tasks after init load");
         int end = mPrevData.size();
         while (end != 0) {
             ConcreteData item = mData.remove(end - 1);
             Log.i("Data", "remove " + item.getText() + " from pos " + (end - 1));
-            mData.add(item.getTilePos(), item);
+            mData.add(new Prefs(context).getPos(item.getPackage()), item);
             Log.i("Data", "add " + item.getText() + " to pos " + (item.getTilePos()));
             end = end - 1;
 
@@ -108,18 +109,14 @@ public class DataProvider extends AbstractDataProvider {
         if (fromPosition == toPosition) {
             return;
         }
-        Log.d("move", "Move Items");
-        Log.d("move", "Move " + mData.get(fromPosition).getText() + " to " + mData.get(toPosition).getText());
         ConcreteData item1 = mData.get(fromPosition);
         ConcreteData item2 = mData.get(toPosition);
         mData.remove(item1);
         mData.add(toPosition, item1);
-        Log.d("move", "Remove " + item1.getText() );
-        Log.d("move", "Remove " + item2.getText() );
         mData.remove(item2);
         mData.add(fromPosition, item2);
-        Log.d("move", "Add " + item2.getText() + " to pos " + fromPosition);
-        Log.d("move", "Add " + item1.getText() + " to pos " + toPosition);
+        new Prefs(Application.getAppContext()).setPos(item1.getPackage(), toPosition);
+        new Prefs(Application.getAppContext()).setPos(item2.getPackage(), fromPosition);
         mLastRemovedPosition = -1;
     }
 
