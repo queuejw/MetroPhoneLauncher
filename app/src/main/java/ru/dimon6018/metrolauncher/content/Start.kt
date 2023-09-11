@@ -45,41 +45,19 @@ class Start : Fragment(), OnStartDragListener {
 
         //adapter
         val adapter = StartAdapter(dataProvider, this)
-        mSpannedLayoutManager = SpannedGridLayoutManager(SpannedGridLayoutManager.Orientation.VERTICAL, 3)
-        /**     mSpannedLayoutManager.spanSizeLookup = SpannedGridLayoutManager.SpanSizeLookup label@{ position: Int ->
-            Log.i("LM", "pos$position")
-            val size = dataProvider.count
-            if (position < size) {
-                val item = dataProvider.getItem(position)
-                Log.i("LM", "item pos" + item.tilePos)
-                Log.i("LM", "item pack" + item.getPackage())
-                Log.i("LM", "item size" + item.tileSize)
-                return@label when (item.tileSize) {
-                    0 -> SpanSize(1, 1)
-                    1 -> SpanSize(2, 2)
-                    2 -> SpanSize(3, 2)
-                    else -> SpanSize(1, 1)
-                }
-            } else {
-                return@label SpanSize(1, 1)
-            }
-        } **/
+        mSpannedLayoutManager = SpannedGridLayoutManager(SpannedGridLayoutManager.Orientation.VERTICAL, 4)
         mSpannedLayoutManager?.spanSizeLookup = SpannedGridLayoutManager.SpanSizeLookup { position ->
                  when (dataProvider.getItem(position).tileSize) {
                     0 -> {
-                        Log.i("sgl", "0")
                         SpanSize(1, 1)
                     }
                     1 -> {
-                        Log.i("sgl", "1")
                         SpanSize(2, 2)
                     }
                     2 ->  {
-                        Log.i("sgl", "2")
-                        SpanSize(3, 2)
+                        SpanSize(4, 2)
                     }
                     else -> {
-                        Log.i("sgl", "else")
                         SpanSize(1, 1)
                     }
                 }
@@ -120,9 +98,11 @@ class Start : Fragment(), OnStartDragListener {
             Prefs(context).setPos(item2.getPackage(), fromPosition)
             mProvider.moveItem(fromPosition, toPosition)
             notifyItemMoved(fromPosition, toPosition)
+            trySaveAllPositions()
         }
 
         override fun onItemDismiss(position: Int) {}
+
         inner class NormalItemViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
             val mContainer: FrameLayout
             val mDragHandle: View
@@ -141,7 +121,7 @@ class Start : Fragment(), OnStartDragListener {
         }
 
         init {
-            setHasStableIds(true)
+        //    setHasStableIds(true)
             Log.e("Adapter", "Adapter Loaded")
         }
 
@@ -158,7 +138,9 @@ class Start : Fragment(), OnStartDragListener {
         override fun onBindViewHolder(holder: NormalItemViewHolder, position: Int) {
             val item = mProvider.getItem(position)
             // set text
-            holder.mTextView.text = item.text
+            if(item.tileSize != 0) {
+                holder.mTextView.text = item.text
+            }
             holder.mAppIcon.setImageDrawable(item.drawable)
             holder.itemView.setOnTouchListener { v: View?, event: MotionEvent? ->
                 if (MotionEventCompat.getActionMasked(event) ==
@@ -174,9 +156,19 @@ class Start : Fragment(), OnStartDragListener {
                     1 -> Prefs(context).setTileSize(item.getPackage(), 2)
                     2 -> Prefs(context).setTileSize(item.getPackage(), 0)
                 }
+                notifyItemChanged(position)
             }
         }
-
+        private fun trySaveAllPositions() {
+            var allItemsCount = itemCount;
+            while(allItemsCount != 0) {
+                val pos = allItemsCount - 1
+                val item = dataProvider.getItem(pos)
+                allItemsCount -= 1
+                Log.i("savePos", "Saving item pos. Item " + item.text + ". New pos: " + pos + " . (Old pos: " + item.tilePos)
+                Prefs(context).setPos(item.`package`, pos)
+            }
+        }
         override fun getItemCount(): Int {
             return mProvider.count
         }

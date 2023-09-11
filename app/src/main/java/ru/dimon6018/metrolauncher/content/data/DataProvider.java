@@ -60,10 +60,8 @@ public class DataProvider extends AbstractDataProvider {
         Log.i("Data", "Run tasks after init load");
         int end = mPrevData.size();
         while (end != 0) {
-            ConcreteData item = mData.remove(end - 1);
-            Log.i("Data", "remove " + item.getText() + " from pos " + (end - 1));
-            mData.add(new Prefs(context).getPos(item.getPackage()), item);
-            Log.i("Data", "add " + item.getText() + " to pos " + (item.getTilePos()));
+            ConcreteData item = mData.get(end - 1);
+            swapItem(end - 1, new Prefs(context).getPos(item.getPackage()));
             end = end - 1;
 
         }
@@ -115,8 +113,6 @@ public class DataProvider extends AbstractDataProvider {
         mData.add(toPosition, item1);
         mData.remove(item2);
         mData.add(fromPosition, item2);
-        new Prefs(Application.getAppContext()).setPos(item1.getPackage(), toPosition);
-        new Prefs(Application.getAppContext()).setPos(item2.getPackage(), fromPosition);
         mLastRemovedPosition = -1;
     }
 
