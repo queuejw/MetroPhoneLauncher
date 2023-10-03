@@ -48,9 +48,8 @@ public class Prefs implements SharedPreferences.OnSharedPreferenceChangeListener
         return prefs.getInt(APP_TILE_SIZE + packag, 0);
     }
     public void removeApp(String packag) {
-        prefs.edit()
-                .remove(APP_PREFIX + packag)
-                .apply();
+        prefs.edit().remove(APP_PREFIX + packag).apply();
+        prefs.edit().remove(APP_POS_PREFIX + packag).apply();
     }
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String s) {

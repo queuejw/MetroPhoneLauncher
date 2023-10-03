@@ -1,6 +1,5 @@
 package ru.dimon6018.metrolauncher.content;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,28 +8,21 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.lang.ref.WeakReference;
@@ -58,7 +50,6 @@ public class AllApps extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setUpApps();
-        pinAppDialog = new PinAppDialog();
         RecyclerView recyclerView = view.findViewById(R.id.app_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mApps = new ArrayList<>();
@@ -110,30 +101,6 @@ public class AllApps extends Fragment {
             mApps.add(app);
         }
     }
-    public static class PinAppDialog extends DialogFragment {
-
-        @NonNull
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Context context = new ContextThemeWrapper(getContext(), R.style.PinAppStyle);
-            View view = LayoutInflater.from(context).inflate(R.layout.pin_app_dialog, null);
-            MaterialTextView pin = view.findViewById(R.id.pin_app);
-            pin.setOnClickListener(view1 -> {
-                App app = appsList.get(positionCurrent);
-                List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
-                int iCount = mPrevData.size();
-                new Prefs(getContext()).addApp(app.getPackagel(), app.getLabel());
-                new Prefs(getContext()).setPos(app.getPackagel(), iCount);
-                new Prefs(getContext()).setTileSize(app.getPackagel(), 0);
-                Log.i("AllApps", "Add new app. Pos: " + iCount);
-                Log.i("AllApps", "Add new app. Label: " + app.getLabel());
-                dismiss();
-            });
-            MaterialAlertDialogBuilder builder=new MaterialAlertDialogBuilder(getActivity());
-            return builder
-                    .setView(view)
-                    .create();
-        }
-    }
     public static void CurrentPos(int pos) {
         positionCurrent = pos;
     }
@@ -175,10 +142,10 @@ public class AllApps extends Fragment {
                 startActivity(intent);
             });
             holder1.itemView.setOnLongClickListener(view -> {
-                View v = LayoutInflater.from(getContext()).inflate(R.layout.pin_app_dialog, null);
-                MaterialTextView pin = v.findViewById(R.id.pin_app);
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), R.style.CustomDialog);
-                pin.setOnClickListener(view1 -> {
+                final WPDialog wp=new WPDialog(getActivity());
+                wp.setTitle(apps.getLabel())
+                        .setMessage("What do you want to do?")
+                        .setPositiveButton("pin to start", (View.OnClickListener) p1 -> {
                             List<App> mPrevData = new Prefs(getContext()).getAppsPackage();
                             int iCount = mPrevData.size();
                             new Prefs(getContext()).addApp(apps.getPackagel(), apps.getLabel());
@@ -186,8 +153,10 @@ public class AllApps extends Fragment {
                             new Prefs(getContext()).setTileSize(apps.getPackagel(), 0);
                             Log.i("AllApps", "Add new app. Pos: " + iCount);
                             Log.i("AllApps", "Add new app. Label: " + apps.getLabel());
-                        });
-                builder.setView(v).show();
+                            wp.dismiss();
+                        })
+                        .setNegativeButton("delete", (View.OnClickListener) p1 -> wp.dismiss())
+                        .show();
                 return true;
             });
         }

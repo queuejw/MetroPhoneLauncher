@@ -1,20 +1,20 @@
 package ru.dimon6018.metrolauncher.content
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.MotionEventCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.arasthel.spannedgridlayoutmanager.SpanSize
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import ru.dimon6018.metrolauncher.Main
@@ -28,9 +28,9 @@ import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.SpaceItemDecorator
 
+
 class Start : Fragment(), OnStartDragListener {
     private var mRecyclerView: RecyclerView? = null
-    private var mLayoutManager: StaggeredGridLayoutManager? = null
     private var mItemTouchHelper: ItemTouchHelper? = null
     private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
 
@@ -41,31 +41,21 @@ class Start : Fragment(), OnStartDragListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mRecyclerView = requireView().findViewById(R.id.start_apps_tiles)
-        mLayoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
-
         //adapter
         val adapter = StartAdapter(dataProvider, this)
+        mRecyclerView?.addItemDecoration(SpaceItemDecorator(5, 5, 5, 5))
         mSpannedLayoutManager = SpannedGridLayoutManager(SpannedGridLayoutManager.Orientation.VERTICAL, 4)
         mSpannedLayoutManager?.spanSizeLookup = SpannedGridLayoutManager.SpanSizeLookup { position ->
                  when (dataProvider.getItem(position).tileSize) {
-                    0 -> {
-                        SpanSize(1, 1)
-                    }
-                    1 -> {
-                        SpanSize(2, 2)
-                    }
-                    2 ->  {
-                        SpanSize(4, 2)
-                    }
-                    else -> {
-                        SpanSize(1, 1)
-                    }
+                    0 -> { SpanSize(1, 1) }
+                    1 -> { SpanSize(2, 2) }
+                    2 ->  { SpanSize(4, 2) }
+                    else -> { SpanSize(1, 1) }
                 }
         }
+        mSpannedLayoutManager?.itemOrderIsStable = true
         mRecyclerView?.layoutManager = mSpannedLayoutManager
-        mRecyclerView?.addItemDecoration(SpaceItemDecorator(5, 5, 5, 5))
         mRecyclerView?.adapter = adapter
-        mRecyclerView?.setHasFixedSize(false)
         val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter)
         mItemTouchHelper = ItemTouchHelper(callback)
         mItemTouchHelper!!.attachToRecyclerView(mRecyclerView)
@@ -74,10 +64,10 @@ class Start : Fragment(), OnStartDragListener {
     override fun onDestroyView() {
         if (mRecyclerView != null) {
             mRecyclerView!!.itemAnimator = null
+            mRecyclerView!!.layoutManager = null
             mRecyclerView!!.adapter = null
             mRecyclerView = null
         }
-        mLayoutManager = null
         super.onDestroyView()
     }
 
@@ -91,7 +81,6 @@ class Start : Fragment(), OnStartDragListener {
     inner class StartAdapter(private val mProvider: AbstractDataProvider, private val mDragStartListener: OnStartDragListener) : RecyclerView.Adapter<NormalItemViewHolder>(), ItemTouchHelperAdapter {
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             Log.i("adapter", "onMoveItem(fromPosition = $fromPosition, toPosition = $toPosition)")
-            val b = mProvider.count
             val item1 = mProvider.getItem(fromPosition)
             val item2 = mProvider.getItem(toPosition)
             Prefs(context).setPos(item1.getPackage(), toPosition)
@@ -121,14 +110,12 @@ class Start : Fragment(), OnStartDragListener {
         }
 
         init {
-        //    setHasStableIds(true)
             Log.e("Adapter", "Adapter Loaded")
         }
 
         override fun getItemId(position: Int): Long {
             return mProvider.getItem(position).id
         }
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NormalItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val v = inflater.inflate(R.layout.tile, parent, false)
@@ -138,35 +125,62 @@ class Start : Fragment(), OnStartDragListener {
         override fun onBindViewHolder(holder: NormalItemViewHolder, position: Int) {
             val item = mProvider.getItem(position)
             // set text
-            if(item.tileSize != 0) {
+            if (item.tileSize != 0) {
                 holder.mTextView.text = item.text
             }
             holder.mAppIcon.setImageDrawable(item.drawable)
-            holder.itemView.setOnTouchListener { v: View?, event: MotionEvent? ->
-                if (MotionEventCompat.getActionMasked(event) ==
-                        MotionEvent.ACTION_DOWN) {
-                    mDragStartListener.onStartDrag(holder)
-                }
-                false
+
+            holder.mAppIcon.setOnClickListener {
+                val intent = context!!.packageManager.getLaunchIntentForPackage((item.`package` as String))
+                intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
-            holder.mAppIcon.setOnClickListener { v: View? ->
-                Log.i("holder", "clicked")
-                when (item.tileSize) {
-                    0 -> Prefs(context).setTileSize(item.getPackage(), 1)
-                    1 -> Prefs(context).setTileSize(item.getPackage(), 2)
-                    2 -> Prefs(context).setTileSize(item.getPackage(), 0)
-                }
-                notifyItemChanged(position)
+            holder.mDragHandle.setOnLongClickListener {
+                val wp = WPDialog(activity)
+                wp.setTitle(item.text)
+                        .setMessage("What do you want to do?")
+                        .setTopDialog(true)
+                        .setPositiveButton("resize") {
+                            when (item.tileSize) {
+                                0 -> Prefs(context).setTileSize(item.getPackage(), 1)
+                                1 -> Prefs(context).setTileSize(item.getPackage(), 2)
+                                2 -> Prefs(context).setTileSize(item.getPackage(), 0)
+                            }
+                            notifyItemChanged(position)
+                            wp.dismiss()
+                        }
+                        .setNegativeButton("remove") {
+                            Prefs(context).removeApp(item.`package`)
+                            mProvider.removeItem(position)
+                            notifyItemRemoved(position)
+                            wp.dismiss()
+                        }
+                        .setNeutralButton("move") {
+                            mDragStartListener.onStartDrag(holder)
+                        }
+                        .show()
+                false
             }
         }
         private fun trySaveAllPositions() {
-            var allItemsCount = itemCount;
+            var allItemsCount = itemCount
             while(allItemsCount != 0) {
                 val pos = allItemsCount - 1
+                mRecyclerView?.adapter?.getItemId(pos)
                 val item = dataProvider.getItem(pos)
                 allItemsCount -= 1
                 Log.i("savePos", "Saving item pos. Item " + item.text + ". New pos: " + pos + " . (Old pos: " + item.tilePos)
                 Prefs(context).setPos(item.`package`, pos)
+            }
+        }
+        private fun trySaveAllPositionsExp() {
+            var allItemsCount = itemCount
+            var currentItem = 0
+            var nextitem = currentItem + 1;
+            while(allItemsCount != 0) {
+                allItemsCount -= 1
+                currentItem += 1
+                nextitem += 1
             }
         }
         override fun getItemCount(): Int {

@@ -15,15 +15,15 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * A [android.support.v7.widget.RecyclerView.LayoutManager] which layouts and orders its views
+ * A [androidx.recyclerview.widget.RecyclerView.LayoutManager] which layouts and orders its views
  * based on width and height spans.
  *
  * @param orientation Whether the views will be layouted and scrolled in vertical or horizontal
  * @param spans How many spans does the layout have per row or column
  */
 open class SpannedGridLayoutManager(
-    val orientation: Orientation,
-    val spans: Int
+        val orientation: Orientation,
+        val spans: Int
 ) : RecyclerView.LayoutManager() {
 
     //==============================================================================================
@@ -131,8 +131,8 @@ open class SpannedGridLayoutManager(
      * SpanSizes can be cached to improve efficiency.
      */
     open class SpanSizeLookup(
-        /** Used to provide an SpanSize for each item. */
-        var lookupFunction: ((Int) -> SpanSize)? = null
+            /** Used to provide an SpanSize for each item. */
+            var lookupFunction: ((Int) -> SpanSize)? = null
     ) {
 
         private var cache = SparseArray<SpanSize>()
@@ -190,8 +190,8 @@ open class SpannedGridLayoutManager(
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(
-            RecyclerView.LayoutParams.MATCH_PARENT,
-            RecyclerView.LayoutParams.WRAP_CONTENT
+                RecyclerView.LayoutParams.MATCH_PARENT,
+                RecyclerView.LayoutParams.WRAP_CONTENT
         )
     }
 
@@ -320,19 +320,19 @@ open class SpannedGridLayoutManager(
 
             if (orientation == Orientation.VERTICAL) {
                 layoutDecorated(
-                    view,
-                    frame.left + paddingLeft,
-                    frame.top - scroll + startPadding,
-                    frame.right + paddingLeft,
-                    frame.bottom - scroll + startPadding
+                        view,
+                        frame.left + paddingLeft,
+                        frame.top - scroll + startPadding,
+                        frame.right + paddingLeft,
+                        frame.bottom - scroll + startPadding
                 )
             } else {
                 layoutDecorated(
-                    view,
-                    frame.left - scroll + startPadding,
-                    frame.top + paddingTop,
-                    frame.right - scroll + startPadding,
-                    frame.bottom + paddingTop
+                        view,
+                        frame.left - scroll + startPadding,
+                        frame.top + paddingTop,
+                        frame.right - scroll + startPadding,
+                        frame.bottom + paddingTop
                 )
             }
         }
@@ -513,12 +513,12 @@ open class SpannedGridLayoutManager(
         }
 
         val canScrollBackwards = (firstVisiblePosition) >= 0 &&
-            0 < scroll &&
-            delta < 0
+                0 < scroll &&
+                delta < 0
 
         val canScrollForward = (firstVisiblePosition + childCount) <= state.itemCount &&
-            (scroll + size) < (layoutEnd + rectsHelper.itemSize + getPaddingEndForOrientation()) &&
-            delta > 0
+                (scroll + size) < (layoutEnd + rectsHelper.itemSize + getPaddingEndForOrientation()) &&
+                delta > 0
 
         // If can't scroll forward or backwards, return
         if (!(canScrollBackwards || canScrollForward)) {

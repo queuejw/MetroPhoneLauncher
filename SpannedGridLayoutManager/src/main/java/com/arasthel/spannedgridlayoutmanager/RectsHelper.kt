@@ -6,8 +6,8 @@ import android.graphics.Rect
  * A helper to find free rects in the current layout.
  */
 open class RectsHelper(
-    val layoutManager: SpannedGridLayoutManager,
-    val orientation: SpannedGridLayoutManager.Orientation
+        val layoutManager: SpannedGridLayoutManager,
+        val orientation: SpannedGridLayoutManager.Orientation
 ) {
 
     /**

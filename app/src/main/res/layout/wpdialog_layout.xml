@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:gravity="bottom|center">
+
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/wp_bg"
+        android:orientation="vertical"
+        android:gravity="bottom|center"
+        android:id="@+id/wp_bg">
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:text="标题"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="match_parent"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/wp_title"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:text="消息"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/wp_message"/>
+
+            <FrameLayout
+                android:id="@+id/wp_view"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1.0"
+                android:background="#FFFFFF"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/wp_cancle_bg">
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:text="取消"
+                    android:background="@drawable/background"
+                    android:layout_width="match_parent"
+                    android:textColor="#FFFFFF"
+                    android:layout_margin="2dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/wp_cancel"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1.0"
+                android:background="#FFFFFF"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/wp_neutral_bg">
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:text="中间"
+                    android:background="@drawable/background"
+                    android:layout_width="match_parent"
+                    android:textColor="#FFFFFF"
+                    android:layout_margin="2dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/wp_neutral"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="40dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="1.0"
+                android:background="#FFFFFF"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:id="@+id/wp_ok_bg">
+
+                <TextView
+                    android:layout_height="match_parent"
+                    android:text="确定"
+                    android:background="@drawable/background"
+                    android:layout_width="match_parent"
+                    android:textColor="#FFFFFF"
+                    android:layout_margin="2dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/wp_ok"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

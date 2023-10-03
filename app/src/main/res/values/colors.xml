@@ -88,4 +88,9 @@
     <color name="snackbar_action_color_done">#ffccccff</color>
 
     <color name="expandable_item_indicator_color">#42000000</color>
+
+    <color name="wp_bg">#171717</color>
+    <color name="wp_bg_pressed">#525252</color>
+    <color name="wp_light_bg">#FFFFFF</color>
+    <color name="wp_light_bg_pressed">#B6B6B6</color>
 </resources>
