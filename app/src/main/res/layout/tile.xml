@@ -36,7 +36,8 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
-        tools:ignore="UselessParent">
+        tools:ignore="UselessParent"
+        android:focusable="true">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,39 +51,6 @@
             android:gravity="center"
             android:textColor="@android:color/white"
             tools:ignore="RtlHardcoded"/>
-        <View
-            android:layout_width="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:layout_height="match_parent"
-            android:id="@+id/drag_handle"/>
     </FrameLayout>
-        <LinearLayout
-            android:id="@+id/contextGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="end|center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/unPinApp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_unpin"
-                android:scaleX="1.1"
-                android:scaleY="1.1"
-                app:tint="?attr/colorOnSurfaceInverse" />
-
-            <ImageView
-                android:id="@+id/resizeApp"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/ic_arrow"
-                app:tint="?attr/colorOnSurfaceInverse"/>
-        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

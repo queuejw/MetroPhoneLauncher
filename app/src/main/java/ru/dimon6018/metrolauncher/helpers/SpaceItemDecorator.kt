@@ -3,8 +3,8 @@
 package ru.dimon6018.metrolauncher.helpers
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Created by Jorge Martín on 2/6/17.

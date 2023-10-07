@@ -8,6 +8,7 @@ public abstract class AbstractDataProvider {
         public abstract boolean isSectionHeader();
         public abstract int getViewType();
         public abstract int getTilePos();
+        public abstract void setTileSize(int size);
         public abstract int getTileSize();
         public abstract String getText();
         public abstract String getPackage();

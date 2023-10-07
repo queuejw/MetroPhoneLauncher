@@ -17,6 +17,7 @@ import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
 
 public class DataProvider extends AbstractDataProvider {
     public final List<ConcreteData> mData;
+    public static List<ConcreteData> mDataStatic;
     private final LinkedList<App> mPrevData;
     private ConcreteData mLastRemovedData;
     private int mLastRemovedPosition = -1;
@@ -65,6 +66,7 @@ public class DataProvider extends AbstractDataProvider {
             end = end - 1;
 
         }
+        mDataStatic = mData;
         Log.i("Data", "done");
     }
     @Override
@@ -145,7 +147,7 @@ public class DataProvider extends AbstractDataProvider {
         private final int mViewType;
         private boolean mPinned;
         private final int mPos;
-        private final int mSize;
+        private int mSize;
         ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size) {
             mId = id;
             mViewType = viewType;
@@ -174,7 +176,10 @@ public class DataProvider extends AbstractDataProvider {
         public int getTilePos() {
             return mPos;
         }
-
+        @Override
+        public void setTileSize(int size) {
+            mSize = size;
+        }
         @Override
         public int getTileSize() {
             return mSize;

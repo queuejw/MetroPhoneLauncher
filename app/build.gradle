@@ -42,7 +42,6 @@ dependencies {
     implementation 'androidx.core:core:1.12.0'
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.fragment:fragment:1.7.0-alpha05'
-    implementation 'androidx.gridlayout:gridlayout:1.1.0-beta01'
 
     implementation project(path: ':SpannedGridLayoutManager')
 

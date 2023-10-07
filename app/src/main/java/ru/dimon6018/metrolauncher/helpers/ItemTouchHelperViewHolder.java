@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.helpers;
-import  androidx.recyclerview.widget.ItemTouchHelper;
+
+import androidx.recyclerview.widget.ItemTouchHelper;
 public interface ItemTouchHelperViewHolder {
     /**
      * Called when the {@link ItemTouchHelper} first registers an item as being moved or swiped.
