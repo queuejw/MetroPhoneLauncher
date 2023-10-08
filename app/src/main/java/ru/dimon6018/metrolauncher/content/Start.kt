@@ -26,32 +26,28 @@ import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.SpaceItemDecorator
 import java.util.Collections
 
-
-
-
-
 class Start : Fragment(), OnStartDragListener {
      private var mRecyclerView: RecyclerView? = null
      private var mItemTouchHelper: ItemTouchHelper? = null
      private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
+     private var adapter: StartAdapter? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.main_screen_content, container, false)
+        val v = inflater.inflate(R.layout.main_screen_content, container, false)
+        mRecyclerView = v.findViewById(R.id.start_apps_tiles)
+        mSpannedLayoutManager = SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = requireActivity())
+        adapter = StartAdapter(dataProvider, this)
+        return v
     }
 
     override fun onResume() {
         super.onResume()
-        mRecyclerView?.adapter?.notifyDataSetChanged()
-        Log.i("resume", "resume")
+        adapter!!.setNewData(dataProvider)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mRecyclerView = view.findViewById(R.id.start_apps_tiles)
-        //adapter
-        val adapter = StartAdapter(dataProvider, this)
-        mRecyclerView?.addItemDecoration(SpaceItemDecorator(5, 5, 5, 5))
-        mSpannedLayoutManager = SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = requireActivity())
+        mRecyclerView!!.addItemDecoration(SpaceItemDecorator(5, 5, 5, 5))
         mSpannedLayoutManager!!.itemOrderIsStable = true
         mSpannedLayoutManager!!.spanSizeLookup = SpannedGridLayoutManager.SpanSizeLookup { position ->
             when (dataProvider.getItem(position).tileSize) {
@@ -91,7 +87,7 @@ class Start : Fragment(), OnStartDragListener {
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
         mItemTouchHelper!!.startDrag(viewHolder)
     }
-    inner class StartAdapter(private val mProvider: AbstractDataProvider, private val mDragStartListener: OnStartDragListener) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
+    inner class StartAdapter(private var mProvider: AbstractDataProvider, private val mDragStartListener: OnStartDragListener) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
@@ -117,6 +113,10 @@ class Start : Fragment(), OnStartDragListener {
         }
         override fun onItemDismiss(position: Int) {}
 
+        fun setNewData(mProviderNew: AbstractDataProvider) {
+            mProvider = mProviderNew
+            notifyDataSetChanged()
+        }
         inner class NormalItemViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
             val mContainer: FrameLayout
             val mTextView: TextView

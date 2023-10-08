@@ -2,6 +2,9 @@ package ru.dimon6018.metrolauncher.helpers;
 
 import android.graphics.drawable.Drawable;
 
+import ru.dimon6018.metrolauncher.content.data.App;
+import ru.dimon6018.metrolauncher.content.data.DataProvider;
+
 public abstract class AbstractDataProvider {
     public static abstract class Data {
         public abstract long getId();
@@ -21,6 +24,8 @@ public abstract class AbstractDataProvider {
     public abstract int getCount();
 
     public abstract Data getItem(int index);
+
+    public abstract void addItem(int pos, DataProvider.ConcreteData app, App apps);
 
     public abstract void removeItem(int position);
 

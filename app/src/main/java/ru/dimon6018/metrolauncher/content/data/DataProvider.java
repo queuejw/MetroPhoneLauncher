@@ -127,6 +127,11 @@ public class DataProvider extends AbstractDataProvider {
         Collections.swap(mData, toPosition, fromPosition);
         mLastRemovedPosition = -1;
     }
+    @Override
+    public void addItem(int pos, ConcreteData app, App apps) {
+        mData.add(pos, app);
+        mPrevData.add(apps);
+    }
 
     @Override
     public void removeItem(int position) {
@@ -148,7 +153,7 @@ public class DataProvider extends AbstractDataProvider {
         private boolean mPinned;
         private final int mPos;
         private int mSize;
-        ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size) {
+        public ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size) {
             mId = id;
             mViewType = viewType;
             mIco = ico;

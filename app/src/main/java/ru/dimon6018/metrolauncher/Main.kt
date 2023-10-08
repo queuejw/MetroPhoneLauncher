@@ -40,11 +40,11 @@ class Main : AppCompatActivity() {
         navbar.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.start_win -> {
-                viewPager.setCurrentItem(0);
+                    viewPager?.currentItem = 0
                     true
                 }
                 R.id.start_apps -> {
-               viewPager.setCurrentItem(1);
+                    viewPager?.currentItem = 1
                     true
                 }
                 else -> false

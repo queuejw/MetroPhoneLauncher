@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,16 +30,17 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import ru.dimon6018.metrolauncher.Main;
 import ru.dimon6018.metrolauncher.R;
 import ru.dimon6018.metrolauncher.content.data.App;
+import ru.dimon6018.metrolauncher.content.data.DataProvider;
 import ru.dimon6018.metrolauncher.content.data.Prefs;
+import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
 
 public class AllApps extends Fragment {
 
     private static List<App> appsList;
     private List<App> mApps;
-    DialogFragment pinAppDialog;
-
     public static int positionCurrent;
 
     public AllApps(){
@@ -153,6 +153,20 @@ public class AllApps extends Fragment {
                             new Prefs(getContext()).setTileSize(apps.getPackagel(), 0);
                             Log.i("AllApps", "Add new app. Pos: " + iCount);
                             Log.i("AllApps", "Add new app. Label: " + apps.getLabel());
+                            mPrevData.add(apps);
+                            final String text = apps.app_label;
+                            final String packag = apps.app_package;
+                            apps.tilesize = new Prefs(getContext()).getTileSize(apps.app_package);
+                            final int size = apps.tilesize;
+                            final Drawable icon2;
+                            PackageManager pManager = getContext().getPackageManager();
+                            try {
+                                icon2 = pManager.getApplicationIcon(apps.app_package);
+                            } catch (PackageManager.NameNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+                            DataProvider.ConcreteData item = new DataProvider.ConcreteData(iCount, 0, text, icon2, iCount, packag, size);
+                            getDataProvider().addItem(iCount, item, apps);
                             wp.dismiss();
                         })
                         .setNegativeButton("delete", (View.OnClickListener) p1 -> wp.dismiss())
@@ -160,6 +174,10 @@ public class AllApps extends Fragment {
                 return true;
             });
         }
+        public AbstractDataProvider getDataProvider() {
+            return ((Main) requireActivity()).getDataProvider();
+        }
+
         @Override
         public int getItemViewType(int position) {
             if (appsList.get(position).isSection) {
