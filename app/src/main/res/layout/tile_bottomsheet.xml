@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/MPL.BottomSheet.AllAppsStyle"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="?attr/colorOnSurface"
+        app:behavior_hideable="true"
+        app:enableEdgeToEdge="true"
+        app:layout_optimizationLevel="standard"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/appLabelSheet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"
+            android:textColor="?attr/colorSurface"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/editTileColor"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintVertical_bias="0.0" android:textSize="17sp"/>
+    <Space
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/uninstallApp"/>
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:id="@+id/editAppLabel"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="0dp"
+            android:layout_height="55dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:cardBackgroundColor="?attr/colorOnSurface"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="40dp" app:layout_constraintHorizontal_bias="0.0">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:text="edit app label"
+                android:textColor="?attr/colorSurface"
+                android:layout_marginStart="12dp"
+                android:textSize="25sp"/>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:id="@+id/editTileColor"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="0dp"
+            android:layout_height="55dp"
+            tools:layout_editor_absoluteX="0dp"
+            app:cardBackgroundColor="?attr/colorOnSurface"
+            app:layout_constraintTop_toBottomOf="@+id/editAppLabel">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:text="choose tile color"
+                android:textColor="?attr/colorSurface"
+                android:layout_marginStart="12dp"
+                android:textSize="25sp"/>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:id="@+id/uninstallApp"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="0dp"
+            android:layout_height="55dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardBackgroundColor="?attr/colorOnSurface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTileColor"
+            app:layout_constraintHorizontal_bias="0.0">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:text="uninstall"
+                android:textColor="?attr/colorSurface"
+                android:layout_marginStart="12dp"
+                android:textSize="25sp"/>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

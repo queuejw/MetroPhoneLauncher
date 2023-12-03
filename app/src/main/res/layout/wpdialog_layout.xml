@@ -7,7 +7,6 @@
     android:gravity="bottom|center">
 
     <LinearLayout
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/wp_bg"
@@ -22,7 +21,6 @@
 
             <TextView
                 android:layout_height="wrap_content"
-                android:text="标题"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:layout_width="match_parent"
                 android:textColor="#FFFFFF"
@@ -33,7 +31,6 @@
 
             <TextView
                 android:layout_height="wrap_content"
-                android:text="消息"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="match_parent"
                 android:textColor="#FFFFFF"
@@ -53,7 +50,8 @@
         <LinearLayout
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_height="40dp"
@@ -63,12 +61,11 @@
                 android:background="#FFFFFF"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:id="@+id/wp_cancle_bg">
 
                 <TextView
                     android:layout_height="match_parent"
-                    android:text="取消"
                     android:background="@drawable/background"
                     android:layout_width="match_parent"
                     android:textColor="#FFFFFF"
@@ -88,12 +85,11 @@
                 android:background="#FFFFFF"
                 android:layout_marginBottom="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:id="@+id/wp_neutral_bg">
 
                 <TextView
                     android:layout_height="match_parent"
-                    android:text="中间"
                     android:background="@drawable/background"
                     android:layout_width="match_parent"
                     android:textColor="#FFFFFF"
@@ -119,7 +115,6 @@
 
                 <TextView
                     android:layout_height="match_parent"
-                    android:text="确定"
                     android:background="@drawable/background"
                     android:layout_width="match_parent"
                     android:textColor="#FFFFFF"

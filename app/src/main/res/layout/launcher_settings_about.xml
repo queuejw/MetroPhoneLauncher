@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="4dp"
+        android:id="@+id/coordinator"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:backgroundTint="?android:attr/colorBackground"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:textSize="24sp"
+                android:text="settings"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/opensans_light"
+                android:textStyle="bold"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:textSize="52sp"
+                android:text="about"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/opensans_light"
+                android:textStyle="bold">
+        </TextView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <include layout="@layout/settings_about_content"/>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

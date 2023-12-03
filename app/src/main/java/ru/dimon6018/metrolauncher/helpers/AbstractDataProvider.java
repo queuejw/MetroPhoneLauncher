@@ -1,7 +1,6 @@
 package ru.dimon6018.metrolauncher.helpers;
 
 import android.graphics.drawable.Drawable;
-
 import ru.dimon6018.metrolauncher.content.data.App;
 import ru.dimon6018.metrolauncher.content.data.DataProvider;
 
@@ -15,6 +14,10 @@ public abstract class AbstractDataProvider {
         public abstract int getTileSize();
         public abstract String getText();
         public abstract String getPackage();
+
+        public abstract boolean isTileUsingCustomColor();
+
+        public abstract int getTileColor();
 
         public abstract void setPinned(boolean pinned);
 

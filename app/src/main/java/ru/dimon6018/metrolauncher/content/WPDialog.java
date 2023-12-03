@@ -12,7 +12,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import ru.dimon6018.metrolauncher.R;
 
 /*

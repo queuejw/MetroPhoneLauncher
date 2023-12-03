@@ -1,25 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <ImageView
-        android:id="@+id/app_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center"
-        android:layout_weight="0" />
-
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical">
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <ImageView
+                android:id="@+id/app_icon"
+                android:src="@drawable/ic_os_android"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="?attr/colorPrimaryContainer"
+                android:layout_weight="0"/>
     <TextView
         android:id="@+id/app_label"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_weight="1"
-        android:layout_marginStart="4dp"
-        android:textSize="22sp"
+        android:layout_marginStart="7dp"
+        android:textSize="21sp"
         android:text="placeholder"
         android:fontFamily="@font/opensans_medium"
-        android:gravity="center|start" />
+        android:gravity="center|start"/>
+    </LinearLayout>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true"
+            android:id="@+id/appSettings"
+            android:visibility="gone">
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:id="@+id/pinApp"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"
+                android:layout_height="55dp"
+                app:cardBackgroundColor="?attr/colorOnSurface">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="pin to start"
+                    android:textColor="?attr/colorSurface"
+                    android:layout_marginStart="12dp"
+                    android:textSize="25sp"/>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:id="@+id/shareApp"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"
+                android:layout_height="55dp"
+                app:cardBackgroundColor="?attr/colorOnSurface">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="share"
+                    android:textColor="?attr/colorSurface"
+                    android:layout_marginStart="12dp"
+                    android:textSize="25sp"/>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:id="@+id/uninstallApp"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"
+                android:layout_height="55dp"
+                app:cardBackgroundColor="?attr/colorOnSurface">
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="uninstall"
+                    android:textColor="?attr/colorSurface"
+                    android:layout_marginStart="12dp"
+                    android:textSize="25sp"/>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 </LinearLayout>

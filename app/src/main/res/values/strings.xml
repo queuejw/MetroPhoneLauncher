@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">MetroLauncher</string>
+    <string name="app_name">MPLauncher</string>
+    <string name="phone_info">Name: %s \nModel: %s \nSoftware: %s</string>
+    <string name="phone_moreinfo">MPL Version: %s \nMPL Version code: %d \nDevice: %s \nPhone brand: %s \nPhone model: %s \nProduct: %s \nHardware: %s \nBuild: %s \nBuild time: %d</string>
+    <string name="settings_theme_accent_title_part1">accent color </string>
+    <string name="settings_theme_accent_title_part2"> to match your day mood today, this week, or all month </string>
+    <string name="u_remove_u"><u>remove</u></string>
 </resources>

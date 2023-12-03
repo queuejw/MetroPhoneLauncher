@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:icon="@drawable/ic_win"
+        android:icon="@drawable/ic_os_windows_8"
         android:id="@+id/start_win"
         app:showAsAction="always" />
     <item

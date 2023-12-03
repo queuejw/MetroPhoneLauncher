@@ -17,7 +17,7 @@
         <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
         <item name="colorOnError">@color/md_theme_light_onError</item>
         <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_theme_light_background</item>
+        <item name="android:colorBackground">@android:color/white</item>
         <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
         <item name="colorSurface">@color/md_theme_light_surface</item>
         <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
@@ -26,8 +26,375 @@
         <item name="colorOutline">@color/md_theme_light_outline</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
-        <item name="android:statusBarColor">@color/md_theme_light_background</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Lime" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#a1d800</item>
+        <item name="colorPrimaryContainer">#b8f600</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#5a6147</item>
+        <item name="colorSurface">#fefcf4</item>
+        <item name="colorOnSurface">#1b1c17</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Green" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#256d00</item>
+        <item name="colorPrimaryContainer">#D932CD32</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#55624c</item>
+        <item name="colorSurface">#fdfdf6</item>
+        <item name="colorOnSurface">#1a1c18</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Emerald" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#006d36</item>
+        <item name="colorPrimaryContainer">#83fba5</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#506352</item>
+        <item name="colorSurface">#fcfdf7</item>
+        <item name="colorOnSurface">#191c19</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Cyan" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#00696b</item>
+        <item name="colorPrimaryContainer">#5af8fb</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#4a6363</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorSurface">#fafdfc</item>
+        <item name="colorOnSurface">#191c1c</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Teal" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#006a6a</item>
+        <item name="colorPrimaryContainer">#00fbfb</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#4a6363</item>
+        <item name="colorSurface">#fafdfc</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="colorOnSurface">#191c1c</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Cobalt" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#2559bd</item>
+        <item name="colorPrimaryContainer">#1656AF</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#585e71</item>
+        <item name="colorSurface">#fefbff</item>
+        <item name="colorOnSurface">#1b1b1f</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Indigo" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#7b41b3</item>
+        <item name="colorPrimaryContainer">#f0dbff</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#665a6f</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Violet" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#7b41b3</item>
+        <item name="colorPrimaryContainer">#f0dbff</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#665a6f</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Pink" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#96339b</item>
+        <item name="colorPrimaryContainer">#ffd6f9</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#6d586a</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1e1a1d</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Magenta" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#a900a9</item>
+        <item name="colorPrimaryContainer">#ffd7f5</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#6e5869</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1e1a1d</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Crimson" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#bf0030</item>
+        <item name="colorPrimaryContainer">#ffdad9</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#775656</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#201a1a</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Red" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#c00100</item>
+        <item name="colorPrimaryContainer">#ffdad4</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#775651</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#201a19</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Orange" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#FFA500</item>
+        <item name="colorPrimaryContainer">#ffddb7</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#705b41</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1f1b16</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Amber" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#ffbf00</item>
+        <item name="colorPrimaryContainer">#ffdfa0</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#6b5c3f</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1e1b16</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Yellow" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#cdcd00</item>
+        <item name="colorPrimaryContainer">#eaea00</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#606043</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1c1c17</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Brown" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#855400</item>
+        <item name="colorPrimaryContainer">#ffddb7</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#705b41</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1f1b16</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Olive" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#5c6300</item>
+        <item name="colorPrimaryContainer">#e0eb76</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#5e6044</item>
+        <item name="colorSurface">#feffd7</item>
+        <item name="colorOnSurface">#1c1c17</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Steel" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#71797E</item>
+        <item name="colorPrimaryContainer">#b4cad6</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#70787d</item>
+        <item name="colorSurface">#fbfcfe</item>
+        <item name="colorOnSurface">#191c1e</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Mauve" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#774b9b</item>
+        <item name="colorPrimaryContainer">#f2daff</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#675a6e</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="AppTheme.Taupe" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#483c32</item>
+        <item name="colorPrimaryContainer">#ffdcc0</item>
+        <item name="colorOnPrimary">#ffffff</item>
+        <item name="colorSecondary">#735943</item>
+        <item name="colorSurface">#fffbff</item>
+        <item name="colorOnSurface">#201b17</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:statusBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
+        <item name="alertDialogStyle">@style/ThemeOverlay.App.AlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.App.AlertDialog</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+    <style name="ThemeOverlay.MPL.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="shapeAppearance">@style/ShapeAppearance</item>
+    </style>
+    <style name="MPL.BottomSheet.AllAppsStyle" parent="ThemeOverlay.MPL.BottomSheet">
+        <item name="backgroundTint">@android:color/black</item>
+    </style>
+    <style name="ThemeOverlay.App.AlertDialog" parent="android:Theme.NoTitleBar.Fullscreen">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
+    </style>
+    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
     </style>
 </resources>

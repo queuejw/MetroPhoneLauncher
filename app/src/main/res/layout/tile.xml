@@ -16,41 +16,47 @@
 -->
 <!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="125dp"
-    android:layout_height="125dp"
-    android:layout_margin="4dp"
-    android:orientation="vertical">
-
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_margin="4dp"
+        android:orientation="vertical"
+        android:id="@+id/tile_layout">
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        app:cardCornerRadius="0dp"
-        app:cardBackgroundColor="?attr/colorPrimary">
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:foreground="?attr/selectableItemBackground"
-        tools:ignore="UselessParent"
-        android:focusable="true">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@android:id/icon1" />
-        <TextView
-            android:id="@android:id/text1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            tools:ignore="RtlHardcoded"/>
-    </FrameLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            app:cardBackgroundColor="@color/transparent"
+            app:strokeWidth="0dp"
+            app:cardCornerRadius="0dp">
+        <FrameLayout
+                android:id="@+id/container"
+                android:background="?attr/colorPrimary"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                tools:ignore="UselessParent"
+                android:focusable="true">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@android:id/icon1"/>
+            <TextView
+                    android:id="@android:id/text1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|start"
+                    android:text="TILE"
+                    android:textColor="@android:color/white"
+                    tools:ignore="RtlHardcoded"
+                    android:fontFamily="@font/opensans_regular"
+                    android:textSize="16sp"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginBottom="4dp"
+                    android:textAlignment="viewEnd"/>
+        </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

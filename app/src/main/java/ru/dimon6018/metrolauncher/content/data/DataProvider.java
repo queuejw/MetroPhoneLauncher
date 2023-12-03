@@ -4,24 +4,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+import ru.dimon6018.metrolauncher.Application;
+import ru.dimon6018.metrolauncher.R;
+import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import ru.dimon6018.metrolauncher.Application;
-import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider;
-
 public class DataProvider extends AbstractDataProvider {
     public final List<ConcreteData> mData;
     public static List<ConcreteData> mDataStatic;
     private final LinkedList<App> mPrevData;
     private ConcreteData mLastRemovedData;
     private int mLastRemovedPosition = -1;
-
+    boolean isPackageInstalled(String packageName, PackageManager packageManager) {
+        try {
+            packageManager.getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
     public DataProvider() {
         Context context = Application.getAppContext();
         mData = new LinkedList<>();
@@ -30,44 +34,38 @@ public class DataProvider extends AbstractDataProvider {
         Intent i = new Intent(Intent.ACTION_MAIN, null);
         i.addCategory(Intent.CATEGORY_LAUNCHER);
         int end = mPrevData.size();
-        Log.i("Data", "size " + end);
+        int end2 = mPrevData.size();
+        //Firstly create placeholder
         while (end != 0) {
-            final int id = mPrevData.size();
+            end = end - 1;
+            mData.add(new ConcreteData(mPrevData.size(), 0, "", context.getDrawable(R.drawable.ic_os_android), end, "", 1, false, 0));
+        }
+        //change placeholders to the apps
+        while (end2 != 0) {
+            final int id = mData.size();
             final int viewType = 0;
-            App app = mPrevData.get(end - 1);
+            App app = mPrevData.get(end2 - 1);
+            if(!isPackageInstalled(app.app_package, pManager)) {
+                new Prefs(context).removeApp(app.app_package);
+                continue;
+            }
             app.CurrentPosition = new Prefs(context).getPos(app.app_package);
             int pos = new Prefs(context).getPos(app.app_package);
-            Log.i("Data", "current id size mData: " + mData.size());
-            Log.i("Data", "current item pos: " + app.getCurrentPosition());
-            Log.i("Data", "current item label: " + app.app_label);
-            Log.i("Data", "current item package: " + app.app_package);
             final String text = app.app_label;
             final String packag = app.app_package;
+            app.isTileUseCustomColor = new Prefs(context).getAppTileColorAvailability(packag);
             app.tilesize = new Prefs(context).getTileSize(app.app_package);
-            final int size = app.tilesize;
+            app.tileCustomColor = new Prefs(context).getTileColor(app.app_package);
             final Drawable icon;
             try {
                 icon = pManager.getApplicationIcon(app.app_package);
             } catch (PackageManager.NameNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            end = end - 1;
-            mData.add(new ConcreteData(id, viewType, text, icon, pos, packag, size));
-        }
-       after(context);
-    }
-
-    private void after(Context context) {
-        Log.i("Data", "Run tasks after init load");
-        int end = mPrevData.size();
-        while (end != 0) {
-            ConcreteData item = mData.get(end - 1);
-            swapItem(end - 1, new Prefs(context).getPos(item.getPackage()));
-            end = end - 1;
-
+            end2 = end2 - 1;
+            mData.set(pos, new ConcreteData(id, viewType, text, icon, pos, packag, app.tilesize, app.isTileUseCustomColor, app.tileCustomColor));
         }
         mDataStatic = mData;
-        Log.i("Data", "done");
     }
     @Override
     public int getCount() {
@@ -79,7 +77,6 @@ public class DataProvider extends AbstractDataProvider {
         if (index < 0 || index >= getCount()) {
             throw new IndexOutOfBoundsException("index = " + index);
         }
-
         return mData.get(index);
     }
 
@@ -123,7 +120,6 @@ public class DataProvider extends AbstractDataProvider {
         if (fromPosition == toPosition) {
             return;
         }
-        Log.d("SwapItems", "Swap");
         Collections.swap(mData, toPosition, fromPosition);
         mLastRemovedPosition = -1;
     }
@@ -136,7 +132,6 @@ public class DataProvider extends AbstractDataProvider {
     @Override
     public void removeItem(int position) {
         final ConcreteData removedItem = mData.remove(position);
-        Log.d("Remove Item", "Remove Item");
         mLastRemovedData = removedItem;
         mLastRemovedPosition = position;
     }
@@ -151,32 +146,32 @@ public class DataProvider extends AbstractDataProvider {
         private final Drawable mIco;
         private final int mViewType;
         private boolean mPinned;
+        private boolean mIsTileUsingCustomColor;
         private final int mPos;
+        private final int mTileColor;
         private int mSize;
-        public ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size) {
+        public ConcreteData(long id, int viewType, @NonNull String text, @NonNull Drawable ico, int pos, String packag, int size, boolean usingCustomColor, int tileColor) {
             mId = id;
             mViewType = viewType;
             mIco = ico;
             mPos = pos;
             mPackage = packag;
+            mTileColor = tileColor;
+            mIsTileUsingCustomColor = usingCustomColor;
             mSize = size;
             mText = makeText(text);
         }
-
         private static String makeText(String text) {
             return text;
         }
-
         @Override
         public boolean isSectionHeader() {
             return false;
         }
-
         @Override
         public int getViewType() {
             return mViewType;
         }
-
         @Override
         public int getTilePos() {
             return mPos;
@@ -189,7 +184,6 @@ public class DataProvider extends AbstractDataProvider {
         public int getTileSize() {
             return mSize;
         }
-
         @Override
         public long getId() {
             return mId;
@@ -197,26 +191,30 @@ public class DataProvider extends AbstractDataProvider {
         public Drawable getDrawable() {
             return mIco;
         }
-
         @NonNull
         @Override
         public String toString() {
             return mText;
         }
-
         @Override
         public String getText() {
             return mText;
         }
-
         @Override
         public String getPackage() {
             return mPackage;
         }
-
         @Override
         public boolean isPinned() {
             return mPinned;
+        }
+        @Override
+        public boolean isTileUsingCustomColor() {
+            return mIsTileUsingCustomColor;
+        }
+        @Override
+        public int getTileColor() {
+            return mTileColor;
         }
         @Override
         public void setPinned(boolean pinned) {

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:animateLayoutChanges="true"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:text="phone information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:layout_marginTop="32dp"
+                android:textSize="24sp"/>
+        <TextView
+                android:text="@string/phone_info"
+                android:layout_width="match_parent"
+                android:id="@+id/phoneinfo"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:textSize="17sp"/>
+        <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:text="more info"
+                android:fontFamily="@font/opensans_regular"
+                app:cornerRadius="0dp"
+                app:strokeColor="?attr/colorOnBackground"
+                android:textColor="?attr/colorOnBackground"
+                app:strokeWidth="2dp"
+                android:layout_gravity="start"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:id="@+id/moreInfobtn"
+                android:textSize="20sp"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:id="@+id/moreinfoLayout"
+                android:layout_marginTop="24dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:visibility="gone">
+            <TextView
+                    android:text="@string/phone_moreinfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/phoneinfo_more"
+                    android:fontFamily="@font/opensans_regular"
+                    android:textSize="17sp"/>
+        </LinearLayout>
+        <TextView
+                android:text="help contacts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:layout_marginTop="24dp"
+                android:textSize="24sp"/>
+        <TextView
+                android:text="Get help: github.com/queuejw/metrophonelauncher/issues"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:fontFamily="@font/opensans_medium"
+                android:textSize="17sp"/>
+        <TextView
+                android:text="Email: dimon6018t@gmail.com"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_medium"
+                android:textSize="17sp" android:autoLink="email"/>
+        <TextView
+                android:text="online content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_regular"
+                android:layout_marginTop="24dp"
+                android:textSize="24sp"/>
+        <TextView
+                android:text="GitHub: github.com/queuejw/metrophonelauncher/"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_medium"
+                android:textSize="17sp" android:autoLink="web"/>
+        <TextView
+                android:text="Telegram: t.me/neko_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/opensans_medium"
+                android:textSize="17sp" android:autoLink="web"/>
+        <TextView
+                android:text="2023 queuejw &amp; dimon6018"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/opensans_light"
+                android:textSize="18sp"/>
+        <com.google.android.material.button.MaterialButton
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:text="reset your launcher"
+                android:fontFamily="@font/opensans_regular"
+                app:cornerRadius="0dp"
+                app:strokeColor="?attr/colorOnBackground"
+                android:textColor="?attr/colorOnBackground"
+                app:strokeWidth="2dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginStart="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:id="@+id/resetLauncher"
+                android:textSize="20sp"/>
+    </LinearLayout>
+</ScrollView>

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item android:title="Добавить на рабочий стол"
-        android:id="@+id/add_to_start"/>
-
-    <item android:title="Удалить"
-        android:id="@+id/delete_app"/>
-</menu>

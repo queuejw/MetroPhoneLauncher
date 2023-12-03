@@ -10,6 +10,7 @@
         android:layout_height="48dp"
         app:cardCornerRadius="0dp"
         app:strokeColor="?attr/colorPrimary"
+        app:cardBackgroundColor="?android:attr/colorBackground"
         app:strokeWidth="3dp">
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/abc_label"
@@ -20,6 +21,6 @@
             android:textColor="?attr/colorPrimary"
             android:textSize="20sp"
             android:fontFamily="@font/opensans_medium"
-            android:text="б"/>
+            android:text="a"/>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

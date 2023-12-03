@@ -2,6 +2,7 @@
 
 package ru.dimon6018.metrolauncher.helpers
 
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -24,5 +25,4 @@ class SpaceItemDecorator(val left: Int,
         outRect.right = this.right
         outRect.bottom = this.bottom
     }
-
 }

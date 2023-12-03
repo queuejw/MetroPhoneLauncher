@@ -9,6 +9,8 @@ public class App {
     public int CurrentPosition;
     public int tilesize;
     public boolean isSection = false;
+    public boolean isTileUseCustomColor = false;
+    public int tileCustomColor;
     public String getLabel() {
         return this.app_label;
     }
@@ -20,6 +22,12 @@ public class App {
     }
     public int getCurrentPosition() {
         return CurrentPosition;
+    }
+    public int getTileCustomColor() {
+        return tileCustomColor;
+    }
+    public boolean isTileUsingCustomColor() {
+        return isTileUseCustomColor;
     }
     public int getTileSize() {
         return this.tilesize;

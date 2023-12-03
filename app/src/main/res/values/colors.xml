@@ -1,4 +1,3 @@
-
 <resources>
     <color name="seed">#0062a3</color>
     <color name="default_tiles">#1D68A5</color>
@@ -63,34 +62,31 @@
     <color name="md_theme_dark_outlineVariant">#42474E</color>
     <color name="md_theme_dark_scrim">#000000</color>
 
-    <color name="bg_item_normal_state">#fff0f0f0</color>
-    <color name="bg_item_dragging_state">#ffffdddd</color>
-    <color name="bg_item_dragging_active_state">#ffff9999</color>
-    <color name="bg_item_swiping_state">#ffddddff</color>
-    <color name="bg_item_swiping_active_state">#ff9999ff</color>
-
-    <color name="bg_group_item_normal_state">#ffddffdd</color>
-    <color name="bg_group_item_normal_pressed_state">#ff99cc99</color>
-    <color name="bg_group_item_expanded_state">#ff88dd88</color>
-    <color name="bg_group_item_expanded_pressed_state">#ff99cc99</color>
-    <color name="bg_group_item_dragging_state">#ffeeccff</color>
-    <color name="bg_group_item_dragging_active_state">#ffee99ff</color>
-    <color name="bg_group_item_swiping_state">#ffddccff</color>
-    <color name="bg_group_item_swiping_active_state">#ffbb99ff</color>
-
-    <color name="bg_swipe_item_neutral">@android:color/transparent</color>
-    <color name="bg_swipe_item_pinned">#fff9930d</color>
-    <color name="bg_swipe_item_dismiss">#ff2f8b2a</color>
-    <color name="bg_swipe_item_gray">#999999</color>
-    <color name="bg_swipe_group_item_pinned">#fff45f30</color>
-    <color name="bg_swipe_group_item_dismiss">#ff295db3</color>
-
-    <color name="snackbar_action_color_done">#ffccccff</color>
-
-    <color name="expandable_item_indicator_color">#42000000</color>
+    <color name="transparent">#00000000</color>
 
     <color name="wp_bg">#171717</color>
     <color name="wp_bg_pressed">#525252</color>
     <color name="wp_light_bg">#FFFFFF</color>
     <color name="wp_light_bg_pressed">#B6B6B6</color>
+    <!-- tiles -->
+    <color name="tile_magenta">#ff0080</color>
+    <color name="tile_crimson">#DC143C</color>
+    <color name="tile_red">#FF0000</color>
+    <color name="tile_orange">#FFA500</color>
+    <color name="tile_amber">#ffbf00</color>
+    <color name="tile_yellow">#FFFF00</color>
+    <color name="tile_brown">#C19A6B</color>
+    <color name="tile_olive">#858861</color>
+    <color name="tile_steel">#71797E</color>
+    <color name="tile_mauve">#eacaff</color>
+    <color name="tile_taupe">#483c32</color>
+    <color name="tile_lime">#99cc00</color>
+    <color name="tile_green">#32CD32</color>
+    <color name="tile_emerald">#008000</color>
+    <color name="tile_cyan">#00CED1</color>
+    <color name="tile_teal">#00FFFF</color>
+    <color name="tile_cobalt">#0047AB</color>
+    <color name="tile_indigo">#4B0082</color>
+    <color name="tile_violet">#b968ff</color>
+    <color name="tile_pink">#EE82EE</color>
 </resources>
