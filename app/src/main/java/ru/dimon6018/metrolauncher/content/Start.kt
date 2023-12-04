@@ -1,9 +1,5 @@
 package ru.dimon6018.metrolauncher.content
 
-import android.R.attr
-import android.R.attr.height
-import android.R.attr.width
-import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,14 +9,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.view.animation.AlphaAnimation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -38,25 +31,25 @@ import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.*
 import java.util.*
 
-
 class Start : Fragment(), OnStartDragListener {
-     private var mRecyclerView: RecyclerView? = null
-     private var mAppListButton: MaterialCardView? = null
-     private var mItemTouchHelper: ItemTouchHelper? = null
-     private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
-     private var adapter: StartAdapter? = null
-     private var backgroundImg: ImageView? = null
+    private var mRecyclerView: RecyclerView? = null
+    private var mAppListButton: MaterialCardView? = null
+    private var mItemTouchHelper: ItemTouchHelper? = null
+    private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
+    private var adapter: StartAdapter? = null
+    private var backgroundImg: ImageView? = null
 
-     private var loadingHolder: LinearLayout? = null
-     private var progressBar: WP7ProgressBar? = null
+    private var loadingHolder: LinearLayout? = null
+    private var progressBar: WP7ProgressBar? = null
 
-     private var background: LinearLayout? = null
+    private var background: LinearLayout? = null
 
-     var contxt: Context? = null
-     var prefs: Prefs? = null
+    var contxt: Context? = null
+    var prefs: Prefs? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
+
         contxt = context
         prefs = Prefs(contxt)
         progressBar = v.findViewById(R.id.progressBarStart)
@@ -64,11 +57,11 @@ class Start : Fragment(), OnStartDragListener {
         loadingHolder = v.findViewById(R.id.loadingHolderStart)
         mAppListButton = v.findViewById(R.id.open_applist_btn)
         background = v.findViewById(R.id.startBackground)
+        //background = v.findViewById(R.id.startBackground)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
-        if(prefs!!.isCustomBackgroundUsed) {
+        if (prefs!!.isCustomBackgroundUsed) {
             try {
                 background!!.background = AppCompatResources.getDrawable(contxt!!, R.drawable.start_transparent)
-                WallpaperManager.getInstance(contxt).drawable
             } catch (ex: Exception) {
                 Snackbar.make(mRecyclerView!!, "something went wrong. see $ex", Snackbar.LENGTH_LONG).show()
                 Log.e("Start", ex.toString())
@@ -77,8 +70,10 @@ class Start : Fragment(), OnStartDragListener {
         } else {
             requireActivity().window.setBackgroundDrawable(AppCompatResources.getDrawable(contxt!!, R.drawable.start_background))
         }
+
         return v
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val threadStart = Thread {
@@ -126,6 +121,8 @@ class Start : Fragment(), OnStartDragListener {
         adapter?.setNewData(dataProvider)
     }
     override fun onDestroyView() {
+        adapter = null
+
         if (mRecyclerView != null) {
             mRecyclerView!!.itemAnimator = null
             mRecyclerView!!.layoutManager = null
@@ -146,7 +143,7 @@ class Start : Fragment(), OnStartDragListener {
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
                     Collections.swap(mDataStatic, i, i + 1)
-            }
+                }
             } else {
                 for (i in fromPosition downTo toPosition + 1) {
                     Collections.swap(mDataStatic, i, i - 1)
@@ -205,9 +202,7 @@ class Start : Fragment(), OnStartDragListener {
             }
             if(prefs!!.isCustomBackgroundUsed) {
                 holder.mContainer.background = AppCompatResources.getDrawable(contxt!!, R.drawable.start_transparent)
-                val values = IntArray(2)
-                holder.itemView.getLocationInWindow(values)
-                val view: View = holder.itemView
+                val view: View = holder.mContainer
                 val bmp = BitmapFactory.decodeFile(prefs!!.backgroundPath)
                 view.getViewTreeObserver().addOnGlobalLayoutListener {
                     val bmpNew = Bitmap.createBitmap(bmp, view.x.toInt(), view.y.toInt(), view.width, view.height, null, true)
@@ -220,7 +215,7 @@ class Start : Fragment(), OnStartDragListener {
                 startActivity(intent)
             }
             holder.mAppIcon.setImageDrawable(item.drawable)
-           // if(item.isTileUsingCustomColor) { holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor)) } else { holder.mContainer.setBackgroundColor(Application.getAccentColorFromPrefs()) }
+            // if(item.isTileUsingCustomColor) { holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor)) } else { holder.mContainer.setBackgroundColor(Application.getAccentColorFromPrefs()) }
             holder.mContainer.setOnLongClickListener {
                 val wp = WPDialog(activity)
                 wp.setTitle(item.text)
@@ -249,9 +244,6 @@ class Start : Fragment(), OnStartDragListener {
                             mProvider.removeItem(position)
                             notifyItemRemoved(position)
                             wp.dismiss()
-                        }
-                        .setNeutralButton("move") {
-                            mDragStartListener.onStartDrag(holder)
                         }
                         .show()
                 false

@@ -13,301 +13,74 @@ public class Application extends android.app.Application {
         Application.context = getApplicationContext();
     }
     public static int getAccentColorFromPrefs() {
-         int color;
-        // 0 - lime
-        // 1 - green
-        // 2 - emerald
-        // 3 - cyan
-        // 4 - teal
-        // 5 - cobalt
-        // 6 - indigo
-        // 7 - violet
-        // 8 - pink
-        // 9 - magenta
-        // 10 - crimson
-        // 11 - red
-        // 12 - orange
-        // 13 - amber
-        // 14 - yellow
-        // 15 - brown
-        // 16 - olive
-        // 17 - steel
-        // 18 - mauve
-        // 19 - taupe
-         switch(new Prefs(context).getAccentColor()) {
-            case 0: {
-                color = context.getColor(R.color.tile_lime);
-            }
-            case 1: {
-                color = context.getColor(R.color.tile_green);
-            }
-            case 2: {
-                color = context.getColor(R.color.tile_emerald);
-            }
-            case 3: {
-                color = context.getColor(R.color.tile_cyan);
-            }
-            case 4: {
-                color = context.getColor(R.color.tile_teal);
-            }
-            case 5: {
-                color = context.getColor(R.color.tile_cobalt);
-            }
-            case 6: {
-                color = context.getColor(R.color.tile_indigo);
-            }
-            case 7: {
-                 color = context.getColor(R.color.tile_violet);
-            }
-            case 8: {
-                 color = context.getColor(R.color.tile_pink);
-            }
-             case 9: {
-                 color = context.getColor(R.color.tile_magenta);
-             }
-             case 10: {
-                 color = context.getColor(R.color.tile_crimson);
-             }
-             case 11: {
-                 color = context.getColor(R.color.tile_red);
-             }
-             case 12: {
-                 color = context.getColor(R.color.tile_orange);
-             }
-             case 13: {
-                 color = context.getColor(R.color.tile_amber);
-             }
-             case 14: {
-                 color = context.getColor(R.color.tile_yellow);
-             }
-             case 15: {
-                 color = context.getColor(R.color.tile_brown);
-             }
-             case 16: {
-                 color = context.getColor(R.color.tile_olive);
-             }
-             case 17: {
-                 color = context.getColor(R.color.tile_steel);
-             }
-             case 18: {
-                 color = context.getColor(R.color.tile_mauve);
-             }
-             case 19: {
-                 color = context.getColor(R.color.tile_taupe);
-             }
-            default: {
-                color = context.getColor(R.color.tile_cobalt);
-            }
+        int[] accentColors = {
+                R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
+                R.color.tile_teal, R.color.tile_cobalt, R.color.tile_indigo, R.color.tile_violet,
+                R.color.tile_pink, R.color.tile_magenta, R.color.tile_crimson, R.color.tile_red,
+                R.color.tile_orange, R.color.tile_amber, R.color.tile_yellow, R.color.tile_brown,
+                R.color.tile_olive, R.color.tile_steel, R.color.tile_mauve, R.color.tile_taupe
+        };
+
+        int selectedColor = new Prefs(context).getAccentColor();
+
+        if (selectedColor >= 0 && selectedColor < accentColors.length) {
+            return context.getColor(accentColors[selectedColor]);
+        } else {
+            // Default to cobalt if the selected color is out of bounds
+            return context.getColor(R.color.tile_cobalt);
         }
-        return color;
     }
     public static int getTileColorFromPrefs(int tileColor) {
-        int color;
-        switch (tileColor) {
-            case 0: {
-                color = context.getColor(R.color.tile_lime);
-            }
-            case 1: {
-                color = context.getColor(R.color.tile_green);
-            }
-            case 2: {
-                color = context.getColor(R.color.tile_emerald);
-            }
-            case 3: {
-                color = context.getColor(R.color.tile_cyan);
-            }
-            case 4: {
-                color = context.getColor(R.color.tile_teal);
-            }
-            case 5: {
-                color = context.getColor(R.color.tile_cobalt);
-            }
-            case 6: {
-                color = context.getColor(R.color.tile_indigo);
-            }
-            case 7: {
-                color = context.getColor(R.color.tile_violet);
-            }
-            case 8: {
-                color = context.getColor(R.color.tile_pink);
-            }
-            case 9: {
-                color = context.getColor(R.color.tile_magenta);
-            }
-            case 10: {
-                color = context.getColor(R.color.tile_crimson);
-            }
-            case 11: {
-                color = context.getColor(R.color.tile_red);
-            }
-            case 12: {
-                color = context.getColor(R.color.tile_orange);
-            }
-            case 13: {
-                color = context.getColor(R.color.tile_amber);
-            }
-            case 14: {
-                color = context.getColor(R.color.tile_yellow);
-            }
-            case 15: {
-                color = context.getColor(R.color.tile_brown);
-            }
-            case 16: {
-                color = context.getColor(R.color.tile_olive);
-            }
-            case 17: {
-                color = context.getColor(R.color.tile_steel);
-            }
-            case 18: {
-                color = context.getColor(R.color.tile_mauve);
-            }
-            case 19: {
-                color = context.getColor(R.color.tile_taupe);
-            }
-            default: {
-                color = context.getColor(R.color.tile_cobalt);
-            }
+        int[] tileColors = {
+                R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
+                R.color.tile_teal, R.color.tile_cobalt, R.color.tile_indigo, R.color.tile_violet,
+                R.color.tile_pink, R.color.tile_magenta, R.color.tile_crimson, R.color.tile_red,
+                R.color.tile_orange, R.color.tile_amber, R.color.tile_yellow, R.color.tile_brown,
+                R.color.tile_olive, R.color.tile_steel, R.color.tile_mauve, R.color.tile_taupe
+        };
+
+        if (tileColor >= 0 && tileColor < tileColors.length) {
+            return context.getColor(tileColors[tileColor]);
+        } else {
+            // Default to cobalt if the selected color is out of bounds
+            return context.getColor(R.color.tile_cobalt);
         }
-        return color;
     }
     public static int getLauncherAccentTheme() {
-        int result;
-        Prefs prefs = new Prefs(context);
-        switch (prefs.getAccentColor()) {
-            case 0:
-                result = R.style.AppTheme_Lime;
-                break;
-            case 1:
-                result = R.style.AppTheme_Green;
-                break;
-            case 2:
-                result = R.style.AppTheme_Emerald;
-                break;
-            case 3:
-                result = R.style.AppTheme_Cyan;
-                break;
-            case 4:
-                result = R.style.AppTheme_Teal;
-                break;
-            case 5:
-                result = R.style.AppTheme_Cobalt;
-                break;
-            case 6:
-                result = R.style.AppTheme_Indigo;
-                break;
-            case 7:
-                result = R.style.AppTheme_Violet;
-                break;
-            case 8:
-                result = R.style.AppTheme_Pink;
-                break;
-            case 9:
-                result = R.style.AppTheme_Magenta;
-                break;
-            case 10:
-                result = R.style.AppTheme_Crimson;
-                break;
-            case 11:
-                result = R.style.AppTheme_Red;
-                break;
-            case 12:
-                result = R.style.AppTheme_Orange;
-                break;
-            case 13:
-                result = R.style.AppTheme_Amber;
-                break;
-            case 14:
-                result = R.style.AppTheme_Yellow;
-                break;
-            case 15:
-                result = R.style.AppTheme_Brown;
-                break;
-            case 16:
-                result = R.style.AppTheme_Olive;
-                break;
-            case 17:
-                result = R.style.AppTheme_Steel;
-                break;
-            case 18:
-                result = R.style.AppTheme_Mauve;
-                break;
-            case 19:
-                result = R.style.AppTheme_Taupe;
-                break;
-            default:
-                result = R.style.AppTheme_Cobalt;
-                break;
+        int[] themeStyles = {
+                R.style.AppTheme_Lime, R.style.AppTheme_Green, R.style.AppTheme_Emerald,
+                R.style.AppTheme_Cyan, R.style.AppTheme_Teal, R.style.AppTheme_Cobalt,
+                R.style.AppTheme_Indigo, R.style.AppTheme_Violet, R.style.AppTheme_Pink,
+                R.style.AppTheme_Magenta, R.style.AppTheme_Crimson, R.style.AppTheme_Red,
+                R.style.AppTheme_Orange, R.style.AppTheme_Amber, R.style.AppTheme_Yellow,
+                R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
+                R.style.AppTheme_Mauve, R.style.AppTheme_Taupe
+        };
+
+        int selectedColor = new Prefs(context).getAccentColor();
+
+        if (selectedColor >= 0 && selectedColor < themeStyles.length) {
+            return themeStyles[selectedColor];
+        } else {
+            // Default to cobalt theme if the selected color is out of bounds
+            return R.style.AppTheme_Cobalt;
         }
-        return result;
     }
     public static String getAccentName() {
-        String result = "unknown";
-        Prefs prefs = new Prefs(context);
-        switch (prefs.getAccentColor()) {
-            case 0:
-                result = "lime";
-                break;
-            case 1:
-                result = "green";
-                break;
-            case 2:
-                result = "emerald";
-                break;
-            case 3:
-                result = "cyan";
-                break;
-            case 4:
-                result = "teal";
-                break;
-            case 5:
-                result = "cobalt";
-                break;
-            case 6:
-                result = "indigo";
-                break;
-            case 7:
-                result = "violet";
-                break;
-            case 8:
-                result = "pink";
-                break;
-            case 9:
-                result = "magenta";
-                break;
-            case 10:
-                result = "crimson";
-                break;
-            case 11:
-                result = "red";
-                break;
-            case 12:
-                result = "orange";
-                break;
-            case 13:
-                result = "amber";
-                break;
-            case 14:
-                result = "yellow";
-                break;
-            case 15:
-                result = "brown";
-                break;
-            case 16:
-                result = "olive";
-                break;
-            case 17:
-                result = "steel";
-                break;
-            case 18:
-                result = "mauve";
-                break;
-            case 19:
-                result = "taupe";
-                break;
-            default:
-                break;
+        String[] accentNames = {
+                "lime", "green", "emerald", "cyan", "teal", "cobalt", "indigo", "violet",
+                "pink", "magenta", "crimson", "red", "orange", "amber", "yellow", "brown",
+                "olive", "steel", "mauve", "taupe"
+        };
+
+        int selectedColor = new Prefs(context).getAccentColor();
+
+        if (selectedColor >= 0 && selectedColor < accentNames.length) {
+            return accentNames[selectedColor];
+        } else {
+            // Default to "unknown" if the selected color is out of bounds
+            return "unknown";
         }
-        return result;
     }
     public static Context getAppContext() {
         return Application.context;

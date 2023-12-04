@@ -112,11 +112,21 @@
                         android:gravity="start"
                         android:id="@+id/chooseAccent"
                         android:textSize="20sp"/>
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_marginTop="12dp"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:text="feature in development, may not work properly" />
+
                 <FrameLayout
                         android:layout_width="match_parent"
+
                         android:animateLayoutChanges="true"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="48dp">
+                        android:layout_marginTop="6dp">
 
                         <ImageView
                                 android:layout_width="148dp"
@@ -163,6 +173,14 @@
                                         android:textSize="18sp"/>
                         </LinearLayout>
                 </FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="if the app crashes after installing a picture, just remove it"
+                    android:textAllCaps="false"
+                    android:fontFamily="@font/opensans_regular"
+                    android:layout_marginTop="12dp"
+                    android:textSize="14sp"/>
                 <TextView
                         android:text="You can change the size and number of tiles available on your start screen"
                         android:layout_width="match_parent"

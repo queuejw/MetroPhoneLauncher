@@ -131,8 +131,7 @@ public class DataProvider extends AbstractDataProvider {
 
     @Override
     public void removeItem(int position) {
-        final ConcreteData removedItem = mData.remove(position);
-        mLastRemovedData = removedItem;
+        mLastRemovedData = mData.remove(position);
         mLastRemovedPosition = position;
     }
 
@@ -146,7 +145,7 @@ public class DataProvider extends AbstractDataProvider {
         private final Drawable mIco;
         private final int mViewType;
         private boolean mPinned;
-        private boolean mIsTileUsingCustomColor;
+        private final boolean mIsTileUsingCustomColor;
         private final int mPos;
         private final int mTileColor;
         private int mSize;

@@ -9,7 +9,7 @@
 
     <application
         android:name="ru.dimon6018.metrolauncher.Application"
-        android:hardwareAccelerated="true"
+        android:testOnly="false"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

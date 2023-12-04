@@ -3,12 +3,10 @@ package ru.dimon6018.metrolauncher
 import android.app.UiModeManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -22,87 +20,163 @@ import ru.dimon6018.metrolauncher.content.data.DataProviderFragment
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
 class Main : AppCompatActivity() {
 
-    private var viewPager: ViewPager2? = null
-    private var pagerAdapter: FragmentStateAdapter? = null
-    private var coord: CoordinatorLayout? = null
+    private val REQUEST_PERMISSIONS_CODE = 123
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var pagerAdapter: FragmentStateAdapter
+    private lateinit var coordinatorLayout: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(getLauncherAccentTheme())
         setAppTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen_laucnher)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        val navbar = findViewById<BottomNavigationView>(R.id.navigation)
+  //      checkPermissions()
+        initViews()
+        setupNavigationBar()
+        applyWindowInsets()
         supportFragmentManager.beginTransaction()
                 .add(DataProviderFragment(), FRAGMENT_TAG_DATA_PROVIDER)
                 .commit()
+    }
+    private fun checkPermissions() {
+        val permissions = arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val missingPermissions = ArrayList<String>()
+
+            for (permission in permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission)
+                        != PackageManager.PERMISSION_GRANTED
+                ) {
+                    missingPermissions.add(permission)
+                }
+            }
+            if (missingPermissions.isNotEmpty()) {
+                ActivityCompat.requestPermissions(
+                        this,
+                        missingPermissions.toTypedArray(),
+                        REQUEST_PERMISSIONS_CODE
+                )
+            } else {
+                // Разрешения уже предоставлены
+                // Можете выполнять операции с файлами и медиафайлами
+            }
+        } else {
+            // Для устройств с версией Android ниже 23 разрешения предоставляются автоматически
+            // Можете выполнять операции с файлами и медиафайлами
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_PERMISSIONS_CODE) {
+            for (result in grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    // Если хотя бы одно разрешение не было предоставлено
+                    Toast.makeText(
+                            this,
+                            "Необходимо предоставить все разрешения для работы приложения",
+                            Toast.LENGTH_SHORT
+                    ).show()
+
+                    // Закрываем приложение
+                    finish()
+                    return
+                }
+            }
+
+            // Все разрешения предоставлены
+            // Можете выполнять операции с файлами и медиафайлами
+        }
+    }
+
+    private fun initViews() {
         viewPager = findViewById(R.id.pager)
         pagerAdapter = NumberAdapter(this)
-        coord = findViewById(R.id.coordinator)
-        viewPager?.adapter = pagerAdapter
-        navbar.setOnItemSelectedListener { item ->
+        coordinatorLayout = findViewById(R.id.coordinator)
+        viewPager.adapter = pagerAdapter
+    }
+
+    private fun setupNavigationBar() {
+        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.start_win -> {
-                    viewPager?.currentItem = 0
+                    viewPager.currentItem = 0
                     true
                 }
                 R.id.start_apps -> {
-                    viewPager?.currentItem = 1
+                    viewPager.currentItem = 1
                     true
                 }
                 else -> false
             }
         }
-        ViewCompat.setOnApplyWindowInsetsListener(coord!!) { v: View, insets: WindowInsetsCompat ->
-            val pB = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            val tB = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, tB, 0, pB)
+    }
+
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
+            val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+            val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.setPadding(0, paddingTop, 0, paddingBottom)
             WindowInsetsCompat.CONSUMED
         }
     }
+
     private fun setAppTheme() {
-        val uimanager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        if(Prefs(this).isLightThemeUsed) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                uimanager.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+        val isLightThemeUsed = Prefs(this).isLightThemeUsed
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            uiModeManager.setApplicationNightMode(if (isLightThemeUsed) UiModeManager.MODE_NIGHT_NO else UiModeManager.MODE_NIGHT_YES)
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                uimanager.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
+            AppCompatDelegate.setDefaultNightMode(if (isLightThemeUsed) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if(Prefs.isAccentChanged) {
+        if (Prefs.isAccentChanged) {
             Prefs.isAccentChanged = false
             recreate()
         }
     }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (viewPager!!.currentItem != 0) {
-            viewPager!!.currentItem -= 1
+        if (viewPager.currentItem != 0) {
+            viewPager.currentItem -= 1
         } else {
             super.onBackPressed()
         }
     }
+
     val dataProvider: AbstractDataProvider
         get() {
             val fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_DATA_PROVIDER)
-            return (fragment as DataProviderFragment?)!!.dataProvider
+            return (fragment as DataProviderFragment).dataProvider
         }
 
     companion object {
         private const val FRAGMENT_TAG_DATA_PROVIDER = "data provider"
     }
+
     class NumberAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 
