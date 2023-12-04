@@ -17,11 +17,16 @@ Since the launcher isn't ready yet, I can't show a huge list of functionality, b
 
 And much more... 
 
-Screenshots:
+# Screenshots:
 
-<img src='/screenshots/1.jpg' width='300'> <img src='/screenshots/2.jpg' width='300'> <img src='/screenshots/3.jpg' width='300'>
+<img src='/screenshots/1.jpg' width='300'> <img src='/screenshots/2.jpg' width='300'> <img src='/screenshots/3.jpg' width='300'> <img src='/screenshots/4.jpg' width='300'> <img src='/screenshots/5.jpg' width='300'>
 
-<img src='/screenshots/4.jpg' width='300'> <img src='/screenshots/5.jpg' width='300'>
+# Download (free):
 
-Download (free):
-https://github.com/queuejw/MetroPhoneLauncher/releases
+step 1: click here: https://github.com/queuejw/MetroPhoneLauncher/releases 
+
+step 2: open latest release 
+
+step 3: download app_debug.apk
+
+step 4: install.
