@@ -99,7 +99,11 @@ class Start : Fragment(), OnStartDragListener {
             pManager = contxt!!.packageManager
             tileList = dbCall!!.getJustApps()
             detectBrokenApps()
-            mSpannedLayoutManager = SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = contxt!!)
+            mSpannedLayoutManager = if(!prefs!!.isMoreTilesEnabled) {
+                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = contxt!!)
+            } else {
+                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 12, _columnCount = 6, context = contxt!!)
+            }
             mSpannedLayoutManager!!.itemOrderIsStable = true
             adapter = StartAdapter(tileList!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter)
@@ -162,7 +166,6 @@ class Start : Fragment(), OnStartDragListener {
     }
     override fun onDestroyView() {
         adapter = null
-
         if (mRecyclerView != null) {
             mRecyclerView!!.itemAnimator = null
             mRecyclerView!!.layoutManager = null
@@ -252,19 +255,35 @@ class Start : Fragment(), OnStartDragListener {
             var canOpenApp = true
             when(item.appSize) {
                 "small" -> {
+                    if(prefs!!.isMoreTilesEnabled) {
+                        holder.mTextView.text = ""
+                        holder.mRemove.scaleX = 0.5f
+                        holder.mRemove.scaleY = 0.5f
+                        holder.mResize.scaleX = 0.5f
+                        holder.mResize.scaleY = 0.5f
+                        holder.mSettings.scaleX = 0.5f
+                        holder.mSettings.scaleY = 0.5f
+                        holder.mTileLayout.scaleX = 1.5f
+                        holder.mTileLayout.scaleY = 1.5f
+                    } else {
+                        holder.mRemove.scaleX = 0.7f
+                        holder.mRemove.scaleY = 0.7f
+                        holder.mResize.scaleX = 0.7f
+                        holder.mResize.scaleY = 0.7f
+                        holder.mSettings.scaleX = 0.7f
+                        holder.mSettings.scaleY = 0.7f
+                        holder.mTileLayout.scaleX = 1.15f
+                        holder.mTileLayout.scaleY = 1.15f
+                    }
                     holder.mTextView.text = ""
-                    holder.mRemove.scaleX = 0.7f
-                    holder.mRemove.scaleY = 0.7f
-                    holder.mResize.scaleX = 0.7f
-                    holder.mResize.scaleY = 0.7f
                     holder.mResize.rotation = -145f
-                    holder.mSettings.scaleX = 0.7f
-                    holder.mSettings.scaleY = 0.7f
-                    holder.mTileLayout.scaleX = 1.15f
-                    holder.mTileLayout.scaleY = 1.15f
                 }
                 "medium" -> {
-                    holder.mTextView.text = item.appLabel
+                    if(prefs!!.isMoreTilesEnabled) {
+                        holder.mTextView.text = ""
+                    } else {
+                        holder.mTextView.text = item.appLabel
+                    }
                     holder.mRemove.scaleX = 1f
                     holder.mRemove.scaleY = 1f
                     holder.mResize.scaleX = 1f
@@ -312,7 +331,7 @@ class Start : Fragment(), OnStartDragListener {
                     canOpenApp = true
                     holder.mTileLayout.visibility = View.INVISIBLE
                 }
-                holder.mTileLayout.postDelayed(hideAction, 7000)
+                holder.mTileLayout.postDelayed(hideAction, 5500)
                 false
             }
              try {
@@ -322,7 +341,7 @@ class Start : Fragment(), OnStartDragListener {
                      dbCall!!.removeApp(item)
                  }.start()
             }
-            if(item.tileColor != 0) {
+            if(item.tileColor != -1) {
                  holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!))
             } else {
                 holder.mContainer.setBackgroundColor(Application.getAccentColorFromPrefs())
@@ -430,16 +449,13 @@ class Start : Fragment(), OnStartDragListener {
             super.onCreate(savedInstanceState)
             setStyle(STYLE_NORMAL, R.style.AppTheme_FullScreenDialog)
         }
-
         override fun onStart() {
             super.onStart()
             val dialog = dialog
-            if (dialog != null) {
-                val width = ViewGroup.LayoutParams.MATCH_PARENT
-                val height = ViewGroup.LayoutParams.MATCH_PARENT
-                dialog.setTitle("ACCENT")
-                dialog.window!!.setLayout(width, height)
-            }
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog?.setTitle("ACCENT")
+            dialog?.window!!.setLayout(width, height)
         }
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

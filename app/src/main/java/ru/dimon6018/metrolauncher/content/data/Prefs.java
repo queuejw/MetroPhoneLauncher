@@ -7,6 +7,8 @@ public class Prefs {
     public static final String ACCENT_COLOR = "accentColor";
     public static final String LAUNCHER_LIGHT_THEME = "useLightTheme";
     public static final String LAUNCHER_CUSTOM_BACKGRD = "useCustomBackground";
+
+    public static final String MORE_TILES = "isMoreTilesEnabled";
     public static final String IS_LAUNCHER_USING_CUSTOM_BACKGRD = "isCustomBackgrdUsing";
     private final SharedPreferences prefs;
     public static boolean isAccentChanged = false;
@@ -18,6 +20,12 @@ public class Prefs {
     }
     public boolean isCustomBackgroundUsed() {
         return prefs.getBoolean(IS_LAUNCHER_USING_CUSTOM_BACKGRD, false);
+    }
+    public void setMoreTilesPref(boolean bool) {
+        prefs.edit().putBoolean(MORE_TILES, bool).apply();
+    }
+    public boolean isMoreTilesEnabled() {
+        return prefs.getBoolean(MORE_TILES, false);
     }
     public void setCustomBackgrdPath(String path) {
         prefs.edit().putString(LAUNCHER_CUSTOM_BACKGRD, path).apply();

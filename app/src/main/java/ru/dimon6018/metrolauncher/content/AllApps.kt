@@ -53,7 +53,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
         recyclerView = view.findViewById(R.id.app_list)
-        searchBtn = view.findViewById(R.id.search_btn)
+        searchBtn = view.findViewById(R.id.labelChange)
         searchCard = view.findViewById(R.id.search_card)
         searchView = view.findViewById(R.id.searchView)
         loadingHolder = view.findViewById(R.id.loadingHolder)

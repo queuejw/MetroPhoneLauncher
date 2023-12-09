@@ -29,6 +29,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.materialswitch.MaterialSwitch
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -83,6 +84,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         themeMenu = findViewById(R.id.chooseThemeMenu)
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
+        val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         chooseAccentBtn!!.text = Application.getAccentName()
         val themeButtonLabel: String = if (prefs!!.isLightThemeUsed) {
             "light"
@@ -114,6 +116,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
             backgroundImg!!.setBackgroundColor(getColor(android.R.color.darker_gray))
             backgroundImg!!.setVisibility(View.GONE)
             removeBackgrd!!.visibility = View.GONE
+        }
+        moreTilesSwitch.setChecked(prefs!!.isMoreTilesEnabled)
+        moreTilesSwitch.text = if(prefs!!.isMoreTilesEnabled) "On" else "Off"
+        moreTilesSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs!!.setMoreTilesPref(isChecked)
+            moreTilesSwitch.text = if(isChecked) "On" else "Off"
+            moreTilesSwitch.setChecked(isChecked)
         }
         try {
             if (prefs!!.isCustomBackgroundUsed) {
@@ -176,12 +185,10 @@ class ThemeSettingsActivity : AppCompatActivity() {
         override fun onStart() {
             super.onStart()
             val dialog = dialog
-            if (dialog != null) {
-                val width = ViewGroup.LayoutParams.MATCH_PARENT
-                val height = ViewGroup.LayoutParams.MATCH_PARENT
-                dialog.setTitle("ACCENT")
-                dialog.window!!.setLayout(width, height)
-            }
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog?.setTitle("ACCENT")
+            dialog?.window!!.setLayout(width, height)
         }
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

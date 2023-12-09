@@ -15,11 +15,9 @@ import com.google.android.material.card.MaterialCardView
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
-
 class SettingsActivity : AppCompatActivity() {
 
     private var coord: CoordinatorLayout? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setAppTheme()
         setTheme(Application.getLauncherAccentTheme())

@@ -31,7 +31,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-            android:id="@+id/search_btn"
+            android:id="@+id/labelChange"
             android:layout_width="42dp"
             android:layout_height="42dp"
             app:cardCornerRadius="48dp"

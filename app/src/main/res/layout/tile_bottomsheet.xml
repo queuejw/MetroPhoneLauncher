@@ -70,32 +70,38 @@
                         android:layout_width="match_parent"
                         android:layout_height="54dp"
                         android:layout_marginEnd="48dp"
+                        android:textColorHint="?attr/colorSurface"
                         android:hint="enter label here"
+                        app:boxCornerRadiusBottomStart="0dp"
+                        app:boxCornerRadiusBottomEnd="0dp"
+                        app:boxCornerRadiusTopEnd="0dp"
+                        app:boxCornerRadiusTopStart="0dp"
+                        app:boxStrokeColor="?attr/colorSurface"
                         app:boxStrokeWidth="0dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/textEdit"
+                            android:textColor="?attr/colorSurface"
+                            android:fontFamily="@font/opensans_light"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="" />
                     </com.google.android.material.textfield.TextInputLayout>
-
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/labelChange"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end|bottom"
-                        app:cardBackgroundColor="@color/transparent"
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:layout_gravity="bottom|end"
                         app:cardCornerRadius="48dp"
-                        app:strokeColor="?attr/colorOnSurface"
+                        app:strokeColor="?attr/colorSurface"
+                        app:cardBackgroundColor="@android:color/transparent"
                         app:strokeWidth="3dp">
-
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="?android:attr/colorBackground"
+                            android:layout_gravity="center"
                             android:src="@drawable/ic_edit"
-                            app:tint="?attr/colorOnSurface" />
+                            app:tint="?attr/colorSurface"/>
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
             </LinearLayout></LinearLayout>
@@ -121,6 +127,10 @@
                 android:text="choose tile color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/chooseColorSub"
                 android:layout_width="wrap_content"
@@ -134,27 +144,28 @@
                 android:id="@+id/chooseColorRemove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="48dp"
                 android:fontFamily="@font/opensans_light"
                 android:textColor="?attr/colorSurface"
                 android:layout_gravity="end"
                 android:text="@string/remove"
                 android:textSize="20sp" />
         </LinearLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
     <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:id="@+id/uninstallApp"
-            app:cardCornerRadius="0dp"
-            android:layout_marginTop="12dp"
-            app:strokeWidth="0dp"
-            android:layout_height="55dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:cardBackgroundColor="?attr/colorOnSurface"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTileColor"
-            app:layout_constraintHorizontal_bias="0.0">
+        android:id="@+id/uninstallApp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginTop="48dp"
+        app:cardBackgroundColor="?attr/colorOnSurface"
+        app:cardCornerRadius="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTileColor"
+        app:strokeWidth="0dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -165,11 +176,12 @@
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />
     </com.google.android.material.card.MaterialCardView>
+
     <Space
         android:layout_width="match_parent"
-        android:layout_height="72dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@+id/uninstallApp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uninstallApp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

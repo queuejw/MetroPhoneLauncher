@@ -14,14 +14,17 @@ import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 class Reset : AppCompatActivity() {
+
+    private var frame: FrameLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reset)
         val progressBar: WP10ProgressBar = findViewById(R.id.progressBar)
         progressBar.setIndicatorRadius(5)
         progressBar.showProgressBar()
-        val frame: FrameLayout = findViewById(R.id.frameReset)
-        ViewCompat.setOnApplyWindowInsetsListener(frame) { v: View, insets: WindowInsetsCompat ->
+        frame = findViewById(R.id.frameReset)
+        ViewCompat.setOnApplyWindowInsetsListener(frame!!) { v: View, insets: WindowInsetsCompat ->
             val pB = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
             val tB = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
             v.setPadding(0, tB, 0, pB)
@@ -34,9 +37,12 @@ class Reset : AppCompatActivity() {
             db!!.clearAllTables()
             Prefs(this).reset()
             runOnUiThread {
-                val intent = (Intent(this, WelcomeActivity::class.java))
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                val oobe = Runnable {
+                    val intent = (Intent(this, WelcomeActivity::class.java))
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                }
+                frame!!.postDelayed(oobe, 2000)
             }
         }.start()
     }
