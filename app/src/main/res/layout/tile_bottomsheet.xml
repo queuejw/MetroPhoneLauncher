@@ -2,76 +2,152 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/MPL.BottomSheet.AllAppsStyle"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:background="?attr/colorOnSurface"
         app:behavior_hideable="true"
         app:enableEdgeToEdge="true"
+        android:animateLayoutChanges="true"
         app:layout_optimizationLevel="standard"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
     <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/appLabelSheet"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="12dp"
-            android:textColor="?attr/colorSurface"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/editTileColor"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintVertical_bias="0.0" android:textSize="17sp"/>
-    <Space
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintTop_toBottomOf="@+id/uninstallApp"/>
+        android:id="@+id/appLabelSheet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/opensans_regular"
+        android:textColor="?attr/colorSurface"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/editTileColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:id="@+id/editAppLabel"
             app:cardCornerRadius="0dp"
             app:strokeWidth="0dp"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:cardBackgroundColor="?attr/colorOnSurface"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="40dp" app:layout_constraintHorizontal_bias="0.0">
+            app:layout_constraintTop_toTopOf="@+id/appLabelSheet"
+            android:layout_marginTop="40dp"
+            app:layout_constraintHorizontal_bias="0.0">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
         <TextView
-                android:layout_width="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="edit app label"
+            android:textColor="?attr/colorSurface"
+            android:textSize="25sp" />
+
+            <LinearLayout
+                android:id="@+id/changeLabelLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
-                android:text="edit app label"
-                android:textColor="?attr/colorSurface"
-                android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+                android:orientation="vertical"
+                android:visibility="invisible">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="54dp"
+                        android:layout_marginEnd="48dp"
+                        android:hint="enter label here"
+                        app:boxStrokeWidth="0dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/textEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/labelChange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end|bottom"
+                        app:cardBackgroundColor="@color/transparent"
+                        app:cardCornerRadius="48dp"
+                        app:strokeColor="?attr/colorOnSurface"
+                        app:strokeWidth="3dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?android:attr/colorBackground"
+                            android:src="@drawable/ic_edit"
+                            app:tint="?attr/colorOnSurface" />
+                    </com.google.android.material.card.MaterialCardView>
+                </FrameLayout>
+            </LinearLayout></LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:id="@+id/editTileColor"
             app:cardCornerRadius="0dp"
             app:strokeWidth="0dp"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             tools:layout_editor_absoluteX="0dp"
             app:cardBackgroundColor="?attr/colorOnSurface"
             app:layout_constraintTop_toBottomOf="@+id/editAppLabel">
-        <TextView
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/opensans_light"
                 android:text="choose tile color"
                 android:textColor="?attr/colorSurface"
+                android:textSize="25sp" />
+            <TextView
+                android:id="@+id/chooseColorSub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+                android:fontFamily="@font/opensans_light"
+                android:text="selected color: %s"
+                android:textColor="?attr/colorSurface"
+                android:textSize="20sp" />
+            <TextView
+                android:id="@+id/chooseColorRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/opensans_light"
+                android:textColor="?attr/colorSurface"
+                android:layout_gravity="end"
+                android:text="@string/remove"
+                android:textSize="20sp" />
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:id="@+id/uninstallApp"
             app:cardCornerRadius="0dp"
+            android:layout_marginTop="12dp"
             app:strokeWidth="0dp"
             android:layout_height="55dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -79,13 +155,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTileColor"
             app:layout_constraintHorizontal_bias="0.0">
+
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
-                android:text="uninstall"
-                android:textColor="?attr/colorSurface"
-                android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/opensans_light"
+            android:text="uninstall"
+            android:textColor="?attr/colorSurface"
+            android:textSize="25sp" />
     </com.google.android.material.card.MaterialCardView>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintTop_toBottomOf="@+id/uninstallApp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

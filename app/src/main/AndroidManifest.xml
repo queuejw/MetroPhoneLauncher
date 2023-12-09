@@ -48,6 +48,14 @@
                 android:icon="@drawable/ic_settings">
         </activity>
         <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.Reset"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity"
+            android:exported="true">
+        </activity>
+        <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.AboutSettingsActivity"
                 android:exported="true"
                 android:label="about"

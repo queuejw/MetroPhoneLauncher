@@ -49,8 +49,6 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowShowWallpaper">true</item>
     </style>
     <style name="AppTheme.Green" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">#6fdf3e</item>

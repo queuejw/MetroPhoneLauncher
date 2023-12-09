@@ -2,15 +2,13 @@ package ru.dimon6018.metrolauncher.content
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AlphaAnimation
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -18,18 +16,19 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
-import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.Start.Companion.pManager
+import ru.dimon6018.metrolauncher.content.Start.Companion.tileList
 import ru.dimon6018.metrolauncher.content.data.App
-import ru.dimon6018.metrolauncher.content.data.DataProvider.ConcreteData
-import ru.dimon6018.metrolauncher.content.data.Prefs
-import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider
+import ru.dimon6018.metrolauncher.content.data.AppEntity
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.Collections
+import java.util.Locale
+import kotlin.random.Random
 
 
 class AllApps : Fragment(R.layout.all_apps_screen) {
@@ -39,13 +38,19 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
     private var appAdapter: AppAdapter? = null
     private var searchBtn: MaterialCardView? = null
     private var searchCard: MaterialCardView? = null
-    var loadingHolder: LinearLayout? = null
-    var progressBar: WP7ProgressBar? = null
+    private var loadingHolder: LinearLayout? = null
+    private var progressBar: WP7ProgressBar? = null
     var contxt: Context? = null
+    private var appsList: ArrayList<App>? = null
+
+    private var sharedPool = RecycledViewPool()
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
+        contxt = context
         progressBar = view.findViewById(R.id.progressBar)
+        progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
         recyclerView = view.findViewById(R.id.app_list)
         searchBtn = view.findViewById(R.id.search_btn)
@@ -54,39 +59,37 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         loadingHolder = view.findViewById(R.id.loadingHolder)
         searchBtn!!.setOnClickListener { searchFunction() }
         progressBar!!.showProgressBar()
-        contxt = context
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val thread = Thread {
+        Thread {
             mApps = ArrayList()
             appAdapter = AppAdapter(contxt, mApps!!)
             setUpApps()
             getHeaderListLatter(appsList)
-            recyclerView!!.post {
+            requireActivity().runOnUiThread {
                 recyclerView!!.setLayoutManager(LinearLayoutManager(contxt))
                 recyclerView!!.adapter = appAdapter
-                appAdapter!!.hideLoadingHolder()
+                hideLoadingHolder()
             }
-        }
-        thread.priority = 1
-        thread.start()
+        }.start()
     }
-    private fun closeSearch() {
-        searchView!!.clearFocus()
-        searchCard!!.visibility = View.GONE
-        searchBtn!!.visibility = View.VISIBLE
-        appAdapter!!.restoreAppList()
+    private fun hideLoadingHolder() {
+        progressBar!!.hideProgressBar()
+        loadingHolder!!.visibility = View.GONE
+        recyclerView!!.visibility = View.VISIBLE
     }
-
     private fun searchFunction() {
         removeHeaders()
         searchBtn!!.visibility = View.GONE
         searchCard!!.visibility = View.VISIBLE
         searchView!!.setOnCloseListener {
-            closeSearch()
+            searchView!!.clearFocus()
+            searchCard!!.visibility = View.GONE
+            searchBtn!!.visibility = View.VISIBLE
+            appAdapter!!.restoreAppList()
             false
         }
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -100,13 +103,11 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
         })
     }
-
     private fun setUpApps() {
-        val pManager = contxt!!.packageManager
         appsList = ArrayList()
         val i = Intent(Intent.ACTION_MAIN, null)
         i.addCategory(Intent.CATEGORY_LAUNCHER)
-        val allApps = pManager.queryIntentActivities(i, 0)
+        val allApps = pManager!!.queryIntentActivities(i, 0)
         for (ri in allApps) {
             val app = App()
             app.app_label = ri.loadLabel(pManager) as String
@@ -164,6 +165,11 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
             appAdapter!!.notifyDataSetChanged()
         }
+
+    override fun onResume() {
+        appAdapter!!.notifyDataSetChanged()
+        super.onResume()
+    }
     inner class AppAdapter internal constructor(context: Context?, private var appsList: List<App>) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
         private val appsListReserved: List<App> = appsList
         private var mContextWeakReference: WeakReference<Context?>
@@ -185,7 +191,10 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return if (viewType == Companion.SECTION_VIEW) {
                 SectionHeaderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.abc, parent, false))
-            } else AppHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
+            } else {
+                recyclerView!!.setRecycledViewPool(sharedPool)
+                AppHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
+            }
         }
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -209,52 +218,27 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 true
             }
             holder1.pin.setOnClickListener {
-                    holder1.layout.visibility = View.GONE
-                    val prefs = Prefs(context)
-                    if (prefs.isItemPinedToStart(apps.app_package)) {
-                        Snackbar.make(holder1.itemView, "Это приложение уже закрепрелено", Snackbar.LENGTH_SHORT).show()
-                    } else {
-                        val mPrevData: MutableList<App> = Prefs(context).getAppsPackage()
-                        val iCount = mPrevData.size
-                        prefs.addApp(apps.packagel, apps.label)
-                        prefs.setPos(apps.packagel, iCount)
-                        prefs.setTileSize(apps.packagel, 0)
-                        prefs.setAppTileColorAvailability(apps.app_package, false)
-                        mPrevData.add(apps)
-                        val text = apps.app_label
-                        val packag = apps.app_package
-                        apps.tilesize = Prefs(context).getTileSize(apps.app_package)
-                        val size = apps.tilesize
-                        val icon2: Drawable
-                        val pManager = context!!.packageManager
-                        icon2 = try {
-                            pManager.getApplicationIcon(apps.app_package)
-                        } catch (e: PackageManager.NameNotFoundException) {
-                            throw RuntimeException(e)
-                        }
-                        val item = ConcreteData(iCount.toLong(), 0, text, icon2, iCount, packag, size, false, 0)
-                        dataProvider.addItem(iCount, item, apps)
-                        activity!!.onBackPressed()
-                    }
+                holder1.layout.visibility = View.GONE
+                val text = apps.app_label
+                val packag = apps.app_package
+                Thread {
+                    val pos = Start.dbCall!!.getJustApps().size
+                    val id = Random.nextInt(1000, 10000)
+                    val app = AppEntity(pos, id,-1,"small", text, packag)
+                    Start.dbCall!!.insertItem(app)
+                    tileList = Start.dbCall!!.getJustApps()
+                }.start()
+                activity!!.onBackPressed()
             }
             holder1.share.setOnClickListener {
                 holder1.layout.visibility = View.GONE
             }
             holder1.uninstall.setOnClickListener {
+                val intent = Intent(Intent.ACTION_DELETE)
+                intent.setData(Uri.parse("package:" + apps.packagel))
+                startActivity(intent)
                 holder1.layout.visibility = View.GONE
             }
-        }
-
-        private val dataProvider: AbstractDataProvider
-            get() = (requireActivity() as Main).dataProvider
-
-        fun hideLoadingHolder() {
-            progressBar!!.hideProgressBar()
-            val anim = AlphaAnimation(1f,0f)
-            anim.duration = 250
-            loadingHolder!!.startAnimation(anim)
-            loadingHolder!!.visibility = View.GONE
-            recyclerView!!.visibility = View.VISIBLE
         }
         override fun getItemViewType(position: Int): Int {
             return if (appsList[position].isSection) {

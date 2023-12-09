@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import ru.dimon6018.metrolauncher.R;
 
 /*
@@ -29,23 +30,15 @@ public class WPDialog
     private String okText="";
     private String neutral="";
     private String cancleText="";
-
     private boolean Cancelable=true,onTop=false,Light=false;
-
-    private WPDialog.Builder mBuilder;
-
     private View mView=null;
-
     //监听器
     private View.OnClickListener okButtonListener;
     private View.OnClickListener cancelButtonListener;
     private View.OnClickListener NeutralListener;
-
-    private DialogInterface.OnDismissListener dismissListener;
-
     //Show方法
     public WPDialog show(){
-        mBuilder=new Builder();
+        Builder mBuilder = new Builder();
         if(!wp.isShowing()){
             wp.show();
         }
@@ -66,19 +59,17 @@ public class WPDialog
     }
     //创建
     private class Builder {
-        //布局
-        private LinearLayout layout,okLayout,neutralLayout,cancleLayout;
-        private TextView wp_title,wp_ok,wp_neutral,wp_cancel;
-        private TextView wp_message;
-        private FrameLayout frame;
+
         private Builder() {
             if(onTop){
                 defStyle=R.style.CustomDialogTop;
             }
             wp=new Dialog(mContext,defStyle);
-            wp.getWindow().setFlags(
-                    WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
-                    WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            if(wp.getWindow() != null) {
+                wp.getWindow().setFlags(
+                        WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
+                        WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
+            }
             wp.setContentView(R.layout.wpdialog_layout);
             Window dialogWindow = wp.getWindow();
             DisplayMetrics d = mContext.getResources().getDisplayMetrics();
@@ -104,18 +95,19 @@ public class WPDialog
         //设置布局
         private void setCustomView(Dialog dialog){
             //控件实例化
-            wp_title= dialog.findViewById(R.id.wp_title);
-            wp_message= dialog.findViewById(R.id.wp_message);
-            wp_ok= dialog.findViewById(R.id.wp_ok);
-            wp_neutral= dialog.findViewById(R.id.wp_neutral);
-            wp_cancel=dialog.findViewById(R.id.wp_cancel);
+            TextView wp_title = dialog.findViewById(R.id.wp_title);
+            TextView wp_message = dialog.findViewById(R.id.wp_message);
+            TextView wp_ok = dialog.findViewById(R.id.wp_ok);
+            TextView wp_neutral = dialog.findViewById(R.id.wp_neutral);
+            TextView wp_cancel = dialog.findViewById(R.id.wp_cancel);
 
-            layout=dialog.findViewById(R.id.wp_bg);
-            okLayout=dialog.findViewById(R.id.wp_ok_bg);
-            neutralLayout=dialog.findViewById(R.id.wp_neutral_bg);
-            cancleLayout=dialog.findViewById(R.id.wp_cancle_bg);
+            //布局
+            LinearLayout layout = dialog.findViewById(R.id.wp_bg);
+            LinearLayout okLayout = dialog.findViewById(R.id.wp_ok_bg);
+            LinearLayout neutralLayout = dialog.findViewById(R.id.wp_neutral_bg);
+            LinearLayout cancleLayout = dialog.findViewById(R.id.wp_cancle_bg);
 
-            frame=dialog.findViewById(R.id.wp_view);
+            FrameLayout frame = dialog.findViewById(R.id.wp_view);
 
             if(Light){
                 layout.setBackgroundResource(R.color.wp_light_bg);
@@ -223,7 +215,6 @@ public class WPDialog
         return this;
     }
     public WPDialog setOnDismissListener(DialogInterface.OnDismissListener listener){
-        this.dismissListener=listener;
         return this;
     }
     public WPDialog setCancelable(boolean cancelable){

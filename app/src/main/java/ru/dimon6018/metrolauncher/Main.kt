@@ -1,11 +1,16 @@
 package ru.dimon6018.metrolauncher
 
+import android.Manifest
 import android.app.UiModeManager
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -16,15 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.dimon6018.metrolauncher.Application.getLauncherAccentTheme
 import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.Start
-import ru.dimon6018.metrolauncher.content.data.DataProviderFragment
 import ru.dimon6018.metrolauncher.content.data.Prefs
-import ru.dimon6018.metrolauncher.helpers.AbstractDataProvider
-
-import android.Manifest
-import android.content.pm.PackageManager
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 
 class Main : AppCompatActivity() {
 
@@ -43,36 +40,28 @@ class Main : AppCompatActivity() {
         initViews()
         setupNavigationBar()
         applyWindowInsets()
-        supportFragmentManager.beginTransaction()
-                .add(DataProviderFragment(), FRAGMENT_TAG_DATA_PROVIDER)
-                .commit()
     }
     private fun checkPermissions() {
         val permissions = arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val missingPermissions = ArrayList<String>()
+        val missingPermissions = ArrayList<String>()
 
-            for (permission in permissions) {
-                if (ContextCompat.checkSelfPermission(this, permission)
-                        != PackageManager.PERMISSION_GRANTED
-                ) {
-                    missingPermissions.add(permission)
-                }
+        for (permission in permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED
+            ) {
+                missingPermissions.add(permission)
             }
-            if (missingPermissions.isNotEmpty()) {
-                ActivityCompat.requestPermissions(
-                        this,
-                        missingPermissions.toTypedArray(),
-                        REQUEST_PERMISSIONS_CODE
-                )
-            } else {
-                // Разрешения уже предоставлены
-                // Можете выполнять операции с файлами и медиафайлами
-            }
+        }
+        if (missingPermissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    missingPermissions.toTypedArray(),
+                    REQUEST_PERMISSIONS_CODE
+            )
         } else {
-            // Для устройств с версией Android ниже 23 разрешения предоставляются автоматически
+            // Разрешения уже предоставлены
             // Можете выполнять операции с файлами и медиафайлами
         }
     }
@@ -104,14 +93,12 @@ class Main : AppCompatActivity() {
             // Можете выполнять операции с файлами и медиафайлами
         }
     }
-
     private fun initViews() {
         viewPager = findViewById(R.id.pager)
         pagerAdapter = NumberAdapter(this)
         coordinatorLayout = findViewById(R.id.coordinator)
         viewPager.adapter = pagerAdapter
     }
-
     private fun setupNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
 
@@ -129,7 +116,6 @@ class Main : AppCompatActivity() {
             }
         }
     }
-
     private fun applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
             val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
@@ -157,7 +143,6 @@ class Main : AppCompatActivity() {
             recreate()
         }
     }
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (viewPager.currentItem != 0) {
@@ -166,17 +151,6 @@ class Main : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-
-    val dataProvider: AbstractDataProvider
-        get() {
-            val fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_TAG_DATA_PROVIDER)
-            return (fragment as DataProviderFragment).dataProvider
-        }
-
-    companion object {
-        private const val FRAGMENT_TAG_DATA_PROVIDER = "data provider"
-    }
-
     class NumberAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 

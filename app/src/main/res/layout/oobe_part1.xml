@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fontFamily="@font/opensans_medium"
+    android:textSize="48sp"
+    android:layout_marginStart="4dp"
+    android:text="welcome"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/opensans_regular"
+        android:textSize="20sp"
+        android:text="Welcome to MPL. \nMPL is a fast, convenient and reliable Windows Phone 8 style launcher for your device. \nYou can skip this screen or let's quickly customize it. It won't take much time."/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="48dp"
+        android:layout_height="wrap_content">
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:text="continue"
+            android:fontFamily="@font/opensans_regular"
+            app:cornerRadius="0dp"
+            app:strokeColor="?attr/colorOnBackground"
+            android:textColor="?attr/colorOnBackground"
+            app:strokeWidth="2dp"
+            android:layout_gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:id="@+id/oobe_next"
+            android:textSize="20sp"/>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:text="skip"
+            android:fontFamily="@font/opensans_regular"
+            app:cornerRadius="0dp"
+            app:strokeColor="?attr/colorOnBackground"
+            android:textColor="?attr/colorOnBackground"
+            app:strokeWidth="2dp"
+            android:layout_gravity="start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:id="@+id/oobe_skip"
+            android:textSize="20sp"/>
+    </FrameLayout>
+</LinearLayout>
