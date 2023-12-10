@@ -19,14 +19,12 @@ And much more...
 
 # Screenshots:
 
-<img src='/screenshots/1.jpg' width='300'> <img src='/screenshots/2.jpg' width='300'> <img src='/screenshots/3.jpg' width='300'> <img src='/screenshots/4.jpg' width='300'> <img src='/screenshots/5.jpg' width='300'>
+<img src='/screenshots/1.jpg' width='300'> <img src='/screenshots/2.jpg' width='300'> <img src='/screenshots/3.jpg' width='300'> <img src='/screenshots/4.jpg' width='300'> <img src='/screenshots/5.jpg' width='300'>  <img src='/screenshots/6.jpg' width='300'>
 
 # Download (free):
 
-step 1: click here: https://github.com/queuejw/MetroPhoneLauncher/releases 
+step 1: click here: https://github.com/queuejw/MetroPhoneLauncher/releases/latest
 
-step 2: open latest release 
+step 2: download file.apk
 
-step 3: download app_debug.apk
-
-step 4: install.
+step 3: install.
