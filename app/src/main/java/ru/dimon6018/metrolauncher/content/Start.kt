@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -183,6 +184,7 @@ class Start : Fragment(), OnStartDragListener {
         var tileList: List<AppEntity>? = null
         var pManager: PackageManager? = null
         var isAdapterUpdateEnabled: Boolean? = null
+        var canOpenPrefs: Boolean = true
     }
     inner class StartAdapter(private var items: List<AppEntity>) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
@@ -201,16 +203,16 @@ class Start : Fragment(), OnStartDragListener {
         private fun saveAllPositions() {
             isAdapterUpdateEnabled = false
             Thread {
-                var allItemsCount: Int = items.size
+                var allItemsCount: Int = tileList!!.size
                 while (allItemsCount != 0) {
                     allItemsCount -= 1
-                    val item = items[allItemsCount]
+                    val item = tileList!![allItemsCount]
                     item.appPos = allItemsCount
                     dbCall!!.updateApp(item)
                 }
                 Handler(Looper.getMainLooper()).postDelayed({
                     isAdapterUpdateEnabled = true
-                }, 1000)
+                }, 50)
             }.start()
         }
         override fun onItemDismiss(position: Int) {
@@ -257,14 +259,14 @@ class Start : Fragment(), OnStartDragListener {
                 "small" -> {
                     if(prefs!!.isMoreTilesEnabled) {
                         holder.mTextView.text = ""
-                        holder.mRemove.scaleX = 0.5f
-                        holder.mRemove.scaleY = 0.5f
-                        holder.mResize.scaleX = 0.5f
-                        holder.mResize.scaleY = 0.5f
-                        holder.mSettings.scaleX = 0.5f
-                        holder.mSettings.scaleY = 0.5f
-                        holder.mTileLayout.scaleX = 1.5f
-                        holder.mTileLayout.scaleY = 1.5f
+                        holder.mRemove.scaleX = 0.25f
+                        holder.mRemove.scaleY = 0.25f
+                        holder.mResize.scaleX = 0.25f
+                        holder.mResize.scaleY = 0.25f
+                        holder.mSettings.scaleX = 0.25f
+                        holder.mSettings.scaleY = 0.25f
+                        holder.mTileLayout.scaleX = 1.7f
+                        holder.mTileLayout.scaleY = 1.7f
                     } else {
                         holder.mRemove.scaleX = 0.7f
                         holder.mRemove.scaleY = 0.7f
@@ -325,17 +327,35 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             holder.mContainer.setOnLongClickListener {
-                canOpenApp = false
-                holder.mTileLayout.visibility = View.VISIBLE
-                val hideAction = Runnable {
-                    canOpenApp = true
-                    holder.mTileLayout.visibility = View.INVISIBLE
+                if (canOpenPrefs) {
+                    canOpenPrefs = false
+                    canOpenApp = false
+                    holder.mTileLayout.visibility = View.VISIBLE
+                    val hideAction = Runnable {
+                        canOpenApp = true
+                        canOpenPrefs = true
+                        holder.mTileLayout.visibility = View.INVISIBLE
+                    }
+                    holder.mTileLayout.postDelayed(hideAction, 5500)
+                    true
+                } else {
+                    false
                 }
-                holder.mTileLayout.postDelayed(hideAction, 5500)
-                false
             }
              try {
-                 holder.mAppIcon.setImageDrawable(pManager!!.getApplicationIcon(item.appPackage))
+                 val bmp: Bitmap = if(item.appSize == "small") {
+                     if (prefs!!.isMoreTilesEnabled) {
+                         pManager!!.getApplicationIcon(item.appPackage).toBitmap(64, 64)
+                     } else {
+                         pManager!!.getApplicationIcon(item.appPackage).toBitmap(82, 82)
+                     }
+                 } else {
+                     pManager!!.getApplicationIcon(item.appPackage).toBitmap(150, 150)
+                 }
+                 if (item.appSize == "big") {
+                     pManager!!.getApplicationIcon(item.appPackage).toBitmap(180, 180)
+                 }
+                 holder.mAppIcon.setImageBitmap(bmp)
             } catch (e: PackageManager.NameNotFoundException) {
                  Thread {
                      dbCall!!.removeApp(item)
@@ -350,7 +370,8 @@ class Start : Fragment(), OnStartDragListener {
                 when (item.appSize) {
                     "small" -> {
                         Thread {
-                            val appEntity = AppEntity(item.appPos, item.id, item.tileColor,"medium", item.appLabel, item.appPackage)
+                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            appEntity.appSize = "medium"
                             dbCall!!.updateApp(appEntity)
                         }.start()
                         holder.mTextView.post {
@@ -360,7 +381,8 @@ class Start : Fragment(), OnStartDragListener {
                     }
                     "medium" -> {
                         Thread {
-                            val appEntity = AppEntity(item.appPos, item.id, item.tileColor,"big", item.appLabel, item.appPackage)
+                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            appEntity.appSize = "big"
                             dbCall!!.updateApp(appEntity)
                         }.start()
                         item.appSize = "big"
@@ -368,18 +390,21 @@ class Start : Fragment(), OnStartDragListener {
 
                     "big" -> {
                         Thread {
-                            val appEntity = AppEntity(item.appPos, item.id, item.tileColor,"small", item.appLabel, item.appPackage)
+                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            appEntity.appSize = "small"
                             dbCall!!.updateApp(appEntity)
                         }.start()
                         item.appSize = "small"
                     }
                 }
+                canOpenPrefs = true
                 notifyDataSetChanged()
             }
             holder.mRemove.setOnClickListener {
                 Thread {
                     dbCall!!.removeApp(dbCall!!.getAppById(item.id!!))
                 }.start()
+                canOpenPrefs = true
                 notifyItemRemoved(position)
             }
             holder.mSettings.setOnClickListener {

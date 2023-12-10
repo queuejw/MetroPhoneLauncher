@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -113,7 +116,6 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             app.app_label = ri.loadLabel(pManager) as String
             app.app_package = ri.activityInfo.packageName
             app.isSection = false
-            app.app_icon = ri.activityInfo.loadIcon(pManager)
             appsList!!.add(app)
         }
     }
@@ -121,7 +123,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
     private fun filterText(text: String) {
         val filteredlist: ArrayList<App> = ArrayList()
         for (item in appsList!!) {
-            if (item.label.lowercase(Locale.getDefault()).contains(text.lowercase(Locale.getDefault()))) {
+            if (item.app_label.lowercase(Locale.getDefault()).contains(text.lowercase(Locale.getDefault()))) {
                 filteredlist.add(item)
             }
         }
@@ -143,7 +145,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         }
         var lastHeader: String? = ""
             for (app in newApps!!) {
-                val header = app.label[0].toString().uppercase(Locale.getDefault())
+                val header = app.app_label[0].toString().uppercase(Locale.getDefault())
                 if (!TextUtils.equals(lastHeader, header)) {
                     lastHeader = header
                     val head = App()
@@ -205,11 +207,16 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 return
             }
             val holder1 = holder as AppHolder
-            val apps: App = appsList[position]
-            holder1.icon.setImageDrawable(apps.drawable)
-            holder1.label.text = apps.label
+            val app: App = appsList[position]
+            try {
+               val bmp = pManager!!.getApplicationIcon(app.app_package).toBitmap(72, 72)
+                holder.icon.setImageBitmap(bmp)
+            } catch (e: PackageManager.NameNotFoundException) {
+                holder.icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_os_android, null))
+            }
+            holder1.label.text = app.app_label
             holder1.itemView.setOnClickListener {
-                val intent = contxt!!.packageManager.getLaunchIntentForPackage(apps.packagel)
+                val intent = contxt!!.packageManager.getLaunchIntentForPackage(app.app_package)
                 intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
@@ -218,16 +225,16 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 true
             }
             holder1.pin.setOnClickListener {
-                holder1.layout.visibility = View.GONE
-                val text = apps.app_label
-                val packag = apps.app_package
+                val text = app.app_label
+                val packag = app.app_package
                 Thread {
                     val pos = Start.dbCall!!.getJustApps().size
-                    val id = Random.nextInt(1000, 10000)
-                    val app = AppEntity(pos, id,-1,"small", text, packag)
-                    Start.dbCall!!.insertItem(app)
+                    val id = Random.nextInt(1000, 20000)
+                    val item = AppEntity(pos, id,-1,"small", text, packag)
+                    Start.dbCall!!.insertItem(item)
                     tileList = Start.dbCall!!.getJustApps()
                 }.start()
+                holder1.layout.visibility = View.GONE
                 activity!!.onBackPressed()
             }
             holder1.share.setOnClickListener {
@@ -235,7 +242,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
             holder1.uninstall.setOnClickListener {
                 val intent = Intent(Intent.ACTION_DELETE)
-                intent.setData(Uri.parse("package:" + apps.packagel))
+                intent.setData(Uri.parse("package:" + app.app_package))
                 startActivity(intent)
                 holder1.layout.visibility = View.GONE
             }
@@ -281,6 +288,5 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
     companion object {
         const val SECTION_VIEW = 0
         const val CONTENT_VIEW = 1
-        private var appsList: MutableList<App>? = null
     }
 }

@@ -10,14 +10,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-        <ImageView
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="48dp"
+            android:layout_gravity="center"
+            android:layout_height="48dp"
+            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+            app:cardCornerRadius="0dp">
+            <ImageView
                 android:id="@+id/app_icon"
                 android:src="@drawable/ic_os_android"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="?attr/colorPrimaryContainer"
                 android:layout_weight="0"/>
+        </com.google.android.material.card.MaterialCardView>
     <TextView
         android:id="@+id/app_label"
         android:layout_width="match_parent"

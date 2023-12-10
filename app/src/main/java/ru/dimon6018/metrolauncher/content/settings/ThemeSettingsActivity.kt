@@ -66,7 +66,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
             Log.i("PhotoPicker", "No media selected")
         }
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.getLauncherAccentTheme())
         super.onCreate(savedInstanceState)
