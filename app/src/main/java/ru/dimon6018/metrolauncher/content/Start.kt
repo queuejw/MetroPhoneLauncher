@@ -34,7 +34,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.R
@@ -73,7 +72,7 @@ class Start : Fragment(), OnStartDragListener {
             db = AppData.getAppData(contxt!!)
             dbCall = db!!.getAppDao()
         }.run()
-        prefs = Prefs(contxt)
+        prefs = Prefs(contxt!!)
         progressBar = v.findViewById(R.id.progressBarStart)
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
@@ -364,7 +363,7 @@ class Start : Fragment(), OnStartDragListener {
             if(item.tileColor != -1) {
                  holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!))
             } else {
-                holder.mContainer.setBackgroundColor(Application.getAccentColorFromPrefs())
+                holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs)
             }
             holder.mResize.setOnClickListener {
                 when (item.appSize) {

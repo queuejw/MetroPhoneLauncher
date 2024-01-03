@@ -20,7 +20,7 @@ class SettingsActivity : AppCompatActivity() {
     private var coord: CoordinatorLayout? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         setAppTheme()
-        setTheme(Application.getLauncherAccentTheme())
+        setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)

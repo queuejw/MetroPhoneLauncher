@@ -63,6 +63,7 @@
     <color name="md_theme_dark_scrim">#000000</color>
 
     <color name="transparent">#00000000</color>
+    <color name="bsod">#0078D7</color>
 
     <color name="wp_bg">#171717</color>
     <color name="wp_bg_pressed">#525252</color>

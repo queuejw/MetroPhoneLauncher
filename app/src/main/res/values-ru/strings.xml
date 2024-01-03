@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MPLauncher</string>
+    <string name="phone_info">Название: %s \nМодель: %s \nПО: %s</string>
+    <string name="phone_moreinfo">Версия MPL: %s \nНомер сборки VPM: %d \nУстройство: %s \nБренд устройства: %s \nМодель устройства %s \nПродукт: %s \nАппаратное обеспечение: %s \nСборка: %s \nДата сборки: %d</string>
+    <string name="settings_theme_accent_title_part1">цвет акцента</string>
+    <string name="settings_theme_accent_title_part2">чтобы соответствовать вашему настроению сегодня, на этой неделе или в течение всего месяца </string>
+    <string name="remove">><u>Убрать</u></string>
+    <string name="tileSettings_color_sub">выбранный цвет: %s</string>
+    <string name="reset_warning">Сброс лаунчера приведет к удалению всех настроек плиток, тем и стартового меню. ЭТО НЕ ОТНОСИТСЯ К ПРИЛОЖЕНИЯМ ТЕЛЕФОНА И ЛИЧНЫМ ДАННЫМ. Вы хотите продолжить?</string>
+    <string name="reset_warning_title">ВНИМАНИЕ!</string>
+    <string name="bsod">:(</string>
+    <string name="bsodDialogMessage">Из-за неё лаунчер перезагрузился. Вы можете отправить сведения о неполадке, чтобы помочь нам улучшить MetroPhoneLauncher</string>
+    <string name="bsodDialogTitle">С вашим лаунчером возникла проблема</string>
+    <string name="bsodDialogDismiss">Не отправлять</string>
+    <string name="bsodDialogSend">Отправить</string>
+</resources>

@@ -52,6 +52,10 @@
             android:exported="true">
         </activity>
         <activity
+            android:name="ru.dimon6018.metrolauncher.helpers.bsod.BsodScreen"
+            android:exported="true">
+        </activity>
+        <activity
             android:name="ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity"
             android:exported="true">
         </activity>

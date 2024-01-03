@@ -51,6 +51,7 @@
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="colorPrimary">?attr/colorPrimary</item>
+        <item name="android:colorAccent">?attr/colorPrimary</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
         <item name="android:windowIsFloating">false</item>

@@ -32,7 +32,7 @@ class AboutSettingsActivity : AppCompatActivity() {
     private var time = Build.TIME
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.getLauncherAccentTheme())
+        setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_about)
         WindowCompat.setDecorFitsSystemWindows(window, false)

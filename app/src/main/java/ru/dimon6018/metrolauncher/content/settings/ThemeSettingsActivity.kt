@@ -67,13 +67,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.getLauncherAccentTheme())
+        setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         coord = findViewById(R.id.coordinator)
         context = this
-        prefs = Prefs(context)
+        prefs = Prefs(context!!)
         backgroundImg = findViewById(R.id.Startbackground)
         removeBackgrd = findViewById(R.id.removeBackground)
         chooseThemeBtn = findViewById(R.id.chooseTheme)
@@ -84,7 +84,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
-        chooseAccentBtn!!.text = Application.getAccentName()
+        chooseAccentBtn!!.text = Application.accentName
         val themeButtonLabel: String = if (prefs!!.isLightThemeUsed) {
             "light"
         } else {
@@ -174,7 +174,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
             }
         }
     }
-
     class AccentDialog : DialogFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -197,126 +196,126 @@ class ThemeSettingsActivity : AppCompatActivity() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val prefs = Prefs(context)
+            val prefs = Prefs(requireContext())
             val lime = view.findViewById<ImageView>(R.id.choose_color_lime)
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
             lime.setOnClickListener {
-                prefs.setAccentColor(0)
+                prefs.accentColor = 0
                 dismiss()
                 requireActivity().recreate()
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
-                prefs.setAccentColor(1)
+                prefs.accentColor = 1
                 dismiss()
                 requireActivity().recreate()
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
-                prefs.setAccentColor(2)
+                prefs.accentColor = 2
                 dismiss()
                 requireActivity().recreate()
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
-                prefs.setAccentColor(3)
+                prefs.accentColor = 3
                 dismiss()
                 requireActivity().recreate()
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
-                prefs.setAccentColor(4)
+                prefs.accentColor = 4
                 dismiss()
                 requireActivity().recreate()
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
-                prefs.setAccentColor(5)
+                prefs.accentColor = 5
                 dismiss()
                 requireActivity().recreate()
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
-                prefs.setAccentColor(6)
+                prefs.accentColor = 6
                 dismiss()
                 requireActivity().recreate()
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
-                prefs.setAccentColor(7)
+                prefs.accentColor = 7
                 dismiss()
                 requireActivity().recreate()
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
-                prefs.setAccentColor(8)
+                prefs.accentColor = 8
                 dismiss()
                 requireActivity().recreate()
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
-                prefs.setAccentColor(9)
+                prefs.accentColor = 9
                 dismiss()
                 requireActivity().recreate()
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
-                prefs.setAccentColor(10)
+                prefs.accentColor = 10
                 dismiss()
                 requireActivity().recreate()
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
-                prefs.setAccentColor(11)
+                prefs.accentColor = 11
                 dismiss()
                 requireActivity().recreate()
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
-                prefs.setAccentColor(12)
+                prefs.accentColor = 12
                 dismiss()
                 requireActivity().recreate()
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
-                prefs.setAccentColor(13)
+                prefs.accentColor = 13
                 dismiss()
                 requireActivity().recreate()
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
-                prefs.setAccentColor(14)
+                prefs.accentColor = 14
                 dismiss()
                 requireActivity().recreate()
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
-                prefs.setAccentColor(15)
+                prefs.accentColor = 15
                 dismiss()
                 requireActivity().recreate()
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
-                prefs.setAccentColor(16)
+                prefs.accentColor = 16
                 dismiss()
                 requireActivity().recreate()
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
-                prefs.setAccentColor(17)
+                prefs.accentColor = 17
                 dismiss()
                 requireActivity().recreate()
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
-                prefs.setAccentColor(18)
+                prefs.accentColor = 18
                 dismiss()
                 requireActivity().recreate()
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
-                prefs.setAccentColor(19)
+                prefs.accentColor = 19
                 dismiss()
                 requireActivity().recreate()
             }

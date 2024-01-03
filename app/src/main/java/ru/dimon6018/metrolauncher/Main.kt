@@ -18,29 +18,31 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import ru.dimon6018.metrolauncher.Application.getLauncherAccentTheme
 import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.Start
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.helpers.WPDialog
 
 class Main : AppCompatActivity() {
 
-    private val REQUEST_PERMISSIONS_CODE = 123
+    private val permCode = 123
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var coordinatorLayout: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(getLauncherAccentTheme())
+        setTheme(Application.launcherAccentTheme)
         setAppTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen_laucnher)
-  //      checkPermissions()
+        //      checkPermissions()
         initViews()
         setupNavigationBar()
         applyWindowInsets()
+        checkCrashes()
     }
+
     private fun checkPermissions() {
         val permissions = arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -58,7 +60,7 @@ class Main : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                     this,
                     missingPermissions.toTypedArray(),
-                    REQUEST_PERMISSIONS_CODE
+                    permCode
             )
         } else {
             // Разрешения уже предоставлены
@@ -73,7 +75,7 @@ class Main : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (requestCode == REQUEST_PERMISSIONS_CODE) {
+        if (requestCode == permCode) {
             for (result in grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     // Если хотя бы одно разрешение не было предоставлено
@@ -93,12 +95,26 @@ class Main : AppCompatActivity() {
             // Можете выполнять операции с файлами и медиафайлами
         }
     }
+
+    private fun checkCrashes() {
+        if (Prefs(this).pref.getBoolean("app_crashed", true)) {
+            Prefs(this).editor.putBoolean("app_crashed", false).apply()
+            WPDialog(this).setTopDialog(true)
+                    .setTitle(getString(R.string.bsodDialogTitle))
+                    .setMessage(getString(R.string.bsodDialogMessage))
+                    .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                    .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                    }.show()
+        }
+    }
+
     private fun initViews() {
         viewPager = findViewById(R.id.pager)
         pagerAdapter = NumberAdapter(this)
         coordinatorLayout = findViewById(R.id.coordinator)
         viewPager.adapter = pagerAdapter
     }
+
     private fun setupNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
 
@@ -108,14 +124,17 @@ class Main : AppCompatActivity() {
                     viewPager.currentItem = 0
                     true
                 }
+
                 R.id.start_apps -> {
                     viewPager.currentItem = 1
                     true
                 }
+
                 else -> false
             }
         }
     }
+
     private fun applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
             val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
@@ -142,7 +161,11 @@ class Main : AppCompatActivity() {
             Prefs.isAccentChanged = false
             recreate()
         }
+        if (viewPager.currentItem == 1) {
+            AllApps.checkApps()
+        }
     }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (viewPager.currentItem != 0) {
@@ -151,6 +174,7 @@ class Main : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
     class NumberAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 

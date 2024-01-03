@@ -8,4 +8,9 @@
     <string name="tileSettings_color_sub">selected color: %s</string>
     <string name="reset_warning">Resetting the launcher will remove all tile settings, themes, and the start menu. THIS DOES NOT APPLY TO PHONE APPLICATIONS AND PERSONAL DATA. Do you want to continue?</string>
     <string name="reset_warning_title">WARNING!</string>
+    <string name="bsod">:(</string>
+    <string name="bsodDialogMessage">It caused the launcher to reboot. You can send us information about the problem to help us improve MetroPhoneLauncher.</string>
+    <string name="bsodDialogTitle">There\'s a problem with your launcher</string>
+    <string name="bsodDialogDismiss">Don\'t send</string>
+    <string name="bsodDialogSend">Send</string>
 </resources>
