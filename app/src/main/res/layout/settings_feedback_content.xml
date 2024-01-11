@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:animateLayoutChanges="true"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        android:layout_marginTop="2dp"
+        android:text="Send launcher usage feedback to help improve MetroPhoneLauncher" />
+
+    <TextView
+        android:textSize="16sp"
+        android:alpha="0.8"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send feedback" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/sendFeedbackSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        android:text="Off" />
+
+    <TextView
+        android:alpha="0.8"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Number of issues to save" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/setCrashLogLimitBtn"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/opensans_regular"
+        android:gravity="start"
+        android:text="только последнюю"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="20sp"
+        android:visibility="visible"
+        app:cornerRadius="0dp"
+        app:strokeColor="?attr/colorOnBackground"
+        app:strokeWidth="2dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/chooseBsodInfoLimit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorOnBackground"
+        app:cardCornerRadius="0dp"
+        app:strokeColor="?attr/colorPrimaryContainer"
+        app:strokeWidth="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/save1bsod"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_gravity="top"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="только последнюю"
+                android:textColor="?attr/colorSurface"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/save5bsod"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="последние 5"
+                android:textColor="?attr/colorSurface"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/save10bsod"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="последние 10"
+                android:textColor="?attr/colorSurface"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/saveallbsods"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:text="как можно больше"
+                android:textColor="?attr/colorSurface"
+                android:textSize="22sp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:alpha="0.8"
+        android:layout_height="wrap_content"
+        android:text="Your phone may save fewer issues if there isn't enough space"
+        android:textSize="18sp" />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:text="show info"
+        android:fontFamily="@font/opensans_regular"
+        app:cornerRadius="0dp"
+        app:strokeColor="?attr/colorOnBackground"
+        android:textColor="?attr/colorOnBackground"
+        app:strokeWidth="2dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:id="@+id/showBsodInfo"
+        android:textSize="20sp"
+        android:visibility="visible"/>
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:text="delete info"
+        android:fontFamily="@font/opensans_regular"
+        app:cornerRadius="0dp"
+        app:strokeColor="?attr/colorOnBackground"
+        android:textColor="?attr/colorOnBackground"
+        app:strokeWidth="2dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:id="@+id/deleteBsodInfo"
+        android:textSize="20sp"
+        android:visibility="visible"/>
+</LinearLayout>

@@ -1,71 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/frame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:attr/colorBackground"
-        android:id="@+id/constraintAllApps">
+        android:layout_height="wrap_content">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/search_card"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:visibility="gone"
-        app:strokeWidth="3dp">
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/searchView"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            app:defaultQueryHint="Search for app's"
-            app:queryHint="Search for app's"
-            app:searchIcon="@drawable/ic_search" />
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-            android:id="@+id/labelChange"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/searchBackBtn"
             android:layout_width="42dp"
             android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:cardBackgroundColor="?android:attr/colorBackground"
             app:cardCornerRadius="48dp"
             app:strokeColor="?attr/colorOnSurface"
-            app:cardBackgroundColor="?android:attr/colorBackground"
             app:strokeWidth="3dp">
-        <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="center"
-                android:scaleX="-1"
-                android:src="@drawable/ic_search"
-                app:tint="?attr/colorOnSurface"/>
-    </com.google.android.material.card.MaterialCardView>
 
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_left"
+                app:tint="?attr/colorOnSurface" />
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            app:boxStrokeWidth="3dp"
+            app:endIconMode="none">
+
+            <AutoCompleteTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/opensans_regular"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="16sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="62dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="4dp"
-        android:visibility="gone" />
+        android:visibility="visible" />
+</LinearLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchButton"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="24dp"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="48dp"
+        app:strokeColor="?attr/colorOnSurface"
+        app:strokeWidth="3dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:scaleX="-1"
+            android:src="@drawable/ic_search"
+            app:tint="?attr/colorOnSurface" />
+    </com.google.android.material.card.MaterialCardView>
+
     <LinearLayout
+        android:id="@+id/loadingHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center"
-        android:id="@+id/loadingHolder">
+        android:gravity="center"
+        android:orientation="vertical">
+
         <ir.alirezabdn.wp7progress.WP7ProgressBar
-                android:layout_width="match_parent"
-                android:id="@+id/progressBar"
-                android:layout_height="wrap_content"
-                app:indicatorColor="?attr/colorPrimary"/>
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:indicatorColor="?attr/colorPrimary" />
+
         <TextView
-                android:layout_width="match_parent"
-                android:text="Loading..."
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textSize="18sp"
-                android:fontFamily="@font/opensans_light"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_light"
+            android:gravity="center"
+            android:text="Loading..."
+            android:textSize="18sp" />
     </LinearLayout>
 </FrameLayout>

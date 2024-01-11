@@ -3,6 +3,7 @@ package ru.dimon6018.metrolauncher
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
@@ -18,6 +19,17 @@ class Application : Application() {
         @SuppressLint("StaticFieldLeak")
         var appContext: Context? = null
             private set
+        const val VERSION_CODE: Int = BuildConfig.VERSION_CODE
+        const val VERSION_NAME: String = BuildConfig.VERSION_NAME
+        const val BUILD_TYPE: String = BuildConfig.BUILD_TYPE
+        val ANDROID_VERSION: Int = Build.VERSION.SDK_INT
+        val MODEL: String = Build.MODEL
+        val BUILD: String = Build.DISPLAY
+        val PRODUCT: String = Build.PRODUCT
+        val BRAND: String = Build.BRAND
+        val DEVICE: String = Build.DEVICE
+        val HARDWARE: String = Build.HARDWARE
+        val TIME: Long = Build.TIME
         private var accentColors = intArrayOf(
                 R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
                 R.color.tile_teal, R.color.tile_cobalt, R.color.tile_indigo, R.color.tile_violet,
@@ -40,7 +52,6 @@ class Application : Application() {
                     appContext!!.getColor(R.color.tile_cobalt)
                 }
             }
-
         fun getTileColorFromPrefs(tileColor: Int): Int {
             // 0 - use accent color
             // 1 - lime

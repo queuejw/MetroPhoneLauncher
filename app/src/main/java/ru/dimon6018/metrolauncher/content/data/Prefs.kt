@@ -34,9 +34,33 @@ class Prefs(context: Context) {
     fun useLightTheme(bool: Boolean) {
         prefs.edit().putBoolean(LAUNCHER_LIGHT_THEME, bool).apply()
     }
-
+    fun setMaxCrashLogs(int: Int) {
+        prefs.edit().putInt(MAX_CRASH_LOGS, int).apply()
+    }
+    fun getMaxCrashLogs(): Int {
+        // 0 - 1
+        // 1 - 5
+        // 2 - 10
+        // 3 - no limit
+        return prefs.getInt(MAX_CRASH_LOGS, 0)
+    }
     val isLightThemeUsed: Boolean
         get() = prefs.getBoolean(LAUNCHER_LIGHT_THEME, false)
+    fun setFeedback(bool: Boolean) {
+        prefs.edit().putBoolean(FEEDBACK, bool).apply()
+    }
+    val isFeedbackEnabled: Boolean
+        get() = prefs.getBoolean(FEEDBACK, true)
+    fun setUpdateCheck(bool: Boolean) {
+        prefs.edit().putBoolean(UPDATE_CHECK, bool).apply()
+    }
+    val isUpdateCheck: Boolean
+        get() = prefs.getBoolean(UPDATE_CHECK, false)
+    fun setAutoUpdate(bool: Boolean) {
+        prefs.edit().putBoolean(AUTO_UPDATE, bool).apply()
+    }
+    val isAutoUpdateEnabled: Boolean
+        get() = prefs.getBoolean(AUTO_UPDATE, false)
     var accentColor: Int
         get() = prefs.getInt(ACCENT_COLOR, 5)
         set(color) {
@@ -79,6 +103,10 @@ class Prefs(context: Context) {
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
+        const val MAX_CRASH_LOGS = "crashLogs"
+        const val UPDATE_CHECK = "updateCheck"
+        const val AUTO_UPDATE = "autoUpdate"
+        const val FEEDBACK = "feedback"
         const val LAUNCHER_LIGHT_THEME = "useLightTheme"
         const val LAUNCHER_CUSTOM_BACKGRD = "useCustomBackground"
         const val MORE_TILES = "isMoreTilesEnabled"

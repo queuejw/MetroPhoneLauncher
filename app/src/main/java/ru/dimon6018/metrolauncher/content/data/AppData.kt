@@ -14,7 +14,7 @@ abstract class AppData: RoomDatabase() {
         private const val DB: String = "AppData.db"
 
         fun getAppData(context: Context): AppData {
-            return Room.databaseBuilder(context.applicationContext, AppData::class.java, DB).build()
+            return Room.databaseBuilder(context, AppData::class.java, DB).build()
         }
     }
 }

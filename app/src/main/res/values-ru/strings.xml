@@ -5,7 +5,7 @@
     <string name="phone_moreinfo">Версия MPL: %s \nНомер сборки VPM: %d \nУстройство: %s \nБренд устройства: %s \nМодель устройства %s \nПродукт: %s \nАппаратное обеспечение: %s \nСборка: %s \nДата сборки: %d</string>
     <string name="settings_theme_accent_title_part1">цвет акцента</string>
     <string name="settings_theme_accent_title_part2">чтобы соответствовать вашему настроению сегодня, на этой неделе или в течение всего месяца </string>
-    <string name="remove">><u>Убрать</u></string>
+    <string name="remove"><u>Убрать</u></string>
     <string name="tileSettings_color_sub">выбранный цвет: %s</string>
     <string name="reset_warning">Сброс лаунчера приведет к удалению всех настроек плиток, тем и стартового меню. ЭТО НЕ ОТНОСИТСЯ К ПРИЛОЖЕНИЯМ ТЕЛЕФОНА И ЛИЧНЫМ ДАННЫМ. Вы хотите продолжить?</string>
     <string name="reset_warning_title">ВНИМАНИЕ!</string>
@@ -14,4 +14,27 @@
     <string name="bsodDialogTitle">С вашим лаунчером возникла проблема</string>
     <string name="bsodDialogDismiss">Не отправлять</string>
     <string name="bsodDialogSend">Отправить</string>
+    <string name="on">Вкл</string>
+    <string name="off">Выкл</string>
+    <string name="light">светлая</string>
+    <string name="dark">тёмная</string>
+    <string name="automatic_repair">Автоматическое восстановление</string>
+    <string name="not_start_correctly">Лаунчер запущен некорректно</string>
+    <string name="auto_repair_tip">Нажмите \'Перезагрузить\', чтобы перезапустить лаунчер. Иногда это решает проблему. Также можно нажать \'Дополнительные параметры\' и попробовать другие варианты восстановления лаунчера.</string>
+    <string name="restart">Перезагрузить</string>
+    <string name="advanced_options">Дополнительные параметы</string>
+    <string name="feedback_limit_0">Только последнюю</string>
+    <string name="feedback_limit_1">последние 5</string>
+    <string name="feedback_limit_2">последние 10</string>
+    <string name="feedback_limit_3">как можно больше</string>
+    <string name="start_theme">рабочий стол+тема</string>
+    <string name="feedback_sub">помогите улучшить MetroPhoneLaucnher</string>
+    <string name="launcher_update_sub">загрузить обновления</string>
+    <string name="start_theme_sub">настройте свой телефон</string>
+    <string name="feedback">отчет об ошибках</string>
+    <string name="launcher_update">обновление лаунчера</string>
+    <string name="navigation_bar">панель навигации</string>
+    <string name="about">сведения об устройстве</string>
+    <string name="about_sub">характеристики устройства</string>
+    <string name="settings">Параметры</string>
 </resources>

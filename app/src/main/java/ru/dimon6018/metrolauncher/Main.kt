@@ -5,6 +5,7 @@ import android.app.UiModeManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -21,6 +22,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.Start
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.content.settings.BSODadapter.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 
 class Main : AppCompatActivity() {
@@ -29,7 +32,6 @@ class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
-    private lateinit var coordinatorLayout: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme)
@@ -39,8 +41,6 @@ class Main : AppCompatActivity() {
         //      checkPermissions()
         initViews()
         setupNavigationBar()
-        applyWindowInsets()
-        checkCrashes()
     }
 
     private fun checkPermissions() {
@@ -95,24 +95,48 @@ class Main : AppCompatActivity() {
             // Можете выполнять операции с файлами и медиафайлами
         }
     }
-
+    override fun onStart() {
+        super.onStart()
+        checkCrashes()
+    }
     private fun checkCrashes() {
-        if (Prefs(this).pref.getBoolean("app_crashed", true)) {
-            Prefs(this).editor.putBoolean("app_crashed", false).apply()
-            WPDialog(this).setTopDialog(true)
-                    .setTitle(getString(R.string.bsodDialogTitle))
-                    .setMessage(getString(R.string.bsodDialogMessage))
-                    .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
-                    .setPositiveButton(getString(R.string.bsodDialogSend)) {
-                    }.show()
+        val prefs = Prefs(this)
+        if (prefs.pref.getBoolean("app_crashed", false)) {
+            prefs.editor.putBoolean("app_crashed", false).apply()
+            prefs.editor.putInt("crashCounter", 0).apply()
+            if(prefs.isFeedbackEnabled) {
+                Thread {
+                    val db = BSOD.getData(this)
+                    val pos = (db.getDao().getBsodList().size) - 1
+                    val text = db.getDao().getBSOD(pos).log
+                    runOnUiThread {
+                        WPDialog(this).setTopDialog(true)
+                                .setTitle(getString(R.string.bsodDialogTitle))
+                                .setMessage(getString(R.string.bsodDialogMessage))
+                                .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                                .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                                    sendCrash(text, this)
+                                }.show()
+                    }
+                }.start()
+            }
         }
+    }
+    override fun onLowMemory() {
+        super.onLowMemory()
+        WPDialog(this).setTopDialog(true)
+                .setTitle("Not enough memory")
+                .setMessage("This may degrade the performance of your phone. Try closing unnecessary applications")
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
     }
 
     private fun initViews() {
         viewPager = findViewById(R.id.pager)
         pagerAdapter = NumberAdapter(this)
-        coordinatorLayout = findViewById(R.id.coordinator)
         viewPager.adapter = pagerAdapter
+        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
+        applyWindowInsets(coordinatorLayout)
     }
 
     private fun setupNavigationBar() {
@@ -134,16 +158,6 @@ class Main : AppCompatActivity() {
             }
         }
     }
-
-    private fun applyWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout) { view, insets ->
-            val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            view.setPadding(0, paddingTop, 0, paddingBottom)
-            WindowInsetsCompat.CONSUMED
-        }
-    }
-
     private fun setAppTheme() {
         val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
         val isLightThemeUsed = Prefs(this).isLightThemeUsed
@@ -161,9 +175,6 @@ class Main : AppCompatActivity() {
             Prefs.isAccentChanged = false
             recreate()
         }
-        if (viewPager.currentItem == 1) {
-            AllApps.checkApps()
-        }
     }
 
     @Deprecated("Deprecated in Java")
@@ -174,12 +185,21 @@ class Main : AppCompatActivity() {
             super.onBackPressed()
         }
     }
-
+    companion object {
+         fun applyWindowInsets(target: View) {
+            ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
+                val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+                val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+                view.setPadding(0, paddingTop, 0, paddingBottom)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+    }
     class NumberAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            return if (position == 1) AllApps() else Start()
+            return if (position == 1)  AllApps() else Start()
         }
     }
 }

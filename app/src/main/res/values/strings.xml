@@ -13,4 +13,27 @@
     <string name="bsodDialogTitle">There\'s a problem with your launcher</string>
     <string name="bsodDialogDismiss">Don\'t send</string>
     <string name="bsodDialogSend">Send</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="light">light</string>
+    <string name="dark">dark</string>
+    <string name="automatic_repair">Automatic Repair</string>
+    <string name="not_start_correctly">Your launcher did not start correctly</string>
+    <string name="auto_repair_tip">Press \'Restart\' to restart your launcher, which can sometimes fix the problem. You can also press \'Advanced options\' to try other options to repair your launcher.</string>
+    <string name="restart">Restart</string>
+    <string name="advanced_options">Advanced options</string>
+    <string name="feedback_limit_0">Только последнюю</string>
+    <string name="feedback_limit_1">последние 5</string>
+    <string name="feedback_limit_2">последние 10</string>
+    <string name="feedback_limit_3">как можно больше</string>
+    <string name="start_theme">start+theme</string>
+    <string name="start_theme_sub">customize your phone</string>
+    <string name="feedback">feedback</string>
+    <string name="feedback_sub">help me improve MetroPhoneLaucnher</string>
+    <string name="launcher_update">launcher update</string>
+    <string name="launcher_update_sub">get software updates</string>
+    <string name="navigation_bar">navigation bar</string>
+    <string name="about">about</string>
+    <string name="about_sub">information about your phone</string>
+    <string name="settings">Параметры</string>
 </resources>

@@ -6,14 +6,16 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import ru.dimon6018.metrolauncher.R
@@ -28,7 +31,7 @@ import ru.dimon6018.metrolauncher.content.Start.Companion.pManager
 import ru.dimon6018.metrolauncher.content.Start.Companion.tileList
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppEntity
-import java.lang.ref.WeakReference
+import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
@@ -36,16 +39,16 @@ import kotlin.random.Random
 
 class AllApps : Fragment(R.layout.all_apps_screen) {
     private var mApps: ArrayList<App>? = null
+
     private var recyclerView: RecyclerView? = null
-    private var searchView: SearchView? = null
+    private var search: TextInputLayout? = null
     private var appAdapter: AppAdapter? = null
     private var searchBtn: MaterialCardView? = null
-    private var searchCard: MaterialCardView? = null
+    private var searchBtnBack: MaterialCardView? = null
     private var loadingHolder: LinearLayout? = null
     private var progressBar: WP7ProgressBar? = null
     var contxt: Context? = null
     private var sharedPool = RecycledViewPool()
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
@@ -54,9 +57,10 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
         recyclerView = view.findViewById(R.id.app_list)
-        searchBtn = view.findViewById(R.id.labelChange)
-        searchCard = view.findViewById(R.id.search_card)
-        searchView = view.findViewById(R.id.searchView)
+        setRecyclerPadding(96)
+        searchBtn = view.findViewById(R.id.searchButton)
+        searchBtnBack = view.findViewById(R.id.searchBackBtn)
+        search = view.findViewById(R.id.search)
         loadingHolder = view.findViewById(R.id.loadingHolder)
         searchBtn!!.setOnClickListener { searchFunction() }
         progressBar!!.showProgressBar()
@@ -67,7 +71,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         super.onViewCreated(view, savedInstanceState)
         Thread {
             mApps = ArrayList()
-            appAdapter = AppAdapter(contxt, mApps!!)
+            appAdapter = AppAdapter(mApps!!)
             appsList = getAppList()
             getHeaderListLatter(appsList)
             requireActivity().runOnUiThread {
@@ -76,33 +80,44 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 hideLoadingHolder()
             }
         }.start()
+        searchBtnBack!!.setOnClickListener {
+            searchBtn!!.visibility = View.VISIBLE
+            search!!.visibility = View.GONE
+            searchBtnBack!!.visibility = View.GONE
+            setRecyclerPadding(96)
+            getHeaderListLatter(appsList)
+            appAdapter!!.restoreAppList()
+        }
     }
     private fun hideLoadingHolder() {
         progressBar!!.hideProgressBar()
         loadingHolder!!.visibility = View.GONE
         recyclerView!!.visibility = View.VISIBLE
     }
+    private fun setRecyclerPadding(pad: Int) {
+        recyclerView!!.setPadding(pad, 0, 0 ,0)
+    }
     private fun searchFunction() {
-        removeHeaders()
         searchBtn!!.visibility = View.GONE
-        searchCard!!.visibility = View.VISIBLE
-        searchView!!.setOnCloseListener {
-            searchView!!.clearFocus()
-            searchCard!!.visibility = View.GONE
-            searchBtn!!.visibility = View.VISIBLE
-            appAdapter!!.restoreAppList()
-            false
-        }
-        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                return false
-            }
+        search!!.visibility = View.VISIBLE
+        search!!.isFocusable = true
+        searchBtnBack!!.visibility = View.VISIBLE
+        setRecyclerPadding(0)
+        Thread {
+            removeHeaders()
+            (search!!.editText as? AutoCompleteTextView)?.addTextChangedListener(object : TextWatcher {
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    filterText(s.toString())
+                }
 
-            override fun onQueryTextChange(newText: String): Boolean {
-                filterText(newText)
-                return false
-            }
-        })
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int,
+                                               after: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable) {
+                }
+            })
+        }.start()
     }
     private fun filterText(text: String) {
         val filteredlist: ArrayList<App> = ArrayList()
@@ -128,49 +143,42 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
         }
         var lastHeader: String? = ""
-            for (app in newApps!!) {
-                val header = app.appLabel!![0].toString().uppercase(Locale.getDefault())
-                if (!TextUtils.equals(lastHeader, header)) {
-                    lastHeader = header
-                    val head = App()
-                    head.appLabel = header
-                    head.isSection = true
-                    mApps!!.add(head)
-                }
-                mApps!!.add(app)
+        for (app in newApps!!) {
+            val header = app.appLabel!![0].toString().uppercase(Locale.getDefault())
+            if (!TextUtils.equals(lastHeader, header)) {
+                lastHeader = header
+                val head = App()
+                head.appLabel = header
+                head.isSection = true
+                mApps!!.add(head)
             }
+            mApps!!.add(app)
         }
+    }
     private fun removeHeaders() {
-            var temp = mApps!!.size
-            while (temp != 0) {
-                temp -= 1
-                val item = mApps!![temp]
-                if (item.isSection) {
-                    mApps!!.remove(item)
-                }
+        var temp = mApps!!.size
+        while (temp != 0) {
+            temp -= 1
+            val item = mApps!![temp]
+            if (item.isSection) {
+                mApps!!.remove(item)
             }
-            appAdapter!!.notifyDataSetChanged()
         }
+        appAdapter?.notifyDataSetChanged()
+    }
 
     override fun onResume() {
-        appAdapter!!.notifyDataSetChanged()
+        appAdapter?.notifyDataSetChanged()
         super.onResume()
     }
-    inner class AppAdapter internal constructor(context: Context?, private var appsList: List<App>) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
-        private val appsListReserved: List<App> = appsList
-        private var mContextWeakReference: WeakReference<Context?>
-        init {
-            mContextWeakReference = WeakReference(context)
-        }
-
+    inner class AppAdapter internal constructor(private var appsList: List<App>) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
         fun setNewFilteredList(appListFiltered: List<App>) {
             appsList = appListFiltered
             notifyDataSetChanged()
         }
 
         fun restoreAppList() {
-            appsList = appsListReserved
-            getHeaderListLatter(appsList)
+            appsList = Companion.appsList!!
             notifyDataSetChanged()
         }
 
@@ -193,15 +201,19 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             val holder1 = holder as AppHolder
             val app: App = appsList[position]
             try {
-               val bmp = pManager!!.getApplicationIcon(app.appPackage!!).toBitmap(72, 72)
+                val bmp = pManager!!.getApplicationIcon(app.appPackage!!).toBitmap(72, 72)
                 holder.icon.setImageBitmap(bmp)
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_os_android, null))
             }
             holder1.label.text = app.appLabel
             holder1.itemView.setOnClickListener {
-                val intent = contxt!!.packageManager.getLaunchIntentForPackage(app.appPackage!!)
-                intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                val intent: Intent = if(app.appPackage == activity?.packageName) {
+                    Intent(activity, SettingsActivity::class.java)
+                } else {
+                    contxt!!.packageManager.getLaunchIntentForPackage(app.appPackage!!)!!
+                }
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
             holder1.itemView.setOnLongClickListener {
@@ -273,12 +285,6 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         const val SECTION_VIEW = 0
         const val CONTENT_VIEW = 1
         var appsList: ArrayList<App>? = null
-        fun checkApps() {
-            if (appsList != getAppList()) {
-                appsList = null
-                appsList = getAppList()
-            }
-        }
         private fun getAppList(): ArrayList<App> {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null)

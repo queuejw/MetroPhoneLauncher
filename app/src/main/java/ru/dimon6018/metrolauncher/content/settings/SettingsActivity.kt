@@ -13,28 +13,27 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.card.MaterialCardView
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 class SettingsActivity : AppCompatActivity() {
 
-    private var coord: CoordinatorLayout? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         setAppTheme()
         setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        coord = findViewById(R.id.coordinator)
+        val coord: CoordinatorLayout = findViewById(R.id.coordinator)
         val themebtn = findViewById<MaterialCardView>(R.id.themeSetting)
         themebtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
         val aboutbtn = findViewById<MaterialCardView>(R.id.aboutSetting)
         aboutbtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java)) }
-        ViewCompat.setOnApplyWindowInsetsListener(coord!!) { v: View, insets: WindowInsetsCompat ->
-            val pB = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            val tB = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, tB, 0, pB)
-            WindowInsetsCompat.CONSUMED
-        }
+        val feedbackBtn = findViewById<MaterialCardView>(R.id.feedbackSetting)
+        feedbackBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java)) }
+        val updateBtn = findViewById<MaterialCardView>(R.id.updatesSetting)
+        updateBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java)) }
+        Main.applyWindowInsets(coord)
     }
 
     private fun setAppTheme() {

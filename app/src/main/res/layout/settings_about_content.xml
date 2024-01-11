@@ -9,7 +9,6 @@
             android:layout_width="match_parent"
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
-
         <TextView
                 android:text="phone information"
                 android:layout_width="match_parent"

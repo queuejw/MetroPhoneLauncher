@@ -48,11 +48,33 @@
                 android:icon="@drawable/ic_settings">
         </activity>
         <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackSettingsActivity"
+            android:exported="true"
+            android:label="start+theme"
+            android:icon="@drawable/ic_settings">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackBsodListActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.UpdateActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.NavBarSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.Reset"
             android:exported="true">
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.helpers.bsod.BsodScreen"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.helpers.bsod.Recovery"
             android:exported="true">
         </activity>
         <activity

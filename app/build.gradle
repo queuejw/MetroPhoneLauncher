@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 1
-        versionName "1.0 Developer Preview 2"
+        versionName "1.0 Developer Preview 3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -40,14 +40,14 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
     implementation 'androidx.annotation:annotation:1.7.1'
-    implementation 'com.google.android.material:material:1.12.0-alpha02'
+    implementation 'com.google.android.material:material:1.12.0-alpha03'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.0-alpha02'
     implementation 'androidx.fragment:fragment-ktx:1.7.0-alpha07'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
     ksp "androidx.room:room-compiler:2.6.1"
 
     implementation project(path: ':SpannedGridLayoutManager')

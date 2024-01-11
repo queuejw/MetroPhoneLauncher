@@ -8,39 +8,35 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.button.MaterialButton
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.BRAND
+import ru.dimon6018.metrolauncher.Application.Companion.BUILD
+import ru.dimon6018.metrolauncher.Application.Companion.DEVICE
+import ru.dimon6018.metrolauncher.Application.Companion.HARDWARE
+import ru.dimon6018.metrolauncher.Application.Companion.MODEL
+import ru.dimon6018.metrolauncher.Application.Companion.PRODUCT
+import ru.dimon6018.metrolauncher.Application.Companion.TIME
+import ru.dimon6018.metrolauncher.Application.Companion.VERSION_CODE
+import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.BuildConfig
+import ru.dimon6018.metrolauncher.Main.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 
 class AboutSettingsActivity : AppCompatActivity() {
-
-    private var coord: CoordinatorLayout? = null
-
-    private var n = BuildConfig.VERSION_NAME
-    private var c = BuildConfig.VERSION_CODE
-    private var model = Build.MODEL
-    private var brand = Build.BRAND
-    private var device = Build.DEVICE
-    private var product = Build.PRODUCT
-    private var hardware = Build.HARDWARE
-    private var display = Build.DISPLAY
-    private var time = Build.TIME
-
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_about)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val moreinfo = findViewById<TextView>(R.id.phoneinfo_more)
-        coord = findViewById(R.id.coordinator)
+        val coord: CoordinatorLayout = findViewById(R.id.coordinator)
         val moreinfobtn = findViewById<MaterialButton>(R.id.moreInfobtn)
         val moreinfolayout = findViewById<LinearLayout>(R.id.moreinfoLayout)
-        moreinfo.text = getString(R.string.phone_moreinfo, n, c, device, brand, model, product, hardware, display, time)
+        moreinfo.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
         moreinfobtn.setOnClickListener {
             moreinfobtn.visibility = View.GONE
             moreinfolayout.visibility = View.VISIBLE
@@ -53,18 +49,14 @@ class AboutSettingsActivity : AppCompatActivity() {
                     .setNegativeButton(getString(android.R.string.yes)) { resetPart1() }
                     .setPositiveButton(getString(android.R.string.no), null).show()
         }
-        ViewCompat.setOnApplyWindowInsetsListener(coord!!) { v: View, insets: WindowInsetsCompat ->
-            val pB = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            val tB = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, tB, 0, pB)
-            WindowInsetsCompat.CONSUMED
-        }
+        applyWindowInsets(coord)
     }
     private fun resetPart1() {
         val intent = (Intent(this@AboutSettingsActivity, Reset::class.java))
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         startActivity(intent)
     }
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         super.onBackPressed()
         finish()

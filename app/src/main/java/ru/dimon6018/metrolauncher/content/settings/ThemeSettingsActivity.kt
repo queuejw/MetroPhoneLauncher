@@ -31,6 +31,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import java.io.File
@@ -49,7 +50,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private var removeBackgrd: TextView? = null
     private var context: Context? = null
     private var prefs: Prefs? = null
-    private var coord: CoordinatorLayout? = null
 
     private var pickMedia = registerForActivityResult<PickVisualMediaRequest, Uri>(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
         if (uri != null) {
@@ -71,7 +71,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        coord = findViewById(R.id.coordinator)
+        val coord: CoordinatorLayout = findViewById(R.id.coordinator)
         context = this
         prefs = Prefs(context!!)
         backgroundImg = findViewById(R.id.Startbackground)
@@ -86,9 +86,9 @@ class ThemeSettingsActivity : AppCompatActivity() {
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         chooseAccentBtn!!.text = Application.accentName
         val themeButtonLabel: String = if (prefs!!.isLightThemeUsed) {
-            "light"
+            getString(R.string.light)
         } else {
-            "dark"
+            getString(R.string.dark)
         }
         chooseThemeBtn!!.text = themeButtonLabel
         chooseThemeBtn!!.setOnClickListener {
@@ -117,10 +117,10 @@ class ThemeSettingsActivity : AppCompatActivity() {
             removeBackgrd!!.visibility = View.GONE
         }
         moreTilesSwitch.setChecked(prefs!!.isMoreTilesEnabled)
-        moreTilesSwitch.text = if(prefs!!.isMoreTilesEnabled) "On" else "Off"
+        moreTilesSwitch.text = if(prefs!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
         moreTilesSwitch.setOnCheckedChangeListener { _, isChecked ->
             prefs!!.setMoreTilesPref(isChecked)
-            moreTilesSwitch.text = if(isChecked) "On" else "Off"
+            moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             moreTilesSwitch.setChecked(isChecked)
         }
         try {
@@ -137,12 +137,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         } catch (ex: Exception) {
             Log.e("ThemeSettings", "Exception. See: $ex")
         }
-        ViewCompat.setOnApplyWindowInsetsListener(coord!!) { v: View, insets: WindowInsetsCompat ->
-            val pB = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-            val tB = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, tB, 0, pB)
-            WindowInsetsCompat.CONSUMED
-        }
+       Main.applyWindowInsets(coord)
     }
 
     private fun restoreThemeButtonsAndApplyChanges() {

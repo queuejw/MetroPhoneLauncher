@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/bsod"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/bsod"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/automatic_repair"
+        android:layout_gravity="top"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:textColor="@android:color/white"
+        android:textSize="28sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/bsod"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/not_start_correctly"
+        android:layout_gravity="top"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:textColor="@android:color/white"
+        android:textSize="19sp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/bsod"
+        android:fontFamily="@font/opensans_regular"
+        android:layout_marginTop="1dp"
+        android:text="@string/auto_repair_tip"
+        android:layout_gravity="top"
+        android:layout_marginStart="24dp"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/restartRecovery"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/opensans_regular"
+        android:gravity="start"
+        android:text="@string/restart"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:strokeColor="@android:color/white"
+        app:strokeWidth="3dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/advancedRecovery"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/opensans_regular"
+        android:gravity="start"
+        android:text="@string/advanced_options"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="0dp"
+        app:strokeColor="@android:color/white"
+        app:strokeWidth="3dp" />
+</LinearLayout>
