@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "MetroLauncher"
 include ':app'
 include ':SpannedGridLayoutManager'
+include ':AdvancedRecyclerView'

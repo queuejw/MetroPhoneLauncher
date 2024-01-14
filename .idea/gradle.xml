@@ -9,6 +9,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AdvancedRecyclerView" />
             <option value="$PROJECT_DIR$/SpannedGridLayoutManager" />
             <option value="$PROJECT_DIR$/app" />
           </set>

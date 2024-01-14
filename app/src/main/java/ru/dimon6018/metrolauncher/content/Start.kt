@@ -106,7 +106,7 @@ class Start : Fragment(), OnStartDragListener {
             }
             mSpannedLayoutManager!!.itemOrderIsStable = true
             adapter = StartAdapter(tileList!!)
-            val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter)
+            val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
             setLM()
             requireActivity().runOnUiThread {
                 mRecyclerView!!.layoutManager = mSpannedLayoutManager
@@ -174,8 +174,10 @@ class Start : Fragment(), OnStartDragListener {
         }
         super.onDestroyView()
     }
-    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-        mItemTouchHelper!!.startDrag(viewHolder)
+    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
+        if (viewHolder != null) {
+            mItemTouchHelper!!.startDrag(viewHolder)
+        }
     }
     companion object {
         var db: AppData? = null
@@ -341,27 +343,27 @@ class Start : Fragment(), OnStartDragListener {
                     false
                 }
             }
-             try {
-                 val bmp: Bitmap = if(item.appSize == "small") {
-                     if (prefs!!.isMoreTilesEnabled) {
-                         pManager!!.getApplicationIcon(item.appPackage).toBitmap(64, 64)
-                     } else {
-                         pManager!!.getApplicationIcon(item.appPackage).toBitmap(82, 82)
-                     }
-                 } else {
-                     pManager!!.getApplicationIcon(item.appPackage).toBitmap(150, 150)
-                 }
-                 if (item.appSize == "big") {
-                     pManager!!.getApplicationIcon(item.appPackage).toBitmap(180, 180)
-                 }
-                 holder.mAppIcon.setImageBitmap(bmp)
+            try {
+                val bmp: Bitmap = if(item.appSize == "small") {
+                    if (prefs!!.isMoreTilesEnabled) {
+                        pManager!!.getApplicationIcon(item.appPackage).toBitmap(64, 64)
+                    } else {
+                        pManager!!.getApplicationIcon(item.appPackage).toBitmap(82, 82)
+                    }
+                } else {
+                    pManager!!.getApplicationIcon(item.appPackage).toBitmap(150, 150)
+                }
+                if (item.appSize == "big") {
+                    pManager!!.getApplicationIcon(item.appPackage).toBitmap(180, 180)
+                }
+                holder.mAppIcon.setImageBitmap(bmp)
             } catch (e: PackageManager.NameNotFoundException) {
-                 Thread {
-                     dbCall!!.removeApp(item)
-                 }.start()
+                Thread {
+                    dbCall!!.removeApp(item)
+                }.start()
             }
             if(item.tileColor != -1) {
-                 holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!))
+                holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!))
             } else {
                 holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs)
             }

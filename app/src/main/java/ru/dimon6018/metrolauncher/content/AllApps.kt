@@ -27,7 +27,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.Start.Companion.pManager
 import ru.dimon6018.metrolauncher.content.Start.Companion.tileList
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppEntity
@@ -72,7 +71,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         Thread {
             mApps = ArrayList()
             appAdapter = AppAdapter(mApps!!)
-            appsList = getAppList()
+            appsList = getAppList(contxt!!)
             getHeaderListLatter(appsList)
             requireActivity().runOnUiThread {
                 recyclerView!!.setLayoutManager(LinearLayoutManager(contxt))
@@ -201,7 +200,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             val holder1 = holder as AppHolder
             val app: App = appsList[position]
             try {
-                val bmp = pManager!!.getApplicationIcon(app.appPackage!!).toBitmap(72, 72)
+                val bmp = contxt!!.packageManager!!.getApplicationIcon(app.appPackage!!).toBitmap(72, 72)
                 holder.icon.setImageBitmap(bmp)
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_os_android, null))
@@ -285,11 +284,12 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         const val SECTION_VIEW = 0
         const val CONTENT_VIEW = 1
         var appsList: ArrayList<App>? = null
-        private fun getAppList(): ArrayList<App> {
+        private fun getAppList(context: Context): ArrayList<App> {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null)
             i.addCategory(Intent.CATEGORY_LAUNCHER)
-            val allApps = pManager!!.queryIntentActivities(i, 0)
+            val pManager = context.packageManager
+            val allApps = pManager.queryIntentActivities(i, 0)
             for (ri in allApps) {
                 val app = App()
                 app.appLabel = ri.loadLabel(pManager) as String

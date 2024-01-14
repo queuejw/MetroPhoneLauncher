@@ -36,4 +36,24 @@
     <string name="about">about</string>
     <string name="about_sub">information about your phone</string>
     <string name="settings">Параметры</string>
+    <string name="preparing_to_install">Preparing to install %d</string>
+    <string name="up_to_date">Your phone is up to date.</string>
+    <string name="checking_for_updates">Checking for updates …</string>
+    <string name="update_notification">Updating MPL …</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ready_to_install">The update is ready to install</string>
+    <string name="ready_to_download">The update is ready for download</string>
+    <string name="update_failed">Something went wrong</string>
+    <string name="install">install</string>
+    <string name="check_for_updates">check for updates</string>
+    <string name="retry">retry</string>
+    <string name="update_status">Update status</string>
+    <string name="download">download</string>
+    <string name="hide">Hide</string>
+    <string name="cancel_update"><u>Cancel update</u></string>
+    <string name="auto_update">Automatically download updates if my data settings allow it</string>
+    <string name="notify_update">Tell me when updates are available for my phone</string>
+    <string name="update_info"><u>Details</u></string>
+    <string name="notification_channel_name">MPL Updates</string>
 </resources>

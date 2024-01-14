@@ -1,7 +1,6 @@
 package ru.dimon6018.metrolauncher.content.settings
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
@@ -20,7 +19,6 @@ import ru.dimon6018.metrolauncher.Application.Companion.PRODUCT
 import ru.dimon6018.metrolauncher.Application.Companion.TIME
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
-import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.Main.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.WPDialog
@@ -46,8 +44,8 @@ class AboutSettingsActivity : AppCompatActivity() {
             WPDialog(this).setTopDialog(true)
                     .setTitle(getString(R.string.reset_warning_title))
                     .setMessage(getString(R.string.reset_warning))
-                    .setNegativeButton(getString(android.R.string.yes)) { resetPart1() }
-                    .setPositiveButton(getString(android.R.string.no), null).show()
+                    .setNegativeButton(getString(R.string.yes)) { resetPart1() }
+                    .setPositiveButton(getString(R.string.no), null).show()
         }
         applyWindowInsets(coord)
     }

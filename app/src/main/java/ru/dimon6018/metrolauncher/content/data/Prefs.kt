@@ -51,16 +51,36 @@ class Prefs(context: Context) {
     }
     val isFeedbackEnabled: Boolean
         get() = prefs.getBoolean(FEEDBACK, true)
-    fun setUpdateCheck(bool: Boolean) {
-        prefs.edit().putBoolean(UPDATE_CHECK, bool).apply()
+    fun setUpdateState(int: Int) {
+        // 0 - nothing
+        // 1 - checking
+        // 2 - downloading
+        // 3 - up-to-date
+        // 4 - ready to install
+        // 5 - failed
+        // 6 - ready to download
+        prefs.edit().putInt(UPDATE_STATE, int).apply()
     }
-    val isUpdateCheck: Boolean
-        get() = prefs.getBoolean(UPDATE_CHECK, false)
+    val updateState: Int
+        get() = prefs.getInt(UPDATE_STATE, 0)
+
+    fun setUpdateProgressLevel(int: Int) {
+        prefs.edit().putInt(UPDATE_LEVEL, int).apply()
+    }
+    val updateProgressLevel: Int
+        get() = prefs.getInt(UPDATE_LEVEL, 0)
+
     fun setAutoUpdate(bool: Boolean) {
         prefs.edit().putBoolean(AUTO_UPDATE, bool).apply()
     }
     val isAutoUpdateEnabled: Boolean
         get() = prefs.getBoolean(AUTO_UPDATE, false)
+    fun setUpdateNotification(bool: Boolean) {
+        prefs.edit().putBoolean(UPDATE_NOTIFICATION, bool).apply()
+    }
+    val isUpdateNotificationEnabled: Boolean
+        get() = prefs.getBoolean(UPDATE_NOTIFICATION, false)
+
     var accentColor: Int
         get() = prefs.getInt(ACCENT_COLOR, 5)
         set(color) {
@@ -104,8 +124,10 @@ class Prefs(context: Context) {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
         const val MAX_CRASH_LOGS = "crashLogs"
-        const val UPDATE_CHECK = "updateCheck"
+        const val UPDATE_STATE = "updateState"
+        const val UPDATE_LEVEL = "updateLevel"
         const val AUTO_UPDATE = "autoUpdate"
+        const val UPDATE_NOTIFICATION = "autoUpdate"
         const val FEEDBACK = "feedback"
         const val LAUNCHER_LIGHT_THEME = "useLightTheme"
         const val LAUNCHER_CUSTOM_BACKGRD = "useCustomBackground"

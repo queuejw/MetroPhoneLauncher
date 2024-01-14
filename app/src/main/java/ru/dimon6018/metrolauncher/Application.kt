@@ -30,6 +30,9 @@ class Application : Application() {
         val DEVICE: String = Build.DEVICE
         val HARDWARE: String = Build.HARDWARE
         val TIME: Long = Build.TIME
+        val TAG: String = ""
+
+        var isUpdateDownloading = false
         private var accentColors = intArrayOf(
                 R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
                 R.color.tile_teal, R.color.tile_cobalt, R.color.tile_indigo, R.color.tile_violet,

@@ -1,15 +1,11 @@
 package ru.dimon6018.metrolauncher.helpers.bsod
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.ANDROID_VERSION
 import ru.dimon6018.metrolauncher.Application.Companion.MODEL
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
@@ -18,6 +14,7 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
+import ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery
 import java.util.Calendar
 import java.util.Date
 import kotlin.system.exitProcess
@@ -32,8 +29,8 @@ class BsodScreen : AppCompatActivity() {
         counter += 1
         prefs.editor.putBoolean("app_crashed", true).apply()
         prefs.editor.putInt("crashCounter", counter).apply()
-        db = BSOD.getData(this)
         Thread {
+            db = BSOD.getData(this)
             val model = "Model: $MODEL\n"
             val name = "MPL Ver: $VERSION_NAME\n"
             val android = "Android Version: $ANDROID_VERSION\n"
@@ -79,22 +76,21 @@ class BsodScreen : AppCompatActivity() {
             entity.pos = pos
             db!!.getDao().insertLog(entity)
         }.start()
+        setTheme(R.style.bsod)
+        super.onCreate(savedInstanceState)
         if (counter >= 3) {
             val intent = Intent(this, Recovery::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("stacktrace", intent.extras?.getString("stacktrace"))
-            startActivity(intent)
-        } else {
-            setTheme(R.style.bsod)
-            super.onCreate(savedInstanceState)
-            setContentView(R.layout.bsod)
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            val layout: ConstraintLayout = findViewById(R.id.bsodLayout)
-            Main.applyWindowInsets(layout)
+            this.startActivity(intent)
         }
-    }
+        setContentView(R.layout.bsod)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val layout: ConstraintLayout = findViewById(R.id.bsodLayout)
+        Main.applyWindowInsets(layout)
 
+    }
     override fun onStart() {
         super.onStart()
         object : Thread() {

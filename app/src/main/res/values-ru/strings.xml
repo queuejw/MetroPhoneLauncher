@@ -37,4 +37,24 @@
     <string name="about">сведения об устройстве</string>
     <string name="about_sub">характеристики устройства</string>
     <string name="settings">Параметры</string>
+    <string name="preparing_to_install">Подготовка к установке %d</string>
+    <string name="up_to_date">Your phone is up to date.</string>
+    <string name="checking_for_updates">Проверка наличия обновлений …</string>
+    <string name="update_notification">Updating MPL …</string>
+    <string name="ready_to_install">Обновление готово к установке</string>
+    <string name="ready_to_download">Обновление готово к скачиванию</string>
+    <string name="update_failed">Что-то пошло не так</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="install">установить</string>
+    <string name="check_for_updates">проверить обновления</string>
+    <string name="retry">повторить</string>
+    <string name="update_status">Состояние обновления</string>
+    <string name="download">скачать</string>
+    <string name="hide">Скрыть</string>
+    <string name="cancel_update"><u>Отменить обновление</u></string>
+    <string name="auto_update">Автоматическая загрузка обновлений, если это позволяют настройки данных.</string>
+    <string name="notify_update">Сообщить, когда будут доступны обновления для моего телефона</string>
+    <string name="update_info"><u>Подробности</u></string>
+    <string name="notification_channel_name">MPL Updates</string>
 </resources>

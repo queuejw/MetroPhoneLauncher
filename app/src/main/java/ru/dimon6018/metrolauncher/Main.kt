@@ -5,8 +5,10 @@ import android.app.UiModeManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -25,6 +27,7 @@ import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.BSODadapter.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker.Companion.setupNotificationChannels
 
 class Main : AppCompatActivity() {
 
@@ -33,10 +36,18 @@ class Main : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
 
+    private val handler: Handler = Handler(Looper.getMainLooper())
+    private val runnable: Runnable = Runnable {
+        Log.i("runnable", "clear bsod")
+        checkCrashes()
+    }
+    private var prefs: Prefs? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme)
         setAppTheme()
         super.onCreate(savedInstanceState)
+        prefs = Prefs(this)
         setContentView(R.layout.main_screen_laucnher)
         //      checkPermissions()
         initViews()
@@ -79,32 +90,19 @@ class Main : AppCompatActivity() {
             for (result in grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
                     // Если хотя бы одно разрешение не было предоставлено
-                    Toast.makeText(
-                            this,
-                            "Необходимо предоставить все разрешения для работы приложения",
-                            Toast.LENGTH_SHORT
-                    ).show()
-
-                    // Закрываем приложение
                     finish()
                     return
                 }
             }
-
             // Все разрешения предоставлены
             // Можете выполнять операции с файлами и медиафайлами
         }
     }
-    override fun onStart() {
-        super.onStart()
-        checkCrashes()
-    }
     private fun checkCrashes() {
-        val prefs = Prefs(this)
-        if (prefs.pref.getBoolean("app_crashed", false)) {
-            prefs.editor.putBoolean("app_crashed", false).apply()
-            prefs.editor.putInt("crashCounter", 0).apply()
-            if(prefs.isFeedbackEnabled) {
+        if (prefs!!.pref.getBoolean("app_crashed", false)) {
+            prefs!!.editor.putBoolean("app_crashed", false).apply()
+            prefs!!.editor.putInt("crashCounter", 0).apply()
+            if(prefs!!.isFeedbackEnabled) {
                 Thread {
                     val db = BSOD.getData(this)
                     val pos = (db.getDao().getBsodList().size) - 1
@@ -169,12 +167,21 @@ class Main : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        //move this to oobe in future
+        if(!prefs!!.pref.getBoolean("channelConfigured", false)) {
+            setupNotificationChannels(this)
+            prefs!!.editor.putBoolean("channelConfigured", true).apply()
+        }
+    }
     override fun onResume() {
         super.onResume()
         if (Prefs.isAccentChanged) {
             Prefs.isAccentChanged = false
             recreate()
         }
+        handler.postDelayed(runnable, 5000)
     }
 
     @Deprecated("Deprecated in Java")

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:alpha="0.7"
         android:fontFamily="@font/opensans_regular"
-        android:text="Update status"
+        android:text="@string/update_status"
         android:textSize="19sp" />
 
     <TextView
@@ -20,17 +20,52 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:fontFamily="@font/opensans_regular"
-        android:text="Checking for updates ..."
+        android:text="@string/checking_for_updates"
         android:textSize="19sp" />
 
+    <LinearLayout
+        android:id="@+id/updateIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:progressTint="?attr/colorPrimary" />
+
+        <TextView
+            android:id="@+id/progessText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_regular"
+            android:text="@string/preparing_to_install" />
+
+        <TextView
+            android:id="@+id/cancel_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/opensans_regular"
+            android:text="@string/cancel_update" />
+    </LinearLayout>
+    <TextView
+        android:id="@+id/updateInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/update_info" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/checkForUpdatesBtn"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="64dp"
         android:fontFamily="@font/opensans_regular"
-        android:text="check for updates"
+        android:text="@string/check_for_updates"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         app:cornerRadius="0dp"
@@ -38,11 +73,19 @@
         app:strokeWidth="2dp" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/AutoUpdateCheckBox"
+        android:id="@+id/UpdateNotifyCheckBox"
         android:layout_width="match_parent"
         android:layout_marginTop="64dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/opensans_regular"
-        android:text="Automatically download updates if my data settings allow it"
+        android:text="@string/notify_update"
+        android:textSize="18sp" />
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/AutoUpdateCheckBox"
+        android:layout_width="match_parent"
+        android:layout_marginTop="16dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/auto_update"
         android:textSize="18sp" />
 </LinearLayout>

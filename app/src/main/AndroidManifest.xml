@@ -4,8 +4,13 @@
 
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name="ru.dimon6018.metrolauncher.Application"
@@ -74,7 +79,11 @@
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.helpers.bsod.Recovery"
+            android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.RecoveryOptions"
             android:exported="true">
         </activity>
         <activity
@@ -87,5 +96,14 @@
                 android:label="about"
                 android:icon="@drawable/ic_settings">
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 </manifest>

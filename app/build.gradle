@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 1
-        versionName "1.0 Developer Preview 3"
+        versionCode 2
+        versionName "1.0 Developer Preview 4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -48,9 +48,11 @@ dependencies {
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
+    implementation "androidx.work:work-runtime-ktx:2.9.0"
     ksp "androidx.room:room-compiler:2.6.1"
 
     implementation project(path: ':SpannedGridLayoutManager')
+    implementation project(path: ':AdvancedRecyclerView')
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
