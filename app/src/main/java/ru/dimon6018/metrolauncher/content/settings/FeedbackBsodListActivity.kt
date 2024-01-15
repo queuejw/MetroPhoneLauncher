@@ -22,6 +22,8 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 
 class FeedbackBsodListActivity: AppCompatActivity() {
 
+    private var db: BSOD? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme)
         super.onCreate(savedInstanceState)
@@ -38,9 +40,6 @@ class FeedbackBsodListActivity: AppCompatActivity() {
                 recyclerView.adapter = adapter
             }
         }.start()
-    }
-    companion object {
-        var db: BSOD? = null
     }
 }
 class BSODadapter(private var data: List<BSODEntity>, private val activity: Activity, private val db: BSOD) :
@@ -61,7 +60,7 @@ class BSODadapter(private var data: List<BSODEntity>, private val activity: Acti
     }
     private fun updateList() {
         Thread {
-            val newList = FeedbackBsodListActivity.db!!.getDao().getBsodList()
+            val newList = db.getDao().getBsodList()
             activity.runOnUiThread {
                 data = newList
                 notifyDataSetChanged()
@@ -71,7 +70,6 @@ class BSODadapter(private var data: List<BSODEntity>, private val activity: Acti
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
                 .inflate(R.layout.bsod_item, viewGroup, false)
-
         return ViewHolder(view)
     }
 

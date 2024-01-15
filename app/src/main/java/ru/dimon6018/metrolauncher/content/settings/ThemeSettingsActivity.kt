@@ -82,6 +82,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
+        val fastIconsSwitch: MaterialSwitch = findViewById(R.id.fastIcons)
         chooseAccentBtn!!.text = Application.accentName
         val themeButtonLabel: String = if (prefs!!.isLightThemeUsed) {
             getString(R.string.light)
@@ -113,6 +114,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
             backgroundImg!!.setBackgroundColor(getColor(android.R.color.darker_gray))
             backgroundImg!!.setVisibility(View.GONE)
             removeBackgrd!!.visibility = View.GONE
+        }
+        fastIconsSwitch.setChecked(prefs!!.isFastIconsEnabled)
+        fastIconsSwitch.text = if(prefs!!.isFastIconsEnabled) getString(R.string.on) else getString(R.string.off)
+        fastIconsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs!!.setFastIcons(isChecked)
+            fastIconsSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+            fastIconsSwitch.setChecked(isChecked)
         }
         moreTilesSwitch.setChecked(prefs!!.isMoreTilesEnabled)
         moreTilesSwitch.text = if(prefs!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)

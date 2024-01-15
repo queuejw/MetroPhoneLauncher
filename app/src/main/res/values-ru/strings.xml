@@ -36,11 +36,11 @@
     <string name="navigation_bar">панель навигации</string>
     <string name="about">сведения об устройстве</string>
     <string name="about_sub">характеристики устройства</string>
-    <string name="settings">Параметры</string>
+    <string name="settings">параметры</string>
     <string name="preparing_to_install">Подготовка к установке %d</string>
     <string name="up_to_date">Your phone is up to date.</string>
     <string name="checking_for_updates">Проверка наличия обновлений …</string>
-    <string name="update_notification">Updating MPL …</string>
+    <string name="update_notification">Обновляем MPL …</string>
     <string name="ready_to_install">Обновление готово к установке</string>
     <string name="ready_to_download">Обновление готово к скачиванию</string>
     <string name="update_failed">Что-то пошло не так</string>
@@ -57,4 +57,14 @@
     <string name="notify_update">Сообщить, когда будут доступны обновления для моего телефона</string>
     <string name="update_info"><u>Подробности</u></string>
     <string name="notification_channel_name">MPL Updates</string>
+    <string name="loading">Загрузка…</string>
+    <string name="fast_render_desc">Если приложение использует много памяти или зависает, попробуйте включить быстрый рендеринг иконок. Это может повлиять на их качество.</string>
+    <string name="fast_icon_rendering">Быстрый рендеринг иконок</string>
+    <string name="show_more_tiles">Показывать больше иконок</string>
+    <string name="more_tiles_desc">Вы можете изменить размер и количество иконок, доступных на рабочем столе</string>
+    <string name="start_background">Фон рабочего стола</string>
+    <string name="choose_photo">выбрать фото</string>
+    <string name="accent_color">Цвет элементов</string>
+    <string name="background">Фон</string>
+    <string name="launcher">лаунчер</string>
 </resources>

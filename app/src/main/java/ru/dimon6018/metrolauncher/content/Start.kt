@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.arasthel.spannedgridlayoutmanager.SpanSize
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
@@ -64,6 +66,9 @@ class Start : Fragment(), OnStartDragListener {
     var contxt: Context? = null
     var prefs: Prefs? = null
 
+    private var db: AppData? = null
+    private var dbCall: AppDao? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         contxt = context
@@ -96,7 +101,6 @@ class Start : Fragment(), OnStartDragListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Thread {
-            pManager = contxt!!.packageManager
             tileList = dbCall!!.getJustApps()
             detectBrokenApps()
             mSpannedLayoutManager = if(!prefs!!.isMoreTilesEnabled) {
@@ -105,7 +109,7 @@ class Start : Fragment(), OnStartDragListener {
                 SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 12, _columnCount = 6, context = contxt!!)
             }
             mSpannedLayoutManager!!.itemOrderIsStable = true
-            adapter = StartAdapter(tileList!!)
+            adapter = StartAdapter(tileList!!, contxt!!, dbCall!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
             setLM()
             requireActivity().runOnUiThread {
@@ -117,18 +121,15 @@ class Start : Fragment(), OnStartDragListener {
                 hideLoadingHolder()
             }
         }.start()
-        dbCall!!.getApps().asLiveData().observe(requireActivity()) {
-            tileList = it
-            if(isAdapterUpdateEnabled == true) adapter?.setNewData(it)
-        }
     }
     private fun detectBrokenApps() {
         var size = tileList!!.size
+        val packageManager = contxt!!.packageManager
         while(size != 0) {
             size -= 1
             val appEntity = tileList!![size]
             try {
-                pManager!!.getPackageInfo(appEntity.appPackage, 0)
+                packageManager.getPackageInfo(appEntity.appPackage, 0)
             } catch (e: PackageManager.NameNotFoundException) {
                 Thread {
                     dbCall!!.removeApp(appEntity)
@@ -161,8 +162,17 @@ class Start : Fragment(), OnStartDragListener {
         mAppListButton!!.visibility = View.VISIBLE
     }
     override fun onResume() {
+        dbCall?.getApps()?.asLiveData()?.observe(requireActivity()) {
+            tileList = it
+            if(isAdapterUpdateEnabled == true) adapter?.setNewData(it)
+        }
         adapter?.setNewData(tileList!!)
         super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        dbCall?.getApps()?.asLiveData()?.removeObservers(requireActivity())
     }
     override fun onDestroyView() {
         adapter = null
@@ -180,14 +190,20 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
     companion object {
-        var db: AppData? = null
-        var dbCall: AppDao? = null
         var tileList: List<AppEntity>? = null
-        var pManager: PackageManager? = null
         var isAdapterUpdateEnabled: Boolean? = null
         var canOpenPrefs: Boolean = true
     }
-    inner class StartAdapter(private var items: List<AppEntity>) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
+    inner class StartAdapter(private var items: List<AppEntity>, private val adapterContext: Context, private val dbAppsCall: AppDao) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
+
+        private var packageManager: PackageManager? = null
+
+        init {
+            Thread {
+                packageManager = adapterContext.packageManager
+            }.start()
+        }
+
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
@@ -209,7 +225,7 @@ class Start : Fragment(), OnStartDragListener {
                     allItemsCount -= 1
                     val item = tileList!![allItemsCount]
                     item.appPos = allItemsCount
-                    dbCall!!.updateApp(item)
+                    dbAppsCall.updateApp(item)
                 }
                 Handler(Looper.getMainLooper()).postDelayed({
                     isAdapterUpdateEnabled = true
@@ -311,7 +327,7 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             if(prefs!!.isCustomBackgroundUsed) {
-                holder.mContainer.background = AppCompatResources.getDrawable(contxt!!, R.drawable.start_transparent)
+                holder.mContainer.background = AppCompatResources.getDrawable(adapterContext, R.drawable.start_transparent)
                 val view: View = holder.mContainer
                 view.getViewTreeObserver().addOnGlobalLayoutListener {
                     val bmp = BitmapFactory.decodeFile(prefs!!.backgroundPath)
@@ -322,7 +338,7 @@ class Start : Fragment(), OnStartDragListener {
             }
             holder.mContainer.setOnClickListener {
                 if(canOpenApp) {
-                    val intent = pManager!!.getLaunchIntentForPackage(item.appPackage)
+                    val intent = packageManager!!.getLaunchIntentForPackage(item.appPackage)
                     intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                 }
@@ -344,22 +360,35 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             try {
-                val bmp: Bitmap = if(item.appSize == "small") {
-                    if (prefs!!.isMoreTilesEnabled) {
-                        pManager!!.getApplicationIcon(item.appPackage).toBitmap(64, 64)
-                    } else {
-                        pManager!!.getApplicationIcon(item.appPackage).toBitmap(82, 82)
+                var bmp: Bitmap
+                var size: Int
+                when(item.appSize) {
+                    "small" -> {
+                        if (prefs!!.isMoreTilesEnabled) {
+                            size = resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
+                            bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
+                        } else {
+                            size = resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
+                            bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
+                        }
                     }
-                } else {
-                    pManager!!.getApplicationIcon(item.appPackage).toBitmap(150, 150)
+                    "medium" -> {
+                        size = resources.getDimensionPixelSize(R.dimen.tile_medium)
+                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
+                    }
+                    "big" -> {
+                        size = resources.getDimensionPixelSize(R.dimen.tile_big)
+                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
+                    }
+                    else -> {
+                        size = resources.getDimensionPixelSize(R.dimen.tile_medium)
+                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
+                    }
                 }
-                if (item.appSize == "big") {
-                    pManager!!.getApplicationIcon(item.appPackage).toBitmap(180, 180)
-                }
-                holder.mAppIcon.setImageBitmap(bmp)
+                Glide.with(adapterContext).load(bmp).placeholder(R.drawable.ic_os_android).override(size, size).into(holder.mAppIcon)
             } catch (e: PackageManager.NameNotFoundException) {
                 Thread {
-                    dbCall!!.removeApp(item)
+                    dbAppsCall.removeApp(item)
                 }.start()
             }
             if(item.tileColor != -1) {
@@ -371,9 +400,9 @@ class Start : Fragment(), OnStartDragListener {
                 when (item.appSize) {
                     "small" -> {
                         Thread {
-                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            val appEntity = dbAppsCall.getAppById(item.id!!)
                             appEntity.appSize = "medium"
-                            dbCall!!.updateApp(appEntity)
+                            dbAppsCall.updateApp(appEntity)
                         }.start()
                         holder.mTextView.post {
                             holder.mTextView.text = ""
@@ -382,18 +411,18 @@ class Start : Fragment(), OnStartDragListener {
                     }
                     "medium" -> {
                         Thread {
-                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            val appEntity = dbAppsCall.getAppById(item.id!!)
                             appEntity.appSize = "big"
-                            dbCall!!.updateApp(appEntity)
+                            dbAppsCall.updateApp(appEntity)
                         }.start()
                         item.appSize = "big"
                     }
 
                     "big" -> {
                         Thread {
-                            val appEntity = dbCall!!.getAppById(item.id!!)
+                            val appEntity = dbAppsCall.getAppById(item.id!!)
                             appEntity.appSize = "small"
-                            dbCall!!.updateApp(appEntity)
+                            dbAppsCall.updateApp(appEntity)
                         }.start()
                         item.appSize = "small"
                     }
@@ -403,7 +432,7 @@ class Start : Fragment(), OnStartDragListener {
             }
             holder.mRemove.setOnClickListener {
                 Thread {
-                    dbCall!!.removeApp(dbCall!!.getAppById(item.id!!))
+                    dbAppsCall.removeApp(dbCall!!.getAppById(item.id!!))
                 }.start()
                 canOpenPrefs = true
                 notifyItemRemoved(position)
@@ -413,7 +442,7 @@ class Start : Fragment(), OnStartDragListener {
                 bottomsheet.setContentView(R.layout.tile_bottomsheet)
                 bottomsheet.dismissWithAnimation = true
                 val bottomSheetInternal = bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-                BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = context!!.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
+                BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = adapterContext.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
                 val label = bottomSheetInternal.findViewById<TextView>(R.id.appLabelSheet)
                 val colorSub = bottomSheetInternal.findViewById<TextView>(R.id.chooseColorSub)
                 val removeColor = bottomSheetInternal.findViewById<TextView>(R.id.chooseColorRemove)
@@ -437,7 +466,7 @@ class Start : Fragment(), OnStartDragListener {
                 labelChangeBtn.setOnClickListener {
                     Thread {
                         val appEntity = AppEntity(item.appPos, item.id, item.tileColor,item.appSize, editor.text.toString(), item.appPackage)
-                        dbCall!!.updateApp(appEntity)
+                        dbAppsCall.updateApp(appEntity)
                         activity!!.runOnUiThread {
                             bottomsheet.dismiss()
                         }
@@ -446,7 +475,7 @@ class Start : Fragment(), OnStartDragListener {
                 removeColor.setOnClickListener {
                     Thread {
                         val appEntity = AppEntity(item.appPos, item.id, -1,item.appSize, item.appLabel, item.appPackage)
-                        dbCall!!.updateApp(appEntity)
+                        dbAppsCall.updateApp(appEntity)
                     }.start()
                     bottomsheet.dismiss()
                 }
@@ -471,16 +500,22 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
     class AccentDialog : DialogFragment() {
+
+        private var dbCallDialog: AppDao? = null
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setStyle(STYLE_NORMAL, R.style.AppTheme_FullScreenDialog)
         }
         override fun onStart() {
             super.onStart()
+            Runnable {
+                dbCallDialog = AppData.getAppData(requireContext()).getAppDao()
+            }.run()
             val dialog = dialog
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog?.setTitle("ACCENT")
+            dialog?.setTitle("TILE")
             dialog?.window!!.setLayout(width, height)
         }
 
@@ -498,7 +533,7 @@ class Start : Fragment(), OnStartDragListener {
             lime.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 0,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -506,7 +541,7 @@ class Start : Fragment(), OnStartDragListener {
             green.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 1,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -514,7 +549,7 @@ class Start : Fragment(), OnStartDragListener {
             emerald.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 2,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -522,7 +557,7 @@ class Start : Fragment(), OnStartDragListener {
             cyan.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 3,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -530,7 +565,7 @@ class Start : Fragment(), OnStartDragListener {
             teal.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 4,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -538,7 +573,7 @@ class Start : Fragment(), OnStartDragListener {
             cobalt.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 5,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -546,7 +581,7 @@ class Start : Fragment(), OnStartDragListener {
             indigo.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 6,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -554,7 +589,7 @@ class Start : Fragment(), OnStartDragListener {
             violet.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 7,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -562,7 +597,7 @@ class Start : Fragment(), OnStartDragListener {
             pink.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 8,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -570,7 +605,7 @@ class Start : Fragment(), OnStartDragListener {
             magenta.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 9,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -578,7 +613,7 @@ class Start : Fragment(), OnStartDragListener {
             crimson.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 10,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -586,7 +621,7 @@ class Start : Fragment(), OnStartDragListener {
             red.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 11,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -594,7 +629,7 @@ class Start : Fragment(), OnStartDragListener {
             orange.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 12,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -602,7 +637,7 @@ class Start : Fragment(), OnStartDragListener {
             amber.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 13,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -610,7 +645,7 @@ class Start : Fragment(), OnStartDragListener {
             yellow.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 14,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -618,7 +653,7 @@ class Start : Fragment(), OnStartDragListener {
             brown.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 15,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -626,7 +661,7 @@ class Start : Fragment(), OnStartDragListener {
             olive.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 16,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -634,7 +669,7 @@ class Start : Fragment(), OnStartDragListener {
             steel.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 17,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -642,7 +677,7 @@ class Start : Fragment(), OnStartDragListener {
             mauve.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 18,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }
@@ -650,7 +685,7 @@ class Start : Fragment(), OnStartDragListener {
             taupe.setOnClickListener {
                 Thread {
                     val appEntity = AppEntity(item.appPos, item.id, 19,item.appSize, item.appLabel, item.appPackage)
-                    dbCall!!.updateApp(appEntity)
+                    dbCallDialog!!.updateApp(appEntity)
                 }.start()
                 dismiss()
             }

@@ -3,7 +3,9 @@ package ru.dimon6018.metrolauncher
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
+import androidx.core.os.ConfigurationCompat
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
@@ -30,7 +32,7 @@ class Application : Application() {
         val DEVICE: String = Build.DEVICE
         val HARDWARE: String = Build.HARDWARE
         val TIME: Long = Build.TIME
-        val TAG: String = ""
+        val LOCALE = ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0);
 
         var isUpdateDownloading = false
         private var accentColors = intArrayOf(

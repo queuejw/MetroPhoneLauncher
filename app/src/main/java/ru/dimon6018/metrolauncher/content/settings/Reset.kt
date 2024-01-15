@@ -9,17 +9,24 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import ir.alirezabdn.wp7progress.WP10ProgressBar
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.Start.Companion.db
+import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 class Reset : AppCompatActivity() {
 
     private var frame: FrameLayout? = null
+    private var dbApps: AppData? = null
+    private var dbBsod: BSOD? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reset)
+        Runnable {
+            dbApps = AppData.getAppData(this)
+            dbBsod = BSOD.getData(this)
+        }.run()
         val progressBar: WP10ProgressBar = findViewById(R.id.progressBar)
         progressBar.setIndicatorRadius(5)
         progressBar.showProgressBar()
@@ -34,7 +41,8 @@ class Reset : AppCompatActivity() {
     }
     private fun resetPart2() {
         Thread {
-            db!!.clearAllTables()
+            dbApps!!.clearAllTables()
+            dbBsod!!.clearAllTables()
             Prefs(this).reset()
             runOnUiThread {
                 val oobe = Runnable {

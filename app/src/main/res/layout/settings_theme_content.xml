@@ -31,12 +31,12 @@
                                 android:fontFamily="@font/opensans_regular"/>
                 </LinearLayout>
                 <TextView
-                        android:text="Background"
+                        android:text="@string/background"
                         android:layout_marginTop="24dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/opensans_regular"
-                        android:textSize="19sp" android:rotationX="-360"/>
+                        android:textSize="19sp" />
                 <com.google.android.material.button.MaterialButton
                         style="@style/Widget.Material3.Button.OutlinedButton"
                         android:text="dark"
@@ -90,7 +90,7 @@
                                 android:id="@+id/chooseDark"/>
                 </com.google.android.material.card.MaterialCardView>
                 <TextView
-                        android:text="Accent color"
+                        android:text="@string/accent_color"
                         android:layout_marginTop="42dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -133,7 +133,7 @@
                                 android:animateLayoutChanges="true"
                                 android:layout_height="match_parent">
                                 <TextView
-                                        android:text="Start background"
+                                        android:text="@string/start_background"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:id="@+id/textView"
@@ -142,7 +142,7 @@
                                         android:textSize="18sp"/>
                                 <com.google.android.material.button.MaterialButton
                                         style="@style/Widget.Material3.Button.OutlinedButton"
-                                        android:text="choose photo"
+                                        android:text="@string/choose_photo"
                                         android:fontFamily="@font/opensans_regular"
                                         app:cornerRadius="0dp"
                                         app:strokeColor="?attr/colorOnBackground"
@@ -166,7 +166,7 @@
                         </LinearLayout>
                 </FrameLayout>
                 <TextView
-                        android:text="You can change the size and number of tiles available on your start screen"
+                        android:text="@string/more_tiles_desc"
                         android:layout_width="match_parent"
                         android:fontFamily="@font/opensans_regular"
                         android:layout_height="wrap_content"
@@ -176,7 +176,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"/>
                 <TextView
-                        android:text="Show more tiles"
+                        android:text="@string/show_more_tiles"
                         android:layout_width="match_parent"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="14dp"
@@ -186,6 +186,35 @@
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/moreTilesSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:text="Off"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:text="@string/fast_render_desc"
+                    android:layout_width="match_parent"
+                    android:fontFamily="@font/opensans_regular"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="54dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:text="@string/fast_icon_rendering"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/opensans_regular"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/fastIcons"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

@@ -257,7 +257,7 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun checkUpdateInfo() {
         Thread {
-            if (UpdateDataParser.verCode == Application.VERSION_CODE) {
+            if (UpdateDataParser.verCode!! >= Application.VERSION_CODE) {
                 Log.i("CheckForUpdates", "up-to-date")
                 prefs!!.setUpdateState(3)
                 runOnUiThread {

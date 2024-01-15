@@ -1,8 +1,6 @@
 package ru.dimon6018.metrolauncher
 
-import android.Manifest
 import android.app.UiModeManager
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -12,8 +10,6 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -31,93 +27,53 @@ import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker.Companion.setupNot
 
 class Main : AppCompatActivity() {
 
-    private val permCode = 123
-
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
 
-    private val handler: Handler = Handler(Looper.getMainLooper())
-    private val runnable: Runnable = Runnable {
-        Log.i("runnable", "clear bsod")
-        checkCrashes()
-    }
     private var prefs: Prefs? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme)
         setAppTheme()
         super.onCreate(savedInstanceState)
-        prefs = Prefs(this)
         setContentView(R.layout.main_screen_laucnher)
-        //      checkPermissions()
-        initViews()
+        viewPager = findViewById(R.id.pager)
+        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
+        Thread {
+            prefs = Prefs(this)
+            pagerAdapter = NumberAdapter(this)
+            applyWindowInsets(coordinatorLayout)
+            runOnUiThread {
+                viewPager.adapter = pagerAdapter
+            }
+        }.start()
         setupNavigationBar()
-    }
-
-    private fun checkPermissions() {
-        val permissions = arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        val missingPermissions = ArrayList<String>()
-
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED
-            ) {
-                missingPermissions.add(permission)
-            }
-        }
-        if (missingPermissions.isNotEmpty()) {
-            ActivityCompat.requestPermissions(
-                    this,
-                    missingPermissions.toTypedArray(),
-                    permCode
-            )
-        } else {
-            // Разрешения уже предоставлены
-            // Можете выполнять операции с файлами и медиафайлами
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<out String>,
-            grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == permCode) {
-            for (result in grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    // Если хотя бы одно разрешение не было предоставлено
-                    finish()
-                    return
-                }
-            }
-            // Все разрешения предоставлены
-            // Можете выполнять операции с файлами и медиафайлами
-        }
     }
     private fun checkCrashes() {
         if (prefs!!.pref.getBoolean("app_crashed", false)) {
-            prefs!!.editor.putBoolean("app_crashed", false).apply()
-            prefs!!.editor.putInt("crashCounter", 0).apply()
-            if(prefs!!.isFeedbackEnabled) {
+            val handler = Handler(Looper.getMainLooper())
+            val runnable = Runnable {
                 Thread {
-                    val db = BSOD.getData(this)
-                    val pos = (db.getDao().getBsodList().size) - 1
-                    val text = db.getDao().getBSOD(pos).log
-                    runOnUiThread {
-                        WPDialog(this).setTopDialog(true)
-                                .setTitle(getString(R.string.bsodDialogTitle))
-                                .setMessage(getString(R.string.bsodDialogMessage))
-                                .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
-                                .setPositiveButton(getString(R.string.bsodDialogSend)) {
-                                    sendCrash(text, this)
-                                }.show()
+                Log.i("runnable", "clear bsod")
+                prefs!!.editor.putBoolean("app_crashed", false).apply()
+                prefs!!.editor.putInt("crashCounter", 0).apply()
+                if(prefs!!.isFeedbackEnabled) {
+                        val db = BSOD.getData(this)
+                        val pos = (db.getDao().getBsodList().size) - 1
+                        val text = db.getDao().getBSOD(pos).log
+                        runOnUiThread {
+                            WPDialog(this).setTopDialog(true)
+                                    .setTitle(getString(R.string.bsodDialogTitle))
+                                    .setMessage(getString(R.string.bsodDialogMessage))
+                                    .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                                    .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                                        sendCrash(text, this)
+                                    }.show()
+                        }
                     }
                 }.start()
             }
+            handler.postDelayed(runnable, 5000)
         }
     }
     override fun onLowMemory() {
@@ -128,15 +84,6 @@ class Main : AppCompatActivity() {
                 .setPositiveButton(getString(android.R.string.ok), null)
                 .show()
     }
-
-    private fun initViews() {
-        viewPager = findViewById(R.id.pager)
-        pagerAdapter = NumberAdapter(this)
-        viewPager.adapter = pagerAdapter
-        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        applyWindowInsets(coordinatorLayout)
-    }
-
     private fun setupNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
 
@@ -181,7 +128,7 @@ class Main : AppCompatActivity() {
             Prefs.isAccentChanged = false
             recreate()
         }
-        handler.postDelayed(runnable, 5000)
+        checkCrashes()
     }
 
     @Deprecated("Deprecated in Java")
@@ -191,6 +138,11 @@ class Main : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewPager.adapter = null
     }
     companion object {
          fun applyWindowInsets(target: View) {

@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/opensans_light"
             android:gravity="center"
-            android:text="Loading..."
+            android:text="@string/loading"
             android:textSize="18sp" />
     </LinearLayout>
 </FrameLayout>

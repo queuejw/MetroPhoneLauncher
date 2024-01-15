@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 
 class Prefs(context: Context) {
     private val prefs: SharedPreferences
@@ -81,6 +82,15 @@ class Prefs(context: Context) {
     val isUpdateNotificationEnabled: Boolean
         get() = prefs.getBoolean(UPDATE_NOTIFICATION, false)
 
+    fun setFastIcons(bool: Boolean) {
+        prefs.edit().putBoolean(ICON_CONFIG, bool).apply()
+    }
+    val isFastIconsEnabled: Boolean
+        get() = prefs.getBoolean(ICON_CONFIG, false)
+
+    fun iconBitmapConfig(): Bitmap.Config {
+        return if(isFastIconsEnabled) Bitmap.Config.RGB_565 else Bitmap.Config.ARGB_8888
+    }
     var accentColor: Int
         get() = prefs.getInt(ACCENT_COLOR, 5)
         set(color) {
@@ -109,23 +119,20 @@ class Prefs(context: Context) {
                     .putInt(ACCENT_COLOR, color)
                     .apply()
         }
-
     fun reset() {
         prefs.all.clear()
     }
-
     val editor: SharedPreferences.Editor
         get() = prefs.edit()
-
     val pref: SharedPreferences
         get() = prefs
-
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
         const val MAX_CRASH_LOGS = "crashLogs"
         const val UPDATE_STATE = "updateState"
         const val UPDATE_LEVEL = "updateLevel"
+        const val ICON_CONFIG = "fastIcons"
         const val AUTO_UPDATE = "autoUpdate"
         const val UPDATE_NOTIFICATION = "autoUpdate"
         const val FEEDBACK = "feedback"

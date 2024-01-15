@@ -2,5 +2,12 @@
 <resources>
     <dimen name="app_icon_size">48dp</dimen>
     <dimen name="navbar_app_icon_size">32dp</dimen>
+    <dimen name="recyclerViewPadding">64dp</dimen>
+    <dimen name="iconAppsListSize">40dp</dimen>
     <dimen name="bottom_sheet_size">400dp</dimen>
+
+    <dimen name="tile_small_moreTiles_off">72dp</dimen>
+    <dimen name="tile_small_moreTiles_on">94dp</dimen>
+    <dimen name="tile_medium">125dp</dimen>
+    <dimen name="tile_big">148dp</dimen>
 </resources>
