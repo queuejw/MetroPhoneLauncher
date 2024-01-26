@@ -2,9 +2,10 @@
 <resources>
     <string name="app_name">MPLauncher</string>
     <string name="phone_info">Название: %s \nМодель: %s \nПО: %s</string>
-    <string name="phone_moreinfo">Версия MPL: %s \nНомер сборки VPM: %d \nУстройство: %s \nБренд устройства: %s \nМодель устройства %s \nПродукт: %s \nАппаратное обеспечение: %s \nСборка: %s \nДата сборки: %d</string>
-    <string name="settings_theme_accent_title_part1">цвет акцента</string>
-    <string name="settings_theme_accent_title_part2">чтобы соответствовать вашему настроению сегодня, на этой неделе или в течение всего месяца </string>
+    <string name="phone_moreinfo">Версия MPL: %s \nНомер сборки MPL: %d \nУстройство: %s \nБренд устройства: %s \nМодель устройства %s \nПродукт: %s \nАппаратное обеспечение: %s \nСборка: %s \nДата сборки: %d</string>
+    <string name="settings_theme_accent_title_part1">цвет элементов</string>
+    <string name="settings_theme_accent_title_part2">Измените фон телефона и </string>
+    <string name="settings_theme_accent_title_part3">по вашему вкусу на день, неделю или месяц</string>
     <string name="remove"><u>Убрать</u></string>
     <string name="tileSettings_color_sub">выбранный цвет: %s</string>
     <string name="reset_warning">Сброс лаунчера приведет к удалению всех настроек плиток, тем и стартового меню. ЭТО НЕ ОТНОСИТСЯ К ПРИЛОЖЕНИЯМ ТЕЛЕФОНА И ЛИЧНЫМ ДАННЫМ. Вы хотите продолжить?</string>
@@ -16,8 +17,8 @@
     <string name="bsodDialogSend">Отправить</string>
     <string name="on">Вкл</string>
     <string name="off">Выкл</string>
-    <string name="light">светлая</string>
-    <string name="dark">тёмная</string>
+    <string name="light">светлый</string>
+    <string name="dark">тёмный</string>
     <string name="automatic_repair">Автоматическое восстановление</string>
     <string name="not_start_correctly">Лаунчер запущен некорректно</string>
     <string name="auto_repair_tip">Нажмите \'Перезагрузить\', чтобы перезапустить лаунчер. Иногда это решает проблему. Также можно нажать \'Дополнительные параметры\' и попробовать другие варианты восстановления лаунчера.</string>
@@ -67,4 +68,8 @@
     <string name="accent_color">Цвет элементов</string>
     <string name="background">Фон</string>
     <string name="launcher">лаунчер</string>
+    <string name="copy">Скопировать</string>
+    <string name="welcome_1">Мы готовы помочь. Всего за несколько шагов ваш телефон будет готов к работе</string>
+    <string name="back">previous</string>
+    <string name="next">next</string>
 </resources>

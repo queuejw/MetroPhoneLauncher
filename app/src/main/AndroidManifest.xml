@@ -16,13 +16,10 @@
         android:name="ru.dimon6018.metrolauncher.Application"
         android:testOnly="false"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/ic_os_windows_8"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:targetApi="31">
+        android:theme="@style/AppTheme.Cobalt">
         <activity
             android:name=".Main"
             android:exported="true"

@@ -59,7 +59,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="4dp"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:nestedScrollingEnabled="false"/>
 </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView

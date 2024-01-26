@@ -1,11 +1,10 @@
 package ru.dimon6018.metrolauncher
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import android.content.res.Resources
+import android.content.res.Resources.Theme
 import android.os.Build
-import androidx.core.os.ConfigurationCompat
+import android.util.TypedValue
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
@@ -14,16 +13,13 @@ class Application : Application() {
         BsodDetector.setContext(applicationContext)
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         super.onCreate()
-        appContext = applicationContext
+        PREFS = Prefs(applicationContext)
     }
 
+
     companion object {
-        @SuppressLint("StaticFieldLeak")
-        var appContext: Context? = null
-            private set
         const val VERSION_CODE: Int = BuildConfig.VERSION_CODE
         const val VERSION_NAME: String = BuildConfig.VERSION_NAME
-        const val BUILD_TYPE: String = BuildConfig.BUILD_TYPE
         val ANDROID_VERSION: Int = Build.VERSION.SDK_INT
         val MODEL: String = Build.MODEL
         val BUILD: String = Build.DISPLAY
@@ -32,7 +28,7 @@ class Application : Application() {
         val DEVICE: String = Build.DEVICE
         val HARDWARE: String = Build.HARDWARE
         val TIME: Long = Build.TIME
-        val LOCALE = ConfigurationCompat.getLocales(Resources.getSystem().configuration).get(0);
+        var PREFS: Prefs? = null
 
         var isUpdateDownloading = false
         private var accentColors = intArrayOf(
@@ -47,17 +43,16 @@ class Application : Application() {
                 "pink", "magenta", "crimson", "red", "orange", "amber", "yellow", "brown",
                 "olive", "steel", "mauve", "taupe"
         )
-        val accentColorFromPrefs: Int
-            get() {
-                val selectedColor = Prefs(appContext!!).accentColor
+        fun accentColorFromPrefs(context: Context): Int {
+                val selectedColor = Prefs(context).accentColor
                 return if (selectedColor >= 0 && selectedColor < accentColors.size) {
-                    appContext!!.getColor(accentColors[selectedColor])
+                    context.getColor(accentColors[selectedColor])
                 } else {
                     // Default to cobalt if the selected color is out of bounds
-                    appContext!!.getColor(R.color.tile_cobalt)
+                    context.getColor(R.color.tile_cobalt)
                 }
             }
-        fun getTileColorFromPrefs(tileColor: Int): Int {
+        fun getTileColorFromPrefs(tileColor: Int, context: Context): Int {
             // 0 - use accent color
             // 1 - lime
             // 2 - green
@@ -80,15 +75,14 @@ class Application : Application() {
             // 19 - mauve
             // 20 - taupe
             return if (tileColor >= 0 && tileColor < accentColors.size) {
-                appContext!!.getColor(accentColors[tileColor])
+                context.getColor(accentColors[tileColor])
             } else {
                 // Default to cobalt if the selected color is out of bounds
-                appContext!!.getColor(R.color.tile_cobalt)
+                context.getColor(R.color.tile_cobalt)
             }
         }
 
-        val launcherAccentTheme: Int
-            get() {
+        fun launcherAccentTheme(): Int {
                 val themeStyles = intArrayOf(
                         R.style.AppTheme_Lime, R.style.AppTheme_Green, R.style.AppTheme_Emerald,
                         R.style.AppTheme_Cyan, R.style.AppTheme_Teal, R.style.AppTheme_Cobalt,
@@ -98,7 +92,7 @@ class Application : Application() {
                         R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
                         R.style.AppTheme_Mauve, R.style.AppTheme_Taupe
                 )
-                val selectedColor = Prefs(appContext!!).accentColor
+                val selectedColor = PREFS!!.accentColor
                 return if (selectedColor >= 0 && selectedColor < themeStyles.size) {
                     themeStyles[selectedColor]
                 } else {
@@ -106,9 +100,13 @@ class Application : Application() {
                     R.style.AppTheme_Cobalt
                 }
             }
-        val accentName: String
-            get() {
-                val selectedColor = Prefs(appContext!!).accentColor
+        fun launcherAccentColor(theme: Theme): Int {
+            val typedValue = TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
+            return typedValue.data
+        }
+        fun accentName(): String {
+                val selectedColor = PREFS!!.accentColor
                 return if (selectedColor >= 0 && selectedColor < accentNames.size) {
                     accentNames[selectedColor]
                 } else {

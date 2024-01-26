@@ -3,9 +3,6 @@ package ru.dimon6018.metrolauncher
 import android.app.UiModeManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,8 +14,16 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.Start
+import ru.dimon6018.metrolauncher.content.data.AppDao
+import ru.dimon6018.metrolauncher.content.data.AppData
+import ru.dimon6018.metrolauncher.content.data.AppEntity
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.BSODadapter.Companion.sendCrash
@@ -29,76 +34,63 @@ class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
-
-    private var prefs: Prefs? = null
+    private lateinit var dbCall: AppDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme)
+        setTheme(Application.launcherAccentTheme())
         setAppTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen_laucnher)
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        Thread {
-            prefs = Prefs(this)
-            pagerAdapter = NumberAdapter(this)
+        CoroutineScope(Dispatchers.Default).launch {
+            if (!PREFS!!.pref.getBoolean("placeholdersGenerated", false)) {
+                dbCall = AppData.getAppData(this@Main).getAppDao()
+                generatePlaceholders()
+            }
+            pagerAdapter = NumberAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
                 viewPager.adapter = pagerAdapter
             }
-        }.start()
+        }
         setupNavigationBar()
     }
     private fun checkCrashes() {
-        if (prefs!!.pref.getBoolean("app_crashed", false)) {
-            val handler = Handler(Looper.getMainLooper())
-            val runnable = Runnable {
-                Thread {
-                Log.i("runnable", "clear bsod")
-                prefs!!.editor.putBoolean("app_crashed", false).apply()
-                prefs!!.editor.putInt("crashCounter", 0).apply()
-                if(prefs!!.isFeedbackEnabled) {
-                        val db = BSOD.getData(this)
-                        val pos = (db.getDao().getBsodList().size) - 1
-                        val text = db.getDao().getBSOD(pos).log
-                        runOnUiThread {
-                            WPDialog(this).setTopDialog(true)
-                                    .setTitle(getString(R.string.bsodDialogTitle))
-                                    .setMessage(getString(R.string.bsodDialogMessage))
-                                    .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
-                                    .setPositiveButton(getString(R.string.bsodDialogSend)) {
-                                        sendCrash(text, this)
-                                    }.show()
-                        }
+        if (PREFS!!.pref.getBoolean("app_crashed", false)) {
+            CoroutineScope(Dispatchers.Default).launch {
+                delay(5000)
+                PREFS!!.editor.putBoolean("app_crashed", false).apply()
+                PREFS!!.editor.putInt("crashCounter", 0).apply()
+                if (PREFS!!.isFeedbackEnabled) {
+                    val dbCall = BSOD.getData(this@Main).getDao()
+                    val pos = (dbCall.getBsodList().size) - 1
+                    val text = dbCall.getBSOD(pos).log
+                    runOnUiThread {
+                        WPDialog(this@Main).setTopDialog(true)
+                                .setTitle(getString(R.string.bsodDialogTitle))
+                                .setMessage(getString(R.string.bsodDialogMessage))
+                                .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                                .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                                    sendCrash(text, this@Main)
+                                }.show()
                     }
-                }.start()
+                }
             }
-            handler.postDelayed(runnable, 5000)
         }
-    }
-    override fun onLowMemory() {
-        super.onLowMemory()
-        WPDialog(this).setTopDialog(true)
-                .setTitle("Not enough memory")
-                .setMessage("This may degrade the performance of your phone. Try closing unnecessary applications")
-                .setPositiveButton(getString(android.R.string.ok), null)
-                .show()
     }
     private fun setupNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.start_win -> {
                     viewPager.currentItem = 0
                     true
                 }
-
                 R.id.start_apps -> {
                     viewPager.currentItem = 1
                     true
                 }
-
                 else -> false
             }
         }
@@ -117,9 +109,24 @@ class Main : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         //move this to oobe in future
-        if(!prefs!!.pref.getBoolean("channelConfigured", false)) {
+        if(!PREFS!!.pref.getBoolean("channelConfigured", false)) {
             setupNotificationChannels(this)
-            prefs!!.editor.putBoolean("channelConfigured", true).apply()
+            PREFS!!.editor.putBoolean("channelConfigured", true).apply()
+        }
+        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
+            PREFS!!.setUpdateState(3)
+        }
+    }
+    private fun generatePlaceholders() {
+        CoroutineScope(Dispatchers.IO).launch {
+            PREFS!!.editor.putBoolean("placeholdersGenerated", true).apply()
+            val size = 35
+            var temp = 0
+            while (temp != size) {
+                val placeholder = AppEntity(temp, temp + 1, -1, true, "small", "", "")
+                temp += 1
+                dbCall.insertItem(placeholder)
+            }
         }
     }
     override fun onResume() {

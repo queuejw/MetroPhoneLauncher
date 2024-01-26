@@ -23,7 +23,6 @@ class BsodDetector : Thread.UncaughtExceptionHandler {
     companion object {
         @SuppressLint("StaticFieldLeak")
         var cntxt: Context? = null
-
         fun setContext(context: Context?) {
             cntxt = context
         }

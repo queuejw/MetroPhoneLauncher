@@ -26,7 +26,7 @@ import ru.dimon6018.metrolauncher.helpers.WPDialog
 class AboutSettingsActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme)
+        setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_about)
         WindowCompat.setDecorFitsSystemWindows(window, false)

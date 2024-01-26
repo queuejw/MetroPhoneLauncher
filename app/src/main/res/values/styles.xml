@@ -19,12 +19,12 @@
     </style>
 
     <style name="dialogWindowAnim" parent="android:Animation" mce_bogus="1">
-        <item name="android:windowEnterAnimation">@anim/d_enter</item>
-        <item name="android:windowExitAnimation">@anim/d_exit</item>
+        <item name="android:windowEnterAnimation">@anim/wpd_enter</item>
+        <item name="android:windowExitAnimation">@anim/wpd_exit</item>
     </style>
 
     <style name="dialogWindowAnimTop" parent="android:Animation" mce_bogus="1">
-        <item name="android:windowEnterAnimation">@anim/d_top_enter</item>
+        <item name="android:windowEnterAnimation">@anim/wpd_top_enter</item>
         <item name="android:windowExitAnimation">@anim/d_top_exit</item>
     </style>
     <style name="ShapeAppearance" parent="ShapeAppearance.Material3.LargeComponent">
@@ -58,5 +58,9 @@
         <item name="android:windowBackground">?android:attr/colorBackground</item>
     </style>
     <style name="AppTheme.Tile.Transparent" parent="@android:style/Theme.Wallpaper">
+    </style>
+    <style name="enterStyle">
+        <item name="android:windowEnterAnimation">@anim/enter</item>
+        <item name="android:windowExitAnimation">@anim/dismiss</item>
     </style>
 </resources>

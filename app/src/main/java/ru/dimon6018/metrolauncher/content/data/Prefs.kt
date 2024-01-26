@@ -91,6 +91,12 @@ class Prefs(context: Context) {
     fun iconBitmapConfig(): Bitmap.Config {
         return if(isFastIconsEnabled) Bitmap.Config.RGB_565 else Bitmap.Config.ARGB_8888
     }
+    fun setVersionCode(int: Int) {
+        prefs.edit().putInt(VERSION_CODE, int).apply()
+    }
+    val versionCode: Int
+        get() = prefs.getInt(VERSION_CODE, 0)
+
     var accentColor: Int
         get() = prefs.getInt(ACCENT_COLOR, 5)
         set(color) {
@@ -134,6 +140,7 @@ class Prefs(context: Context) {
         const val UPDATE_LEVEL = "updateLevel"
         const val ICON_CONFIG = "fastIcons"
         const val AUTO_UPDATE = "autoUpdate"
+        const val VERSION_CODE = "versionCode"
         const val UPDATE_NOTIFICATION = "autoUpdate"
         const val FEEDBACK = "feedback"
         const val LAUNCHER_LIGHT_THEME = "useLightTheme"

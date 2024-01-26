@@ -1,6 +1,10 @@
 package ru.dimon6018.metrolauncher.content.settings
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -14,6 +18,10 @@ import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
@@ -25,7 +33,7 @@ class FeedbackBsodListActivity: AppCompatActivity() {
     private var db: BSOD? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme)
+        setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         db = BSOD.getData(this)
         setContentView(R.layout.launcher_settings_feedback_bsods)
@@ -78,16 +86,27 @@ class BSODadapter(private var data: List<BSODEntity>, private val activity: Acti
         viewHolder.date.text = item.date.toString()
         viewHolder.log.text = item.log
         viewHolder.delete.setOnClickListener {
-            Thread {
+            CoroutineScope(Dispatchers.Default).launch {
                 db.getDao().removeLog(item)
                 viewHolder.itemView.post {
                     updateList()
                 }
-            }.start()
+            }
+        }
+        viewHolder.itemView.setOnClickListener {
+            showDialog(item.log)
         }
         viewHolder.share.setOnClickListener {
             sendCrash(item.log, activity)
         }
+    }
+    private fun showDialog(text: String) {
+        MaterialAlertDialogBuilder(activity).setMessage(text).setPositiveButton(activity.getString(R.string.copy)) { _: DialogInterface?, _: Int -> copyError(text) }.setNegativeButton(activity.getString(android.R.string.cancel), null).show()
+    }
+    private fun copyError(error: String) {
+        val clipbrd = activity.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("MPL_Error", error)
+        clipbrd.setPrimaryClip(clip)
     }
     override fun getItemCount() = data.size
     companion object {

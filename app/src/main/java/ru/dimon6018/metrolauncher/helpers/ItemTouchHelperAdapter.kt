@@ -20,4 +20,6 @@ interface ItemTouchHelperAdapter {
      * @see RecyclerView.ViewHolder.getAdapterPosition
      */
     fun onItemDismiss(position: Int)
+
+    fun onDragAndDropCompleted()
 }

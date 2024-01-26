@@ -8,6 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,6 +38,7 @@ import ru.dimon6018.metrolauncher.content.data.Prefs
 import java.io.File
 import java.io.FileOutputStream
 import kotlin.math.min
+
 
 class ThemeSettingsActivity : AppCompatActivity() {
     private var themeMenu: MaterialCardView? = null
@@ -65,7 +69,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme)
+        setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -81,9 +85,14 @@ class ThemeSettingsActivity : AppCompatActivity() {
         themeMenu = findViewById(R.id.chooseThemeMenu)
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
+        val accentTip: TextView = findViewById(R.id.accentTip)
+        val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
+        val spannable: Spannable = SpannableString(textFinal)
+        spannable.setSpan(ForegroundColorSpan(Application.launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         val fastIconsSwitch: MaterialSwitch = findViewById(R.id.fastIcons)
-        chooseAccentBtn!!.text = Application.accentName
+        chooseAccentBtn!!.text = Application.accentName()
         val themeButtonLabel: String = if (prefs!!.isLightThemeUsed) {
             getString(R.string.light)
         } else {

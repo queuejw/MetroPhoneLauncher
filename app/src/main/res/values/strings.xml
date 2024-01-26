@@ -2,8 +2,9 @@
     <string name="app_name">MPLauncher</string>
     <string name="phone_info">Name: %s \nModel: %s \nSoftware: %s</string>
     <string name="phone_moreinfo">MPL Version: %s \nMPL Version code: %d \nDevice: %s \nPhone brand: %s \nPhone model: %s \nProduct: %s \nHardware: %s \nBuild: %s \nBuild time: %d</string>
-    <string name="settings_theme_accent_title_part1">accent color </string>
-    <string name="settings_theme_accent_title_part2"> to match your day mood today, this week, or all month </string>
+    <string name="settings_theme_accent_title_part1">accent color</string>
+    <string name="settings_theme_accent_title_part2">Change your phone\'s background and </string>
+    <string name="settings_theme_accent_title_part3">to match your mood today, this week, or all month</string>
     <string name="remove"><u>remove</u></string>
     <string name="tileSettings_color_sub">selected color: %s</string>
     <string name="reset_warning">Resetting the launcher will remove all tile settings, themes, and the start menu. THIS DOES NOT APPLY TO PHONE APPLICATIONS AND PERSONAL DATA. Do you want to continue?</string>
@@ -22,7 +23,7 @@
     <string name="auto_repair_tip">Press \'Restart\' to restart your launcher, which can sometimes fix the problem. You can also press \'Advanced options\' to try other options to repair your launcher.</string>
     <string name="restart">Restart</string>
     <string name="advanced_options">Advanced options</string>
-    <string name="feedback_limit_0">Только последнюю</string>
+    <string name="feedback_limit_0">only the most recent one</string>
     <string name="feedback_limit_1">последние 5</string>
     <string name="feedback_limit_2">последние 10</string>
     <string name="feedback_limit_3">как можно больше</string>
@@ -66,4 +67,8 @@
     <string name="accent_color">Accent color</string>
     <string name="background">Background</string>
     <string name="launcher">launcher</string>
+    <string name="copy">Copy</string>
+    <string name="welcome_1">We\'re here to help. In just a handful of steps, your phone will be ready to go.</string>
+    <string name="back">previous</string>
+    <string name="next">next</string>
 </resources>

@@ -9,8 +9,9 @@ data class AppEntity (
     @PrimaryKey
     var appPos: Int? = null,
     var id: Int? = null,
-    var tileColor: Int? = null,
     @ColumnInfo
+    var tileColor: Int? = null,
+    var isPlaceholder: Boolean? = null,
     var appSize: String = "",
     var appLabel: String = "",
     var appPackage: String = ""

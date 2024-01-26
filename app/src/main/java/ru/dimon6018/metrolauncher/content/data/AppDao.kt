@@ -16,12 +16,20 @@ interface AppDao {
     fun removeApp(app: AppEntity)
     @Update
     fun updateApp(app: AppEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun updateAllApps(apps: MutableList<AppEntity>)
     @Query("SELECT * FROM apps")
-    fun getApps(): Flow<List<AppEntity>>
+    fun getApps(): Flow<MutableList<AppEntity>>
+    @Query("SELECT * FROM apps WHERE isPlaceholder = :bool")
+    fun getAppsWithoutPlaceholders(bool: Boolean): Flow<MutableList<AppEntity>>
     @Query("SELECT * FROM apps")
-    fun getJustApps(): List<AppEntity>
+    fun getJustApps(): MutableList<AppEntity>
+    @Query("SELECT * FROM apps WHERE isPlaceholder = :bool")
+    fun getJustAppsWithoutPlaceholders(bool: Boolean): MutableList<AppEntity>
     @Query("SELECT * FROM apps WHERE appPos = :pos")
     fun getApp(pos: Int): AppEntity
     @Query("SELECT * FROM apps WHERE id = :id")
     fun getAppById(id: Int): AppEntity
+    @Query("DELETE FROM apps")
+    fun removeAllApps()
 }

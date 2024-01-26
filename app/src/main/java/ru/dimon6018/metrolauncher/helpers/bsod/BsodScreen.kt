@@ -2,16 +2,21 @@ package ru.dimon6018.metrolauncher.helpers.bsod
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.ANDROID_VERSION
 import ru.dimon6018.metrolauncher.Application.Companion.MODEL
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery
@@ -24,13 +29,12 @@ class BsodScreen : AppCompatActivity() {
     private var db: BSOD? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val prefs = Prefs(this)
-        var counter = prefs.pref.getInt("crashCounter", 0)
+        var counter = PREFS!!.pref.getInt("crashCounter", 0)
         counter += 1
-        prefs.editor.putBoolean("app_crashed", true).apply()
-        prefs.editor.putInt("crashCounter", counter).apply()
-        Thread {
-            db = BSOD.getData(this)
+        PREFS!!.editor.putBoolean("app_crashed", true).apply()
+        PREFS!!.editor.putInt("crashCounter", counter).apply()
+        CoroutineScope(Dispatchers.IO).launch {
+            db = BSOD.getData(this@BsodScreen)
             val model = "Model: $MODEL\n"
             val name = "MPL Ver: $VERSION_NAME\n"
             val android = "Android Version: $ANDROID_VERSION\n"
@@ -45,7 +49,7 @@ class BsodScreen : AppCompatActivity() {
             entity.date = time.toString()
             entity.log = error
             val pos: Int
-            when (prefs.getMaxCrashLogs()) {
+            when (PREFS!!.getMaxCrashLogs()) {
                 0 -> {
                     db!!.clearAllTables()
                     pos = db!!.getDao().getBsodList().size
@@ -75,7 +79,7 @@ class BsodScreen : AppCompatActivity() {
             }
             entity.pos = pos
             db!!.getDao().insertLog(entity)
-        }.start()
+        }
         setTheme(R.style.bsod)
         super.onCreate(savedInstanceState)
         if (counter >= 3) {
@@ -93,18 +97,7 @@ class BsodScreen : AppCompatActivity() {
     }
     override fun onStart() {
         super.onStart()
-        object : Thread() {
-            override fun run() {
-                try {
-                    sleep(5000)
-                    runOnUiThread {
-                        restartApplication()
-                    }
-                } catch (e: InterruptedException) {
-                    Log.e("BSOD", e.toString())
-                }
-            }
-        }.start()
+        Handler(Looper.getMainLooper()).postDelayed({ restartApplication() }, 5000)
     }
 
     override fun onPause() {

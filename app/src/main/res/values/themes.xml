@@ -1,47 +1,11 @@
-
 <resources>
-    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_light_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/md_theme_light_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
-        <item name="colorError">@color/md_theme_light_error</item>
-        <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
-        <item name="colorOnError">@color/md_theme_light_onError</item>
-        <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
-        <item name="android:colorBackground">@android:color/white</item>
-        <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
-        <item name="colorSurface">@color/md_theme_light_surface</item>
-        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
-        <item name="colorOutline">@color/md_theme_light_outline</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
-        <item name="android:statusBarColor">?android:attr/colorBackground</item>
-        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
-        <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
-        <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-    </style>
     <style name="AppTheme.Lime" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">#a1d800</item>
         <item name="colorPrimaryContainer">#b8f600</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#5a6147</item>
         <item name="colorSurface">#fefcf4</item>
-        <item name="colorOnSurface">#1b1c17</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -57,7 +21,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#55624c</item>
         <item name="colorSurface">#fdfdf6</item>
-        <item name="colorOnSurface">#1a1c18</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -73,7 +37,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#506352</item>
         <item name="colorSurface">#fcfdf7</item>
-        <item name="colorOnSurface">#191c19</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -90,7 +54,7 @@
         <item name="colorSecondary">#4a6363</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="colorSurface">#fafdfc</item>
-        <item name="colorOnSurface">#191c1c</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -106,7 +70,7 @@
         <item name="colorSecondary">#4a6363</item>
         <item name="colorSurface">#fafdfc</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="colorOnSurface">#191c1c</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -121,7 +85,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#585e71</item>
         <item name="colorSurface">#fefbff</item>
-        <item name="colorOnSurface">#1b1b1f</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -137,7 +101,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#665a6f</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -153,7 +117,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#665a6f</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -169,7 +133,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#6d586a</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1e1a1d</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -185,7 +149,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#6e5869</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1e1a1d</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -201,7 +165,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#775656</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#201a1a</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -217,7 +181,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#775651</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#201a19</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -233,7 +197,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#705b41</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1f1b16</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:windowLightStatusBar">true</item>
@@ -249,7 +213,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#6b5c3f</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1e1b16</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -265,7 +229,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#606043</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1c1c17</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -281,7 +245,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#705b41</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1f1b16</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -297,7 +261,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#5e6044</item>
         <item name="colorSurface">#feffd7</item>
-        <item name="colorOnSurface">#1c1c17</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -313,7 +277,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#70787d</item>
         <item name="colorSurface">#fbfcfe</item>
-        <item name="colorOnSurface">#191c1e</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -329,7 +293,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#675a6e</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#1d1b1e</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
@@ -345,7 +309,7 @@
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#735943</item>
         <item name="colorSurface">#fffbff</item>
-        <item name="colorOnSurface">#201b17</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>

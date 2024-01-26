@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e500f1f08c6aca67e9227f9aa81e19f8",
+    "identityHash": "5b8932107ffa6f00f888e9b1dfe60823",
     "entities": [
       {
         "tableName": "apps",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`appPos` INTEGER, `id` INTEGER, `tileColor` INTEGER, `appSize` TEXT NOT NULL, `appLabel` TEXT NOT NULL, `appPackage` TEXT NOT NULL, PRIMARY KEY(`appPos`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`appPos` INTEGER, `id` INTEGER, `tileColor` INTEGER, `isPlaceholder` INTEGER, `appSize` TEXT NOT NULL, `appLabel` TEXT NOT NULL, `appPackage` TEXT NOT NULL, PRIMARY KEY(`appPos`))",
         "fields": [
           {
             "fieldPath": "appPos",
@@ -23,6 +23,12 @@
           {
             "fieldPath": "tileColor",
             "columnName": "tileColor",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isPlaceholder",
+            "columnName": "isPlaceholder",
             "affinity": "INTEGER",
             "notNull": false
           },
@@ -58,7 +64,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e500f1f08c6aca67e9227f9aa81e19f8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5b8932107ffa6f00f888e9b1dfe60823')"
     ]
   }
 }

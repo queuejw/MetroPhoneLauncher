@@ -7,9 +7,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
@@ -30,19 +30,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.arasthel.spannedgridlayoutmanager.SpanSize
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import ir.alirezabdn.wp7progress.WP7ProgressBar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
-import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
@@ -64,20 +68,15 @@ class Start : Fragment(), OnStartDragListener {
     private var background: LinearLayout? = null
 
     var contxt: Context? = null
-    var prefs: Prefs? = null
 
-    private var db: AppData? = null
     private var dbCall: AppDao? = null
+    private var db: AppData? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         contxt = context
-        isAdapterUpdateEnabled = true
-        Runnable {
-            db = AppData.getAppData(contxt!!)
-            dbCall = db!!.getAppDao()
-        }.run()
-        prefs = Prefs(contxt!!)
+        dbCall = AppData.getAppData(contxt!!).getAppDao()
+        db = AppData.getAppData(contxt!!)
         progressBar = v.findViewById(R.id.progressBarStart)
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
@@ -85,7 +84,7 @@ class Start : Fragment(), OnStartDragListener {
         mAppListButton = v.findViewById(R.id.open_applist_btn)
         background = v.findViewById(R.id.startBackground)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
-        if (prefs!!.isCustomBackgroundUsed) {
+        if (PREFS!!.isCustomBackgroundUsed) {
             try {
                 background!!.background = AppCompatResources.getDrawable(contxt!!, R.drawable.start_transparent)
             } catch (ex: Exception) {
@@ -100,40 +99,24 @@ class Start : Fragment(), OnStartDragListener {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Thread {
-            tileList = dbCall!!.getJustApps()
-            detectBrokenApps()
-            mSpannedLayoutManager = if(!prefs!!.isMoreTilesEnabled) {
+        CoroutineScope(Dispatchers.Default).launch {
+            mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
                 SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = contxt!!)
             } else {
                 SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 12, _columnCount = 6, context = contxt!!)
             }
             mSpannedLayoutManager!!.itemOrderIsStable = true
+            tileList = dbCall!!.getJustApps()
             adapter = StartAdapter(tileList!!, contxt!!, dbCall!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
-            setLM()
+            mItemTouchHelper = ItemTouchHelper(callback)
             requireActivity().runOnUiThread {
-                mRecyclerView!!.layoutManager = mSpannedLayoutManager
-                mItemTouchHelper = ItemTouchHelper(callback)
                 mRecyclerView!!.adapter = adapter
                 mRecyclerView!!.addItemDecoration(SpaceItemDecorator(8, 8, 8, 8))
+                mRecyclerView!!.layoutManager = mSpannedLayoutManager
                 mItemTouchHelper!!.attachToRecyclerView(mRecyclerView)
+                setLM()
                 hideLoadingHolder()
-            }
-        }.start()
-    }
-    private fun detectBrokenApps() {
-        var size = tileList!!.size
-        val packageManager = contxt!!.packageManager
-        while(size != 0) {
-            size -= 1
-            val appEntity = tileList!![size]
-            try {
-                packageManager.getPackageInfo(appEntity.appPackage, 0)
-            } catch (e: PackageManager.NameNotFoundException) {
-                Thread {
-                    dbCall!!.removeApp(appEntity)
-                }.start()
             }
         }
     }
@@ -162,17 +145,29 @@ class Start : Fragment(), OnStartDragListener {
         mAppListButton!!.visibility = View.VISIBLE
     }
     override fun onResume() {
+        super.onResume()
+        observer()
+    }
+    private fun observer() {
+        if(dbCall?.getApps()?.asLiveData()?.hasActiveObservers() == true) {
+            return
+        }
         dbCall?.getApps()?.asLiveData()?.observe(requireActivity()) {
             tileList = it
-            if(isAdapterUpdateEnabled == true) adapter?.setNewData(it)
+            adapter?.setNewData(it)
         }
-        adapter?.setNewData(tileList!!)
-        super.onResume()
     }
-
+    private fun killObserver() {
+        dbCall?.getApps()?.asLiveData()?.removeObservers(requireActivity())
+    }
     override fun onPause() {
         super.onPause()
-        dbCall?.getApps()?.asLiveData()?.removeObservers(requireActivity())
+        killObserver()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        killObserver()
     }
     override fun onDestroyView() {
         adapter = null
@@ -190,21 +185,23 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
     companion object {
-        var tileList: List<AppEntity>? = null
-        var isAdapterUpdateEnabled: Boolean? = null
-        var canOpenPrefs: Boolean = true
+        var tileList: MutableList<AppEntity>? = null
     }
-    inner class StartAdapter(private var items: List<AppEntity>, private val adapterContext: Context, private val dbAppsCall: AppDao) : Adapter<StartAdapter.NormalItemViewHolder>(), ItemTouchHelperAdapter {
+    inner class StartAdapter(private var items: MutableList<AppEntity>, private val adapterContext: Context, private val dbAppsCall: AppDao) : Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         private var packageManager: PackageManager? = null
+        private var popupWindow: PopupWindow? = null
+
+        private val tileType: Int = 0
+        private val placeholderType: Int = 1
 
         init {
-            Thread {
-                packageManager = adapterContext.packageManager
-            }.start()
+            setHasStableIds(true)
+            packageManager = adapterContext.packageManager
         }
 
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
+            popupWindow?.dismiss()
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
                     Collections.swap(items, i, i + 1)
@@ -215,28 +212,22 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             notifyItemMoved(fromPosition, toPosition)
-            saveAllPositions()
         }
-        private fun saveAllPositions() {
-            isAdapterUpdateEnabled = false
-            Thread {
-                var allItemsCount: Int = tileList!!.size
-                while (allItemsCount != 0) {
-                    allItemsCount -= 1
-                    val item = tileList!![allItemsCount]
-                    item.appPos = allItemsCount
-                    dbAppsCall.updateApp(item)
+        override fun onDragAndDropCompleted() {
+            CoroutineScope(Dispatchers.IO).launch {
+                val itemsReserved = items
+                for (i in 0 until itemsReserved.size) {
+                    val item = itemsReserved[i]
+                    item.appPos = i
+                    dbAppsCall.insertItem(item)
                 }
-                Handler(Looper.getMainLooper()).postDelayed({
-                    isAdapterUpdateEnabled = true
-                }, 50)
-            }.start()
+            }
         }
         override fun onItemDismiss(position: Int) {
             notifyDataSetChanged()
         }
 
-        fun setNewData(newData: List<AppEntity>) {
+        fun setNewData(newData: MutableList<AppEntity>) {
             items = newData
             notifyDataSetChanged()
         }
@@ -244,200 +235,146 @@ class Start : Fragment(), OnStartDragListener {
             val mContainer: FrameLayout
             val mTextView: TextView
             val mAppIcon: ImageView
-
-            val mTileLayout: FrameLayout
-            val mRemove: MaterialCardView
-            val mResize: MaterialCardView
-            val mSettings: MaterialCardView
-
             init {
                 mContainer = v.findViewById(R.id.container)
                 mTextView = v.findViewById(android.R.id.text1)
                 mAppIcon = v.findViewById(android.R.id.icon1)
-
-                mTileLayout = v.findViewById(R.id.tileControl)
-                mRemove = v.findViewById(R.id.tileControl_remove)
-                mResize = v.findViewById(R.id.tileControl_resize)
-                mSettings = v.findViewById(R.id.tileControl_settings)
             }
 
             override fun onItemSelected() {}
             override fun onItemClear() {}
         }
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NormalItemViewHolder {
+        inner class HolderItemViewHolder(v: View) : RecyclerView.ViewHolder(v)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            val v = inflater.inflate(R.layout.tile, parent, false)
-            return NormalItemViewHolder(v)
+            return when(viewType) {
+                tileType -> {
+                    val v = inflater.inflate(R.layout.tile, parent, false)
+                    NormalItemViewHolder(v)
+                }
+                placeholderType -> {
+                    val v = inflater.inflate(R.layout.space, parent, false)
+                    HolderItemViewHolder(v)
+                }
+                else -> {
+                    val v = inflater.inflate(R.layout.space, parent, false)
+                    HolderItemViewHolder(v)
+                }
+            }
         }
-        override fun onBindViewHolder(holder: NormalItemViewHolder, position: Int) {
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            when(holder.itemViewType) {
+                tileType -> {
+                    bindTile(holder as NormalItemViewHolder, position)
+                }
+            }
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            return if(items[position].isPlaceholder == true) {
+                placeholderType
+            } else {
+                tileType
+            }
+        }
+
+        private fun bindTile(holder: NormalItemViewHolder, position: Int) {
             val item = items[position]
-            var canOpenApp = true
-            when(item.appSize) {
+            when (item.appSize) {
                 "small" -> {
-                    if(prefs!!.isMoreTilesEnabled) {
-                        holder.mTextView.text = ""
-                        holder.mRemove.scaleX = 0.25f
-                        holder.mRemove.scaleY = 0.25f
-                        holder.mResize.scaleX = 0.25f
-                        holder.mResize.scaleY = 0.25f
-                        holder.mSettings.scaleX = 0.25f
-                        holder.mSettings.scaleY = 0.25f
-                        holder.mTileLayout.scaleX = 1.7f
-                        holder.mTileLayout.scaleY = 1.7f
-                    } else {
-                        holder.mRemove.scaleX = 0.7f
-                        holder.mRemove.scaleY = 0.7f
-                        holder.mResize.scaleX = 0.7f
-                        holder.mResize.scaleY = 0.7f
-                        holder.mSettings.scaleX = 0.7f
-                        holder.mSettings.scaleY = 0.7f
-                        holder.mTileLayout.scaleX = 1.15f
-                        holder.mTileLayout.scaleY = 1.15f
-                    }
                     holder.mTextView.text = ""
-                    holder.mResize.rotation = -145f
                 }
                 "medium" -> {
-                    if(prefs!!.isMoreTilesEnabled) {
+                    if (PREFS!!.isMoreTilesEnabled) {
                         holder.mTextView.text = ""
                     } else {
                         holder.mTextView.text = item.appLabel
                     }
-                    holder.mRemove.scaleX = 1f
-                    holder.mRemove.scaleY = 1f
-                    holder.mResize.scaleX = 1f
-                    holder.mResize.scaleY = 1f
-                    holder.mResize.rotation = 180f
-                    holder.mSettings.scaleX = 1f
-                    holder.mSettings.scaleY = 1f
-                    holder.mTileLayout.scaleX = 1f
-                    holder.mTileLayout.scaleY = 1f
                 }
                 "big" -> {
                     holder.mTextView.text = item.appLabel
-                    holder.mRemove.scaleX = 1f
-                    holder.mRemove.scaleY = 1f
-                    holder.mResize.scaleX = 1f
-                    holder.mResize.scaleY = 1f
-                    holder.mResize.rotation = 45f
-                    holder.mSettings.scaleX = 1f
-                    holder.mSettings.scaleY = 1f
-                    holder.mTileLayout.scaleX = 1f
-                    holder.mTileLayout.scaleY = 1f
                 }
             }
-            if(prefs!!.isCustomBackgroundUsed) {
+            if(PREFS!!.isCustomBackgroundUsed) {
                 holder.mContainer.background = AppCompatResources.getDrawable(adapterContext, R.drawable.start_transparent)
                 val view: View = holder.mContainer
-                view.getViewTreeObserver().addOnGlobalLayoutListener {
-                    val bmp = BitmapFactory.decodeFile(prefs!!.backgroundPath)
-                    val bmpNew = Bitmap.createBitmap(bmp, view.x.toInt(), view.y.toInt(), view.width, view.height, null, true)
-                    holder.mContainer.background = bmpNew.toDrawable(resources)
-                    bmp.recycle()
-                }
+                val bmpNew = Bitmap.createBitmap(BitmapFactory.decodeFile(PREFS!!.backgroundPath), view.x.toInt(), view.y.toInt(), view.width, view.height, null, true)
+                holder.mContainer.background = bmpNew.toDrawable(resources)
             }
             holder.mContainer.setOnClickListener {
-                if(canOpenApp) {
-                    val intent = packageManager!!.getLaunchIntentForPackage(item.appPackage)
-                    intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                }
+                val intent = packageManager!!.getLaunchIntentForPackage(item.appPackage)
+                intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
             holder.mContainer.setOnLongClickListener {
-                if (canOpenPrefs) {
-                    canOpenPrefs = false
-                    canOpenApp = false
-                    holder.mTileLayout.visibility = View.VISIBLE
-                    val hideAction = Runnable {
-                        canOpenApp = true
-                        canOpenPrefs = true
-                        holder.mTileLayout.visibility = View.INVISIBLE
-                    }
-                    holder.mTileLayout.postDelayed(hideAction, 5500)
-                    true
-                } else {
-                    false
-                }
-            }
-            try {
-                var bmp: Bitmap
-                var size: Int
-                when(item.appSize) {
-                    "small" -> {
-                        if (prefs!!.isMoreTilesEnabled) {
-                            size = resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
-                            bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
-                        } else {
-                            size = resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
-                            bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
-                        }
-                    }
-                    "medium" -> {
-                        size = resources.getDimensionPixelSize(R.dimen.tile_medium)
-                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
-                    }
-                    "big" -> {
-                        size = resources.getDimensionPixelSize(R.dimen.tile_big)
-                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
-                    }
-                    else -> {
-                        size = resources.getDimensionPixelSize(R.dimen.tile_medium)
-                        bmp = packageManager!!.getApplicationIcon(item.appPackage).toBitmap(size, size, prefs!!.iconBitmapConfig())
-                    }
-                }
-                Glide.with(adapterContext).load(bmp).placeholder(R.drawable.ic_os_android).override(size, size).into(holder.mAppIcon)
-            } catch (e: PackageManager.NameNotFoundException) {
-                Thread {
-                    dbAppsCall.removeApp(item)
-                }.start()
+                showPopupWindow(holder, position, adapterContext)
+                true
             }
             if(item.tileColor != -1) {
-                holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!))
+                holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, adapterContext))
             } else {
-                holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs)
+                holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(adapterContext))
             }
-            holder.mResize.setOnClickListener {
+            val bmpGen: Deferred<Bitmap> = CoroutineScope(Dispatchers.Default).async {
+                return@async getAppIcon(item.appPackage, item.appSize)
+            }
+            runBlocking {
+                holder.mAppIcon.setImageBitmap(bmpGen.await())
+            }
+        }
+        private fun showPopupWindow(holder: NormalItemViewHolder, position: Int, context: Context) {
+            val item = items[position]
+            val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val popupView: View = if(item.appSize == "small") inflater.inflate(R.layout.tile_window_horiz, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val width = LinearLayout.LayoutParams.WRAP_CONTENT
+            val height = LinearLayout.LayoutParams.WRAP_CONTENT
+            popupWindow = PopupWindow(popupView, width, height, true)
+            popupWindow!!.animationStyle = R.style.enterStyle
+            val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
+            val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
+            val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
+            popupWindow!!.showAsDropDown(holder.itemView, 0, ((-1 * holder.itemView.height)), Gravity.CENTER)
+            resize.setOnClickListener {
                 when (item.appSize) {
                     "small" -> {
-                        Thread {
-                            val appEntity = dbAppsCall.getAppById(item.id!!)
-                            appEntity.appSize = "medium"
-                            dbAppsCall.updateApp(appEntity)
-                        }.start()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            item.appSize = "medium"
+                            dbAppsCall.updateApp(item)
+                        }
                         holder.mTextView.post {
                             holder.mTextView.text = ""
                         }
                         item.appSize = "medium"
                     }
                     "medium" -> {
-                        Thread {
-                            val appEntity = dbAppsCall.getAppById(item.id!!)
-                            appEntity.appSize = "big"
-                            dbAppsCall.updateApp(appEntity)
-                        }.start()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            item.appSize = "big"
+                            dbAppsCall.updateApp(item)
+                        }
                         item.appSize = "big"
                     }
 
                     "big" -> {
-                        Thread {
-                            val appEntity = dbAppsCall.getAppById(item.id!!)
-                            appEntity.appSize = "small"
-                            dbAppsCall.updateApp(appEntity)
-                        }.start()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            item.appSize = "small"
+                            dbAppsCall.updateApp(item)
+                        }
                         item.appSize = "small"
                     }
                 }
-                canOpenPrefs = true
+                popupWindow!!.dismiss()
                 notifyDataSetChanged()
             }
-            holder.mRemove.setOnClickListener {
-                Thread {
-                    dbAppsCall.removeApp(dbCall!!.getAppById(item.id!!))
-                }.start()
-                canOpenPrefs = true
+            remove.setOnClickListener {
+                CoroutineScope(Dispatchers.IO).launch {
+                    dbAppsCall.removeApp(item)
+                }
+                popupWindow!!.dismiss()
                 notifyItemRemoved(position)
             }
-            holder.mSettings.setOnClickListener {
+            settings.setOnClickListener {
                 val bottomsheet = BottomSheetDialog(contxt!!)
                 bottomsheet.setContentView(R.layout.tile_bottomsheet)
                 bottomsheet.dismissWithAnimation = true
@@ -457,26 +394,26 @@ class Start : Fragment(), OnStartDragListener {
                     colorSub.visibility = View.GONE
                     removeColor.visibility = View.GONE
                 } else {
-                    colorSub.setTextColor(Application.getTileColorFromPrefs(item.tileColor!!))
+                    colorSub.setTextColor(Application.getTileColorFromPrefs(item.tileColor!!, adapterContext))
                     colorSub.text = getString(R.string.tileSettings_color_sub, Application.getTileColorName(item.tileColor!!))
                 }
                 changeLabel.setOnClickListener {
                     labellayout.visibility = View.VISIBLE
                 }
                 labelChangeBtn.setOnClickListener {
-                    Thread {
-                        val appEntity = AppEntity(item.appPos, item.id, item.tileColor,item.appSize, editor.text.toString(), item.appPackage)
-                        dbAppsCall.updateApp(appEntity)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        item.appLabel = editor.text.toString()
+                        dbAppsCall.updateApp(item)
                         activity!!.runOnUiThread {
                             bottomsheet.dismiss()
                         }
-                    }.start()
+                    }
                 }
                 removeColor.setOnClickListener {
-                    Thread {
-                        val appEntity = AppEntity(item.appPos, item.id, -1,item.appSize, item.appLabel, item.appPackage)
-                        dbAppsCall.updateApp(appEntity)
-                    }.start()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        item.tileColor = -1
+                        dbAppsCall.updateApp(item)
+                    }
                     bottomsheet.dismiss()
                 }
                 changeColor.setOnClickListener {
@@ -489,9 +426,43 @@ class Start : Fragment(), OnStartDragListener {
                     startActivity(intent)
                     bottomsheet.dismiss()
                 }
+                popupWindow!!.dismiss()
                 bottomsheet.show()
             }
         }
+        private fun getAppIcon(appPackage: String, size: String): Bitmap {
+            val bmp: Bitmap
+            when (size) {
+                "small" -> {
+                    bmp = if (PREFS!!.isMoreTilesEnabled) {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on), PREFS!!.iconBitmapConfig())
+                    } else {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off), PREFS!!.iconBitmapConfig())
+                    }
+                }
+
+                "medium" -> {
+                    bmp = if (PREFS!!.isMoreTilesEnabled) {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on), PREFS!!.iconBitmapConfig())
+                    } else {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), PREFS!!.iconBitmapConfig())
+                    }
+                }
+
+                "big" -> {
+                    bmp = if (PREFS!!.isMoreTilesEnabled) {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on), PREFS!!.iconBitmapConfig())
+                    } else {
+                        packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off), PREFS!!.iconBitmapConfig())
+                    }
+                }
+                else -> {
+                    bmp = packageManager!!.getApplicationIcon(appPackage).toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), PREFS!!.iconBitmapConfig())
+                }
+            }
+            return bmp
+        }
+
         override fun getItemCount(): Int {
             return items.size
         }
@@ -515,7 +486,7 @@ class Start : Fragment(), OnStartDragListener {
             val dialog = dialog
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog?.setTitle("TILE")
+            dialog?.setTitle("TILE COLOR")
             dialog?.window!!.setLayout(width, height)
         }
 
@@ -531,162 +502,162 @@ class Start : Fragment(), OnStartDragListener {
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
             lime.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 0,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 0
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 1,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 1
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 2,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 2
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 3,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 3
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 4,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 4
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 5,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 5
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 6,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 6
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 7,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 7
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 8,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 8
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 9,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 9
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 10,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 10
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 11,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 11
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 12,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 12
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 13,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 13
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 14,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 14
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 15,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 15
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 16,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 16
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 17,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 17
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 18,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 18
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
-                Thread {
-                    val appEntity = AppEntity(item.appPos, item.id, 19,item.appSize, item.appLabel, item.appPackage)
-                    dbCallDialog!!.updateApp(appEntity)
-                }.start()
+                CoroutineScope(Dispatchers.IO).launch {
+                    item.tileColor = 19
+                    dbCallDialog!!.updateApp(item)
+                }
                 dismiss()
             }
         }

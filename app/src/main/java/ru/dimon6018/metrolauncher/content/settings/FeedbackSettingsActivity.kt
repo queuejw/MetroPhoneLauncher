@@ -11,6 +11,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -21,11 +22,10 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
     private var setCrashLogLimitBtn: MaterialButton? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme)
+        setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_feedback)
         val db = BSOD.getData(this)
-        val prefs = Prefs(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coord: CoordinatorLayout = findViewById(R.id.coordinator)
         Main.applyWindowInsets(coord)
@@ -40,47 +40,47 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
            }.start()
         }
         val feedbackSwitch = findViewById<MaterialSwitch>(R.id.sendFeedbackSwitch)
-        feedbackSwitch.setChecked(prefs.isFeedbackEnabled)
-        feedbackSwitch.text = if(prefs.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
+        feedbackSwitch.setChecked(PREFS!!.isFeedbackEnabled)
+        feedbackSwitch.text = if(PREFS!!.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
         feedbackSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.setFeedback(isChecked)
+            PREFS!!.setFeedback(isChecked)
             feedbackSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             feedbackSwitch.setChecked(isChecked)
         }
         setCrashLogLimitBtn = findViewById(R.id.setCrashLogLimitBtn)
         val chooseBsodInfoLimitCard = findViewById<MaterialCardView>(R.id.chooseBsodInfoLimit)
-        setButtonText(prefs)
+        setButtonText(PREFS!!)
         setCrashLogLimitBtn!!.setOnClickListener {
             chooseBsodInfoLimitCard.visibility = View.VISIBLE
             setCrashLogLimitBtn!!.visibility = View.GONE
         }
         val save1bsod: TextView = findViewById(R.id.save1bsod)
         save1bsod.setOnClickListener {
-            prefs.setMaxCrashLogs(0)
+            PREFS!!.setMaxCrashLogs(0)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
-            setButtonText(prefs)
+            setButtonText(PREFS!!)
         }
         val save5bsod: TextView = findViewById(R.id.save5bsod)
         save5bsod.setOnClickListener {
-            prefs.setMaxCrashLogs(1)
+            PREFS!!.setMaxCrashLogs(1)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
-            setButtonText(prefs)
+            setButtonText(PREFS!!)
         }
         val save10bsod: TextView = findViewById(R.id.save10bsod)
         save10bsod.setOnClickListener {
-            prefs.setMaxCrashLogs(2)
+            PREFS!!.setMaxCrashLogs(2)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
-            setButtonText(prefs)
+            setButtonText(PREFS!!)
         }
         val saveallbsods: TextView = findViewById(R.id.saveallbsods)
         saveallbsods.setOnClickListener {
-            prefs.setMaxCrashLogs(3)
+            PREFS!!.setMaxCrashLogs(3)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
-            setButtonText(prefs)
+            setButtonText(PREFS!!)
         }
     }
     private fun setButtonText(prefs: Prefs) {

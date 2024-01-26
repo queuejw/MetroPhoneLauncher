@@ -9,5 +9,4 @@
     android:pivotY="100%"
     android:toXScale="1.0"
     android:toYScale="1.0" />
-
 </set>
