@@ -1,6 +1,36 @@
 package ru.dimon6018.metrolauncher.helpers.bsod.recovery
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.card.MaterialCardView
+import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+
 
 class RecoveryOptions: AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.bsod)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.recovery_options)
+        val refresh: MaterialCardView = findViewById(R.id.refresh)
+        val browser: MaterialCardView = findViewById(R.id.browser)
+        val sysSett: MaterialCardView = findViewById(R.id.settingsSys)
+        val lnhSett: MaterialCardView = findViewById(R.id.settingsLnch)
+        lnhSett.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+        sysSett.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
+        }
+        browser.setOnClickListener {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com/")))
+        }
+        refresh.setOnClickListener {
+            Application.downloadUpdate(this)
+        }
+    }
 }

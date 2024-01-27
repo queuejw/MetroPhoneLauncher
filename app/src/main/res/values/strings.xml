@@ -71,4 +71,6 @@
     <string name="welcome_1">We\'re here to help. In just a handful of steps, your phone will be ready to go.</string>
     <string name="back">previous</string>
     <string name="next">next</string>
+    <string name="configurePhone">Choosing launcher settings</string>
+    <string name="welcomePhone">Let\'s start</string>
 </resources>

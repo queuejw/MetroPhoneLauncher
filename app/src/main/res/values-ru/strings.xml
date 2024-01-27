@@ -69,7 +69,9 @@
     <string name="background">Фон</string>
     <string name="launcher">лаунчер</string>
     <string name="copy">Скопировать</string>
-    <string name="welcome_1">Мы готовы помочь. Всего за несколько шагов ваш телефон будет готов к работе</string>
-    <string name="back">previous</string>
-    <string name="next">next</string>
+    <string name="welcome_1">Мы поможем вам. Всего несколько действий, и ваш телефон будет готов.</string>
+    <string name="back">Назад</string>
+    <string name="next">Далее</string>
+    <string name="configurePhone">Выберите настройки лаунчера</string>
+    <string name="welcomePhone">Начало работы</string>
 </resources>

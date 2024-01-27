@@ -1,11 +1,15 @@
 package ru.dimon6018.metrolauncher
 
 import android.app.Application
+import android.app.DownloadManager
 import android.content.Context
 import android.content.res.Resources.Theme
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.util.TypedValue
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
 class Application : Application() {
@@ -15,8 +19,6 @@ class Application : Application() {
         super.onCreate()
         PREFS = Prefs(applicationContext)
     }
-
-
     companion object {
         const val VERSION_CODE: Int = BuildConfig.VERSION_CODE
         const val VERSION_NAME: String = BuildConfig.VERSION_NAME
@@ -122,6 +124,18 @@ class Application : Application() {
                 // Default to "unknown" if the selected color is out of bounds
                 "unknown"
             }
+        }
+        fun downloadUpdate(context: Context) {
+            val request = DownloadManager.Request(Uri.parse(UpdateActivity.URL_RELEASE))
+            request.setDescription(context.getString(R.string.update_notification))
+            request.setTitle("MPL Recovery")
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MPL_update.apk")
+            val manager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            val downloadId = manager.enqueue(request)
+            isUpdateDownloading = true
+            val q = DownloadManager.Query()
+            q.setFilterById(downloadId)
         }
     }
 }

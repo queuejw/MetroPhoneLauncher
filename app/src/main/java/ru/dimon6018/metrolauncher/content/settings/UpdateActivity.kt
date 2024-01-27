@@ -254,7 +254,7 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun checkUpdateInfo() {
         CoroutineScope(Dispatchers.IO).launch {
-            if (UpdateDataParser.verCode!! >= Application.VERSION_CODE) {
+            if (UpdateDataParser.verCode!! == Application.VERSION_CODE) {
                 Log.i("CheckForUpdates", "up-to-date")
                 PREFS!!.setUpdateState(3)
                 runOnUiThread {

@@ -36,15 +36,15 @@ class WPDialog(private val mContext: Context) {
     fun show(): WPDialog {
         Builder()
         if (!wp!!.isShowing) {
-            wp!!.show()
+            wp?.show()
         } else {
-            wp!!.dismiss()
+            wp?.dismiss()
         }
         return this
     }
     //SnackBar消失方法
     fun dismiss(): WPDialog {
-        wp!!.dismiss()
+        wp?.dismiss()
         return this
     }
     init {
