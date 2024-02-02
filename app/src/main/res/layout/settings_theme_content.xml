@@ -30,7 +30,7 @@
                         android:textSize="19sp" />
                 <com.google.android.material.button.MaterialButton
                         style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:text="dark"
+
                         android:fontFamily="@font/opensans_regular"
                         app:cornerRadius="0dp"
                         app:strokeColor="?attr/colorOnBackground"
@@ -57,7 +57,7 @@
                         android:id="@+id/chooseThemeMenu"
                         android:visibility="gone">
                         <TextView
-                                android:text="light"
+                                android:text="@string/light"
                                 android:layout_width="match_parent"
                                 android:layout_height="36dp"
                                 android:layout_marginStart="24dp"
@@ -68,7 +68,7 @@
                                 android:fontFamily="@font/opensans_regular"
                                 android:id="@+id/chooseLight"/>
                         <TextView
-                                android:text="dark"
+                                android:text="@string/dark"
                                 android:layout_marginTop="12dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="36dp"

@@ -23,9 +23,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:capitalize="characters"
             android:fontFamily="@font/opensans_light"
             android:singleLine="true"
+            android:ellipsize="none"
             android:text="@string/start_theme"
             android:textSize="52sp"
             android:textStyle="bold" />

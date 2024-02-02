@@ -15,19 +15,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:textSize="24sp"
-            android:text="settings"
+            android:text="@string/settings"
             android:layout_height="match_parent"
             android:fontFamily="@font/opensans_light"
             android:textStyle="bold"/>
+
         <TextView
             android:layout_width="wrap_content"
-            android:textSize="52sp"
-            android:capitalize="characters"
-            android:text="feedback"
             android:layout_height="match_parent"
             android:fontFamily="@font/opensans_light"
-            android:textStyle="bold">
-        </TextView>
+            android:singleLine="true"
+            android:ellipsize="none"
+            android:text="@string/feedback"
+            android:textSize="52sp"
+            android:textStyle="bold"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

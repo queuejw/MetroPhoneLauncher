@@ -13,11 +13,10 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="match_parent"
-        android:background="?android:attr/colorBackground"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:layout_gravity="bottom"
-        android:foregroundGravity="bottom"
-        app:backgroundTint="?android:colorBackground"
+        android:background="?android:attr/colorBackground"
+        app:itemIconTint="?attr/colorOnBackground"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:menu="@menu/start_menu" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

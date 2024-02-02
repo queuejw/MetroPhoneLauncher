@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textSize="21sp"
         android:layout_marginTop="2dp"
-        android:text="Send launcher usage feedback to help improve MetroPhoneLauncher" />
+        android:text="@string/send_launcher_usage" />
 
     <TextView
         android:textSize="16sp"
@@ -19,21 +19,20 @@
         android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send feedback" />
+        android:text="@string/send_feedback" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/sendFeedbackSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:text="Off" />
+        android:textSize="24sp" />
 
     <TextView
         android:alpha="0.8"
         android:textSize="18sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Number of issues to save" />
+        android:text="@string/number_of_issues_to_save" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/setCrashLogLimitBtn"
@@ -44,7 +43,6 @@
         android:layout_marginEnd="4dp"
         android:fontFamily="@font/opensans_regular"
         android:gravity="start"
-        android:text="только последнюю"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
         android:visibility="visible"
@@ -127,12 +125,12 @@
         android:layout_width="match_parent"
         android:alpha="0.8"
         android:layout_height="wrap_content"
-        android:text="Your phone may save fewer issues if there isn't enough space"
+        android:text="@string/bsods_tip"
         android:textSize="18sp" />
 
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.OutlinedButton"
-        android:text="show info"
+        android:text="@string/show_bsods"
         android:fontFamily="@font/opensans_regular"
         app:cornerRadius="0dp"
         app:strokeColor="?attr/colorOnBackground"
@@ -149,7 +147,7 @@
         android:visibility="visible"/>
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.OutlinedButton"
-        android:text="delete info"
+        android:text="@string/delete_bsods"
         android:fontFamily="@font/opensans_regular"
         app:cornerRadius="0dp"
         app:strokeColor="?attr/colorOnBackground"

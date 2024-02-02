@@ -4,12 +4,15 @@ import android.app.UiModeManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
+import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -31,9 +34,27 @@ class SettingsActivity : AppCompatActivity() {
         feedbackBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java)) }
         val updateBtn = findViewById<MaterialCardView>(R.id.updatesSetting)
         updateBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java)) }
+        val navBarBtm = findViewById<MaterialCardView>(R.id.navbarSetting)
+        navBarBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java)) }
+        val leaks = findViewById<MaterialCardView>(R.id.leaks)
+        leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
         Main.applyWindowInsets(coord)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val themeSub: TextView = findViewById(R.id.theme_sub)
+        themeSub.text = Application.accentName()
+        val navbarSub: TextView = findViewById(R.id.navbar_sub)
+        navbarSub.text = when(PREFS!!.navBarColor) {
+            0 -> getString(R.string.always_dark)
+            1 -> getString(R.string.always_light)
+            2 -> getString(R.string.matches_accent_color)
+            3 -> getString(R.string.hide_navbar)
+            4 -> getString(R.string.auto)
+            else -> getString(R.string.navigation_bar_2)
+        }
+    }
     private fun setAppTheme() {
         val uimanager = getSystemService(UI_MODE_SERVICE) as UiModeManager
         if (Prefs(this).isLightThemeUsed) {

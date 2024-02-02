@@ -6,9 +6,9 @@
     <dimen name="iconAppsListSize">40dp</dimen>
     <dimen name="bottom_sheet_size">400dp</dimen>
     <dimen name="tile_small_moreTiles_off">62dp</dimen>
-    <dimen name="tile_small_moreTiles_on">48dp</dimen>
+    <dimen name="tile_small_moreTiles_on">38dp</dimen>
     <dimen name="tile_medium_moreTiles_off">84dp</dimen>
     <dimen name="tile_medium_moreTiles_on">64dp</dimen>
     <dimen name="tile_big_moreTiles_off">86dp</dimen>
-    <dimen name="tile_big_moreTiles_on">72dp</dimen>
+    <dimen name="tile_big_moreTiles_on">70dp</dimen>
 </resources>

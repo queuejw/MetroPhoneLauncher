@@ -60,6 +60,7 @@ class Prefs(context: Context) {
         // 4 - ready to install
         // 5 - failed
         // 6 - ready to download
+        // 7 - ready to download (beta ver)
         prefs.edit().putInt(UPDATE_STATE, int).apply()
     }
     val updateState: Int
@@ -94,6 +95,11 @@ class Prefs(context: Context) {
     fun setVersionCode(int: Int) {
         prefs.edit().putInt(VERSION_CODE, int).apply()
     }
+    fun setUpdateMessage(value: String) {
+        prefs.edit().putString(UPDATE_MESSAGE, value).apply()
+    }
+    val updateMessage: String
+        get() = prefs.getString(UPDATE_MESSAGE, "").toString()
     val versionCode: Int
         get() = prefs.getInt(VERSION_CODE, 0)
 
@@ -125,13 +131,35 @@ class Prefs(context: Context) {
                     .putInt(ACCENT_COLOR, color)
                     .apply()
         }
+    fun setLauncherState(int: Int) {
+        // 0 - OOBE
+        // 1 - nothing
+        // 2 - OOBE - selecting the type of settings (recommended or customize)
+        // 3 - waiting for reset (after recovery)
+        prefs.edit().putInt(STATE, int).apply()
+    }
+    val launcherState: Int
+        get() = prefs.getInt(STATE, 0)
+
+    fun setNavBarSetting(int: Int) {
+        // 0 - always dark
+        // 1 - always light
+        // 2 - use accent color
+        // 3 - hidden
+        // 4 - auto
+        prefs.edit().putInt(NAVBAR_COLOR, int).apply()
+    }
+    val navBarColor: Int
+        get() = prefs.getInt(NAVBAR_COLOR, 0)
+
     fun reset() {
-        prefs.all.clear()
+        prefs.edit().clear().apply()
     }
     val editor: SharedPreferences.Editor
         get() = prefs.edit()
     val pref: SharedPreferences
         get() = prefs
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -140,10 +168,13 @@ class Prefs(context: Context) {
         const val UPDATE_LEVEL = "updateLevel"
         const val ICON_CONFIG = "fastIcons"
         const val AUTO_UPDATE = "autoUpdate"
+        const val UPDATE_MESSAGE = "updMessage"
         const val VERSION_CODE = "versionCode"
         const val UPDATE_NOTIFICATION = "autoUpdate"
         const val FEEDBACK = "feedback"
+        const val STATE = "launcherState"
         const val LAUNCHER_LIGHT_THEME = "useLightTheme"
+        const val NAVBAR_COLOR = "navBarColor"
         const val LAUNCHER_CUSTOM_BACKGRD = "useCustomBackground"
         const val MORE_TILES = "isMoreTilesEnabled"
         const val IS_LAUNCHER_USING_CUSTOM_BACKGRD = "isCustomBackgrdUsing"

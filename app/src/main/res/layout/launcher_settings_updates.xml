@@ -24,8 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:fontFamily="@font/opensans_light"
-            android:capitalize="characters"
-            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="none"
             android:text="@string/launcher_update"
             android:textSize="52sp"
             android:textStyle="bold"/>

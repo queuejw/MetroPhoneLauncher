@@ -26,12 +26,14 @@
                             android:text="@string/start_theme"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
+
                     <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
-                            android:text="@string/start_theme_sub"
-                            android:textSize="16sp"/>
+                        android:id="@+id/theme_sub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_light"
+                        android:text="@string/start_theme_sub"
+                        android:textSize="16sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
@@ -104,12 +106,13 @@
                         android:text="@string/navigation_bar"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
+
                     <TextView
+                        android:id="@+id/navbar_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/opensans_light"
-                        android:text="@string/dark"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
@@ -136,6 +139,32 @@
                             android:fontFamily="@font/opensans_light"
                             android:text="@string/about_sub"
                             android:textSize="16sp"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?android:attr/colorBackground"
+                android:layout_width="match_parent"
+                android:id="@+id/leaks"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"
+                android:layout_height="64dp" android:layout_marginTop="12dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_light"
+                        android:text="LeakCanary"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_light"
+                        android:text="For developers"
+                        android:textSize="16sp"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

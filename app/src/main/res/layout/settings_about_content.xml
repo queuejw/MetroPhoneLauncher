@@ -9,13 +9,14 @@
             android:layout_width="match_parent"
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
+
         <TextView
-                android:text="phone information"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
-                android:layout_marginTop="32dp"
-                android:textSize="24sp"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/opensans_regular"
+            android:text="@string/phone_information"
+            android:textSize="24sp" />
         <TextView
                 android:text="@string/phone_info"
                 android:layout_width="match_parent"
@@ -25,7 +26,7 @@
                 android:textSize="17sp"/>
         <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:text="more info"
+                android:text="@string/more_info"
                 android:fontFamily="@font/opensans_regular"
                 app:cornerRadius="0dp"
                 app:strokeColor="?attr/colorOnBackground"
@@ -55,14 +56,14 @@
                     android:textSize="17sp"/>
         </LinearLayout>
         <TextView
-                android:text="help contacts"
+                android:text="@string/help_contacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_regular"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
         <TextView
-                android:text="Get help: github.com/queuejw/metrophonelauncher/issues"
+                android:text="@string/get_help"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
@@ -75,7 +76,7 @@
                 android:fontFamily="@font/opensans_medium"
                 android:textSize="17sp" android:autoLink="email"/>
         <TextView
-                android:text="online content"
+                android:text="@string/online_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/opensans_regular"
@@ -94,7 +95,7 @@
                 android:fontFamily="@font/opensans_medium"
                 android:textSize="17sp" android:autoLink="web"/>
         <TextView
-                android:text="2023 queuejw &amp; dimon6018"
+                android:text="2023-2024 queuejw &amp; dimon6018"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -102,7 +103,7 @@
                 android:textSize="18sp"/>
         <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:text="reset your launcher"
+                android:text="@string/reset_your_launcher"
                 android:fontFamily="@font/opensans_regular"
                 app:cornerRadius="0dp"
                 app:strokeColor="?attr/colorOnBackground"

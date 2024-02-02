@@ -4,4 +4,5 @@ class App {
     var appLabel: String? = null
     var appPackage: String? = null
     var isSection = false
+    var selected = false
 }

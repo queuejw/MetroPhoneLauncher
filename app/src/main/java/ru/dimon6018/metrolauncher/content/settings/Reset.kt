@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.AppData
@@ -24,10 +25,8 @@ class Reset : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reset)
-        Runnable {
-            dbApps = AppData.getAppData(this)
-            dbBsod = BSOD.getData(this)
-        }.run()
+        dbApps = AppData.getAppData(this)
+        dbBsod = BSOD.getData(this)
         frame = findViewById(R.id.frameReset)
         Main.applyWindowInsets(frame!!)
         intent = Intent(this, WelcomeActivity::class.java)
@@ -40,7 +39,8 @@ class Reset : AppCompatActivity() {
             Prefs(this@Reset).reset()
         }.invokeOnCompletion {
             val oobe = Runnable {
-                intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                Application.PREFS!!.setLauncherState(0)
+                intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 finishAffinity()
                 startActivity(intent)
             }

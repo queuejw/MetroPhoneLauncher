@@ -4,6 +4,7 @@ import android.util.Log
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import java.io.IOException
 import java.io.InputStream
 
@@ -50,6 +51,7 @@ class UpdateDataParser {
             }
             if(valueKey == "message") {
                 updateMsg = name
+                PREFS!!.setUpdateMessage(name)
             }
             if(valueKey == "tag") {
                 tag = name

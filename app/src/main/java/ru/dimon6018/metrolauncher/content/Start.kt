@@ -25,6 +25,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.asLiveData
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
@@ -41,6 +42,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.everything.android.ui.overscroll.IOverScrollDecor
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
@@ -72,6 +75,8 @@ class Start : Fragment(), OnStartDragListener {
     private var dbCall: AppDao? = null
     private var db: AppData? = null
 
+    var decor: IOverScrollDecor? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         contxt = context
@@ -101,9 +106,9 @@ class Start : Fragment(), OnStartDragListener {
         super.onViewCreated(view, savedInstanceState)
         CoroutineScope(Dispatchers.Default).launch {
             mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
-                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4, context = contxt!!)
+                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4)
             } else {
-                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 12, _columnCount = 6, context = contxt!!)
+                SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 12, _columnCount = 6)
             }
             mSpannedLayoutManager!!.itemOrderIsStable = true
             tileList = dbCall!!.getJustApps()
@@ -111,9 +116,10 @@ class Start : Fragment(), OnStartDragListener {
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
             requireActivity().runOnUiThread {
+                mRecyclerView!!.layoutManager = mSpannedLayoutManager
+                decor = OverScrollDecoratorHelper.setUpOverScroll(mRecyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                 mRecyclerView!!.adapter = adapter
                 mRecyclerView!!.addItemDecoration(SpaceItemDecorator(8, 8, 8, 8))
-                mRecyclerView!!.layoutManager = mSpannedLayoutManager
                 mItemTouchHelper!!.attachToRecyclerView(mRecyclerView)
                 setLM()
                 hideLoadingHolder()
@@ -222,12 +228,16 @@ class Start : Fragment(), OnStartDragListener {
                     dbAppsCall.insertItem(item)
                 }
             }
+            decor = OverScrollDecoratorHelper.setUpOverScroll(mRecyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
         }
         override fun onItemDismiss(position: Int) {
-            notifyDataSetChanged()
+            notifyItemChanged(position)
         }
 
         fun setNewData(newData: MutableList<AppEntity>) {
+        //    val diffUtilCallback = DiffUtilCallback(items, newData)
+         //   val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
+        //    diffResult.dispatchUpdatesTo(adapter!!)
             items = newData
             notifyDataSetChanged()
         }
@@ -298,10 +308,13 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             if(PREFS!!.isCustomBackgroundUsed) {
-                holder.mContainer.background = AppCompatResources.getDrawable(adapterContext, R.drawable.start_transparent)
                 val view: View = holder.mContainer
-                val bmpNew = Bitmap.createBitmap(BitmapFactory.decodeFile(PREFS!!.backgroundPath), view.x.toInt(), view.y.toInt(), view.width, view.height, null, true)
-                holder.mContainer.background = bmpNew.toDrawable(resources)
+                try {
+                    val bmpNew = Bitmap.createBitmap(BitmapFactory.decodeFile(PREFS!!.backgroundPath), view.x.toInt(), view.y.toInt(), view.width, view.height, null, true)
+                    holder.mContainer.background = bmpNew.toDrawable(resources)
+                } catch (e: IllegalArgumentException) {
+                    Log.e("Start", e.toString())
+                }
             }
             holder.mContainer.setOnClickListener {
                 val intent = packageManager!!.getLaunchIntentForPackage(item.appPackage)
@@ -309,6 +322,7 @@ class Start : Fragment(), OnStartDragListener {
                 startActivity(intent)
             }
             holder.mContainer.setOnLongClickListener {
+                decor!!.detach()
                 showPopupWindow(holder, position, adapterContext)
                 true
             }
@@ -337,35 +351,34 @@ class Start : Fragment(), OnStartDragListener {
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow!!.showAsDropDown(holder.itemView, 0, ((-1 * holder.itemView.height)), Gravity.CENTER)
             resize.setOnClickListener {
-                when (item.appSize) {
-                    "small" -> {
-                        CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {
+                    when (item.appSize) {
+                        "small" -> {
                             item.appSize = "medium"
                             dbAppsCall.updateApp(item)
+                            holder.mTextView.post {
+                                holder.mTextView.text = ""
+                            }
                         }
-                        holder.mTextView.post {
-                            holder.mTextView.text = ""
-                        }
-                        item.appSize = "medium"
-                    }
-                    "medium" -> {
-                        CoroutineScope(Dispatchers.IO).launch {
+
+                        "medium" -> {
                             item.appSize = "big"
                             dbAppsCall.updateApp(item)
+                            holder.mTextView.post {
+                                holder.mTextView.text = item.appLabel
+                            }
                         }
-                        item.appSize = "big"
-                    }
 
-                    "big" -> {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        "big" -> {
                             item.appSize = "small"
                             dbAppsCall.updateApp(item)
                         }
-                        item.appSize = "small"
+                    }
+                    requireActivity().runOnUiThread {
+                        popupWindow!!.dismiss()
+                        notifyItemChanged(position)
                     }
                 }
-                popupWindow!!.dismiss()
-                notifyDataSetChanged()
             }
             remove.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -470,6 +483,28 @@ class Start : Fragment(), OnStartDragListener {
             return items[position].appPos!!.toLong()
         }
     }
+    class DiffUtilCallback(private val oldList: MutableList<AppEntity>, private val newList: MutableList<AppEntity>) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            return old.appPackage == new.appPackage
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val old = oldList[oldItemPosition]
+            val new = newList[newItemPosition]
+            return old.id == new.id
+        }
+    }
+
     class AccentDialog : DialogFragment() {
 
         private var dbCallDialog: AppDao? = null

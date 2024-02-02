@@ -3,11 +3,14 @@ package ru.dimon6018.metrolauncher
 import android.app.Application
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.TypedValue
+import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
@@ -29,6 +32,7 @@ class Application : Application() {
         val BRAND: String = Build.BRAND
         val DEVICE: String = Build.DEVICE
         val HARDWARE: String = Build.HARDWARE
+        val MANUFACTURER: String = Build.MANUFACTURER
         val TIME: Long = Build.TIME
         var PREFS: Prefs? = null
 
@@ -128,7 +132,7 @@ class Application : Application() {
         fun downloadUpdate(context: Context) {
             val request = DownloadManager.Request(Uri.parse(UpdateActivity.URL_RELEASE))
             request.setDescription(context.getString(R.string.update_notification))
-            request.setTitle("MPL Recovery")
+            request.setTitle("MPL")
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MPL_update.apk")
             val manager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
@@ -136,6 +140,20 @@ class Application : Application() {
             isUpdateDownloading = true
             val q = DownloadManager.Query()
             q.setFilterById(downloadId)
+        }
+        fun setUpApps(pManager: PackageManager): MutableList<App> {
+            val list = ArrayList<App>()
+            val i = Intent(Intent.ACTION_MAIN, null)
+            i.addCategory(Intent.CATEGORY_LAUNCHER)
+            val allApps = pManager.queryIntentActivities(i, 0)
+            for (ri in allApps) {
+                val app = App()
+                app.appLabel = ri.loadLabel(pManager).toString()
+                app.appPackage = ri.activityInfo.packageName
+                app.isSection = false
+                list.add(app)
+            }
+            return list
         }
     }
 }

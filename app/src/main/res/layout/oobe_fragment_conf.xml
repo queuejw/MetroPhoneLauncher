@@ -11,22 +11,21 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/opensans_regular"
-        android:text="How would you like your MPL configured?"
+        android:text="@string/mpl_conf_tip"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.727"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button"
+        android:id="@+id/recommended"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/opensans_regular"
-        android:text="Recommended"
+        android:text="@string/recommended"
         android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -40,16 +39,15 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:paddingStart="16dp"
         android:layout_marginTop="12dp"
         android:alpha="0.6"
         android:fontFamily="@font/opensans_regular"
-        android:text="Choose recommended settings to enable mobile data, automatically download phone and app updates, and let apps use your advertising ID. Recommended settings will also send phone, keyboard and WiFi usage information to improve Microsoft and partner products and services. Learn more"
+        android:text="@string/recommended_tip"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/recommended" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/custom"
@@ -59,7 +57,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
         android:fontFamily="@font/opensans_regular"
-        android:text="Custom"
+        android:text="@string/custom"
         android:textColor="?attr/colorOnBackground"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -76,9 +74,9 @@
         android:layout_marginTop="12dp"
         android:alpha="0.6"
         android:fontFamily="@font/opensans_regular"
-        android:text="Customise your phone settings"
+        android:text="@string/customise_your_phone_settings"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.076"
+        app:layout_constraintHorizontal_bias="0.07"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom" />
 

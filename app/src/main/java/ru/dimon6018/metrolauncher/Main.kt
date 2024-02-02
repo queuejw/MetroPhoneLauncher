@@ -1,12 +1,14 @@
 package ru.dimon6018.metrolauncher
 
 import android.app.UiModeManager
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -21,20 +23,16 @@ import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.Start
-import ru.dimon6018.metrolauncher.content.data.AppDao
-import ru.dimon6018.metrolauncher.content.data.AppData
-import ru.dimon6018.metrolauncher.content.data.AppEntity
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.BSODadapter.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.WPDialog
-import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker.Companion.setupNotificationChannels
 
 class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
-    private lateinit var dbCall: AppDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
@@ -42,12 +40,17 @@ class Main : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen_laucnher)
         viewPager = findViewById(R.id.pager)
+        when(PREFS!!.launcherState) {
+            0 -> {
+                val intent = Intent(this, WelcomeActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                finishAffinity()
+                startActivity(intent)
+                return
+            }
+        }
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         CoroutineScope(Dispatchers.Default).launch {
-            if (!PREFS!!.pref.getBoolean("placeholdersGenerated", false)) {
-                dbCall = AppData.getAppData(this@Main).getAppDao()
-                generatePlaceholders()
-            }
             pagerAdapter = NumberAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
@@ -81,6 +84,21 @@ class Main : AppCompatActivity() {
     }
     private fun setupNavigationBar() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
+        when(PREFS!!.navBarColor) {
+            0 -> {
+                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
+            }
+            1 -> {
+                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light))
+            }
+            2 -> {
+                bottomNavigationView.setBackgroundColor(Application.accentColorFromPrefs(this))
+            }
+            3 -> {
+                bottomNavigationView.visibility = View.GONE
+                return
+            }
+        }
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.start_win -> {
@@ -108,25 +126,8 @@ class Main : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        //move this to oobe in future
-        if(!PREFS!!.pref.getBoolean("channelConfigured", false)) {
-            setupNotificationChannels(this)
-            PREFS!!.editor.putBoolean("channelConfigured", true).apply()
-        }
         if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
             PREFS!!.setUpdateState(3)
-        }
-    }
-    private fun generatePlaceholders() {
-        CoroutineScope(Dispatchers.IO).launch {
-            PREFS!!.editor.putBoolean("placeholdersGenerated", true).apply()
-            val size = 35
-            var temp = 0
-            while (temp != size) {
-                val placeholder = AppEntity(temp, temp + 1, -1, true, "small", "", "")
-                temp += 1
-                dbCall.insertItem(placeholder)
-            }
         }
     }
     override fun onResume() {

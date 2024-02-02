@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 
@@ -17,7 +18,6 @@ class WelcomeActivity: AppCompatActivity() {
     private var textLabel: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.oobe)
         textLabel = findViewById(R.id.appbarTextView)
@@ -25,8 +25,14 @@ class WelcomeActivity: AppCompatActivity() {
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         Main.applyWindowInsets(coordinatorLayout)
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
+            if(PREFS!!.launcherState != 2) {
+                supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
+                }
+            } else {
+                supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
+                }
             }
         }
     }

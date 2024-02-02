@@ -32,13 +32,18 @@ import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import leakcanary.LeakCanary
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.Start.Companion.tileList
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
+import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
@@ -57,6 +62,8 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
     private var contxt: Context? = null
 
     private var dbCall: AppDao? = null
+
+    private val reservedApps = mutableListOf("ru.dimon6018.metrolauncher")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
@@ -83,22 +90,23 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                     .interceptorDispatcher(Dispatchers.Default)
                     .memoryCache {
                         MemoryCache.Builder(contxt!!)
-                                .maxSizePercent(0.1)
+                                .maxSizePercent(0.25)
                                 .build()
                     }
                     .diskCache {
                         DiskCache.Builder()
                                 .directory(contxt!!.cacheDir.resolve("cache"))
-                                .maxSizePercent(0.1)
+                                .maxSizePercent(0.25)
                                 .build()
                     }
                     .build()
             appAdapter = AppAdapter(mApps!!, contxt!!.packageManager, dbCall!!, contxt!!, imageLoader)
-            setUpApps(contxt!!.packageManager)
+            appsList = setUpApps(contxt!!.packageManager)
             getHeaderListLatter(appsList)
             requireActivity().runOnUiThread {
                 recyclerView!!.setLayoutManager(LinearLayoutManager(contxt))
                 recyclerView!!.adapter = appAdapter
+                OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                 searchBtnBack!!.setOnClickListener {
                     searchBtn!!.visibility = View.VISIBLE
                     search!!.visibility = View.GONE
@@ -107,9 +115,13 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                     CoroutineScope(Dispatchers.Default).launch {
                         mApps = null
                         mApps = ArrayList()
-                        setUpApps(contxt!!.packageManager)
+                        appsList = setUpApps(contxt!!.packageManager)
                         getHeaderListLatter(appsList)
-                        appAdapter!!.setNewFilteredList(mApps!!)
+                        runBlocking {
+                            requireActivity().runOnUiThread {
+                                appAdapter!!.setNewFilteredList(mApps!!)
+                            }
+                        }
                     }
                 }
                 hideLoadingHolder()
@@ -150,20 +162,6 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             })
         }
     }
-    private fun setUpApps(pManager: PackageManager) {
-        appsList = ArrayList()
-        val i = Intent(Intent.ACTION_MAIN, null)
-        i.addCategory(Intent.CATEGORY_LAUNCHER)
-        val allApps = pManager.queryIntentActivities(i, 0)
-        for (ri in allApps) {
-            val app = App()
-            app.appLabel = ri.loadLabel(pManager).toString()
-            app.appPackage = ri.activityInfo.packageName
-            app.isSection = false
-            appsList!!.add(app)
-        }
-    }
-
     private fun filterText(text: String) {
         val filteredlist: ArrayList<App> = ArrayList()
         for (item in appsList!!) {
@@ -267,9 +265,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
             holder1.label.text = app.appLabel
             holder1.itemView.setOnClickListener {
-                val intent = contxt!!.packageManager.getLaunchIntentForPackage(app.appPackage!!)
-                intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+                runApp(app.appPackage!!)
             }
             holder1.itemView.setOnLongClickListener {
                 showPopupWindow(holder1.itemView, app.appPackage!!, app.appLabel!!)
@@ -308,11 +304,23 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 recyclerView!!.scaleY = 1f
             }
         }
+        private fun runApp(packag: String) {
+            when (packag) {
+                "ru.dimon6018.metrolauncher" -> {
+                    startActivity(Intent(requireActivity(), SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }
+                else -> {
+                    val intent = contxt!!.packageManager.getLaunchIntentForPackage(packag)
+                    intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+            }
+        }
         private fun insertNewApp(text: String, packag: String) {
             CoroutineScope(Dispatchers.Default).launch {
                 val pos = dbCall.getJustAppsWithoutPlaceholders(false).size
                 val id = Random.nextInt(1000, 20000)
-                val item = AppEntity(pos, id, -1, false, "small", text, packag)
+                val item = AppEntity(pos + 1, id, -1, false, "small", text, packag)
                 dbCall.insertItem(item)
                 tileList = dbCall.getJustApps()
             }
@@ -350,6 +358,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
     companion object {
         const val SECTION_VIEW = 0
         const val CONTENT_VIEW = 1
+
         private var appsList: MutableList<App>? = null
     }
 }
