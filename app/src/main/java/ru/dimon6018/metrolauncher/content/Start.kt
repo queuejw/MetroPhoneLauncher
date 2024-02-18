@@ -60,7 +60,6 @@ import java.util.Collections
 
 class Start : Fragment(), OnStartDragListener {
     private var mRecyclerView: RecyclerView? = null
-    private var mAppListButton: MaterialCardView? = null
     private var mItemTouchHelper: ItemTouchHelper? = null
     private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
     private var adapter: StartAdapter? = null
@@ -79,14 +78,16 @@ class Start : Fragment(), OnStartDragListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
-        contxt = context
-        dbCall = AppData.getAppData(contxt!!).getAppDao()
-        db = AppData.getAppData(contxt!!)
         progressBar = v.findViewById(R.id.progressBarStart)
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
+        contxt = context
+        if(contxt == null) {
+            return null
+        }
+        dbCall = AppData.getAppData(contxt!!).getAppDao()
+        db = AppData.getAppData(contxt!!)
         loadingHolder = v.findViewById(R.id.loadingHolderStart)
-        mAppListButton = v.findViewById(R.id.open_applist_btn)
         background = v.findViewById(R.id.startBackground)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
         if (PREFS!!.isCustomBackgroundUsed) {
@@ -104,6 +105,9 @@ class Start : Fragment(), OnStartDragListener {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(contxt == null) {
+            return
+        }
         CoroutineScope(Dispatchers.Default).launch {
             mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
                 SpannedGridLayoutManager(orientation = RecyclerView.VERTICAL, _rowCount = 8, _columnCount = 4)
@@ -148,7 +152,6 @@ class Start : Fragment(), OnStartDragListener {
         progressBar!!.hideProgressBar()
         loadingHolder!!.visibility = View.GONE
         mRecyclerView!!.visibility = View.VISIBLE
-        mAppListButton!!.visibility = View.VISIBLE
     }
     override fun onResume() {
         super.onResume()
@@ -235,9 +238,9 @@ class Start : Fragment(), OnStartDragListener {
         }
 
         fun setNewData(newData: MutableList<AppEntity>) {
-        //    val diffUtilCallback = DiffUtilCallback(items, newData)
-         //   val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
-        //    diffResult.dispatchUpdatesTo(adapter!!)
+            //    val diffUtilCallback = DiffUtilCallback(items, newData)
+            //   val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
+            //    diffResult.dispatchUpdatesTo(adapter!!)
             items = newData
             notifyDataSetChanged()
         }

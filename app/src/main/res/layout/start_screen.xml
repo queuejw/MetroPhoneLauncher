@@ -5,15 +5,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:animateLayoutChanges="true"
         android:id="@+id/startBackground">
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
+        android:layout_height="match_parent">
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/start_apps_tiles"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible"/>
+                android:layout_height="match_parent" />
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -29,29 +30,6 @@
                     android:id="@+id/progressBarStart"
                     android:layout_height="wrap_content"
                     app:indicatorColor="?attr/colorPrimary"/>
-            <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_gravity="bottom"
-                    android:layout_height="wrap_content">
-                <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Material3.CardView.Outlined"
-                        android:id="@+id/open_applist_btn"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:layout_marginEnd="4dp"
-                        app:cardCornerRadius="48dp"
-                        app:strokeColor="?attr/colorOnSurface"
-                        app:strokeWidth="3dp"
-                        android:layout_gravity="end">
-                    <ImageView
-                            android:layout_width="42dp"
-                            android:layout_height="42dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_arrow_right"
-                            app:tint="?attr/colorOnSurface"/>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

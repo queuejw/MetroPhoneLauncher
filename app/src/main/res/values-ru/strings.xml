@@ -116,4 +116,10 @@
     <string name="details">Подробности</string>
     <string name="ready_to_download_beta">Бета-версия готова к скачиванию</string>
     <string name="auto">стандартно</string>
+    <string name="settings_app_title">Настройки MPL</string>
+    <string name="oobe_part1_tip">Выбор настроек лаунчера</string>
+    <string name="oobe_part2_tip">Выбор приложений</string>
+    <string name="oobe_part3_tip">Завершение</string>
+    <string name="advertisement">Реклама</string>
+    <string name="neko11_ad">Neko11 - простая, забавная и интересная игра про котиков. Вам предстоит собрать самую большую коллекцию котов в мире. Кормите, гладьте, купайте, играйте и наряжайте их в разные костюмы. Если заинтересовало, то нажмите на кнопку ниже. Приятной игры =)</string>
 </resources>

@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +45,7 @@ import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.helpers.WPDialog
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
@@ -63,11 +65,8 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
 
     private var dbCall: AppDao? = null
 
-    private val reservedApps = mutableListOf("ru.dimon6018.metrolauncher")
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
-        contxt = context
         progressBar = view.findViewById(R.id.progressBar)
         progressBar!!.setIndicatorRadius(5)
         progressBar!!.showProgressBar()
@@ -83,6 +82,10 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        contxt = activity
+        if(contxt == null) {
+            return
+        }
         CoroutineScope(Dispatchers.Default).launch {
             dbCall = AppData.getAppData(contxt!!).getAppDao()
             mApps = ArrayList()
@@ -169,8 +172,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 filteredlist.add(item)
             }
         }
-        if (filteredlist.isEmpty()) {
-        } else {
+        if (filteredlist.isNotEmpty()) {
             appAdapter!!.setNewFilteredList(filteredlist)
         }
     }
@@ -256,12 +258,8 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                         .build()
                 imageLoader.enqueue(request)
             } catch (e: PackageManager.NameNotFoundException) {
-                val request = ImageRequest.Builder(context)
-                        .data(R.drawable.ic_os_android)
-                        .crossfade(true)
-                        .target(holder.icon)
-                        .build()
-                imageLoader.enqueue(request)
+                adapterApps.removeAt(position)
+                notifyDataSetChanged()
             }
             holder1.label.text = app.appLabel
             holder1.itemView.setOnClickListener {
@@ -318,9 +316,13 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         }
         private fun insertNewApp(text: String, packag: String) {
             CoroutineScope(Dispatchers.Default).launch {
-                val pos = dbCall.getJustAppsWithoutPlaceholders(false).size
+                var pos = dbCall.getJustAppsWithoutPlaceholders(false).size
+                pos += 1
+                if(dbCall.getApp(pos).isPlaceholder == false) {
+                    pos += 1
+                }
                 val id = Random.nextInt(1000, 20000)
-                val item = AppEntity(pos + 1, id, -1, false, "small", text, packag)
+                val item = AppEntity(pos, id, -1, false, "small", text, packag)
                 dbCall.insertItem(item)
                 tileList = dbCall.getJustApps()
             }

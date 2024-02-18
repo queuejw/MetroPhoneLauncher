@@ -1,5 +1,3 @@
-@file:JvmName("SpaceItemDecorator")
-
 package ru.dimon6018.metrolauncher.helpers
 
 import android.graphics.Rect
@@ -10,13 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
  * Created by Jorge Martín on 2/6/17.
  */
 
-class SpaceItemDecorator(val left: Int,
-                         val top: Int,
-                         val right: Int,
-                         val bottom: Int): RecyclerView.ItemDecoration() {
+class SpaceItemDecorator(private val left: Int,
+                         private val top: Int,
+                         private val right: Int,
+                         private val bottom: Int): RecyclerView.ItemDecoration() {
 
-
-    constructor(rect: android.graphics.Rect): this(rect.left, rect.top, rect.right, rect.bottom)
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.left = this.left

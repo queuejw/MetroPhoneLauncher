@@ -52,7 +52,7 @@
                 android:layout_marginTop="24dp"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start"
-                android:text="Выбор настроек лаунчера"
+                android:text="@string/oobe_part1_tip"
                 android:textSize="20sp" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start"
-                android:text="Выбор приложений"
+                android:text="@string/oobe_part2_tip"
                 android:textSize="20sp" />
 
             <TextView
@@ -70,7 +70,7 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="@font/opensans_regular"
                 android:gravity="start"
-                android:text="Завершение"
+                android:text="@string/oobe_part3_tip"
                 android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>

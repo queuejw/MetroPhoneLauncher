@@ -53,8 +53,14 @@
                     android:fontFamily="@font/opensans_regular"
                     android:textSize="17sp"
                     android:layout_marginStart="2dp"
-                    android:layout_marginBottom="4dp"
-                    android:textAlignment="viewEnd"/>
+                    android:layout_marginBottom="4dp"/>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/menuTrigger"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

@@ -109,7 +109,12 @@ class UpdateActivity: AppCompatActivity() {
                 }
                 return@setOnClickListener
             }
-            if (PREFS!!.updateState == 6) {
+            else if (PREFS!!.updateState == 7) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    checkDownload()
+                }
+            }
+            else if (PREFS!!.updateState == 6) {
                 CoroutineScope(Dispatchers.IO).launch {
                     checkDownload()
                 }
@@ -281,6 +286,7 @@ class UpdateActivity: AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             if (UpdateDataParser.verCode!! == Application.VERSION_CODE) {
                 Log.i("CheckForUpdates", "up-to-date")
+                PREFS!!.setUpdateState(3)
                 runOnUiThread {
                     refreshUi()
                 }

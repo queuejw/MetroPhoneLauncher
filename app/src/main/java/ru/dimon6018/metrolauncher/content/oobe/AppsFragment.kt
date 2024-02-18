@@ -76,7 +76,7 @@ class AppsFragment: Fragment() {
         }
         back.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
+                replace(R.id.fragment_container_view, AdFragment(), "oobe")
             }
         }
         next.setOnClickListener {

@@ -115,4 +115,10 @@
     <string name="details">Details</string>
     <string name="ready_to_download_beta">The beta version is ready for download</string>
     <string name="auto">auto</string>
+    <string name="settings_app_title">MPL Settings</string>
+    <string name="oobe_part1_tip">Selecting Launcher Settings</string>
+    <string name="oobe_part2_tip">Selecting applications</string>
+    <string name="oobe_part3_tip">Completion</string>
+    <string name="advertisement">Advertisement</string>
+    <string name="neko11_ad">Neko11 is a simple, funny and interesting game about cats. You will have to collect the largest collection of cats in the world. Feed, pet, bathe, play and dress them up in different costumes. If interested, click on the button below. Enjoy the game =)</string>
 </resources>

@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 7
-        versionName "1.0 Pre-Alpha 1"
+        versionCode 8
+        versionName "1.0 Pre-Alpha 2 (dev 1)"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -34,7 +34,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    setBuildToolsVersion('34.0.0')
+    setBuildToolsVersion('35.0.0-rc01')
 }
 dependencies {
 
@@ -42,8 +42,8 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.7.1'
     implementation 'com.google.android.material:material:1.12.0-alpha03'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
-    implementation 'androidx.core:core-ktx:1.13.0-alpha04'
-    implementation 'androidx.fragment:fragment-ktx:1.7.0-alpha09'
+    implementation 'androidx.core:core-ktx:1.13.0-alpha05'
+    implementation 'androidx.fragment:fragment-ktx:1.7.0-alpha10'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
@@ -56,7 +56,7 @@ dependencies {
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
     implementation 'io.coil-kt:coil:2.5.0'
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.13'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

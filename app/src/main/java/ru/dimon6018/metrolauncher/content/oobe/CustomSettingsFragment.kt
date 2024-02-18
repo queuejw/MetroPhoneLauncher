@@ -24,7 +24,7 @@ class CustomSettingsFragment: Fragment() {
         }
         next.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, AppsFragment(), "oobe")
+                replace(R.id.fragment_container_view, AdFragment(), "oobe")
             }
         }
         return view

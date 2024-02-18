@@ -48,7 +48,10 @@ class AboutSettingsActivity : AppCompatActivity() {
             WPDialog(this).setTopDialog(true)
                     .setTitle(getString(R.string.reset_warning_title))
                     .setMessage(getString(R.string.reset_warning))
-                    .setNegativeButton(getString(R.string.yes)) { resetPart1() }
+                    .setNegativeButton(getString(R.string.yes)) {
+                        resetPart1()
+                        WPDialog(this).dismiss()
+                    }
                     .setPositiveButton(getString(R.string.no), null).show()
         }
         applyWindowInsets(coord)
