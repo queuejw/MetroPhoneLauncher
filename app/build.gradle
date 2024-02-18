@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 8
-        versionName "1.0 Pre-Alpha 2 (dev 1)"
+        versionName "1.0 Pre-Alpha 2 (dev 1b)"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false

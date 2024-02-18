@@ -173,7 +173,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
             }
         }
         if (filteredlist.isNotEmpty()) {
-            appAdapter!!.setNewFilteredList(filteredlist)
+            appAdapter?.setNewFilteredList(filteredlist)
         }
     }
 
@@ -209,12 +209,12 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 mApps!!.remove(item)
             }
         }
-        appAdapter!!.notifyDataSetChanged()
+        appAdapter?.notifyDataSetChanged()
     }
 
     override fun onResume() {
-        appAdapter!!.notifyDataSetChanged()
         super.onResume()
+        appAdapter?.notifyDataSetChanged()
     }
     inner class AppAdapter internal constructor(private var adapterApps: MutableList<App>, private val packageManager: PackageManager, private val dbCall: AppDao, private val context: Context, private val imageLoader: ImageLoader) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)

@@ -129,6 +129,7 @@ class Main : AppCompatActivity() {
         if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
             PREFS!!.setUpdateState(3)
         }
+        checkCrashes()
     }
     override fun onResume() {
         super.onResume()
@@ -136,7 +137,6 @@ class Main : AppCompatActivity() {
             Prefs.isAccentChanged = false
             recreate()
         }
-        checkCrashes()
     }
 
     @Deprecated("Deprecated in Java")
