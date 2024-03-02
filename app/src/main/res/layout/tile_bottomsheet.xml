@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
         style="@style/MPL.BottomSheet.AllAppsStyle"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -49,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:fontFamily="@font/opensans_light"
-            android:text="edit app label"
+            android:text="@string/edit_app_label"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />
 
@@ -58,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="invisible">
+                android:visibility="visible">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -68,12 +67,12 @@
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textField"
                         android:layout_width="match_parent"
-                        android:layout_height="54dp"
+                        android:layout_height="64dp"
                         android:layout_marginEnd="48dp"
+                        android:hint="@string/enter_label_here"
                         android:textColorHint="?attr/colorSurface"
-                        android:hint="enter label here"
-                        app:boxCornerRadiusBottomStart="0dp"
                         app:boxCornerRadiusBottomEnd="0dp"
+                        app:boxCornerRadiusBottomStart="0dp"
                         app:boxCornerRadiusTopEnd="0dp"
                         app:boxCornerRadiusTopStart="0dp"
                         app:boxStrokeColor="?attr/colorSurface"
@@ -81,27 +80,29 @@
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/textEdit"
-                            android:textColor="?attr/colorSurface"
-                            android:fontFamily="@font/opensans_light"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="" />
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/opensans_light"
+                            android:text=""
+                            android:textColor="?attr/colorSurface" />
                     </com.google.android.material.textfield.TextInputLayout>
+
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/labelChange"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
-                        android:layout_gravity="bottom|end"
+                        android:layout_gravity="center|end"
+                        app:cardBackgroundColor="@android:color/transparent"
                         app:cardCornerRadius="48dp"
                         app:strokeColor="?attr/colorSurface"
-                        app:cardBackgroundColor="@android:color/transparent"
                         app:strokeWidth="3dp">
+
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:src="@drawable/ic_edit"
-                            app:tint="?attr/colorSurface"/>
+                            app:tint="?attr/colorSurface" />
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
             </LinearLayout></LinearLayout>
@@ -112,7 +113,6 @@
             app:cardCornerRadius="0dp"
             app:strokeWidth="0dp"
             android:layout_height="wrap_content"
-            tools:layout_editor_absoluteX="0dp"
             app:cardBackgroundColor="?attr/colorOnSurface"
             app:layout_constraintTop_toBottomOf="@+id/editAppLabel">
         <LinearLayout
@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:fontFamily="@font/opensans_light"
-                android:text="choose tile color"
+                android:text="@string/choose_tile_color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
         <LinearLayout
@@ -137,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:fontFamily="@font/opensans_light"
-                android:text="selected color: %s"
+                android:text="@string/selected_color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="20sp" />
             <TextView
@@ -172,7 +172,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:fontFamily="@font/opensans_light"
-            android:text="uninstall"
+            android:text="@string/uninstall"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />
     </com.google.android.material.card.MaterialCardView>

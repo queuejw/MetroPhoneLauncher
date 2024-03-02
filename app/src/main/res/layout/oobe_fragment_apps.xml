@@ -11,7 +11,8 @@
         android:layout_marginTop="16dp"
         android:fontFamily="@font/opensans_regular"
         android:textSize="18sp"
-        android:text="Выберите приложения, которые хотите закрепить на начальном экране"
+        android:text="@string/oobe_apps_tip"
+        android:background="?android:attr/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

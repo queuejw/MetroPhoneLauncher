@@ -11,12 +11,12 @@ class Prefs(context: Context) {
         prefs = context.getSharedPreferences(FILE_NAME, 0)
     }
 
-    fun setLauncherCustomBackgrdAvailability(bool: Boolean) {
-        prefs.edit().putBoolean(IS_LAUNCHER_USING_CUSTOM_BACKGRD, bool).apply()
+    fun setWallpaper(bool: Boolean) {
+        prefs.edit().putBoolean(WALLPAPER_USING, bool).apply()
     }
 
-    val isCustomBackgroundUsed: Boolean
-        get() = prefs.getBoolean(IS_LAUNCHER_USING_CUSTOM_BACKGRD, false)
+    val isWallpaperUsed: Boolean
+        get() = prefs.getBoolean(WALLPAPER_USING, false)
 
     fun setMoreTilesPref(bool: Boolean) {
         prefs.edit().putBoolean(MORE_TILES, bool).apply()
@@ -24,13 +24,6 @@ class Prefs(context: Context) {
 
     val isMoreTilesEnabled: Boolean
         get() = prefs.getBoolean(MORE_TILES, false)
-
-    fun setCustomBackgrdPath(path: String?) {
-        prefs.edit().putString(LAUNCHER_CUSTOM_BACKGRD, path).apply()
-    }
-
-    val backgroundPath: String?
-        get() = prefs.getString(LAUNCHER_CUSTOM_BACKGRD, "")
 
     fun useLightTheme(bool: Boolean) {
         prefs.edit().putBoolean(LAUNCHER_LIGHT_THEME, bool).apply()
@@ -150,7 +143,7 @@ class Prefs(context: Context) {
         prefs.edit().putInt(NAVBAR_COLOR, int).apply()
     }
     val navBarColor: Int
-        get() = prefs.getInt(NAVBAR_COLOR, 0)
+        get() = prefs.getInt(NAVBAR_COLOR, 4)
 
     fun reset() {
         prefs.edit().clear().apply()
@@ -175,9 +168,8 @@ class Prefs(context: Context) {
         const val STATE = "launcherState"
         const val LAUNCHER_LIGHT_THEME = "useLightTheme"
         const val NAVBAR_COLOR = "navBarColor"
-        const val LAUNCHER_CUSTOM_BACKGRD = "useCustomBackground"
         const val MORE_TILES = "isMoreTilesEnabled"
-        const val IS_LAUNCHER_USING_CUSTOM_BACKGRD = "isCustomBackgrdUsing"
+        const val WALLPAPER_USING = "wallpaperUsing"
         var isAccentChanged = false
     }
 }

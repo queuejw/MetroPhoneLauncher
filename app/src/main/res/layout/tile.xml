@@ -18,7 +18,6 @@
 <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="164dp"
         android:layout_height="164dp"
         android:layout_margin="4dp"
@@ -29,14 +28,14 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             app:cardBackgroundColor="@color/transparent"
-            app:strokeWidth="0dp"
+            app:strokeColor="?android:attr/colorBackground"
+            app:strokeWidth="3dp"
             app:cardCornerRadius="0dp">
         <FrameLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clickable="true"
-                tools:ignore="UselessParent"
                 android:focusable="true">
             <ImageView
                     android:layout_width="wrap_content"
@@ -49,18 +48,19 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|start"
                     android:textColor="@android:color/white"
-                    tools:ignore="RtlHardcoded"
                     android:fontFamily="@font/opensans_regular"
                     android:textSize="17sp"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:layout_marginBottom="4dp"/>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <View
         android:id="@+id/menuTrigger"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:background="@android:color/background_dark"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:alpha="0.04"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentTop="true" />
 </RelativeLayout>

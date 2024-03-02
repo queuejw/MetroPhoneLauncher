@@ -15,15 +15,19 @@
     <application
         android:name="ru.dimon6018.metrolauncher.Application"
         android:testOnly="false"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/ic_os_windows_8"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Cobalt">
         <activity
-            android:name=".Main"
+            android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:resumeWhilePausing="true"
             android:icon="@drawable/ic_os_windows_8"
-            android:taskAffinity="ru.dimon6018.metrolauncher.Main">
+            android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -33,6 +37,7 @@
         </activity>
         <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.SettingsActivity"
+                android:autoRemoveFromRecents="true"
                 android:exported="true"
                 android:label="@string/settings_app_title"
                 android:icon="@drawable/ic_settings"
@@ -44,14 +49,17 @@
         </activity>
         <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.ThemeSettingsActivity"
+                android:autoRemoveFromRecents="true"
                 android:exported="true">
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackSettingsActivity"
+            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackBsodListActivity"
+            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -60,6 +68,7 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.NavBarSettingsActivity"
+            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -68,6 +77,7 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.helpers.bsod.BsodScreen"
+            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -76,6 +86,7 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.RecoveryOptions"
+            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -84,6 +95,7 @@
         </activity>
         <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.AboutSettingsActivity"
+            android:autoRemoveFromRecents="true"
                 android:exported="true">
         </activity>
         <provider

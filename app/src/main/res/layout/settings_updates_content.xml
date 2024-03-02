@@ -42,15 +42,14 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/opensans_regular"
             android:text="@string/preparing_to_install" />
-
-        <TextView
-            android:id="@+id/cancel_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/opensans_regular"
-            android:text="@string/cancel_update" />
     </LinearLayout>
+    <TextView
+        android:id="@+id/cancel_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/cancel_update" />
     <TextView
         android:id="@+id/updateInfo"
         android:layout_width="match_parent"

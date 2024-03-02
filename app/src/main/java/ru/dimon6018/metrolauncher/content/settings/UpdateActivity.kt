@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -26,6 +27,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
@@ -95,39 +97,40 @@ class UpdateActivity: AppCompatActivity() {
                     .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         check!!.setOnClickListener {
-            if(PREFS!!.updateState == 4) {
-                try {
-                    val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-                    val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
-                    PREFS!!.setVersionCode(UpdateDataParser.verCode!!)
-                    openFile(uri, this)
-                } catch (e: Exception) {
-                    Log.i("InstallAPK", "error: $e")
-                    PREFS!!.setUpdateState(5)
+            when(PREFS!!.updateState) {
+                4 -> {
+                    try {
+                        val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
+                        val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
+                        PREFS!!.setVersionCode(UpdateDataParser.verCode!!)
+                        openFile(uri, this)
+                    } catch (e: Exception) {
+                        Log.i("InstallAPK", "error: $e")
+                        PREFS!!.setUpdateState(5)
+                        refreshUi()
+                        saveError(e.toString())
+                    }
+                    return@setOnClickListener
+                }
+                6, 7 -> {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        checkDownload()
+                    }
+                }
+                else -> {
+                    PREFS!!.setUpdateState(1)
                     refreshUi()
-                    saveError(e.toString())
-                }
-                return@setOnClickListener
-            }
-            else if (PREFS!!.updateState == 7) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    checkDownload()
-                }
-            }
-            else if (PREFS!!.updateState == 6) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    checkDownload()
-                }
-            } else {
-                PREFS!!.setUpdateState(1)
-                refreshUi()
-                CoroutineScope(Dispatchers.IO).launch {
-                checkForUpdates()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        checkForUpdates()
+                    }
                 }
             }
         }
         cancelDownload!!.setOnClickListener {
             PREFS!!.setUpdateState(0)
+            if(PREFS!!.updateState == 1) {
+                return@setOnClickListener
+            }
             if(manager != null) {
                 isUpdateDownloading = false
                 manager!!.remove(downloadId!!)
@@ -156,6 +159,7 @@ class UpdateActivity: AppCompatActivity() {
         if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
             WPDialog(this).setTopDialog(true)
                     .setTitle(getString(R.string.perms_req))
+                    .setCancelable(true)
                     .setMessage(getString(R.string.perms_req_tip))
                     .setNegativeButton(getString(R.string.yes)) {
                         checkPerms()
@@ -177,11 +181,15 @@ class UpdateActivity: AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (!packageManager.canRequestPackageInstalls()) {
                 startActivityForResult(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(Uri.parse(String.format("package:%s", packageName))), 1)
+                        .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
             }
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1507)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            startActivityForResult(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
         }
     }
     private fun refreshUi() {
@@ -194,11 +202,13 @@ class UpdateActivity: AppCompatActivity() {
                 progressLayout!!.visibility = View.GONE
                 checkingSub!!.text = getString(R.string.checking_for_updates)
                 updateDetails!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.VISIBLE
             }
             2 -> {
                 checkingSub!!.visibility = View.GONE
                 check!!.visibility = View.GONE
                 progressLayout!!.visibility = View.VISIBLE
+                cancelDownload!!.visibility = View.VISIBLE
                 if(isUpdateDownloading) {
                     Thread {
                         while (isUpdateDownloading) {
@@ -226,6 +236,7 @@ class UpdateActivity: AppCompatActivity() {
                 check!!.text = getString(R.string.check_for_updates)
                 progressLayout!!.visibility = View.GONE
                 updateDetails!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.GONE
             }
             4 -> {
                 checkingSub!!.visibility = View.VISIBLE
@@ -234,6 +245,7 @@ class UpdateActivity: AppCompatActivity() {
                 check!!.text = getString(R.string.install)
                 progressLayout!!.visibility = View.GONE
                 updateDetails!!.visibility = View.VISIBLE
+                cancelDownload!!.visibility = View.GONE
             }
             5 -> {
                 checkingSub!!.visibility = View.VISIBLE
@@ -242,6 +254,7 @@ class UpdateActivity: AppCompatActivity() {
                 progressLayout!!.visibility = View.GONE
                 check!!.text = getString(R.string.retry)
                 updateDetails!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.GONE
             }
             6 -> {
                 checkingSub!!.visibility = View.VISIBLE
@@ -250,6 +263,7 @@ class UpdateActivity: AppCompatActivity() {
                 progressLayout!!.visibility = View.GONE
                 check!!.text = getString(R.string.download)
                 updateDetails!!.visibility = View.VISIBLE
+                cancelDownload!!.visibility = View.VISIBLE
             }
             7 -> {
                 checkingSub!!.visibility = View.VISIBLE
@@ -258,6 +272,16 @@ class UpdateActivity: AppCompatActivity() {
                 progressLayout!!.visibility = View.GONE
                 check!!.text = getString(R.string.download_beta)
                 updateDetails!!.visibility = View.VISIBLE
+                cancelDownload!!.visibility = View.VISIBLE
+            }
+            8 -> {
+                checkingSub!!.visibility = View.VISIBLE
+                checkingSub!!.text = getString(R.string.update_failed_version_bigger_than_server)
+                check!!.visibility = View.VISIBLE
+                progressLayout!!.visibility = View.GONE
+                check!!.text = getString(R.string.retry)
+                updateDetails!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.GONE
             }
             0 -> {
                 check!!.visibility = View.VISIBLE
@@ -265,6 +289,7 @@ class UpdateActivity: AppCompatActivity() {
                 checkingSub!!.visibility = View.GONE
                 progressLayout!!.visibility = View.GONE
                 updateDetails!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.GONE
             }
         }
     }
@@ -273,9 +298,13 @@ class UpdateActivity: AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 downloadXml(URL)
-                checkUpdateInfo()
                 runOnUiThread {
                     refreshUi()
+                }
+                runBlocking {
+                    runOnUiThread {
+                        checkUpdateInfo()
+                    }
                 }
             } catch (e: Exception) {
                 Log.e("CheckForUpdates", e.toString())
@@ -284,14 +313,22 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun checkUpdateInfo() {
         CoroutineScope(Dispatchers.IO).launch {
-            if (UpdateDataParser.verCode!! == Application.VERSION_CODE) {
-                Log.i("CheckForUpdates", "up-to-date")
+            if (UpdateDataParser.verCode == null) {
+                PREFS!!.setUpdateState(5)
+                return@launch
+            }
+            if (UpdateDataParser.verCode == Application.VERSION_CODE) {
                 PREFS!!.setUpdateState(3)
-                runOnUiThread {
-                    refreshUi()
+            } else if (Application.VERSION_CODE > UpdateDataParser.verCode!!) {
+                PREFS!!.setUpdateState(8)
+            } else if(UpdateDataParser.verCode!! > Application.VERSION_CODE) {
+                if (UpdateDataParser.isBeta == true) {
+                    PREFS!!.setUpdateState(7)
+                } else {
+                    PREFS!!.setUpdateState(6)
                 }
-            } else {
-                if (UpdateDataParser.isBeta == true) PREFS!!.setUpdateState(7) else PREFS!!.setUpdateState(3)
+            }
+            runBlocking {
                 runOnUiThread {
                     progressBar!!.isIndeterminate = false
                     refreshUi()
@@ -316,37 +353,45 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun saveError(e: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            Log.e("UpdateService", e)
-            val entity = BSODEntity()
-            entity.date = time.toString()
-            entity.log = e
-            val pos: Int
-            when (PREFS!!.getMaxCrashLogs()) {
-                0 -> {
-                    db!!.clearAllTables()
-                    pos = db!!.getDao().getBsodList().size
-                }
-                1 -> {
-                    if (db!!.getDao().getBsodList().size >= 5) {
+            if (PREFS!!.isFeedbackEnabled) {
+                Log.e("UpdateService", e)
+                val entity = BSODEntity()
+                entity.date = time.toString()
+                entity.log = e
+                val pos: Int
+                when (PREFS!!.getMaxCrashLogs()) {
+                    0 -> {
                         db!!.clearAllTables()
+                        pos = db!!.getDao().getBsodList().size
                     }
-                    pos = db!!.getDao().getBsodList().size
-                }
-                2 -> {
-                    if (db!!.getDao().getBsodList().size >= 10) {
-                        db!!.clearAllTables()
+
+                    1 -> {
+                        if (db!!.getDao().getBsodList().size >= 5) {
+                            db!!.clearAllTables()
+                        }
+                        pos = db!!.getDao().getBsodList().size
                     }
-                    pos = db!!.getDao().getBsodList().size
+
+                    2 -> {
+                        if (db!!.getDao().getBsodList().size >= 10) {
+                            db!!.clearAllTables()
+                        }
+                        pos = db!!.getDao().getBsodList().size
+                    }
+
+                    3 -> {
+                        pos = db!!.getDao().getBsodList().size
+                    }
+
+                    else -> {
+                        pos = db!!.getDao().getBsodList().size
+                    }
                 }
-                3 -> {
-                    pos = db!!.getDao().getBsodList().size
-                }
-                else -> {
-                    pos = db!!.getDao().getBsodList().size
-                }
+                entity.pos = pos
+                db!!.getDao().insertLog(entity)
+            } else {
+                Toast.makeText(this@UpdateActivity, getString(R.string.update_err_saving_error), Toast.LENGTH_LONG).show()
             }
-            entity.pos = pos
-            db!!.getDao().insertLog(entity)
         }
     }
     @SuppressLint("Range")
@@ -364,7 +409,7 @@ class UpdateActivity: AppCompatActivity() {
                 runOnUiThread {
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                             .setTitle(getString(R.string.error))
-                            .setMessage("Не получается продолжить процесс обновления из-за ошибки. Информация об ошибке была сохранена.")
+                            .setMessage(getString(R.string.downloading_error))
                             .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
                 return@launch
@@ -405,7 +450,6 @@ class UpdateActivity: AppCompatActivity() {
                     }
                     val progress: Int = ((downloaded * 100L / total)).toInt()
                     val progressString = getString(R.string.preparing_to_install, progress) + "%"
-                    Log.i("download", "current: $progress")
                     PREFS!!.setUpdateProgressLevel(progress)
                     runOnUiThread {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -447,6 +491,9 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
         fun isUpdateAvailable(): Boolean {
+            if(UpdateDataParser.verCode == null) {
+                return false
+            }
             val boolean: Boolean = if (UpdateDataParser.verCode == Application.VERSION_CODE) {
                 Log.i("CheckForUpdates", "up-to-date")
                 false

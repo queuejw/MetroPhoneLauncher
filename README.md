@@ -1,7 +1,7 @@
 # MetroPhoneLauncher (MPL)
 My first Android Launcher with Windows Phone 8(.1) interface
 
-MPL is a launcher that looks as much like Windows Phone 8 as possible (not so much now). Feel the WP experience on your device right now. Free. Really =)
+MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible (not so much now). Feel the WP experience on your device right now. Free.
 
 Since the launcher isn't ready yet, I can't show a huge list of functionality, but you can already see it:
 
@@ -13,13 +13,17 @@ Since the launcher isn't ready yet, I can't show a huge list of functionality, b
 
 - Unique desktop - customize it the way you want. Make tiles bigger, wider, smaller, move and do whatever you want.
 
-- Working app search. almost.
+- Lots of customizations to make the launcher perfect
+
+- Ability to receive "Over-The-Air" updates
+
+- Working app search.
 
 And much more... 
 
 # Screenshots:
 
-<img src='/screenshots/1.jpg' width='300'> <img src='/screenshots/2.jpg' width='300'> <img src='/screenshots/3.jpg' width='300'> <img src='/screenshots/4.jpg' width='300'> <img src='/screenshots/5.jpg' width='300'>  <img src='/screenshots/6.jpg' width='300'>
+<img src='/screenshots/vb.jpg' width='300'> <img src='/screenshots/ab.jpg' width='300'> <img src='/screenshots/dg.jpg' width='300'> <img src='/screenshots/mm.jpg' width='300'> <img src='/screenshots/yc.jpg' width='300'>  <img src='/screenshots/po.jpg' width='300'>
 
 # Download (free):
 

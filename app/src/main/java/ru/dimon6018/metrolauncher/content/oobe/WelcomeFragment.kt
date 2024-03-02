@@ -1,10 +1,10 @@
 package ru.dimon6018.metrolauncher.content.oobe
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +45,7 @@ class WelcomeFragment : Fragment() {
             val size = 100
             val dbCall = AppData.getAppData(requireContext()).getAppDao()
             for (i in 0..size) {
-                val placeholder = AppEntity(i, i + 1, -1, true, "small", "", "")
+                val placeholder = AppEntity(i, (i + 1).toLong(), -1, true, "small", "", "")
                 dbCall.insertItem(placeholder)
             }
         }

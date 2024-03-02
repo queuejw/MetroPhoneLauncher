@@ -17,7 +17,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,18 +33,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import leakcanary.LeakCanary
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.Start.Companion.tileList
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.helpers.WPDialog
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
@@ -54,7 +50,7 @@ import kotlin.random.Random
 class AllApps : Fragment(R.layout.all_apps_screen) {
     private var mApps: ArrayList<App>? = null
 
-    private var recyclerView: RecyclerView? = null
+    var recyclerView: RecyclerView? = null
     private var search: TextInputLayout? = null
     private var appAdapter: AppAdapter? = null
     private var searchBtn: MaterialCardView? = null
@@ -211,11 +207,6 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         }
         appAdapter?.notifyDataSetChanged()
     }
-
-    override fun onResume() {
-        super.onResume()
-        appAdapter?.notifyDataSetChanged()
-    }
     inner class AppAdapter internal constructor(private var adapterApps: MutableList<App>, private val packageManager: PackageManager, private val dbCall: AppDao, private val context: Context, private val imageLoader: ImageLoader) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
@@ -258,8 +249,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                         .build()
                 imageLoader.enqueue(request)
             } catch (e: PackageManager.NameNotFoundException) {
-                adapterApps.removeAt(position)
-                notifyDataSetChanged()
+                adapterApps.remove(app)
             }
             holder1.label.text = app.appLabel
             holder1.itemView.setOnClickListener {
@@ -305,7 +295,7 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
         private fun runApp(packag: String) {
             when (packag) {
                 "ru.dimon6018.metrolauncher" -> {
-                    startActivity(Intent(requireActivity(), SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
                 }
                 else -> {
                     val intent = contxt!!.packageManager.getLaunchIntentForPackage(packag)
@@ -321,10 +311,9 @@ class AllApps : Fragment(R.layout.all_apps_screen) {
                 if(dbCall.getApp(pos).isPlaceholder == false) {
                     pos += 1
                 }
-                val id = Random.nextInt(1000, 20000)
+                val id = Random.nextLong(1000, 2000000)
                 val item = AppEntity(pos, id, -1, false, "small", text, packag)
                 dbCall.insertItem(item)
-                tileList = dbCall.getJustApps()
             }
         }
         override fun getItemViewType(position: Int): Int {

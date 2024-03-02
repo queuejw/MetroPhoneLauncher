@@ -7,29 +7,34 @@
         android:orientation="vertical"
         android:animateLayoutChanges="true"
         android:id="@+id/startBackground">
+
     <FrameLayout
+        android:id="@+id/startFrame"
         android:layout_width="match_parent"
-        android:animateLayoutChanges="true"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/start_apps_tiles"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            android:id="@+id/start_apps_tiles"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <LinearLayout
+            android:id="@+id/loadingHolderStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ir.alirezabdn.wp7progress.WP7ProgressBar
+                android:id="@+id/progressBarStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_gravity="center"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:id="@+id/loadingHolderStart">
-            <ir.alirezabdn.wp7progress.WP7ProgressBar
-                    android:layout_width="match_parent"
-                    android:id="@+id/progressBarStart"
-                    android:layout_height="wrap_content"
-                    app:indicatorColor="?attr/colorPrimary"/>
+                app:indicatorColor="?attr/colorPrimary" />
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

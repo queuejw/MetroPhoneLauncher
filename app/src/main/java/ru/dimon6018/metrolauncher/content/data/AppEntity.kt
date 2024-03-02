@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class AppEntity (
     @PrimaryKey
     var appPos: Int? = null,
-    var id: Int? = null,
+    var id: Long? = null,
     @ColumnInfo
     var tileColor: Int? = null,
     var isPlaceholder: Boolean? = null,

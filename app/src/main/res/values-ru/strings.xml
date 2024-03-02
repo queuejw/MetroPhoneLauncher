@@ -122,4 +122,36 @@
     <string name="oobe_part3_tip">Завершение</string>
     <string name="advertisement">Реклама</string>
     <string name="neko11_ad">Neko11 - простая, забавная и интересная игра про котиков. Вам предстоит собрать самую большую коллекцию котов в мире. Кормите, гладьте, купайте, играйте и наряжайте их в разные костюмы. Если заинтересовало, то нажмите на кнопку ниже. Приятной игры =)</string>
+    <string name="edit_app_label">изменить название</string>
+    <string name="enter_label_here">вводите здесь</string>
+    <string name="choose_tile_color">выбрать цвет плитки</string>
+    <string name="selected_color">выбранный цвет: %s</string>
+    <string name="uninstall">удалить</string>
+    <string name="update_failed_version_bigger_than_server">Мы обнаружили, что ваша версия новее, чем на сервере. Возможно, вы используете тестовую версию или модификацию.</string>
+    <string name="downloading_error">Не получается продолжить процесс обновления из-за ошибки. Информация об ошибке была сохранена.</string>
+    <string name="wallpaper_setting">Вы можете использовать фон рабочего стола для фона плиток</string>
+    <string name="wallpaper_switch">Использовать фон рабочего стола</string>
+    <string name="color_lime">lime</string>
+    <string name="color_green">зелёный</string>
+    <string name="color_emerald">emerald</string>
+    <string name="color_cyan">cyan</string>
+    <string name="color_teal">teal</string>
+    <string name="color_cobalt">cobalt</string>
+    <string name="color_indigo">indigo</string>
+    <string name="color_violet">violet</string>
+    <string name="color_pink">pink</string>
+    <string name="color_magenta">magenta</string>
+    <string name="color_crimson">crimson</string>
+    <string name="color_red">красный</string>
+    <string name="color_orange">orange</string>
+    <string name="color_mauve">mauve</string>
+    <string name="color_steel">steel</string>
+    <string name="color_olive">olive</string>
+    <string name="color_amber">amber</string>
+    <string name="color_taupe">taupe</string>
+    <string name="color_yellow">yellow</string>
+    <string name="color_brown">brown</string>
+    <string name="wallpaper_error">Мы не можем использовать ваши обои без разрешения.</string>
+    <string name="update_err_saving_error">Отключены отчеты об ошибках. Информация не сохранена.</string>
+    <string name="oobe_apps_tip">Выберите приложения, которые хотите закрепить на начальном экране</string>
 </resources>

@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 8
-        versionName "1.0 Pre-Alpha 2 (dev 1b)"
+        versionCode 9
+        versionName "1.0 Pre-Alpha 2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -54,7 +54,7 @@ dependencies {
     implementation project(path: ':SpannedGridLayoutManager')
     implementation project(path: ':liboverscroll')
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
-    implementation 'io.coil-kt:coil:2.5.0'
+    implementation 'io.coil-kt:coil:2.6.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.13'
     testImplementation 'junit:junit:4.13.2'

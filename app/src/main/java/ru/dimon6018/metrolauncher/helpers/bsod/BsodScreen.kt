@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.ANDROID_VERSION
+import ru.dimon6018.metrolauncher.Application.Companion.BRAND
 import ru.dimon6018.metrolauncher.Application.Companion.MODEL
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
@@ -36,13 +37,14 @@ class BsodScreen : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             db = BSOD.getData(this@BsodScreen)
             val model = "Model: $MODEL\n"
+            val brand = "Brand: $BRAND\n"
             val name = "MPL Ver: $VERSION_NAME\n"
             val android = "Android Version: $ANDROID_VERSION\n"
             val code = intent.extras?.getString("errorCode")
             val errCode = "\nIf vou call a support person. aive them this info:\n" +
                     "Stop code: $code"
             val error = "Your launcher ran into a problem and needs to restart. We're just\n" +
-                    "collecting some error info, and then we'll restart for you.\n " + model + android + name + intent.extras?.getString("stacktrace") + errCode
+                    "collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
             Log.e("BSOD", error)
             val time: Date = Calendar.getInstance().time
             val entity = BSODEntity()

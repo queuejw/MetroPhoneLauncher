@@ -76,7 +76,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="6dp"
                 android:fontFamily="@font/opensans_regular"
-                android:text="только последнюю"
+                android:text="@string/feedback_limit_0"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
@@ -89,7 +89,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/opensans_regular"
-                android:text="последние 5"
+                android:text="@string/feedback_limit_1"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
@@ -102,7 +102,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/opensans_regular"
-                android:text="последние 10"
+                android:text="@string/feedback_limit_2"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
@@ -115,7 +115,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/opensans_regular"
-                android:text="как можно больше"
+                android:text="@string/feedback_limit_3"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
         </LinearLayout>

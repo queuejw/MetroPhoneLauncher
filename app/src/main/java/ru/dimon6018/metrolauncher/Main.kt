@@ -1,6 +1,5 @@
 package ru.dimon6018.metrolauncher
 
-import android.app.UiModeManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -22,7 +21,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.AllApps
-import ru.dimon6018.metrolauncher.content.Start
+import ru.dimon6018.metrolauncher.content.NewStart
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
@@ -36,14 +35,14 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
-        setAppTheme()
         super.onCreate(savedInstanceState)
+        setAppTheme()
         setContentView(R.layout.main_screen_laucnher)
         viewPager = findViewById(R.id.pager)
         when(PREFS!!.launcherState) {
             0 -> {
                 val intent = Intent(this, WelcomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 finishAffinity()
                 startActivity(intent)
                 return
@@ -59,9 +58,9 @@ class Main : AppCompatActivity() {
         }
         setupNavigationBar()
     }
-    private fun checkCrashes() {
+    private fun otherTasks() {
         if (PREFS!!.pref.getBoolean("app_crashed", false)) {
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 delay(5000)
                 PREFS!!.editor.putBoolean("app_crashed", false).apply()
                 PREFS!!.editor.putInt("crashCounter", 0).apply()
@@ -80,6 +79,9 @@ class Main : AppCompatActivity() {
                     }
                 }
             }
+        }
+        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
+            PREFS!!.setUpdateState(3)
         }
     }
     private fun setupNavigationBar() {
@@ -114,22 +116,19 @@ class Main : AppCompatActivity() {
         }
     }
     private fun setAppTheme() {
-        val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        val isLightThemeUsed = Prefs(this).isLightThemeUsed
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            uiModeManager.setApplicationNightMode(if (isLightThemeUsed) UiModeManager.MODE_NIGHT_NO else UiModeManager.MODE_NIGHT_YES)
+            return
+        }
+        if(PREFS!!.isLightThemeUsed) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         } else {
-            AppCompatDelegate.setDefaultNightMode(if (isLightThemeUsed) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES)
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
 
     override fun onStart() {
         super.onStart()
-        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
-            PREFS!!.setUpdateState(3)
-        }
-        checkCrashes()
+        otherTasks()
     }
     override fun onResume() {
         super.onResume()
@@ -149,8 +148,8 @@ class Main : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         viewPager.adapter = null
+        super.onDestroy()
     }
     companion object {
          fun applyWindowInsets(target: View) {
@@ -166,7 +165,7 @@ class Main : AppCompatActivity() {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            return if (position == 1)  AllApps() else Start()
+            return if (position == 1)  AllApps() else NewStart()
         }
     }
 }

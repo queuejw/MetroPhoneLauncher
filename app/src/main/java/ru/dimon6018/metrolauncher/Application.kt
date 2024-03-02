@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher
 
 import android.app.Application
 import android.app.DownloadManager
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,11 +17,23 @@ import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
 class Application : Application() {
+
+    private var context: Context? = null
+
     override fun onCreate() {
-        BsodDetector.setContext(applicationContext)
+        context = applicationContext
+        BsodDetector.setContext(context)
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
+        PREFS = Prefs(context!!)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val uiMan: UiModeManager = (context!!.getSystemService(UI_MODE_SERVICE) as UiModeManager)
+            if(PREFS!!.isLightThemeUsed) {
+                uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
+            } else {
+                uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
+            }
+        }
         super.onCreate()
-        PREFS = Prefs(applicationContext)
     }
     companion object {
         const val VERSION_CODE: Int = BuildConfig.VERSION_CODE
@@ -45,9 +58,9 @@ class Application : Application() {
                 R.color.tile_olive, R.color.tile_steel, R.color.tile_mauve, R.color.tile_taupe
         )
         private var accentNames = arrayOf(
-                "lime", "green", "emerald", "cyan", "teal", "cobalt", "indigo", "violet",
-                "pink", "magenta", "crimson", "red", "orange", "amber", "yellow", "brown",
-                "olive", "steel", "mauve", "taupe"
+                R.string.color_lime, R.string.color_green, R.string.color_emerald, R.string.color_cyan, R.string.color_teal, R.string.color_cobalt, R.string.color_indigo, R.string.color_violet,
+                R.string.color_pink, R.string.color_magenta, R.string.color_crimson, R.string.color_red, R.string.color_orange, R.string.color_amber, R.string.color_yellow, R.string.color_brown,
+                R.string.color_olive, R.string.color_steel, R.string.color_mauve, R.string.color_taupe
         )
         fun accentColorFromPrefs(context: Context): Int {
                 val selectedColor = Prefs(context).accentColor
@@ -111,19 +124,19 @@ class Application : Application() {
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
             return typedValue.data
         }
-        fun accentName(): String {
+        fun accentName(context: Context): String {
                 val selectedColor = PREFS!!.accentColor
                 return if (selectedColor >= 0 && selectedColor < accentNames.size) {
-                    accentNames[selectedColor]
+                    context.getString(accentNames[selectedColor])
                 } else {
                     // Default to "unknown" if the selected color is out of bounds
                     "unknown"
                 }
             }
 
-        fun getTileColorName(color: Int): String {
+        fun getTileColorName(color: Int, context: Context): String {
             return if (color >= 0 && color < accentNames.size) {
-                accentNames[color]
+                context.getString(accentNames[color])
             } else {
                 // Default to "unknown" if the selected color is out of bounds
                 "unknown"

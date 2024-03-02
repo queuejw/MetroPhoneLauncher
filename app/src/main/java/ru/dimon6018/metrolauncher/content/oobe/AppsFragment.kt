@@ -20,16 +20,13 @@ import coil.request.ImageRequest
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.AllApps
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
@@ -68,7 +65,7 @@ class AppsFragment: Fragment() {
                     }
                     .build()
             val adapter = AppAdapter(appList, context.packageManager, context, imageLoader)
-            requireActivity().runOnUiThread {
+            activity?.runOnUiThread {
                 recyclerView!!.layoutManager = LinearLayoutManager(context)
                 recyclerView!!.adapter = adapter
                 OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
@@ -84,7 +81,7 @@ class AppsFragment: Fragment() {
                 for (i in 0..<selectedItems!!.size) {
                     val item = selectedItems!![i]
                     val pos = call.getJustAppsWithoutPlaceholders(false).size
-                    val id = Random.nextInt(1000, 20000)
+                    val id = Random.nextLong(1000, 2000000)
                     val entity = AppEntity(pos, id, -1, false, "small", item.appLabel!!, item.appPackage!!)
                     call.insertItem(entity)
                 }

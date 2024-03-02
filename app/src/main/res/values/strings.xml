@@ -121,4 +121,36 @@
     <string name="oobe_part3_tip">Completion</string>
     <string name="advertisement">Advertisement</string>
     <string name="neko11_ad">Neko11 is a simple, funny and interesting game about cats. You will have to collect the largest collection of cats in the world. Feed, pet, bathe, play and dress them up in different costumes. If interested, click on the button below. Enjoy the game =)</string>
+    <string name="edit_app_label">edit app label</string>
+    <string name="enter_label_here">enter label here</string>
+    <string name="choose_tile_color">choose tile color</string>
+    <string name="selected_color">selected color: %s</string>
+    <string name="uninstall">uninstall</string>
+    <string name="update_failed_version_bigger_than_server">We found that your version is newer than the one on the server. You may be using a test version or a modification of the.</string>
+    <string name="downloading_error">Unable to continue the upgrade process due to an error. The error information has been saved.</string>
+    <string name="wallpaper_setting">You can use your desktop wallpaper for the background of the tiles</string>
+    <string name="wallpaper_switch">Use my desktop wallpaper</string>
+    <string name="color_lime">lime</string>
+    <string name="color_green">green</string>
+    <string name="color_emerald">emerald</string>
+    <string name="color_cyan">cyan</string>
+    <string name="color_teal">teal</string>
+    <string name="color_cobalt">cobalt</string>
+    <string name="color_indigo">indigo</string>
+    <string name="color_violet">violet</string>
+    <string name="color_pink">pink</string>
+    <string name="color_magenta">magenta</string>
+    <string name="color_crimson">crimson</string>
+    <string name="color_red">red</string>
+    <string name="color_orange">orange</string>
+    <string name="color_mauve">mauve</string>
+    <string name="color_steel">steel</string>
+    <string name="color_olive">olive</string>
+    <string name="color_amber">amber</string>
+    <string name="color_taupe">taupe</string>
+    <string name="color_yellow">yellow</string>
+    <string name="color_brown">brown</string>
+    <string name="wallpaper_error">We can\'t use your wallpaper without permission.</string>
+    <string name="update_err_saving_error">Feedback are disabled. No information has been saved</string>
+    <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
 </resources>

@@ -23,7 +23,7 @@ class AlmostDoneFragment: Fragment() {
         WelcomeActivity.setText(requireActivity(), getString(R.string.welcomeAlmostDone))
         next.setOnClickListener {
             Application.PREFS!!.setLauncherState(1)
-            requireActivity().startActivity(Intent(activity, Main::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            requireActivity().startActivity(Intent(activity, Main::class.java))
         }
         return view
     }
