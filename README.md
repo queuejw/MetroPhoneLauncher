@@ -23,7 +23,7 @@ And much more...
 
 # Screenshots:
 
-<img src='/screenshots/vb.jpg' width='300'> <img src='/screenshots/ab.jpg' width='300'> <img src='/screenshots/dg.jpg' width='300'> <img src='/screenshots/mm.jpg' width='300'> <img src='/screenshots/yc.jpg' width='300'>  <img src='/screenshots/po.jpg' width='300'>
+<img src='/screenshots/vb.png' width='300'> <img src='/screenshots/ab.png' width='300'> <img src='/screenshots/dg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/yc.png' width='300'>  <img src='/screenshots/po.png' width='300'>
 
 # Download (free):
 
