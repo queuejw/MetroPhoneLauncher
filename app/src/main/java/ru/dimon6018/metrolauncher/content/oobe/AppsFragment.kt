@@ -8,17 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.ImageRequest
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +26,6 @@ import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.App
-import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
 import kotlin.random.Random
@@ -36,39 +33,40 @@ import kotlin.random.Random
 class AppsFragment: Fragment() {
 
     private var recyclerView: RecyclerView? = null
+    private var loading: WP7ProgressBar? = null
+    private var fragmentContext: Context? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.oobe_fragment_apps, container, false)
+        fragmentContext = requireContext()
+        WelcomeActivity.setText(requireActivity(), getString(R.string.configureApps))
+        recyclerView = view.findViewById(R.id.oobeRecycler)
+        loading = view.findViewById(R.id.oobeAppsLoadingBar)
+        loading!!.showProgressBar()
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val back: MaterialButton = view.findViewById(R.id.back)
         val next: MaterialButton = view.findViewById(R.id.next)
-        WelcomeActivity.setText(requireActivity(), getString(R.string.configureApps))
-        val context = requireContext()
-        var call: AppDao = AppData.getAppData(context).getAppDao()
-        recyclerView = view.findViewById(R.id.oobeRecycler)
+        val call = AppData.getAppData(fragmentContext!!).getAppDao()
         CoroutineScope(Dispatchers.Default).launch {
             selectedItems = ArrayList()
             val appList = setUpApps(requireContext().packageManager)
-            call = AppData.getAppData(context).getAppDao()
-            val imageLoader = ImageLoader.Builder(context)
-                    .interceptorDispatcher(Dispatchers.Default)
-                    .memoryCache {
-                        MemoryCache.Builder(context)
-                                .maxSizePercent(0.1)
-                                .build()
-                    }
-                    .diskCache {
-                        DiskCache.Builder()
-                                .directory(context.cacheDir.resolve("cache"))
-                                .maxSizePercent(0.1)
-                                .build()
-                    }
-                    .build()
-            val adapter = AppAdapter(appList, context.packageManager, context, imageLoader)
+            val adapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
+            val lm = LinearLayoutManager(fragmentContext)
             activity?.runOnUiThread {
-                recyclerView!!.layoutManager = LinearLayoutManager(context)
+                recyclerView!!.layoutManager = lm
                 recyclerView!!.adapter = adapter
                 OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+            }
+            runBlocking {
+                activity?.runOnUiThread {
+                    loading!!.hideProgressBar()
+                    loading!!.visibility = View.GONE
+                }
             }
         }
         back.setOnClickListener {
@@ -92,14 +90,13 @@ class AppsFragment: Fragment() {
                 }
             }
         }
-        return view
     }
     companion object {
         var selectedItems: MutableList<App>? = null
         var latestItem: Int? = null
     }
 }
-class AppAdapter internal constructor(private var adapterApps: MutableList<App>, private val packageManager: PackageManager, private val context: Context, private val imageLoader: ImageLoader) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
+class AppAdapter(private var adapterApps: MutableList<App>, private val packageManager: PackageManager, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
     private var iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
@@ -116,19 +113,11 @@ class AppAdapter internal constructor(private var adapterApps: MutableList<App>,
         holder as OOBEAppHolder
         try {
             val bmp = packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
-            val request = ImageRequest.Builder(context)
-                    .data(bmp)
-                    .crossfade(true)
-                    .target(holder.icon)
-                    .build()
-            imageLoader.enqueue(request)
+            holder.icon.setImageBitmap(bmp)
         } catch (e: PackageManager.NameNotFoundException) {
-            val request = ImageRequest.Builder(context)
-                    .data(R.drawable.ic_os_android)
-                    .crossfade(true)
-                    .target(holder.icon)
-                    .build()
-            imageLoader.enqueue(request)
+            holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))
+            adapterApps.remove(item)
+            notifyItemRemoved(position)
         }
         holder.label.text = item.appLabel
         holder.checkbox.setOnCheckedChangeListener { _, isChecked ->

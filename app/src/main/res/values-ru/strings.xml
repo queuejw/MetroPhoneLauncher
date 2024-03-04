@@ -154,4 +154,6 @@
     <string name="wallpaper_error">Мы не можем использовать ваши обои без разрешения.</string>
     <string name="update_err_saving_error">Отключены отчеты об ошибках. Информация не сохранена.</string>
     <string name="oobe_apps_tip">Выберите приложения, которые хотите закрепить на начальном экране</string>
+    <string name="tip">Подсказки</string>
+    <string name="tip1">Нажмите на верхний правый угол плитки, чтобы настроить её</string>
 </resources>

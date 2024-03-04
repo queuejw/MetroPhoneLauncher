@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -20,7 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.content.AllApps
+import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
@@ -57,8 +58,26 @@ class Main : AppCompatActivity() {
             }
         }
         setupNavigationBar()
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (viewPager.currentItem != 0) {
+                    viewPager.currentItem -= 1
+                }
+            }
+        })
     }
     private fun otherTasks() {
+        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
+            PREFS!!.setUpdateState(3)
+        }
+        if (PREFS!!.pref.getBoolean("tip1Enabled", true)) {
+            WPDialog(this@Main).setTopDialog(false)
+                    .setTitle(getString(R.string.tip))
+                    .setMessage(getString(R.string.tip1))
+                    .setPositiveButton(getString(android.R.string.ok), null)
+                    .show()
+            PREFS!!.editor.putBoolean("tip1Enabled", false).apply()
+        }
         if (PREFS!!.pref.getBoolean("app_crashed", false)) {
             CoroutineScope(Dispatchers.IO).launch {
                 delay(5000)
@@ -69,19 +88,20 @@ class Main : AppCompatActivity() {
                     val pos = (dbCall.getBsodList().size) - 1
                     val text = dbCall.getBSOD(pos).log
                     runOnUiThread {
+                        viewPager.visibility = View.VISIBLE
                         WPDialog(this@Main).setTopDialog(true)
                                 .setTitle(getString(R.string.bsodDialogTitle))
                                 .setMessage(getString(R.string.bsodDialogMessage))
                                 .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                                .setOnDismissListener {
+                                    viewPager.visibility = View.VISIBLE
+                                }
                                 .setPositiveButton(getString(R.string.bsodDialogSend)) {
                                     sendCrash(text, this@Main)
                                 }.show()
                     }
                 }
             }
-        }
-        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
-            PREFS!!.setUpdateState(3)
         }
     }
     private fun setupNavigationBar() {
@@ -137,16 +157,6 @@ class Main : AppCompatActivity() {
             recreate()
         }
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (viewPager.currentItem != 0) {
-            viewPager.currentItem -= 1
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     override fun onDestroy() {
         viewPager.adapter = null
         super.onDestroy()
@@ -165,7 +175,7 @@ class Main : AppCompatActivity() {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            return if (position == 1)  AllApps() else NewStart()
+            return if (position == 1)  NewAllApps() else NewStart()
         }
     }
 }

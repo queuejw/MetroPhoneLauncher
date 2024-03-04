@@ -9,7 +9,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
 import android.util.Log
 import android.view.Gravity
@@ -22,7 +21,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -97,18 +95,21 @@ class NewStart: Fragment(), OnStartDragListener {
             adapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
+            if(PREFS!!.isWallpaperUsed) {
+                try {
+                    getPermission()
+                    val wallpaperManager = WallpaperManager.getInstance(context)
+                    val bmp = wallpaperManager.drawable
+                    requireActivity().runOnUiThread {
+                        frame = v.findViewById(R.id.startFrame)
+                        frame.background = bmp
+                    }
+                } catch (e: Exception) {
+                    Log.e("Start", e.toString())
+                }
+            }
             runBlocking {
                 requireActivity().runOnUiThread {
-                    if(PREFS!!.isWallpaperUsed) {
-                        try {
-                            getPermission()
-                            val wallpaperManager = WallpaperManager.getInstance(context)
-                            frame = v.findViewById(R.id.startFrame)
-                            frame.background = wallpaperManager.drawable
-                        } catch (e: Exception) {
-                            Log.e("Start", e.toString())
-                        }
-                    }
                     mRecyclerView = v.findViewById(R.id.start_apps_tiles)
                     mRecyclerView!!.layoutManager = mSpannedLayoutManager
                     mRecyclerView!!.adapter = adapter
@@ -133,11 +134,14 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val new = appsDbCall?.getJustApps()
             runBlocking {
                 requireActivity().runOnUiThread {
                     if (new != null) {
+                        if(new == adapter?.list) {
+                            return@runOnUiThread
+                        }
                         tiles = new
                         adapter?.setData(new)
                     }
@@ -153,7 +157,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mItemTouchHelper!!.startDrag(viewHolder)
         }
     }
-    inner class NewStartAdapter(val context: Context, private var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
+    inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         private val tileType: Int = 0
         val spaceType: Int = 1
@@ -274,6 +278,8 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
+            Log.d("ItemMove", "from pos: $fromPosition")
+            Log.d("ItemMove", "to pos: $toPosition")
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
                     Collections.swap(list, i, i + 1)
@@ -307,7 +313,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun showPopupWindow(holder: TileViewHolder, item: AppEntity) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = if(item.appSize == "medium" && PREFS!!.isMoreTilesEnabled) {
+            val popupView: View = if(PREFS!!.isMoreTilesEnabled) {
                 inflater.inflate(R.layout.tile_window_horiz, holder.itemView as ViewGroup, false)
             } else if(item.appSize == "small" ) {
                 inflater.inflate(R.layout.tile_window_horiz, holder.itemView as ViewGroup, false)
@@ -357,9 +363,14 @@ class NewStart: Fragment(), OnStartDragListener {
             remove.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     appsDbCall!!.removeApp(item)
+                    list.remove(item)
+                    runBlocking {
+                        requireActivity().runOnUiThread {
+                            notifyDataSetChanged()
+                        }
+                    }
                 }
                 popupWindow.dismiss()
-                notifyItemRemoved(item.appPos!!)
             }
             settings.setOnClickListener {
                 val bottomsheet = BottomSheetDialog(context)
@@ -376,7 +387,10 @@ class NewStart: Fragment(), OnStartDragListener {
                 val editor = bottomSheetInternal.findViewById<EditText>(R.id.textEdit)
                 val labellayout = bottomSheetInternal.findViewById<LinearLayout>(R.id.changeLabelLayout)
                 val labelChangeBtn = bottomSheetInternal.findViewById<MaterialCardView>(R.id.labelChange)
+                val originalLabel = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(item.appPackage, 0)).toString()
                 label.text = item.appLabel
+                editor.setText(item.appLabel)
+                editor.hint = originalLabel
                 if(item.tileColor == -1) {
                     colorSub.visibility = View.GONE
                     removeColor.visibility = View.GONE
@@ -389,11 +403,17 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
                 labelChangeBtn.setOnClickListener {
                     CoroutineScope(Dispatchers.IO).launch {
-                        item.appLabel = editor.text.toString()
+                        if(editor.text.toString() == "") {
+                            item.appLabel = originalLabel
+                        } else {
+                            item.appLabel = editor.text.toString()
+                        }
                         appsDbCall!!.updateApp(item)
-                        activity!!.runOnUiThread {
-                            bottomsheet.dismiss()
-                            notifyDataSetChanged()
+                        runBlocking {
+                            activity!!.runOnUiThread {
+                                bottomsheet.dismiss()
+                                notifyDataSetChanged()
+                            }
                         }
                     }
                 }

@@ -104,6 +104,7 @@ class UpdateActivity: AppCompatActivity() {
                         val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
                         PREFS!!.setVersionCode(UpdateDataParser.verCode!!)
                         openFile(uri, this)
+                        PREFS!!.editor.putBoolean("updateInstalled", true).apply()
                     } catch (e: Exception) {
                         Log.i("InstallAPK", "error: $e")
                         PREFS!!.setUpdateState(5)

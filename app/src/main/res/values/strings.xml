@@ -153,4 +153,6 @@
     <string name="wallpaper_error">We can\'t use your wallpaper without permission.</string>
     <string name="update_err_saving_error">Feedback are disabled. No information has been saved</string>
     <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
+    <string name="tip">Tips</string>
+    <string name="tip1">Click on the top right corner of the tile to customize it</string>
 </resources>

@@ -107,13 +107,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         themeMenu!!.visibility = View.GONE
         setAppTheme()
     }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
-    }
-
     private fun setAppTheme() {
         if (Prefs(this).isLightThemeUsed) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

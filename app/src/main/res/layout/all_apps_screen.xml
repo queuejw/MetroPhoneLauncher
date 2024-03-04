@@ -94,6 +94,7 @@
             android:id="@+id/progressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:indicatorRadius="5"
             app:indicatorColor="?attr/colorPrimary" />
 
         <TextView
