@@ -1,5 +1,4 @@
 # MetroPhoneLauncher (MPL)
-My first Android Launcher with Windows Phone 8(.1) interface
 
 MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible (not so much now). Feel the WP experience on your device right now. Free.
 
@@ -21,14 +20,20 @@ Since the launcher isn't ready yet, I can't show a huge list of functionality, b
 
 And much more... 
 
-# Screenshots:
+# 📸 Screenshots:
 
-<img src='/screenshots/vb.jpg' width='300'> <img src='/screenshots/ab.jpg' width='300'> <img src='/screenshots/dg.jpg' width='300'> <img src='/screenshots/mm.jpg' width='300'> <img src='/screenshots/yc.jpg' width='300'>  <img src='/screenshots/po.jpg' width='300'>
+<img src='/screenshots/vb.png' width='300'> <img src='/screenshots/ab.png' width='300'> <img src='/screenshots/dg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/yc.png' width='300'>  <img src='/screenshots/po.png' width='300'>
 
-# Download (free):
+More screenshots in /screenshots folder 📷
+
+# Download (free) 💙💜💚
 
 step 1: click here: https://github.com/queuejw/MetroPhoneLauncher/releases/latest
 
 step 2: download file.apk
 
 step 3: install.
+
+#  Community🤬😡😠
+
+🎃 Telegram channel (🇷🇺): https://t.me/mplauncher
