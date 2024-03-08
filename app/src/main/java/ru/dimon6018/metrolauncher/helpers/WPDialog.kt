@@ -73,7 +73,7 @@ class WPDialog(private val mContext: Context) {
             }
             dialogWindow.setGravity(Gravity.CENTER or gravity)
             p.width = (d.widthPixels * 1.0).toInt()
-            dialogWindow.setAttributes(p)
+            dialogWindow.attributes = p
             setCustomView(wp!!)
             if (wp != null) {
                 wp!!.setCanceledOnTouchOutside(cancelable)
@@ -139,13 +139,11 @@ class WPDialog(private val mContext: Context) {
             } else {
                 wpNeutral.text = neutral
             }
-            //
             if (okButtonListener != null) {
                 wpOk.setOnClickListener(okButtonListener)
             } else {
                 wpOk.setOnClickListener(OnDialogButtonClickListener())
             }
-            //
             if (cancelButtonListener != null) {
                 wpCancel.setOnClickListener(cancelButtonListener)
             } else {

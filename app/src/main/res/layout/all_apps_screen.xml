@@ -68,14 +68,15 @@
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_marginTop="24dp"
+        android:layout_marginStart="12dp"
         app:cardBackgroundColor="?android:attr/colorBackground"
         app:cardCornerRadius="48dp"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="3dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
             android:layout_gravity="center"
             android:scaleX="-1"
             android:src="@drawable/ic_search"

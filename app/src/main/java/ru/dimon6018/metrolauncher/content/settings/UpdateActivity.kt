@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -26,6 +27,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
@@ -63,6 +65,10 @@ class UpdateActivity: AppCompatActivity() {
     private var manager: DownloadManager? = null
     private var downloadId: Long? = null
 
+    private var coroutineXmlScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private var coroutineErrorScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private var coroutineDownloadingScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_updates)
@@ -81,6 +87,7 @@ class UpdateActivity: AppCompatActivity() {
         refreshUi()
         autoUpdateCheckBox!!.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAutoUpdate(isChecked)
+            refreshUi()
         }
         updateNotificationCheckBox!!.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setUpdateNotification(isChecked)
@@ -89,6 +96,7 @@ class UpdateActivity: AppCompatActivity() {
             } else {
                 UpdateWorker.stopWork(this)
             }
+            refreshUi()
         }
         updateDetails!!.setOnClickListener {
             WPDialog(this).setTopDialog(true)
@@ -114,9 +122,7 @@ class UpdateActivity: AppCompatActivity() {
                     return@setOnClickListener
                 }
                 6, 7 -> {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        checkDownload()
-                    }
+                    checkDownload()
                 }
                 else -> {
                     PREFS!!.setUpdateState(1)
@@ -128,23 +134,33 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
         cancelDownload!!.setOnClickListener {
-            PREFS!!.setUpdateState(0)
-            if(PREFS!!.updateState == 1) {
+            val ver = if (UpdateDataParser.verCode == null) {
+                PREFS!!.versionCode
+            } else {
+                UpdateDataParser.verCode
+            }
+            if (ver == Application.VERSION_CODE) {
+                PREFS!!.setUpdateState(3)
+            } else {
+                PREFS!!.setUpdateState(0)
+            }
+            if (PREFS!!.updateState == 1) {
                 return@setOnClickListener
             }
-            if(manager != null) {
-                isUpdateDownloading = false
-                manager!!.remove(downloadId!!)
-                try {
-                    val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-                    if (file.exists()) {
-                        file.delete()
-                    }
-                } catch (e: IOException) {
-                    saveError(e.toString())
-                    refreshUi()
-                }
-            }
+
+            isUpdateDownloading = false
+            manager?.remove(downloadId!!)
+            deleteUpdateFile()
+            refreshUi()
+        }
+    }
+    private fun deleteUpdateFile() {
+        try {
+            val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
+            val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
+            this.contentResolver.delete(uri, null, null)
+        } catch (e: IOException) {
+            saveError(e.toString())
             refreshUi()
         }
     }
@@ -154,6 +170,11 @@ class UpdateActivity: AppCompatActivity() {
         } else {
             UpdateDataParser.updateMsg!!
         }
+    }
+    override fun onDestroy() {
+        coroutineXmlScope.cancel()
+        coroutineErrorScope.cancel()
+        super.onDestroy()
     }
     override fun onStart() {
         super.onStart()
@@ -168,7 +189,6 @@ class UpdateActivity: AppCompatActivity() {
                         return@setNegativeButton
                     }
                     .setNeutralButton(getString(R.string.hide)) {
-                        WPDialog(this).dismiss()
                         hideDialog()
                     }
                     .setPositiveButton(getString(R.string.no), null).show()
@@ -196,6 +216,7 @@ class UpdateActivity: AppCompatActivity() {
     private fun refreshUi() {
         autoUpdateCheckBox?.isChecked = PREFS!!.isAutoUpdateEnabled
         updateNotificationCheckBox?.isChecked = PREFS!!.isUpdateNotificationEnabled
+        autoUpdateCheckBox?.isEnabled = PREFS!!.isUpdateNotificationEnabled
         when (PREFS!!.updateState) {
             1 -> {
                 check!!.visibility = View.GONE
@@ -210,24 +231,13 @@ class UpdateActivity: AppCompatActivity() {
                 check!!.visibility = View.GONE
                 progressLayout!!.visibility = View.VISIBLE
                 cancelDownload!!.visibility = View.VISIBLE
-                if(isUpdateDownloading) {
-                    Thread {
-                        while (isUpdateDownloading) {
-                            val progressString = getString(R.string.preparing_to_install, PREFS!!.updateProgressLevel) + "%"
-                            runOnUiThread {
-                                progressText!!.text = progressString
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    progressBar!!.setProgress(PREFS!!.updateProgressLevel, true)
-                                } else {
-                                    progressBar!!.progress = PREFS!!.updateProgressLevel
-                                }
-                            }
-                        }
-                    }.start()
+                val progressString = if(isUpdateDownloading) {
+                    progressBar!!.progress = PREFS!!.updateProgressLevel
+                    getString(R.string.preparing_to_install, PREFS!!.updateProgressLevel) + "%"
                 } else {
-                    val progressString = getString(R.string.preparing_to_install, 0) + "%"
-                    progressText!!.text = progressString
+                    getString(R.string.preparing_to_install, 0) + "%"
                 }
+                progressText!!.text = progressString
                 updateDetails!!.visibility = View.GONE
             }
             3 -> {
@@ -246,7 +256,7 @@ class UpdateActivity: AppCompatActivity() {
                 check!!.text = getString(R.string.install)
                 progressLayout!!.visibility = View.GONE
                 updateDetails!!.visibility = View.VISIBLE
-                cancelDownload!!.visibility = View.GONE
+                cancelDownload!!.visibility = View.VISIBLE
             }
             5 -> {
                 checkingSub!!.visibility = View.VISIBLE
@@ -294,7 +304,6 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
     }
-
     private fun checkForUpdates() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -313,7 +322,7 @@ class UpdateActivity: AppCompatActivity() {
         }
     }
     private fun checkUpdateInfo() {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineXmlScope.launch {
             if (UpdateDataParser.verCode == null) {
                 PREFS!!.setUpdateState(5)
                 return@launch
@@ -340,20 +349,14 @@ class UpdateActivity: AppCompatActivity() {
     private fun checkDownload() {
         if (UpdateDataParser.isBeta == true) {
             Log.i("CheckForUpdates", "download beta")
-            runOnUiThread {
-                refreshUi()
-                downloadFile("MPL Beta", URL_BETA)
-            }
+            downloadFile("MPL Beta", URL_BETA)
         } else {
             Log.i("CheckForUpdates", "download release")
-            runOnUiThread {
-                refreshUi()
-                downloadFile("MPL", URL_RELEASE)
-            }
+            downloadFile("MPL", URL_RELEASE)
         }
     }
     private fun saveError(e: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineErrorScope.launch {
             if (PREFS!!.isFeedbackEnabled) {
                 Log.e("UpdateService", e)
                 val entity = BSODEntity()
@@ -397,12 +400,9 @@ class UpdateActivity: AppCompatActivity() {
     }
     @SuppressLint("Range")
     private fun downloadFile(fileName: String, url: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        coroutineDownloadingScope.launch {
             try {
-                val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-                if (file.exists()) {
-                    file.delete()
-                }
+                deleteUpdateFile()
             } catch (e: IOException) {
                 saveError(e.toString())
                 PREFS!!.setUpdateState(5)
@@ -413,11 +413,8 @@ class UpdateActivity: AppCompatActivity() {
                             .setMessage(getString(R.string.downloading_error))
                             .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
+                coroutineDownloadingScope.cancel()
                 return@launch
-            }
-            PREFS!!.setUpdateState(2)
-            runOnUiThread {
-                refreshUi()
             }
             try {
                 val request = DownloadManager.Request(Uri.parse(url))
@@ -428,43 +425,56 @@ class UpdateActivity: AppCompatActivity() {
                 manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 downloadId = manager!!.enqueue(request)
                 isUpdateDownloading = true
+                PREFS!!.setUpdateState(2)
+                runOnUiThread {
+                    refreshUi()
+                }
                 val q = DownloadManager.Query()
                 q.setFilterById(downloadId!!)
+                var cursor: Cursor?
                 while (isUpdateDownloading) {
-                    val cursor = manager!!.query(q)
-                    cursor.moveToFirst()
-                    val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                    val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                    if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
-                        isUpdateDownloading = false
-                        PREFS!!.setUpdateState(4)
+                    cursor = manager!!.query(q)
+                    if (cursor != null && cursor.moveToFirst()) {
+                        val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                        val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                        val progress: Int = ((downloaded * 100L / total)).toInt()
+                        val progressString = getString(R.string.preparing_to_install, progress) + "%"
+                        PREFS!!.setUpdateProgressLevel(progress)
                         runOnUiThread {
-                            refreshUi()
+                            progressText!!.text = progressString
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                progressBar!!.setProgress(progress, true)
+                            } else {
+                                progressBar!!.progress = progress
+                            }
                         }
-                    }
-                    if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
+                        if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+                            isUpdateDownloading = false
+                            PREFS!!.setUpdateState(4)
+                            runOnUiThread {
+                                refreshUi()
+                            }
+                        }
+                        if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
+                            isUpdateDownloading = false
+                            PREFS!!.setUpdateState(5)
+                            runOnUiThread {
+                                refreshUi()
+                            }
+                        }
+                        cursor.close()
+                    } else {
+                        cursor.close()
                         isUpdateDownloading = false
-                        PREFS!!.setUpdateState(5)
+                        PREFS!!.setUpdateState(0)
                         runOnUiThread {
-                            refreshUi()
+                            this@UpdateActivity.recreate()
                         }
                     }
-                    val progress: Int = ((downloaded * 100L / total)).toInt()
-                    val progressString = getString(R.string.preparing_to_install, progress) + "%"
-                    PREFS!!.setUpdateProgressLevel(progress)
-                    runOnUiThread {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            progressBar!!.setProgress(PREFS!!.updateProgressLevel, true)
-                        } else {
-                            progressBar!!.progress = PREFS!!.updateProgressLevel
-                        }
-                        progressText!!.text = progressString
-                    }
-                    cursor.close()
                 }
             } catch (e: Exception) {
                 saveError(e.toString())
-                downloadId?.let { manager?.remove(it) }
+                manager?.remove(downloadId!!)
                 isUpdateDownloading = false
                 PREFS!!.setUpdateState(5)
                 runOnUiThread {

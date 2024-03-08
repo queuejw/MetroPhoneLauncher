@@ -3,11 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="48dp"
-    android:layout_height="48dp">
+    android:layout_width="54dp"
+    android:layout_height="54dp">
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         app:cardCornerRadius="0dp"
         app:strokeColor="?attr/colorPrimary"
         app:cardBackgroundColor="?android:attr/colorBackground"
@@ -19,7 +19,7 @@
             android:layout_gravity="start|center"
             android:layout_marginStart="8dp"
             android:textColor="?attr/colorPrimary"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:fontFamily="@font/opensans_medium"
             android:text="a"/>
     </com.google.android.material.card.MaterialCardView>

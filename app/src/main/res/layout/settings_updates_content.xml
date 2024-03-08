@@ -57,6 +57,7 @@
         android:layout_marginTop="12dp"
         android:fontFamily="@font/opensans_regular"
         android:text="@string/update_info" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/checkForUpdatesBtn"
         style="@style/Widget.Material3.Button.OutlinedButton"
@@ -79,11 +80,12 @@
         android:fontFamily="@font/opensans_regular"
         android:text="@string/notify_update"
         android:textSize="18sp" />
+
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/AutoUpdateCheckBox"
         android:layout_width="match_parent"
-        android:layout_marginTop="16dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:fontFamily="@font/opensans_regular"
         android:text="@string/auto_update"
         android:textSize="18sp" />

@@ -1,6 +1,6 @@
 <resources>
     <style name="AppTheme.Lime" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#B399CC00</item>
+        <item name="colorPrimary">@color/tile_lime</item>
         <item name="colorPrimaryContainer">#B399CC00</item>
         <item name="colorOnPrimary">#b8f600</item>
         <item name="colorSecondary">#c2caaa</item>
@@ -16,7 +16,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Green" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#6fdf3e</item>
+        <item name="colorPrimary">@color/tile_green</item>
         <item name="colorPrimaryContainer">#1a5200</item>
         <item name="colorOnPrimary">#0f3900</item>
         <item name="colorSecondary">#bccbb0</item>
@@ -32,7 +32,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Emerald" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#66dd8b</item>
+        <item name="colorPrimary">@color/tile_emerald</item>
         <item name="colorPrimaryContainer">#005227</item>
         <item name="colorOnPrimary">#003919</item>
         <item name="colorSecondary">#b7ccb7</item>
@@ -48,7 +48,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Cyan" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#2ddbde</item>
+        <item name="colorPrimary">@color/tile_cyan</item>
         <item name="colorPrimaryContainer">#004f51</item>
         <item name="colorOnPrimary">#003738</item>
         <item name="colorSecondary">#b0cccc</item>
@@ -64,7 +64,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Teal" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#00dddd</item>
+        <item name="colorPrimary">@color/tile_teal</item>
         <item name="colorPrimaryContainer">#004f4f</item>
         <item name="colorOnPrimary">#003737</item>
         <item name="colorSecondary">#b0cccb</item>
@@ -80,7 +80,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Cobalt" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#2559bd</item>
+        <item name="colorPrimary">@color/tile_cobalt</item>
         <item name="colorPrimaryContainer">#00419e</item>
         <item name="colorOnPrimary">#002c70</item>
         <item name="colorSecondary">#c0c6dc</item>
@@ -96,11 +96,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Indigo" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ddb7ff</item>
-        <item name="colorPrimaryContainer">#622599</item>
-        <item name="colorOnPrimary">#4a0080</item>
-        <item name="colorSecondary">#d0c1d9</item>
-        <item name="colorSurface">#1d1b1e</item>
+        <item name="colorPrimary">@color/tile_indigo</item>
+        <item name="colorPrimaryContainer">#5300cd</item>
+        <item name="colorOnPrimary">#3a0093</item>
+        <item name="colorSecondary">#cbc2dc</item>
+        <item name="colorSurface">#1c1b1e</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -112,10 +112,10 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Violet" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ddb7ff</item>
-        <item name="colorPrimaryContainer">#622599</item>
-        <item name="colorOnPrimary">#4a0080</item>
-        <item name="colorSecondary">#372c3f</item>
+        <item name="colorPrimary">@color/tile_violet</item>
+        <item name="colorPrimaryContainer">#6f00a9</item>
+        <item name="colorOnPrimary">#4e0079</item>
+        <item name="colorSecondary">#d2c1d8</item>
         <item name="colorSurface">#1d1b1e</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
@@ -128,11 +128,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Pink" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffa9fb</item>
-        <item name="colorPrimaryContainer">#7a1481</item>
-        <item name="colorOnPrimary">#590060</item>
-        <item name="colorSecondary">#d9bfd4</item>
-        <item name="colorSurface">#1e1a1d</item>
+        <item name="colorPrimary">@color/tile_pink</item>
+        <item name="colorPrimaryContainer">#840a6e</item>
+        <item name="colorOnPrimary">#5f004e</item>
+        <item name="colorSecondary">#ddbecf</item>
+        <item name="colorSurface">#1f1a1d</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -144,11 +144,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Magenta" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffaaf3</item>
-        <item name="colorPrimaryContainer">#810081</item>
-        <item name="colorOnPrimary">#5b005b</item>
-        <item name="colorSecondary">#dabfd2</item>
-        <item name="colorSurface">#1e1a1d</item>
+        <item name="colorPrimary">@color/tile_magenta</item>
+        <item name="colorPrimaryContainer">#8e004a</item>
+        <item name="colorOnPrimary">#650033</item>
+        <item name="colorSecondary">#e3bdc6</item>
+        <item name="colorSurface">#201a1b</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -160,9 +160,9 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Crimson" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffb3b3</item>
-        <item name="colorPrimaryContainer">#920022</item>
-        <item name="colorOnPrimary">#680015</item>
+        <item name="colorPrimary">@color/tile_crimson</item>
+        <item name="colorPrimaryContainer">#920020</item>
+        <item name="colorOnPrimary">#680014</item>
         <item name="colorSecondary">#e6bdbc</item>
         <item name="colorSurface">#201a1a</item>
         <item name="colorOnSurface">@android:color/white</item>
@@ -176,7 +176,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Red" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffb4a8</item>
+        <item name="colorPrimary">@color/tile_red</item>
         <item name="colorPrimaryContainer">#930100</item>
         <item name="colorOnPrimary">#690100</item>
         <item name="colorSecondary">#e7bdb6</item>
@@ -192,11 +192,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Orange" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#FFA500</item>
+        <item name="colorPrimary">@color/tile_orange</item>
         <item name="colorPrimaryContainer">#ffb95c</item>
         <item name="colorOnPrimary">#ffddb7</item>
         <item name="colorSecondary">#dfc2a2</item>
-        <item name="colorSurface">#ebe1d9</item>
+        <item name="colorSurface">#201a18</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -208,7 +208,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Amber" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffbf00</item>
+        <item name="colorPrimary">@color/tile_amber</item>
         <item name="colorPrimaryContainer">#fbbc00</item>
         <item name="colorOnPrimary">#402d00</item>
         <item name="colorSecondary">#d8c4a0</item>
@@ -224,7 +224,7 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Yellow" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#cdcd00</item>
+        <item name="colorPrimary">@color/tile_yellow</item>
         <item name="colorPrimaryContainer">#eaea00</item>
         <item name="colorOnPrimary">#323200</item>
         <item name="colorSecondary">#cac8a5</item>
@@ -240,10 +240,10 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Brown" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#ffb95c</item>
-        <item name="colorPrimaryContainer">#653e00</item>
-        <item name="colorOnPrimary">#462a00</item>
-        <item name="colorSecondary">#3f2d17</item>
+        <item name="colorPrimary">@color/tile_brown</item>
+        <item name="colorPrimaryContainer">#673d00</item>
+        <item name="colorOnPrimary">#482900</item>
+        <item name="colorSecondary">#e0c1a3</item>
         <item name="colorSurface">#1f1b16</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
@@ -256,11 +256,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Olive" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#c4ce5d</item>
-        <item name="colorPrimaryContainer">#454b00</item>
-        <item name="colorOnPrimary">#2f3300</item>
-        <item name="colorSecondary">#c7c9a6</item>
-        <item name="colorSurface">#1c1c17</item>
+        <item name="colorPrimary">@color/tile_olive</item>
+        <item name="colorPrimaryContainer">#14520f</item>
+        <item name="colorOnPrimary">#003a01</item>
+        <item name="colorSecondary">#bbcbb2</item>
+        <item name="colorSurface">#1a1c18</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -272,11 +272,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Steel" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#71797E</item>
-        <item name="colorPrimaryContainer">#4d616c</item>
-        <item name="colorOnPrimary">#354954</item>
-        <item name="colorSecondary">#b4cad6</item>
-        <item name="colorSurface">#191c1e</item>
+        <item name="colorPrimary">@color/tile_steel</item>
+        <item name="colorPrimaryContainer">#384956</item>
+        <item name="colorOnPrimary">#22323f</item>
+        <item name="colorSecondary">#b7c9d9</item>
+        <item name="colorSurface">#1a1c1e</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -288,10 +288,10 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Mauve" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#e0b6ff</item>
-        <item name="colorPrimaryContainer">#f2daff</item>
-        <item name="colorOnPrimary">#461969</item>
-        <item name="colorSecondary">#d1c1d9</item>
+        <item name="colorPrimary">@color/tile_mauve</item>
+        <item name="colorPrimaryContainer">#5c3383</item>
+        <item name="colorOnPrimary">#441a6b</item>
+        <item name="colorSecondary">#d0c1d9</item>
         <item name="colorSurface">#1d1b1e</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
@@ -304,11 +304,11 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <style name="AppTheme.Taupe" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">#483c32</item>
-        <item name="colorPrimaryContainer">#412c19</item>
-        <item name="colorOnPrimary">#4b2800</item>
-        <item name="colorSecondary">#e2c0a4</item>
-        <item name="colorSurface">#201b17</item>
+        <item name="colorPrimary">@color/tile_taupe</item>
+        <item name="colorPrimaryContainer">#4f462a</item>
+        <item name="colorOnPrimary">#383016</item>
+        <item name="colorSecondary">#d3c6a1</item>
+        <item name="colorSurface">#1e1b16</item>
         <item name="colorOnSurface">@android:color/white</item>
         <item name="android:colorBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
@@ -336,9 +336,9 @@
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
     </style>
     <style name="bsod" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_light_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
-        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorPrimary">@color/bsod</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSurface">@android:color/white</item>
         <item name="android:statusBarColor">@color/bsod</item>
         <item name="android:navigationBarColor">@color/bsod</item>
     </style>

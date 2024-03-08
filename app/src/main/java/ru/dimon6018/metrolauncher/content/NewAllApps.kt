@@ -20,6 +20,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
@@ -30,6 +31,7 @@ import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
@@ -56,6 +58,7 @@ class NewAllApps: Fragment() {
     private var appList: MutableList<App>? = null
 
     private var isSearching = false
+    private var pm: PackageManager? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
@@ -64,6 +67,7 @@ class NewAllApps: Fragment() {
         return view
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.app_list)
@@ -73,11 +77,12 @@ class NewAllApps: Fragment() {
         loadingHolder = view.findViewById(R.id.loadingHolder)
         searchBtn!!.setOnClickListener { searchFunction() }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Default.limitedParallelism(2)).launch {
             val dbCall = AppData.getAppData(requireContext()).getAppDao()
-            appList = getHeaderListLatter(Application.setUpApps(requireContext().packageManager))
-            adapter = AppAdapter(appList!!, resources, requireContext().packageManager, dbCall)
-            val lm = LinearLayoutManager(context)
+            pm = requireContext().packageManager
+            appList = getHeaderListLatter(Application.setUpApps(pm!!))
+            adapter = AppAdapter(appList!!, requireActivity().resources, pm!!, dbCall)
+            val lm = LinearLayoutManager(requireContext())
             requireActivity().runOnUiThread {
                 recyclerView!!.layoutManager = lm
                 recyclerView!!.adapter = adapter
@@ -111,10 +116,13 @@ class NewAllApps: Fragment() {
         searchBtnBack!!.visibility = View.GONE
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         CoroutineScope(Dispatchers.IO).launch {
-            appList = getHeaderListLatter(Application.setUpApps(requireContext().packageManager))
+            if(pm == null) {
+                pm = requireActivity().packageManager
+            }
+            appList = getHeaderListLatter(Application.setUpApps(pm!!))
             runBlocking {
                 requireActivity().runOnUiThread {
-                    adapter?.setData(appList!!)
+                    adapter?.setData(appList!!, false)
                 }
             }
         }
@@ -150,7 +158,7 @@ class NewAllApps: Fragment() {
             }
         }
         if (filteredlist.isNotEmpty()) {
-            adapter?.setData(filteredlist)
+            adapter?.setData(filteredlist, true)
         }
     }
     private fun removeHeaders() {
@@ -162,7 +170,7 @@ class NewAllApps: Fragment() {
                 appList!!.remove(item)
             }
         }
-        adapter?.setData(appList!!)
+        adapter?.setData(appList!!,true)
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -186,25 +194,20 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val packageManager: PackageManager, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val pmAdapter: PackageManager, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val app: Int = 1
-
-        private val maxPoolSize: Int = 32
-
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
-        private var viewPool: RecycledViewPool? = null
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val dispatcher = Dispatchers.IO.limitedParallelism(6)
 
-        init {
-            viewPool = RecycledViewPool()
-            viewPool!!.setMaxRecycledViews(app, maxPoolSize)
-            recyclerView!!.setRecycledViewPool(viewPool)
-        }
-        fun setData(new: MutableList<App>) {
+        fun setData(new: MutableList<App>, refresh: Boolean) {
             list = new
-            notifyDataSetChanged()
+            if(refresh) {
+                notifyDataSetChanged()
+            }
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return if (viewType == letter) {
@@ -220,11 +223,16 @@ class NewAllApps: Fragment() {
                 return
             }
             holder as AppHolder
-            holder.label.text = app.appLabel
-            holder.icon.load(packageManager.getApplicationIcon(app.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())) {
-                crossfade(true)
-                placeholder(R.drawable.ic_clock)
+            try {
+                holder.icon.load(pmAdapter.getApplicationIcon(app.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())) {
+                    crossfade(true)
+                    dispatcher(dispatcher)
+                }
+            } catch (e: PackageManager.NameNotFoundException) {
+                list.remove(app)
+                notifyItemRemoved(position)
             }
+            holder.label.text = app.appLabel
             holder.itemView.setOnClickListener {
                 runApp(app.appPackage!!)
             }
@@ -263,26 +271,18 @@ class NewAllApps: Fragment() {
                     startActivity(Intent(requireActivity(), SettingsActivity::class.java))
                 }
                 else -> {
-                    startActivity(Intent(packageManager.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(pmAdapter.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         }
         private fun insertNewApp(text: String, packag: String) {
             CoroutineScope(Dispatchers.IO).launch {
                 val dBlist = dbCall.getJustApps()
-                var pos = dbCall.getJustAppsWithoutPlaceholders(false).size
-                if(dBlist[pos - 1].isPlaceholder == true) {
-                    pos -= 1
-                }
-                if(dBlist[pos + 1].isPlaceholder == true) {
-                    pos += 1
-                }
-                else {
-                    for (i in 0..<dBlist.size) {
-                        if(dBlist[i].isPlaceholder == true) {
-                            pos = i
-                            break
-                        }
+                var pos = 0
+                for (i in 0..<dBlist.size) {
+                    if (dBlist[i].isPlaceholder == true) {
+                        pos = i
+                        break
                     }
                 }
                 val id = Random.nextLong(1000, 2000000)
@@ -304,7 +304,6 @@ class NewAllApps: Fragment() {
     class AppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon: ImageView
         val label: TextView
-
         init {
             icon = itemView.findViewById(R.id.app_icon)
             label = itemView.findViewById(R.id.app_label)

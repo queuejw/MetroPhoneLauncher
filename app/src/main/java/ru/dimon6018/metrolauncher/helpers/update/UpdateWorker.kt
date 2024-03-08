@@ -96,17 +96,18 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 noman.createNotificationChannel(channel)
             }
         }
-        fun scheduleWork(context: Context?) {
+        fun scheduleWork(context: Context) {
             Log.i("backgroundWork", "scheduleWork")
             val time = 360L
             val workFoodRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(UpdateWorker::class.java)
                     .addTag("UPDATE_WORK")
                     .setInitialDelay(time, TimeUnit.MINUTES)
                     .build()
-            WorkManager.getInstance(context!!).enqueue(workFoodRequest)
+            WorkManager.getInstance(context).enqueue(workFoodRequest)
         }
-        fun stopWork(context: Context?) {
-            WorkManager.getInstance(context!!).cancelAllWorkByTag("UPDATE_WORK")
+        fun stopWork(context: Context) {
+            Log.i("backgroundWork", "stopWork")
+            WorkManager.getInstance(context).cancelAllWorkByTag("UPDATE_WORK")
         }
     }
 }

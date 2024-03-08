@@ -11,10 +11,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="48dp"
+            android:layout_width="54dp"
             android:layout_gravity="center"
-            android:layout_height="48dp"
-            app:cardBackgroundColor="?attr/colorPrimaryContainer"
+            android:layout_height="54dp"
+            app:cardBackgroundColor="?attr/colorPrimary"
             app:strokeWidth="0dp"
             app:cardCornerRadius="0dp">
             <ImageView
@@ -27,7 +27,7 @@
     <TextView
         android:id="@+id/app_label"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="72dp"
         android:layout_weight="1"
         android:layout_marginStart="7dp"
         android:textSize="21sp"

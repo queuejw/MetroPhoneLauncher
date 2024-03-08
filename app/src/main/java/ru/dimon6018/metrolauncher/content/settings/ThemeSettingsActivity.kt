@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
@@ -31,7 +32,8 @@ import kotlin.system.exitProcess
 class ThemeSettingsActivity : AppCompatActivity() {
     private var themeMenu: MaterialCardView? = null
     private var chooseThemeBtn: MaterialButton? = null
-    private var chooseAccentBtn: MaterialButton? = null
+    private var chooseAccentBtn: MaterialCardView? = null
+    private var accentNameTextView: MaterialTextView? = null
     private var light: TextView? = null
     private var dark: TextView? = null
     private var accentTip: TextView? = null
@@ -47,6 +49,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         chooseThemeBtn = findViewById(R.id.chooseTheme)
         accentTip = findViewById(R.id.accentTip)
         chooseAccentBtn = findViewById(R.id.chooseAccent)
+        accentNameTextView = findViewById(R.id.choosedAccentName)
         themeMenu = findViewById(R.id.chooseThemeMenu)
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
@@ -58,7 +61,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         val fastIconsSwitch: MaterialSwitch = findViewById(R.id.fastIcons)
         val wallpaperSwitch: MaterialSwitch = findViewById(R.id.wallpaperShowSwtich)
-        chooseAccentBtn!!.text = Application.accentName(this)
+        accentNameTextView!!.text = Application.accentName(this)
         val themeButtonLabel: String = if (PREFS!!.isLightThemeUsed) {
             getString(R.string.light)
         } else {

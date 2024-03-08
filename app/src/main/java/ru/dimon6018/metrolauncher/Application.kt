@@ -62,6 +62,15 @@ class Application : Application() {
                 R.string.color_pink, R.string.color_magenta, R.string.color_crimson, R.string.color_red, R.string.color_orange, R.string.color_amber, R.string.color_yellow, R.string.color_brown,
                 R.string.color_olive, R.string.color_steel, R.string.color_mauve, R.string.color_taupe
         )
+        private val themeStyles = intArrayOf(
+                R.style.AppTheme_Lime, R.style.AppTheme_Green, R.style.AppTheme_Emerald,
+                R.style.AppTheme_Cyan, R.style.AppTheme_Teal, R.style.AppTheme_Cobalt,
+                R.style.AppTheme_Indigo, R.style.AppTheme_Violet, R.style.AppTheme_Pink,
+                R.style.AppTheme_Magenta, R.style.AppTheme_Crimson, R.style.AppTheme_Red,
+                R.style.AppTheme_Orange, R.style.AppTheme_Amber, R.style.AppTheme_Yellow,
+                R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
+                R.style.AppTheme_Mauve, R.style.AppTheme_Taupe
+        )
         fun accentColorFromPrefs(context: Context): Int {
                 val selectedColor = Prefs(context).accentColor
                 return if (selectedColor >= 0 && selectedColor < accentColors.size) {
@@ -72,27 +81,11 @@ class Application : Application() {
                 }
             }
         fun getTileColorFromPrefs(tileColor: Int, context: Context): Int {
-            // 0 - use accent color
-            // 1 - lime
-            // 2 - green
-            // 3 - emerald
-            // 4 - cyan
-            // 5 - teal
-            // 6 - cobalt
-            // 7 - indigo
-            // 8 - violet
-            // 9 - pink
-            // 10 - magenta
-            // 11 - crimson
-            // 12 - red
-            // 13 - orange
-            // 14 - amber
-            // 15 - yellow
-            // 16 - brown
-            // 17 - olive
-            // 18 - steel
-            // 19 - mauve
-            // 20 - taupe
+            // 0 - use accent color // 1 - lime // 2 - green // 3 - emerald // 4 - cyan
+            // 5 - teal // 6 - cobalt // 7 - indigo // 8 - violet
+            // 9 - pink // 10 - magenta // 11 - crimson // 12 - red
+            // 13 - orange // 14 - amber // 15 - yellow // 16 - brown
+            // 17 - olive // 18 - steel // 19 - mauve // 20 - taupe
             return if (tileColor >= 0 && tileColor < accentColors.size) {
                 context.getColor(accentColors[tileColor])
             } else {
@@ -102,15 +95,6 @@ class Application : Application() {
         }
 
         fun launcherAccentTheme(): Int {
-                val themeStyles = intArrayOf(
-                        R.style.AppTheme_Lime, R.style.AppTheme_Green, R.style.AppTheme_Emerald,
-                        R.style.AppTheme_Cyan, R.style.AppTheme_Teal, R.style.AppTheme_Cobalt,
-                        R.style.AppTheme_Indigo, R.style.AppTheme_Violet, R.style.AppTheme_Pink,
-                        R.style.AppTheme_Magenta, R.style.AppTheme_Crimson, R.style.AppTheme_Red,
-                        R.style.AppTheme_Orange, R.style.AppTheme_Amber, R.style.AppTheme_Yellow,
-                        R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
-                        R.style.AppTheme_Mauve, R.style.AppTheme_Taupe
-                )
                 val selectedColor = PREFS!!.accentColor
                 return if (selectedColor >= 0 && selectedColor < themeStyles.size) {
                     themeStyles[selectedColor]
