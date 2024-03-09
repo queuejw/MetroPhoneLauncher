@@ -20,10 +20,8 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import coil.load
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout

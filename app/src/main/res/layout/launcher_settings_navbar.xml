@@ -28,6 +28,7 @@
             android:ellipsize="none"
             android:text="@string/navigation_bar"
             android:textSize="52sp"
+            android:layout_marginStart="4dp"
             android:textStyle="bold" />
 
     </com.google.android.material.appbar.AppBarLayout>

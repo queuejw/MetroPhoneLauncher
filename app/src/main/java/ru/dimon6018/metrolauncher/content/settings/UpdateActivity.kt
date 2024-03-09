@@ -413,7 +413,7 @@ class UpdateActivity: AppCompatActivity() {
                             .setMessage(getString(R.string.downloading_error))
                             .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
-                coroutineDownloadingScope.cancel()
+                cancel()
                 return@launch
             }
             try {
@@ -423,7 +423,7 @@ class UpdateActivity: AppCompatActivity() {
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
                 request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MPL_update.apk")
                 manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-                downloadId = manager!!.enqueue(request)
+                downloadId = manager?.enqueue(request)
                 isUpdateDownloading = true
                 PREFS!!.setUpdateState(2)
                 runOnUiThread {
@@ -441,11 +441,11 @@ class UpdateActivity: AppCompatActivity() {
                         val progressString = getString(R.string.preparing_to_install, progress) + "%"
                         PREFS!!.setUpdateProgressLevel(progress)
                         runOnUiThread {
-                            progressText!!.text = progressString
+                            progressText?.text = progressString
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                progressBar!!.setProgress(progress, true)
+                                progressBar?.setProgress(progress, true)
                             } else {
-                                progressBar!!.progress = progress
+                                progressBar?.progress = progress
                             }
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
@@ -474,11 +474,17 @@ class UpdateActivity: AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 saveError(e.toString())
-                manager?.remove(downloadId!!)
+                if(downloadId != null) {
+                    manager?.remove(downloadId!!)
+                }
                 isUpdateDownloading = false
                 PREFS!!.setUpdateState(5)
                 runOnUiThread {
                     refreshUi()
+                    WPDialog(this@UpdateActivity).setTopDialog(true)
+                            .setTitle(getString(R.string.error))
+                            .setMessage(getString(R.string.downloading_error))
+                            .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
             }
         }

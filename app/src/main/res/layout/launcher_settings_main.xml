@@ -27,6 +27,7 @@ android:layout_height="wrap_content">
                 android:text="@string/launcher"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/opensans_light"
+                android:layout_marginStart="4dp"
                 android:textStyle="bold"/>
 
 </com.google.android.material.appbar.AppBarLayout>

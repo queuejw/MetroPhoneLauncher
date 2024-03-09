@@ -28,6 +28,7 @@
             android:ellipsize="none"
             android:text="@string/start_theme"
             android:textSize="52sp"
+            android:layout_marginStart="4dp"
             android:textStyle="bold" />
 
     </com.google.android.material.appbar.AppBarLayout>
