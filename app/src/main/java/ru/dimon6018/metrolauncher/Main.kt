@@ -20,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
@@ -33,6 +34,7 @@ class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
@@ -55,16 +57,26 @@ class Main : AppCompatActivity() {
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
                 viewPager.adapter = pagerAdapter
+                setupNavigationBar()
             }
-        }
-        setupNavigationBar()
-        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                if (viewPager.currentItem != 0) {
-                    viewPager.currentItem -= 1
+            runBlocking {
+                runOnUiThread {
+                    onBackPressedDispatcher.addCallback(this@Main, object: OnBackPressedCallback(true) {
+                        override fun handleOnBackPressed() {
+                            if (viewPager.currentItem != 0) {
+                                viewPager.currentItem -= 1
+                            }
+                        }
+                    })
                 }
             }
-        })
+        }
+    }
+    fun openAllApps() {
+        bottomNavigationView.selectedItemId = R.id.start_apps
+    }
+    fun openStart() {
+        bottomNavigationView.selectedItemId = R.id.start_win
     }
     private fun otherTasks() {
         if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
@@ -105,7 +117,7 @@ class Main : AppCompatActivity() {
         }
     }
     private fun setupNavigationBar() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.navigation)
+        bottomNavigationView = findViewById(R.id.navigation)
         when(PREFS!!.navBarColor) {
             0 -> {
                 bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
@@ -120,7 +132,11 @@ class Main : AppCompatActivity() {
                 bottomNavigationView.visibility = View.GONE
                 return
             }
+            else -> {
+                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
+            }
         }
+        bottomNavigationView.selectedItemId = R.id.start_apps
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.start_win -> {
@@ -152,8 +168,8 @@ class Main : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        if (Prefs.isAccentChanged) {
-            Prefs.isAccentChanged = false
+        if (Prefs.isPrefsChanged) {
+            Prefs.isPrefsChanged = false
             recreate()
         }
     }
@@ -175,7 +191,7 @@ class Main : AppCompatActivity() {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
-            return if (position == 1)  NewAllApps() else NewStart()
+            return if (position == 1) NewAllApps() else NewStart()
         }
     }
 }

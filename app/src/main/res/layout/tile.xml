@@ -50,7 +50,7 @@
                     android:textColor="@android:color/white"
                     android:fontFamily="@font/opensans_regular"
                     android:textSize="17sp"
-                    android:layout_marginStart="4dp"
+                    android:layout_marginStart="6dp"
                     android:layout_marginBottom="4dp"/>
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -58,8 +58,8 @@
     <View
         android:id="@+id/menuTrigger"
         android:background="@android:color/background_dark"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:alpha="0.04"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true" />

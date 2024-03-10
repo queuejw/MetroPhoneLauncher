@@ -119,7 +119,7 @@ class Prefs(context: Context) {
             // 17 - steel
             // 18 - mauve
             // 19 - taupe
-            isAccentChanged = true
+            isPrefsChanged = true
             prefs.edit()
                     .putInt(ACCENT_COLOR, color)
                     .apply()
@@ -170,6 +170,6 @@ class Prefs(context: Context) {
         const val NAVBAR_COLOR = "navBarColor"
         const val MORE_TILES = "isMoreTilesEnabled"
         const val WALLPAPER_USING = "wallpaperUsing"
-        var isAccentChanged = false
+        var isPrefsChanged = false
     }
 }

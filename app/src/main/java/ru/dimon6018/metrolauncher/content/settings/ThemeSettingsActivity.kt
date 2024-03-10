@@ -96,11 +96,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
             PREFS!!.setMoreTilesPref(isChecked)
             moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             moreTilesSwitch.setChecked(isChecked)
+            Prefs.isPrefsChanged = true
         }
         wallpaperSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setWallpaper(isChecked)
             wallpaperSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             wallpaperSwitch.setChecked(isChecked)
+            Prefs.isPrefsChanged = true
         }
        Main.applyWindowInsets(cord)
     }

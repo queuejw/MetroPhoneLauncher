@@ -118,5 +118,22 @@
                 android:gravity="start"
                 android:id="@+id/resetLauncher"
                 android:textSize="20sp"/>
+        <com.google.android.material.button.MaterialButton
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:text="@string/restart"
+            android:fontFamily="@font/opensans_regular"
+            app:cornerRadius="0dp"
+            app:strokeColor="?attr/colorOnBackground"
+            android:textColor="?attr/colorOnBackground"
+            app:strokeWidth="2dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:id="@+id/restartLauncher"
+            android:textSize="20sp"/>
     </LinearLayout>
 </ScrollView>

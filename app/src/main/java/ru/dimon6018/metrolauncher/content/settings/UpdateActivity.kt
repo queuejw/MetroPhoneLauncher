@@ -33,6 +33,7 @@ import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
+import ru.dimon6018.metrolauncher.Application.Companion.saveError
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
@@ -58,8 +59,6 @@ class UpdateActivity: AppCompatActivity() {
     private var cancelDownload: TextView? = null
     private var updateDetails: TextView? = null
     private var progressBar: ProgressBar? = null
-
-    private val time: Date = Calendar.getInstance().time
 
     private var db: BSOD? = null
     private var manager: DownloadManager? = null
@@ -117,7 +116,7 @@ class UpdateActivity: AppCompatActivity() {
                         Log.i("InstallAPK", "error: $e")
                         PREFS!!.setUpdateState(5)
                         refreshUi()
-                        saveError(e.toString())
+                        saveError(e.toString(), db!!)
                     }
                     return@setOnClickListener
                 }
@@ -160,7 +159,7 @@ class UpdateActivity: AppCompatActivity() {
             val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
             this.contentResolver.delete(uri, null, null)
         } catch (e: IOException) {
-            saveError(e.toString())
+            saveError(e.toString(), db!!)
             refreshUi()
         }
     }
@@ -355,56 +354,13 @@ class UpdateActivity: AppCompatActivity() {
             downloadFile("MPL", URL_RELEASE)
         }
     }
-    private fun saveError(e: String) {
-        coroutineErrorScope.launch {
-            if (PREFS!!.isFeedbackEnabled) {
-                Log.e("UpdateService", e)
-                val entity = BSODEntity()
-                entity.date = time.toString()
-                entity.log = e
-                val pos: Int
-                when (PREFS!!.getMaxCrashLogs()) {
-                    0 -> {
-                        db!!.clearAllTables()
-                        pos = db!!.getDao().getBsodList().size
-                    }
-
-                    1 -> {
-                        if (db!!.getDao().getBsodList().size >= 5) {
-                            db!!.clearAllTables()
-                        }
-                        pos = db!!.getDao().getBsodList().size
-                    }
-
-                    2 -> {
-                        if (db!!.getDao().getBsodList().size >= 10) {
-                            db!!.clearAllTables()
-                        }
-                        pos = db!!.getDao().getBsodList().size
-                    }
-
-                    3 -> {
-                        pos = db!!.getDao().getBsodList().size
-                    }
-
-                    else -> {
-                        pos = db!!.getDao().getBsodList().size
-                    }
-                }
-                entity.pos = pos
-                db!!.getDao().insertLog(entity)
-            } else {
-                Toast.makeText(this@UpdateActivity, getString(R.string.update_err_saving_error), Toast.LENGTH_LONG).show()
-            }
-        }
-    }
     @SuppressLint("Range")
     private fun downloadFile(fileName: String, url: String) {
         coroutineDownloadingScope.launch {
             try {
                 deleteUpdateFile()
             } catch (e: IOException) {
-                saveError(e.toString())
+                saveError(e.toString(), db!!)
                 PREFS!!.setUpdateState(5)
                 refreshUi()
                 runOnUiThread {
@@ -473,7 +429,7 @@ class UpdateActivity: AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                saveError(e.toString())
+                saveError(e.toString(), db!!)
                 if(downloadId != null) {
                     manager?.remove(downloadId!!)
                 }

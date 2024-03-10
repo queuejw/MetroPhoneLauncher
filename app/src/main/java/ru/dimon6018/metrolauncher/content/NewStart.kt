@@ -5,6 +5,7 @@ import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
@@ -22,6 +23,7 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -37,10 +39,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
@@ -62,7 +66,9 @@ class NewStart: Fragment(), OnStartDragListener {
     private var appsDbCall: AppDao? = null
     private var appsDB: AppData? = null
 
-    private lateinit var frame: FrameLayout
+    private lateinit var frame: ConstraintLayout
+
+    private var allAppsButton: MaterialCardView? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.start_screen, container, false)
@@ -111,9 +117,23 @@ class NewStart: Fragment(), OnStartDragListener {
             runBlocking {
                 requireActivity().runOnUiThread {
                     mRecyclerView = v.findViewById(R.id.start_apps_tiles)
+                    allAppsButton = v.findViewById(R.id.allAppsButton)
+                    allAppsButton!!.setOnClickListener {
+                        (requireActivity() as Main).openAllApps()
+                    }
                     mRecyclerView!!.layoutManager = mSpannedLayoutManager
                     mRecyclerView!!.adapter = adapter
                     mItemTouchHelper!!.attachToRecyclerView(mRecyclerView)
+                    mRecyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            if (!recyclerView.canScrollVertically(-1)) {
+                                allAppsButton!!.visibility = View.INVISIBLE
+                            } else {
+                                allAppsButton!!.visibility = View.VISIBLE
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -136,12 +156,14 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
             val new = appsDbCall?.getJustApps()
+            if (new != null) {
+                if (adapter?.list == new) {
+                    cancel("old list == new list")
+                }
+            }
             runBlocking {
                 requireActivity().runOnUiThread {
                     if (new != null) {
-                        if(new == adapter?.list) {
-                            return@runOnUiThread
-                        }
                         tiles = new
                         adapter?.setData(new)
                     }
@@ -219,7 +241,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             try {
-                holder.mAppIcon.setImageBitmap(getAppIcon(item.appPackage, item.appSize))
+                holder.mAppIcon.setImageBitmap(getAppIcon(item.appPackage, item.appSize, resources, context.packageManager))
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
@@ -228,20 +250,12 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             holder.mBtn.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
-                    val newItem = list[position]
-                    runBlocking {
-                        requireActivity().runOnUiThread {
-                            showPopupWindow(holder, newItem)
-                        }
-                    }
-                }
+                val newItem = list[position]
+                showPopupWindow(holder, newItem)
             }
         }
-        private fun getAppIcon(appPackage: String, size: String): Bitmap {
+        private fun getAppIcon(appPackage: String, size: String, res: Resources, pm: PackageManager): Bitmap {
             val bmp: Bitmap
-            val pm = context.packageManager
-            val res = context.resources
             when (size) {
                 "small" -> {
                     bmp = if (PREFS!!.isMoreTilesEnabled) {
@@ -325,9 +339,28 @@ class NewStart: Fragment(), OnStartDragListener {
             val popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow.animationStyle = R.style.enterStyle
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
+            val resizeIcon = popupView.findViewById<ImageView>(R.id.resizeIco)
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.showAsDropDown(holder.itemView, 0, ((-1 * holder.itemView.height)), Gravity.CENTER)
+            val arrow = when(item.appSize) {
+                "small" -> {
+                    resizeIcon.rotation = 45f
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right)
+                }
+                "medium" -> {
+                    resizeIcon.rotation = 0f
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right)
+                }
+                "big" -> {
+                    resizeIcon.rotation = 45f
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_up)
+                }
+                else -> {
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right)
+                }
+            }
+            resizeIcon.setImageDrawable(arrow)
             resize.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     when (item.appSize) {
@@ -387,6 +420,10 @@ class NewStart: Fragment(), OnStartDragListener {
                 val editor = bottomSheetInternal.findViewById<EditText>(R.id.textEdit)
                 val labellayout = bottomSheetInternal.findViewById<LinearLayout>(R.id.changeLabelLayout)
                 val labelChangeBtn = bottomSheetInternal.findViewById<MaterialCardView>(R.id.labelChange)
+                val editLabelText = bottomSheetInternal.findViewById<TextView>(R.id.editAppLabelText)
+                editLabelText.setOnClickListener {
+                    labellayout.visibility = View.VISIBLE
+                }
                 val originalLabel = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(item.appPackage, 0)).toString()
                 label.text = item.appLabel
                 editor.setText(item.appLabel)

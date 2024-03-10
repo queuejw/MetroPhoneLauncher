@@ -11,4 +11,5 @@
     <dimen name="tile_medium_moreTiles_on">64dp</dimen>
     <dimen name="tile_big_moreTiles_off">86dp</dimen>
     <dimen name="tile_big_moreTiles_on">70dp</dimen>
+    <dimen name="navbarHeight">64dp</dimen>
 </resources>

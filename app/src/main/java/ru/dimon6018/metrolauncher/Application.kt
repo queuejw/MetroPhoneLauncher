@@ -10,11 +10,20 @@ import android.content.res.Resources.Theme
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import android.util.TypedValue
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.content.data.bsod.BSODDao
+import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
+import java.util.Calendar
 
 class Application : Application() {
 
@@ -138,12 +147,15 @@ class Application : Application() {
             val q = DownloadManager.Query()
             q.setFilterById(downloadId)
         }
-        fun setUpApps(pManager: PackageManager): MutableList<App> {
+        fun setUpApps(pManager: PackageManager, context: Context): MutableList<App> {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null)
             i.addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
             for (ri in allApps) {
+                if(ri.loadLabel(pManager).toString() == context.getString(R.string.app_name)) {
+                    continue
+                }
                 val app = App()
                 app.appLabel = ri.loadLabel(pManager).toString()
                 app.appPackage = ri.activityInfo.packageName
@@ -151,6 +163,47 @@ class Application : Application() {
                 list.add(app)
             }
             return list
+        }
+        fun saveError(e: String, db: BSOD) {
+            CoroutineScope(Dispatchers.IO).launch {
+                if (PREFS!!.isFeedbackEnabled) {
+                    Log.e("UpdateService", e)
+                    val entity = BSODEntity()
+                    entity.date = Calendar.getInstance().time.toString()
+                    entity.log = e
+                    val pos: Int
+                    when (PREFS!!.getMaxCrashLogs()) {
+                        0 -> {
+                            db.clearAllTables()
+                            pos = db.getDao().getBsodList().size
+                        }
+
+                        1 -> {
+                            if (db.getDao().getBsodList().size >= 5) {
+                                db.clearAllTables()
+                            }
+                            pos = db.getDao().getBsodList().size
+                        }
+
+                        2 -> {
+                            if (db.getDao().getBsodList().size >= 10) {
+                                db.clearAllTables()
+                            }
+                            pos = db.getDao().getBsodList().size
+                        }
+
+                        3 -> {
+                            pos = db.getDao().getBsodList().size
+                        }
+
+                        else -> {
+                            pos = db.getDao().getBsodList().size
+                        }
+                    }
+                    entity.pos = pos
+                    db.getDao().insertLog(entity)
+                }
+            }
         }
     }
 }

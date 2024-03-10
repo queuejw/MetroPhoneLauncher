@@ -36,4 +36,4 @@ step 3: install.
 
 #  Community🤬😡😠
 
-🎃 Telegram channel (🇷🇺): https://t.me/mplauncher
+🎃 Telegram channel: https://t.me/mplauncher

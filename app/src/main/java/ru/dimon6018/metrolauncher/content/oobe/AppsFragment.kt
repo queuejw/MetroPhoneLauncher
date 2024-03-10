@@ -54,7 +54,7 @@ class AppsFragment: Fragment() {
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
         CoroutineScope(Dispatchers.Default).launch {
             selectedItems = ArrayList()
-            val appList = setUpApps(requireContext().packageManager)
+            val appList = setUpApps(fragmentContext!!.packageManager, fragmentContext!!)
             val adapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
             activity?.runOnUiThread {
@@ -75,7 +75,7 @@ class AppsFragment: Fragment() {
             }
         }
         next.setOnClickListener {
-            CoroutineScope(Dispatchers.Default).launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 for (i in 0..<selectedItems!!.size) {
                     val item = selectedItems!![i]
                     val pos = call.getJustAppsWithoutPlaceholders(false).size
@@ -112,7 +112,11 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
         val item = adapterApps[position]
         holder as OOBEAppHolder
         try {
-            val bmp = packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
+            val bmp = if(item.appPackage == "ru.dimon6018.metrolauncher" && item.appLabel == context.getString(R.string.settings_app_title)) {
+                ContextCompat.getDrawable(context, R.drawable.ic_settings)?.toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
+            } else {
+                packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
+            }
             holder.icon.setImageBitmap(bmp)
         } catch (e: PackageManager.NameNotFoundException) {
             holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))

@@ -59,12 +59,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="4dp"
-        android:visibility="visible"
-        android:nestedScrollingEnabled="false"/>
+        android:nestedScrollingEnabled="true"/>
 </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/searchButton"
+        android:id="@+id/allAppsButton"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_marginTop="24dp"
@@ -75,8 +74,8 @@
         app:strokeWidth="3dp">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
             android:layout_gravity="center"
             android:scaleX="-1"
             android:src="@drawable/ic_search"

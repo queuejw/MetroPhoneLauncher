@@ -39,12 +39,10 @@ class RecoveryOptions: AppCompatActivity() {
                 if (!packageManager.canRequestPackageInstalls()) {
                     startActivityForResult(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                             .setData(Uri.parse(String.format("package:%s", packageName))), 1)
-                    return@setOnClickListener
                 }
             }
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1)
-                return@setOnClickListener
             }
             Application.PREFS!!.reset()
             Application.downloadUpdate(this)

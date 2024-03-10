@@ -43,21 +43,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:fontFamily="@font/opensans_light"
-            android:text="@string/edit_app_label"
-            android:textColor="?attr/colorSurface"
-            android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/editAppLabelText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:fontFamily="@font/opensans_light"
+                android:text="@string/edit_app_label"
+                android:textColor="?attr/colorSurface"
+                android:textSize="25sp" />
 
             <LinearLayout
                 android:id="@+id/changeLabelLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="invisible">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -129,7 +131,7 @@
                 android:textSize="25sp" />
         <LinearLayout
             android:layout_width="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/chooseColorSub"
@@ -144,10 +146,10 @@
                 android:id="@+id/chooseColorRemove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
                 android:fontFamily="@font/opensans_light"
                 android:textColor="?attr/colorSurface"
-                android:layout_gravity="end"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/remove"
                 android:textSize="20sp" />
         </LinearLayout>

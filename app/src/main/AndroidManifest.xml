@@ -16,7 +16,7 @@
         android:name="ru.dimon6018.metrolauncher.Application"
         android:testOnly="false"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/ic_os_windows_8"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Cobalt">
@@ -26,7 +26,6 @@
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:resumeWhilePausing="true"
-            android:icon="@drawable/ic_os_windows_8"
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +39,7 @@
                 android:autoRemoveFromRecents="true"
                 android:exported="true"
                 android:label="@string/settings_app_title"
-                android:icon="@drawable/ic_settings"
+                android:icon="@mipmap/settings"
                 android:taskAffinity=".content.settings.SettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

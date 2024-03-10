@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,6 +35,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.saveError
+import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppDao
@@ -69,7 +72,7 @@ class NewAllApps: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.app_list)
-        searchBtn = view.findViewById(R.id.searchButton)
+        searchBtn = view.findViewById(R.id.allAppsButton)
         searchBtnBack = view.findViewById(R.id.searchBackBtn)
         search = view.findViewById(R.id.search)
         loadingHolder = view.findViewById(R.id.loadingHolder)
@@ -78,8 +81,8 @@ class NewAllApps: Fragment() {
         CoroutineScope(Dispatchers.Default.limitedParallelism(2)).launch {
             val dbCall = AppData.getAppData(requireContext()).getAppDao()
             pm = requireContext().packageManager
-            appList = getHeaderListLatter(Application.setUpApps(pm!!))
-            adapter = AppAdapter(appList!!, requireActivity().resources, pm!!, dbCall)
+            appList = getHeaderListLatter(Application.setUpApps(pm!!, requireContext()))
+            adapter = AppAdapter(appList!!, requireActivity().resources, dbCall)
             val lm = LinearLayoutManager(requireContext())
             requireActivity().runOnUiThread {
                 recyclerView!!.layoutManager = lm
@@ -117,10 +120,10 @@ class NewAllApps: Fragment() {
             if(pm == null) {
                 pm = requireActivity().packageManager
             }
-            appList = getHeaderListLatter(Application.setUpApps(pm!!))
+            appList = getHeaderListLatter(Application.setUpApps(pm!!, requireContext()))
             runBlocking {
                 requireActivity().runOnUiThread {
-                    adapter?.setData(appList!!, false)
+                    adapter?.setData(appList!!, true)
                 }
             }
         }
@@ -150,8 +153,9 @@ class NewAllApps: Fragment() {
     }
     private fun filterText(text: String) {
         val filteredlist: ArrayList<App> = ArrayList()
+        val locale = Locale.getDefault()
         for (item in appList!!) {
-            if (item.appLabel!!.lowercase(Locale.getDefault()).contains(text.lowercase(Locale.getDefault()))) {
+            if (item.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
                 filteredlist.add(item)
             }
         }
@@ -192,14 +196,14 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val pmAdapter: PackageManager, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val app: Int = 1
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        private val dispatcher = Dispatchers.IO.limitedParallelism(6)
+        private val dispatcher = Dispatchers.IO.limitedParallelism(2)
 
         fun setData(new: MutableList<App>, refresh: Boolean) {
             list = new
@@ -222,9 +226,13 @@ class NewAllApps: Fragment() {
             }
             holder as AppHolder
             try {
-                holder.icon.load(pmAdapter.getApplicationIcon(app.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())) {
-                    crossfade(true)
-                    dispatcher(dispatcher)
+                if(app.appPackage == "ru.dimon6018.metrolauncher" && app.appLabel == context?.getString(R.string.settings_app_title)) {
+                    holder.icon.load(ContextCompat.getDrawable(requireContext(), R.drawable.ic_settings))
+                } else {
+                    holder.icon.load(pm!!.getApplicationIcon(app.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())) {
+                        crossfade(true)
+                        dispatcher(dispatcher)
+                    }
                 }
             } catch (e: PackageManager.NameNotFoundException) {
                 list.remove(app)
@@ -269,7 +277,7 @@ class NewAllApps: Fragment() {
                     startActivity(Intent(requireActivity(), SettingsActivity::class.java))
                 }
                 else -> {
-                    startActivity(Intent(pmAdapter.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(pm!!.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         }
@@ -286,6 +294,11 @@ class NewAllApps: Fragment() {
                 val id = Random.nextLong(1000, 2000000)
                 val item = AppEntity(pos, id, -1, false, "small", text, packag)
                 dbCall.insertItem(item)
+                runBlocking {
+                    requireActivity().runOnUiThread {
+                        (requireActivity() as Main).openStart()
+                    }
+                }
             }
         }
         override fun getItemCount(): Int {

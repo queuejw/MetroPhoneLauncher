@@ -23,6 +23,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.Main.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.WPDialog
+import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
     
@@ -52,6 +53,10 @@ class AboutSettingsActivity : AppCompatActivity() {
                         WPDialog(this).dismiss()
                     }
                     .setPositiveButton(getString(R.string.no), null).show()
+        }
+        val restart = findViewById<MaterialButton>(R.id.restartLauncher)
+        restart.setOnClickListener {
+            exitProcess(0)
         }
         applyWindowInsets(coord)
     }
