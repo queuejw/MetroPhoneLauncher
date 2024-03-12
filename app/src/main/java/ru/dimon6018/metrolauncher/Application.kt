@@ -117,6 +117,11 @@ class Application : Application() {
             theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true)
             return typedValue.data
         }
+        fun launcherSurfaceColor(theme: Theme): Int {
+            val typedValue = TypedValue()
+            theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurface, typedValue, true)
+            return typedValue.data
+        }
         fun accentName(context: Context): String {
                 val selectedColor = PREFS!!.accentColor
                 return if (selectedColor >= 0 && selectedColor < accentNames.size) {

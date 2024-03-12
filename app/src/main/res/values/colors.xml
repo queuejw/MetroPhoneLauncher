@@ -7,6 +7,7 @@
     <color name="wp_bg_pressed">#525252</color>
     <color name="wp_light_bg">#FFFFFF</color>
     <color name="wp_light_bg_pressed">#B6B6B6</color>
+
     <!-- tiles -->
     <color name="tile_magenta">#d80073</color>
     <color name="tile_crimson">#a20024</color>

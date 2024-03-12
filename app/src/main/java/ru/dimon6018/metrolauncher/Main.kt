@@ -78,6 +78,12 @@ class Main : AppCompatActivity() {
     fun openStart() {
         bottomNavigationView.selectedItemId = R.id.start_win
     }
+    fun hideNavBar() {
+        bottomNavigationView.visibility = View.GONE
+    }
+    fun showNavBar() {
+        bottomNavigationView.visibility = View.VISIBLE
+    }
     private fun otherTasks() {
         if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
             PREFS!!.setUpdateState(3)

@@ -23,44 +23,39 @@
         android:layout_margin="4dp"
         android:orientation="vertical"
         android:id="@+id/tile_layout">
+
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        app:cardBackgroundColor="@color/transparent"
+        app:cardCornerRadius="0dp"
+        app:strokeWidth="4dp">
+
+        <FrameLayout
+            android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            app:cardBackgroundColor="@color/transparent"
-            app:strokeColor="?android:attr/colorBackground"
-            app:strokeWidth="4dp"
-            app:cardCornerRadius="0dp">
-        <FrameLayout
-                android:id="@+id/container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="true"
-                android:focusable="true">
+            android:clickable="true"
+            android:focusable="true">
+
             <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:id="@android:id/icon1"/>
+                android:id="@android:id/icon1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
             <TextView
-                    android:id="@android:id/text1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|start"
-                    android:textColor="@android:color/white"
-                    android:fontFamily="@font/opensans_regular"
-                    android:textSize="17sp"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginBottom="4dp"/>
+                android:id="@android:id/text1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="6dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/opensans_regular"
+                android:textColor="@android:color/white"
+                android:textSize="17sp" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <View
-        android:id="@+id/menuTrigger"
-        android:background="@android:color/background_dark"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:alpha="0.04"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" />
 </RelativeLayout>

@@ -13,5 +13,5 @@
         android:textSize="38sp"
         android:textColor="@android:color/white"
         android:fontFamily="@font/opensans_regular"
-        android:text="Goodbye" />
+        android:text="@string/goodbye" />
 </FrameLayout>

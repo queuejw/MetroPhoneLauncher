@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.helpers
 
+import androidx.recyclerview.widget.RecyclerView
+
 interface ItemTouchHelperAdapter {
     /**
      * Called when an item has been dragged far enough to trigger a move. This is called every time
@@ -21,5 +23,5 @@ interface ItemTouchHelperAdapter {
      */
     fun onItemDismiss(position: Int)
 
-    fun onDragAndDropCompleted()
+    fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?)
 }
