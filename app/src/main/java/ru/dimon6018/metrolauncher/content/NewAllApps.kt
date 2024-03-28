@@ -13,7 +13,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -36,7 +35,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Application.Companion.saveError
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.App
@@ -212,6 +210,10 @@ class NewAllApps: Fragment() {
                 notifyDataSetChanged()
             }
         }
+        private fun regenerate() {
+            val newAppList = getHeaderListLatter(Application.setUpApps(pm!!, requireContext()))
+            setData(newAppList, true)
+        }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return if (viewType == letter) {
                 LetterHolder(LayoutInflater.from(parent.context).inflate(R.layout.abc, parent, false))
@@ -236,8 +238,7 @@ class NewAllApps: Fragment() {
                     }
                 }
             } catch (e: PackageManager.NameNotFoundException) {
-                list.remove(app)
-                notifyItemRemoved(position)
+                regenerate()
             }
             holder.label.text = app.appLabel
             holder.itemView.setOnClickListener {
@@ -293,7 +294,7 @@ class NewAllApps: Fragment() {
                     }
                 }
                 val id = Random.nextLong(1000, 2000000)
-                val item = AppEntity(pos, id, -1, false, "small", text, packag)
+                val item = AppEntity(pos, id, -1, 0,false, "small", text, packag)
                 dbCall.insertItem(item)
                 runBlocking {
                     requireActivity().runOnUiThread {

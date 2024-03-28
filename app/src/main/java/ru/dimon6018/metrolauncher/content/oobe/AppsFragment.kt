@@ -80,7 +80,7 @@ class AppsFragment: Fragment() {
                     val item = selectedItems!![i]
                     val pos = call.getJustAppsWithoutPlaceholders(false).size
                     val id = Random.nextLong(1000, 2000000)
-                    val entity = AppEntity(pos, id, -1, false, "small", item.appLabel!!, item.appPackage!!)
+                    val entity = AppEntity(pos, id, -1, 0,false, "small", item.appLabel!!, item.appPackage!!)
                     call.insertItem(entity)
                 }
                 runBlocking {

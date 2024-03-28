@@ -5,13 +5,14 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleJvm" value="jbr-17" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/SpannedGridLayoutManager" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/liboverscroll" />
+            <option value="$PROJECT_DIR$/openweathermaphelper" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

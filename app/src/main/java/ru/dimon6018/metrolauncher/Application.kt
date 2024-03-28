@@ -12,14 +12,12 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.util.TypedValue
-import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
-import ru.dimon6018.metrolauncher.content.data.bsod.BSODDao
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector

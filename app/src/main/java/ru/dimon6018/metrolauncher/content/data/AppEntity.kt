@@ -11,6 +11,7 @@ data class AppEntity (
     var id: Long? = null,
     @ColumnInfo
     var tileColor: Int? = null,
+    var tileType: Int? = null,
     var isPlaceholder: Boolean? = null,
     var appSize: String = "",
     var appLabel: String = "",

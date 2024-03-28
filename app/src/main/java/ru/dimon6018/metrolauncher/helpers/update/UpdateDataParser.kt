@@ -92,6 +92,7 @@ class UpdateDataParser {
             val valueKey = parser.getAttributeValue(null, "name")
             if(valueKey == "versionCode") {
                 verCode = valueData.toInt()
+                PREFS!!.setVersionCode(valueData.toInt())
             }
             parser.nextTag()
             Log.i("parserInt", "key: $valueKey value: $valueData")

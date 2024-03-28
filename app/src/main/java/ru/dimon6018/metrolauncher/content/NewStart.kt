@@ -1,6 +1,8 @@
 package ru.dimon6018.metrolauncher.content
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
@@ -55,7 +57,6 @@ import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import java.util.Collections
-
 
 class NewStart: Fragment(), OnStartDragListener {
 
@@ -128,9 +129,9 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                     })
                     frame.setOnClickListener {
-                        Log.i("Start", "disable edit mode")
                         if (adapter?.isEditMode == true) {
                             adapter?.disableEditMode()
+                            adapter?.stopWobble(true)
                         }
                     }
                 }
@@ -210,6 +211,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
         var isEditMode = false
         private val backgroundColor = (frame.background as ColorDrawable).color
+        private val mWobbleAnimators: MutableList<ObjectAnimator> = ArrayList()
 
         init {
             setHasStableIds(true)
@@ -227,6 +229,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.scaleY = 0.9f
             isEditMode = true
             (requireActivity() as Main).hideNavBar()
+            startWobbleAnimation()
         }
         fun disableEditMode() {
             if(!isEditMode) {
@@ -237,6 +240,66 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.scaleY = 1f
             isEditMode = false
             (requireActivity() as Main).showNavBar()
+            stopWobble(true)
+        }
+        private fun startWobbleAnimation() {
+            for (i in 0..itemCount) {
+                val v: View? = mRecyclerView?.getChildAt(i)
+                if(v != null) {
+                if (i % 2 == 0) animateWobble(v) else animateWobbleInverse(v)
+                }
+            }
+        }
+        fun stopWobble(resetRotation: Boolean) {
+            for (wobbleAnimator in mWobbleAnimators) {
+                wobbleAnimator.cancel()
+            }
+            mWobbleAnimators.clear()
+            for (i in 0..itemCount) {
+                val v: View? = mRecyclerView?.getChildAt(i)
+                if(v != null) {
+                    if (resetRotation) v.rotation = 0f
+                } else {
+                    Log.e("anim", "null $i")
+                    break
+                }
+            }
+        }
+        private fun startSingleWobble(v: View, position: Int) {
+            if (position % 2 == 0) animateWobble(v) else animateWobbleInverse(v)
+        }
+        private fun stopSingleWobble(v: View, position: Int) {
+            mWobbleAnimators[position].cancel()
+            v.clearAnimation()
+            v.rotation = 0f
+        }
+        private fun restartWobble() {
+            stopWobble(false)
+            startWobbleAnimation()
+        }
+        private fun animateWobble(v: View) {
+            val animator = createBaseWobble(v)
+            animator.setFloatValues(-1.2f, 1.2f)
+            animator.start()
+            mWobbleAnimators.add(animator)
+        }
+
+        private fun animateWobbleInverse(v: View) {
+            val animator = createBaseWobble(v)
+            animator.setFloatValues(1.2f, -1.2f)
+            animator.start()
+            mWobbleAnimators.add(animator)
+        }
+
+
+        private fun createBaseWobble(v: View): ObjectAnimator {
+            val animator = ObjectAnimator()
+            animator.setDuration(220)
+            animator.repeatMode = ValueAnimator.REVERSE
+            animator.repeatCount = ValueAnimator.INFINITE
+            animator.setPropertyName("rotation")
+            animator.setTarget(v)
+            return animator
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -267,11 +330,13 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             holder as TileViewHolder
             val item = list[position]
+            if(isEditMode) {
+                startSingleWobble(holder.itemView, position)
+            }
             when (item.appSize) {
                 "small" -> {
                     holder.mTextView.text = ""
                 }
-
                 "medium" -> {
                     if (PREFS!!.isMoreTilesEnabled) {
                         holder.mTextView.text = ""
@@ -287,9 +352,9 @@ class NewStart: Fragment(), OnStartDragListener {
             holder.mCardContainer.strokeColor = backgroundColor
             holder.mContainer.setOnClickListener {
                 if (isEditMode) {
-                    holder.mCardContainer.strokeColor = Application.launcherSurfaceColor(requireActivity().theme)
                     val newItem = list[position]
                     showPopupWindow(holder, newItem)
+                    stopSingleWobble(holder.itemView, position)
                 } else {
                     val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
                     intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -405,12 +470,31 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun showPopupWindow(holder: TileViewHolder, item: AppEntity) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = if(PREFS!!.isMoreTilesEnabled) {
-                inflater.inflate(R.layout.tile_window_horiz, holder.itemView as ViewGroup, false)
-            } else if(item.appSize == "small" ) {
-                inflater.inflate(R.layout.tile_window_horiz, holder.itemView as ViewGroup, false)
-            } else {
-                inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val popupView: View = when(item.appSize) {
+                "big" -> {
+                    if(!PREFS!!.isMoreTilesEnabled) {
+                        inflater.inflate(R.layout.tile_window_big, holder.itemView as ViewGroup, false)
+                    } else {
+                        inflater.inflate(R.layout.tile_window_big_moretiles, holder.itemView as ViewGroup, false)
+                    }
+                }
+                "medium" -> {
+                    if(!PREFS!!.isMoreTilesEnabled) {
+                        inflater.inflate(R.layout.tile_window_medium, holder.itemView as ViewGroup, false)
+                    } else {
+                        inflater.inflate(R.layout.tile_window_medium_moretiles, holder.itemView as ViewGroup, false)
+                    }
+                }
+                "small" -> {
+                    if(!PREFS!!.isMoreTilesEnabled) {
+                        inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false)
+                    } else {
+                        inflater.inflate(R.layout.tile_window_small_moretiles, holder.itemView as ViewGroup, false)
+                    }
+                }
+                else -> {
+                    inflater.inflate(R.layout.tile_window_medium, holder.itemView as ViewGroup, false)
+                }
             }
             val width = LinearLayout.LayoutParams.WRAP_CONTENT
             val height = LinearLayout.LayoutParams.WRAP_CONTENT
@@ -487,11 +571,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 popupWindow.dismiss()
             }
             settings.setOnClickListener {
-                showSettigsBottomSheet(item)
+                showSettingsBottomSheet(item)
                 popupWindow.dismiss()
             }
         }
-        fun showSettigsBottomSheet(item: AppEntity) {
+        fun showSettingsBottomSheet(item: AppEntity) {
             val bottomsheet = BottomSheetDialog(context)
             bottomsheet.setContentView(R.layout.tile_bottomsheet)
             bottomsheet.dismissWithAnimation = true
@@ -566,16 +650,10 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
-        val mCardContainer: MaterialCardView
-        val mContainer: FrameLayout
-        val mTextView: TextView
-        val mAppIcon: ImageView
-        init {
-            mCardContainer = v.findViewById(R.id.cardContainer)
-            mContainer = v.findViewById(R.id.container)
-            mTextView = v.findViewById(android.R.id.text1)
-            mAppIcon = v.findViewById(android.R.id.icon1)
-        }
+        val mCardContainer: MaterialCardView  = v.findViewById(R.id.cardContainer)
+        val mContainer: FrameLayout = v.findViewById(R.id.container)
+        val mTextView: TextView = v.findViewById(android.R.id.text1)
+        val mAppIcon: ImageView = v.findViewById(android.R.id.icon1)
 
         override fun onItemSelected() {}
         override fun onItemClear() {}
@@ -781,7 +859,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
         override fun dismiss() {
             adapter.notifyItemChanged(item.appPos!!)
-            adapter.showSettigsBottomSheet(item)
+            adapter.showSettingsBottomSheet(item)
             super.dismiss()
         }
     }

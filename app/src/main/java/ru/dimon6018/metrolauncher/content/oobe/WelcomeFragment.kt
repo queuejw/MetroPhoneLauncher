@@ -41,7 +41,7 @@ class WelcomeFragment : Fragment() {
             val size = 100
             val dbCall = AppData.getAppData(requireContext()).getAppDao()
             for (i in 0..size) {
-                val placeholder = AppEntity(i, (i + 1).toLong(), -1, true, "small", "", "")
+                val placeholder = AppEntity(i, (i + 1).toLong(), -1, 0,true, "small", "", "")
                 dbCall.insertItem(placeholder)
             }
         }

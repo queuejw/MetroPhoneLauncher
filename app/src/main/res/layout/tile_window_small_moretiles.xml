@@ -1,4 +1,4 @@
-<LinearLayout
+<RelativeLayout
     style="@style/MPL.BottomSheet.AllAppsStyle"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
@@ -7,50 +7,32 @@
     android:background="@android:color/transparent"
     app:behavior_hideable="true"
     app:enableEdgeToEdge="true"
+    android:orientation="vertical"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/remove"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="38dp"
         app:cardBackgroundColor="?android:attr/colorBackground"
         app:cardCornerRadius="48dp"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="3dp">
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:src="@drawable/ic_pin_remove"
             app:tint="?attr/colorOnSurface" />
-
     </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/settings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardBackgroundColor="?android:attr/colorBackground"
-            app:cardCornerRadius="48dp"
-            app:strokeColor="?attr/colorOnSurface"
-            app:strokeWidth="3dp">
-
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_settings"
-                app:tint="?attr/colorOnSurface" />
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/resize"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="38dp"
+        android:layout_marginStart="38dp"
         app:cardBackgroundColor="?android:attr/colorBackground"
         app:cardCornerRadius="48dp"
         app:strokeColor="?attr/colorOnSurface"
@@ -58,10 +40,26 @@
 
         <ImageView
             android:id="@+id/resizeIco"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             app:tint="?attr/colorOnSurface" />
     </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/settings"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:cardCornerRadius="48dp"
+        app:strokeColor="?attr/colorOnSurface"
+        app:strokeWidth="3dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_settings"
+            app:tint="?attr/colorOnSurface" />
+    </com.google.android.material.card.MaterialCardView>
+</RelativeLayout>

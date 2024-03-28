@@ -33,7 +33,7 @@ class Reset : AppCompatActivity() {
         resetPart2()
     }
     private fun resetPart2() {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             dbApps!!.clearAllTables()
             dbBsod!!.clearAllTables()
             Prefs(this@Reset).reset()

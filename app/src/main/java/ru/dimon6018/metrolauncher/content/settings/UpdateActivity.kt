@@ -17,7 +17,6 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
@@ -37,15 +36,12 @@ import ru.dimon6018.metrolauncher.Application.Companion.saveError
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
-import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.update.UpdateDataParser
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import java.util.Calendar
-import java.util.Date
 
 
 class UpdateActivity: AppCompatActivity() {
@@ -109,9 +105,8 @@ class UpdateActivity: AppCompatActivity() {
                     try {
                         val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
                         val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
-                        PREFS!!.setVersionCode(UpdateDataParser.verCode!!)
-                        openFile(uri, this)
                         PREFS!!.editor.putBoolean("updateInstalled", true).apply()
+                        openFile(uri, this)
                     } catch (e: Exception) {
                         Log.i("InstallAPK", "error: $e")
                         PREFS!!.setUpdateState(5)
