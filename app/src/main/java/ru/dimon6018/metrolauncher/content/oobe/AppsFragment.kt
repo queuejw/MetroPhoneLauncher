@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +54,7 @@ class AppsFragment: Fragment() {
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
         CoroutineScope(Dispatchers.Default).launch {
             selectedItems = ArrayList()
-            val appList = setUpApps(fragmentContext!!.packageManager, fragmentContext!!)
+            val appList = setUpApps(fragmentContext!!.packageManager)
             val adapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
             activity?.runOnUiThread {
@@ -80,7 +80,13 @@ class AppsFragment: Fragment() {
                     val item = selectedItems!![i]
                     val pos = call.getJustAppsWithoutPlaceholders(false).size
                     val id = Random.nextLong(1000, 2000000)
-                    val entity = AppEntity(pos, id, -1, 0,false, "small", item.appLabel!!, item.appPackage!!)
+                    val entity = AppEntity(pos, id, -1, 0,
+                        isPlaceholder = false,
+                        isSelected = false,
+                        appSize = "small",
+                        appLabel = item.appLabel!!,
+                        appPackage = item.appPackage!!
+                    )
                     call.insertItem(entity)
                 }
                 runBlocking {
@@ -140,13 +146,7 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
     }
 }
 class OOBEAppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val icon: ImageView
-    val label: TextView
-    val checkbox: MaterialCheckBox
-
-    init {
-        icon = itemView.findViewById(R.id.app_icon)
-        label = itemView.findViewById(R.id.app_label)
-        checkbox = itemView.findViewById(R.id.app_checkbox)
-    }
+    val icon: ImageView = itemView.findViewById(R.id.app_icon)
+    val label: MaterialTextView = itemView.findViewById(R.id.app_label)
+    val checkbox: MaterialCheckBox = itemView.findViewById(R.id.app_checkbox)
 }

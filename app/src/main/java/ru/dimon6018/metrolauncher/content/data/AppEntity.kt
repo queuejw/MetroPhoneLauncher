@@ -13,6 +13,7 @@ data class AppEntity (
     var tileColor: Int? = null,
     var tileType: Int? = null,
     var isPlaceholder: Boolean? = null,
+    var isSelected: Boolean? = null,
     var appSize: String = "",
     var appLabel: String = "",
     var appPackage: String = ""

@@ -36,6 +36,8 @@ class Main : AppCompatActivity() {
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
 
+    private val initCoroutine = CoroutineScope(Dispatchers.IO)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
@@ -52,7 +54,7 @@ class Main : AppCompatActivity() {
             }
         }
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        CoroutineScope(Dispatchers.Default).launch {
+        initCoroutine.launch {
             pagerAdapter = NumberAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
@@ -178,10 +180,6 @@ class Main : AppCompatActivity() {
             Prefs.isPrefsChanged = false
             recreate()
         }
-    }
-    override fun onDestroy() {
-        viewPager.adapter = null
-        super.onDestroy()
     }
     companion object {
          fun applyWindowInsets(target: View) {

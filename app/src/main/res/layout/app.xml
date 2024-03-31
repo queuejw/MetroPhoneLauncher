@@ -24,7 +24,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="0"/>
         </com.google.android.material.card.MaterialCardView>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/app_label"
         android:layout_width="0dp"
         android:layout_height="72dp"
