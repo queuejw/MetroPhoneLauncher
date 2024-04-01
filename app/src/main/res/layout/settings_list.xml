@@ -65,6 +65,35 @@
             <com.google.android.material.card.MaterialCardView
                 app:cardBackgroundColor="?android:attr/colorBackground"
                 android:layout_width="match_parent"
+                android:id="@+id/weatherSettings"
+                app:cardCornerRadius="0dp"
+                app:strokeWidth="0dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="12dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_light"
+                        android:text="weather"
+                        android:textSize="24sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/weather_sub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/opensans_light"
+                        android:text="weather tile"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView
+                app:cardBackgroundColor="?android:attr/colorBackground"
+                android:layout_width="match_parent"
                 android:id="@+id/updatesSetting"
                 app:cardCornerRadius="0dp"
                 app:strokeWidth="0dp"

@@ -1,6 +1,8 @@
 package ru.dimon6018.metrolauncher.content
 
 import android.Manifest
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.app.WallpaperManager
 import android.content.Context
 import android.content.Intent
@@ -8,6 +10,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +21,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -29,6 +33,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -210,6 +215,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
         var isEditMode = false
         private val backgroundColor = (frame.background as ColorDrawable).color
+        private val animList: MutableList<ObjectAnimator> = ArrayList()
 
         init {
             setHasStableIds(true)
@@ -225,8 +231,10 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
             mRecyclerView!!.scaleX = 0.9f
             mRecyclerView!!.scaleY = 0.9f
+            mRecyclerView!!.setBackgroundColor(backgroundColor)
             isEditMode = true
             (requireActivity() as Main).hideNavBar()
+            notifyDataSetChanged()
         }
         fun disableEditMode() {
             if(!isEditMode) {
@@ -235,8 +243,15 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_dismiss))
             mRecyclerView!!.scaleX = 1f
             mRecyclerView!!.scaleY = 1f
+            mRecyclerView!!.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+            setBackground()
             isEditMode = false
             (requireActivity() as Main).showNavBar()
+            for(anim in animList) {
+                anim.cancel()
+            }
+            animList.clear()
+            notifyDataSetChanged()
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -256,6 +271,16 @@ class NewStart: Fragment(), OnStartDragListener {
         override fun getItemId(position: Int): Long {
             return list[position].id!!
         }
+        private fun createBaseWobble(v: View): ObjectAnimator {
+            val animator = ObjectAnimator()
+            animator.setDuration(220)
+            animator.interpolator = LinearInterpolator()
+            animator.repeatMode = ValueAnimator.REVERSE
+            animator.repeatCount = ValueAnimator.INFINITE
+            animator.setPropertyName("rotation")
+            animator.setTarget(v)
+            return animator
+        }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if (holder.itemViewType == spaceType) {
                 holder.itemView.setOnClickListener {
@@ -267,11 +292,29 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             holder as TileViewHolder
             val item = list[position]
+
+            val anim = createBaseWobble(holder.itemView)
+            if(isEditMode) {
+                if (item.tileColor != -1) {
+                    holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, context))
+                } else {
+                    holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(context))
+                }
+                if (position % 2 == 0) {
+                    anim.setFloatValues(-1.2f, 1.2f)
+                } else {
+                    anim.setFloatValues(1.2f, -1.2f)
+                }
+                animList.add(anim)
+                anim.start()
+            } else {
+                holder.itemView.rotation = 0f
+            }
+
             when (item.appSize) {
                 "small" -> {
                     holder.mTextView.text = ""
                 }
-
                 "medium" -> {
                     if (PREFS!!.isMoreTilesEnabled) {
                         holder.mTextView.text = ""
@@ -287,8 +330,9 @@ class NewStart: Fragment(), OnStartDragListener {
             holder.mCardContainer.strokeColor = backgroundColor
             holder.mContainer.setOnClickListener {
                 if (isEditMode) {
-                    holder.mCardContainer.strokeColor = Application.launcherSurfaceColor(requireActivity().theme)
                     val newItem = list[position]
+                    anim.cancel()
+                    holder.itemView.rotation = 0f
                     showPopupWindow(holder, newItem)
                 } else {
                     val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
@@ -302,13 +346,15 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
                 true
             }
-            if (item.tileColor != -1) {
-                holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, context))
-            } else {
-                if (PREFS!!.isWallpaperUsed) {
-                    holder.mContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+            if(!isEditMode) {
+                if (item.tileColor != -1) {
+                    holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
-                    holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(context))
+                    if (PREFS!!.isWallpaperUsed) {
+                        holder.mContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                    } else {
+                        holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(context))
+                    }
                 }
             }
             try {

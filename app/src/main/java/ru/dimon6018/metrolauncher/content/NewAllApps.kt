@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.content
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -58,12 +59,14 @@ class NewAllApps: Fragment() {
     private var pm: PackageManager? = null
 
     private var contextFragment: Context? = null
+    private var currentActivity: Activity? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
         progressBar = view.findViewById(R.id.progressBar)
         progressBar!!.showProgressBar()
         contextFragment = requireContext()
+        currentActivity = requireActivity()
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,7 +84,7 @@ class NewAllApps: Fragment() {
             appList = getHeaderListLatter(Application.setUpApps(pm!!))
             adapter = AppAdapter(appList!!, contextFragment!!.resources, dbCall)
             val lm = LinearLayoutManager(contextFragment)
-            requireActivity().runOnUiThread {
+            currentActivity?.runOnUiThread {
                 recyclerView!!.layoutManager = lm
                 recyclerView!!.adapter = adapter
                 OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
@@ -90,7 +93,7 @@ class NewAllApps: Fragment() {
                 }
             }
             runBlocking {
-                requireActivity().runOnUiThread {
+                currentActivity?.runOnUiThread {
                     progressBar!!.hideProgressBar()
                     progressBar = null
                     loadingHolder!!.visibility = View.GONE
@@ -115,11 +118,11 @@ class NewAllApps: Fragment() {
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         CoroutineScope(Dispatchers.IO).launch {
             if(pm == null) {
-                pm = requireActivity().packageManager
+                pm = currentActivity?.packageManager
             }
             appList = getHeaderListLatter(Application.setUpApps(pm!!))
             runBlocking {
-                requireActivity().runOnUiThread {
+                currentActivity?.runOnUiThread {
                     adapter?.setData(appList!!, true)
                 }
             }
@@ -135,7 +138,7 @@ class NewAllApps: Fragment() {
         search!!.isFocusable = true
         searchBtnBack!!.visibility = View.VISIBLE
         CoroutineScope(Dispatchers.IO).launch {
-            requireActivity().runOnUiThread {
+            currentActivity?.runOnUiThread {
                 setRecyclerPadding(0)
                 removeHeaders()
             }
@@ -298,7 +301,7 @@ class NewAllApps: Fragment() {
                 )
                 dbCall.insertItem(item)
                 runBlocking {
-                    requireActivity().runOnUiThread {
+                    currentActivity?.runOnUiThread {
                         (requireActivity() as Main).openStart()
                     }
                 }
