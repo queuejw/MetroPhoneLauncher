@@ -50,6 +50,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.AppDao
@@ -273,7 +274,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun createBaseWobble(v: View): ObjectAnimator {
             val animator = ObjectAnimator()
-            animator.setDuration(220)
+            animator.setDuration(500)
             animator.interpolator = LinearInterpolator()
             animator.repeatMode = ValueAnimator.REVERSE
             animator.repeatCount = ValueAnimator.INFINITE
@@ -334,6 +335,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     anim.cancel()
                     holder.itemView.rotation = 0f
                     showPopupWindow(holder, newItem)
+                    notifyItemChanged(position)
                 } else {
                     val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
                     intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -358,7 +360,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             try {
-                holder.mAppIcon.setImageBitmap(getAppIcon(item.appPackage, item.appSize, resources, context.packageManager))
+                holder.mAppIcon.setImageIcon(recompressIcon(getAppIcon(item.appPackage, item.appSize, resources, context.packageManager)))
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))

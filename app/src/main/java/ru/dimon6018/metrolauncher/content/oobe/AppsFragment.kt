@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.App
@@ -118,12 +119,8 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
         val item = adapterApps[position]
         holder as OOBEAppHolder
         try {
-            val bmp = if(item.appPackage == "ru.dimon6018.metrolauncher" && item.appLabel == context.getString(R.string.settings_app_title)) {
-                ContextCompat.getDrawable(context, R.drawable.ic_settings)?.toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
-            } else {
-                packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
-            }
-            holder.icon.setImageBitmap(bmp)
+            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig()))
+            holder.icon.setImageIcon(bmp)
         } catch (e: PackageManager.NameNotFoundException) {
             holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))
             adapterApps.remove(item)
