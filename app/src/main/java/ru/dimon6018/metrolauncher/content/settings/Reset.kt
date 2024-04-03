@@ -14,6 +14,7 @@ import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import kotlin.system.exitProcess
 
 class Reset : AppCompatActivity() {
 
@@ -43,6 +44,7 @@ class Reset : AppCompatActivity() {
                 intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 finishAffinity()
                 startActivity(intent)
+                exitProcess(0)
             }
             frame!!.postDelayed(oobe, 3000)
         }

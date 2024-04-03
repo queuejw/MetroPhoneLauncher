@@ -3,6 +3,7 @@ package ru.dimon6018.metrolauncher.content.oobe
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,18 +78,18 @@ class AppsFragment: Fragment() {
         }
         next.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                for (i in 0..<selectedItems!!.size) {
-                    val item = selectedItems!![i]
-                    val pos = call.getJustAppsWithoutPlaceholders(false).size
+                var pos = 0
+                for (i in selectedItems!!) {
                     val id = Random.nextLong(1000, 2000000)
                     val entity = AppEntity(pos, id, -1, 0,
-                        isPlaceholder = false,
                         isSelected = false,
                         appSize = "small",
-                        appLabel = item.appLabel!!,
-                        appPackage = item.appPackage!!
+                        appLabel = i.appLabel!!,
+                        appPackage = i.appPackage!!
                     )
+                    Log.d("OOBE", "insets item: ${i.appLabel} , pos: $pos")
                     call.insertItem(entity)
+                    pos += 1
                 }
                 runBlocking {
                     requireActivity().supportFragmentManager.commit {

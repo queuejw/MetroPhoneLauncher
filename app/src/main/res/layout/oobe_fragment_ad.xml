@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/open"
+        android:id="@+id/openN11"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,6 +32,24 @@
         app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView7"
+        app:strokeColor="?attr/colorOnBackground"
+        app:strokeWidth="2dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/screenshotsAdButtonNeko11"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/opensans_regular"
+        android:text="@string/screenshots"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="18sp"
+        app:cornerRadius="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/openN11"
         app:strokeColor="?attr/colorOnBackground"
         app:strokeWidth="2dp" />
 
@@ -76,30 +94,4 @@
             app:strokeWidth="2dp" />
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/open">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-            <ImageView
-                android:id="@+id/ad_img1"
-                android:layout_width="200dp"
-                android:layout_height="300dp" />
-
-            <ImageView
-                android:id="@+id/ad_img2"
-                android:layout_marginStart="24dp"
-                android:layout_width="200dp"
-                android:layout_height="300dp" />
-
-            <ImageView
-                android:id="@+id/ad_img3"
-                android:layout_marginStart="24dp"
-                android:layout_width="200dp"
-                android:layout_height="300dp" />
-        </LinearLayout>
-    </HorizontalScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

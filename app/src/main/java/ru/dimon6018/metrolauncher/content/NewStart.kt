@@ -10,7 +10,6 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -33,7 +32,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -211,7 +209,7 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
-        private val tileType: Int = 0
+        private val defaultTileType: Int = 0
         val spaceType: Int = 1
 
         var isEditMode = false
@@ -229,6 +227,7 @@ class NewStart: Fragment(), OnStartDragListener {
             if(isEditMode) {
                 return
             }
+            Log.d("EDITMODE", "ENTER EDIT MODE")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
             mRecyclerView!!.scaleX = 0.9f
             mRecyclerView!!.scaleY = 0.9f
@@ -241,12 +240,14 @@ class NewStart: Fragment(), OnStartDragListener {
             if(!isEditMode) {
                 return
             }
+            Log.d("EDITMODE", "EXIT EDIT MODE")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_dismiss))
             mRecyclerView!!.scaleX = 1f
             mRecyclerView!!.scaleY = 1f
             mRecyclerView!!.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
             setBackground()
             isEditMode = false
+            clearItems()
             (requireActivity() as Main).showNavBar()
             for(anim in animList) {
                 anim.cancel()
@@ -256,7 +257,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return if(viewType == tileType) {
+            return if(viewType == defaultTileType) {
                 val v = inflater.inflate(R.layout.tile, parent, false)
                 TileViewHolder(v)
             } else {
@@ -274,7 +275,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun createBaseWobble(v: View): ObjectAnimator {
             val animator = ObjectAnimator()
-            animator.setDuration(500)
+            animator.setDuration(425)
             animator.interpolator = LinearInterpolator()
             animator.repeatMode = ValueAnimator.REVERSE
             animator.repeatCount = ValueAnimator.INFINITE
@@ -283,35 +284,41 @@ class NewStart: Fragment(), OnStartDragListener {
             return animator
         }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-            if (holder.itemViewType == spaceType) {
-                holder.itemView.setOnClickListener {
-                    if (isEditMode) {
-                        disableEditMode()
+            when(holder.itemViewType) {
+                spaceType -> {
+                    holder.itemView.setOnClickListener {
+                        if (isEditMode) {
+                            disableEditMode()
+                        }
                     }
                 }
-                return
+                defaultTileType -> bindDefaultTile(holder as TileViewHolder, position)
             }
-            holder as TileViewHolder
+        }
+        private fun bindDefaultTile(holder: TileViewHolder, position: Int) {
             val item = list[position]
-
-            val anim = createBaseWobble(holder.itemView)
             if(isEditMode) {
+                val anim = createBaseWobble(holder.itemView)
                 if (item.tileColor != -1) {
                     holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
                     holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(context))
                 }
-                if (position % 2 == 0) {
-                    anim.setFloatValues(-1.2f, 1.2f)
+                if(item.isSelected == false) {
+                    if (position % 2 == 0) {
+                        anim.setFloatValues(-1.2f, 1.2f)
+                    } else {
+                        anim.setFloatValues(1.2f, -1.2f)
+                    }
+                    animList.add(anim)
+                    anim.start()
                 } else {
-                    anim.setFloatValues(1.2f, -1.2f)
+                    animList[position].cancel()
+                    anim.cancel()
                 }
-                animList.add(anim)
-                anim.start()
             } else {
                 holder.itemView.rotation = 0f
             }
-
             when (item.appSize) {
                 "small" -> {
                     holder.mTextView.text = ""
@@ -323,7 +330,6 @@ class NewStart: Fragment(), OnStartDragListener {
                         holder.mTextView.text = item.appLabel
                     }
                 }
-
                 "big" -> {
                     holder.mTextView.text = item.appLabel
                 }
@@ -331,11 +337,17 @@ class NewStart: Fragment(), OnStartDragListener {
             holder.mCardContainer.strokeColor = backgroundColor
             holder.mContainer.setOnClickListener {
                 if (isEditMode) {
-                    val newItem = list[position]
-                    anim.cancel()
                     holder.itemView.rotation = 0f
-                    showPopupWindow(holder, newItem)
-                    notifyItemChanged(position)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        item.isSelected = true
+                        appsDbCall!!.insertItem(item)
+                        runBlocking {
+                            requireActivity().runOnUiThread {
+                                showPopupWindow(holder, item, position)
+                                notifyItemChanged(position)
+                            }
+                        }
+                    }
                 } else {
                     val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
                     intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -366,6 +378,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
                 CoroutineScope(Dispatchers.IO).launch {
                     appsDbCall!!.removeApp(item)
+                    notifyDataSetChanged()
                 }
             }
         }
@@ -400,11 +413,11 @@ class NewStart: Fragment(), OnStartDragListener {
             return bmp
         }
         override fun getItemViewType(position: Int): Int {
-            return if(list[position].isPlaceholder == true) {
-                spaceType
-            } else {
-                tileType
-            }
+           return when(list[position].tileType) {
+               -1 -> spaceType
+               0 -> defaultTileType
+               else -> defaultTileType
+           }
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if(!isEditMode) {
@@ -451,36 +464,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
         }
-        private fun showPopupWindow(holder: TileViewHolder, item: AppEntity) {
+        private fun showPopupWindow(holder: TileViewHolder, item: AppEntity, position: Int) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = when(item.appSize) {
-                "big" -> {
-                    if(!PREFS!!.isMoreTilesEnabled) {
-                        inflater.inflate(R.layout.tile_window_big, holder.itemView as ViewGroup, false)
-                    } else {
-                        inflater.inflate(R.layout.tile_window_big_moretiles, holder.itemView as ViewGroup, false)
-                    }
-                }
-                "medium" -> {
-                    if(!PREFS!!.isMoreTilesEnabled) {
-                        inflater.inflate(R.layout.tile_window_medium, holder.itemView as ViewGroup, false)
-                    } else {
-                        inflater.inflate(R.layout.tile_window_medium_moretiles, holder.itemView as ViewGroup, false)
-                    }
-                }
-                "small" -> {
-                    if(!PREFS!!.isMoreTilesEnabled) {
-                        inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false)
-                    } else {
-                        inflater.inflate(R.layout.tile_window_small_moretiles, holder.itemView as ViewGroup, false)
-                    }
-                }
-                else -> {
-                    inflater.inflate(R.layout.tile_window_medium, holder.itemView as ViewGroup, false)
-                }
-            }
-            val width = LinearLayout.LayoutParams.WRAP_CONTENT
-            val height = LinearLayout.LayoutParams.WRAP_CONTENT
+            val popupView: View = inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val width = holder.itemView.width
+            val height = holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow.animationStyle = R.style.enterStyle
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
@@ -488,7 +476,10 @@ class NewStart: Fragment(), OnStartDragListener {
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.setOnDismissListener {
-                notifyItemChanged(item.appPos!!)
+                clearItems()
+                runBlocking {
+                    notifyItemChanged(position)
+                }
             }
             popupWindow.showAsDropDown(holder.itemView, 0, ((-1 * holder.itemView.height)), Gravity.CENTER)
             val arrow = when(item.appSize) {
@@ -516,10 +507,9 @@ class NewStart: Fragment(), OnStartDragListener {
                             item.appSize = "medium"
                             appsDbCall!!.updateApp(item)
                             holder.mTextView.post {
-                                holder.mTextView.text = ""
+                                holder.mTextView.text = item.appLabel
                             }
                         }
-
                         "medium" -> {
                             item.appSize = "big"
                             appsDbCall!!.updateApp(item)
@@ -527,7 +517,6 @@ class NewStart: Fragment(), OnStartDragListener {
                                 holder.mTextView.text = item.appLabel
                             }
                         }
-
                         "big" -> {
                             item.appSize = "small"
                             appsDbCall!!.updateApp(item)
@@ -536,7 +525,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     runBlocking {
                         requireActivity().runOnUiThread {
                             popupWindow.dismiss()
-                            notifyItemChanged(item.appPos!!)
+                            notifyItemChanged(position)
                         }
                     }
                 }
@@ -554,11 +543,21 @@ class NewStart: Fragment(), OnStartDragListener {
                 popupWindow.dismiss()
             }
             settings.setOnClickListener {
-                showSettingsBottomSheet(item)
+                showSettingsBottomSheet(item, position)
                 popupWindow.dismiss()
             }
         }
-        fun showSettingsBottomSheet(item: AppEntity) {
+
+        private fun clearItems() {
+            CoroutineScope(Dispatchers.IO).launch {
+                for (itemList in list) {
+                    itemList.isSelected = false
+                    appsDbCall!!.insertItem(itemList)
+                }
+            }
+        }
+
+        fun showSettingsBottomSheet(item: AppEntity, position: Int) {
             val bottomsheet = BottomSheetDialog(context)
             bottomsheet.setContentView(R.layout.tile_bottomsheet)
             bottomsheet.dismissWithAnimation = true
@@ -602,7 +601,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     runBlocking {
                         requireActivity().runOnUiThread {
                             bottomsheet.dismiss()
-                            notifyItemRemoved(item.appPos!!)
+                            notifyItemRemoved(position)
                         }
                     }
                 }
@@ -612,7 +611,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     item.tileColor = -1
                     appsDbCall!!.updateApp(item)
                     requireActivity().runOnUiThread {
-                        notifyItemRemoved(item.appPos!!)
+                        notifyItemRemoved(position)
                     }
                 }
                 bottomsheet.dismiss()
@@ -842,7 +841,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
         override fun dismiss() {
             adapter.notifyItemChanged(item.appPos!!)
-            adapter.showSettingsBottomSheet(item)
+            adapter.showSettingsBottomSheet(item, item.appPos!!)
             super.dismiss()
         }
     }

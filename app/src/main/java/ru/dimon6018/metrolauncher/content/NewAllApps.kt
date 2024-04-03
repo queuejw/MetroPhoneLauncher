@@ -39,7 +39,10 @@ import ru.dimon6018.metrolauncher.content.data.App
 import ru.dimon6018.metrolauncher.content.data.AppDao
 import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
+import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.helpers.WPDialog
+import java.lang.NullPointerException
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
@@ -154,6 +157,23 @@ class NewAllApps: Fragment() {
     private fun filterText(text: String) {
         val filteredlist: ArrayList<App> = ArrayList()
         val locale = Locale.getDefault()
+        if(appList == null) {
+            try {
+                appList = Application.setUpApps(pm!!)
+                adapter?.setData(appList!!, true)
+            } catch (e: NullPointerException) {
+                if (contextFragment != null) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        Application.saveError(e.toString(), BSOD.getData(contextFragment!!))
+                    }
+                    WPDialog(contextFragment!!).setTopDialog(false)
+                            .setMessage(getString(R.string.error))
+                            .setPositiveButton(getString(android.R.string.ok), null)
+                            .show()
+                }
+            }
+            return
+        }
         for (item in appList!!) {
             if (item.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
                 filteredlist.add(item)
@@ -171,7 +191,7 @@ class NewAllApps: Fragment() {
         while (temp != 0) {
             temp -= 1
             val item = appList!![temp]
-            if (item.isSection) {
+            if(item.type == 1) {
                 appList!!.remove(item)
             }
         }
@@ -192,7 +212,7 @@ class NewAllApps: Fragment() {
                 lastHeader = header
                 val head = App()
                 head.appLabel = header
-                head.isSection = true
+                head.type = 1
                 list.add(head)
             }
             list.add(app)
@@ -202,7 +222,7 @@ class NewAllApps: Fragment() {
     inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
-        private val app: Int = 1
+        private val appHolder: Int = 1
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
         fun setData(new: MutableList<App>, refresh: Boolean) {
@@ -224,17 +244,24 @@ class NewAllApps: Fragment() {
         }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val app = list[position]
-            if(holder.itemViewType == letter) {
-                (holder as LetterHolder).textView.text = app.appLabel
-                return
+            when(holder.itemViewType) {
+                letter -> {
+                    (holder as LetterHolder).textView.text = app.appLabel
+                    return
+                }
+                appHolder -> {
+                    bindAppHolder((holder as AppHolder), app)
+                    return
+                }
             }
-            holder as AppHolder
+        }
+        private fun bindAppHolder(holder: AppHolder, app: App) {
             try {
                 holder.icon.setImageIcon(
-                    recompressIcon(
-                        pm!!.getApplicationIcon(app.appPackage!!)
-                            .toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
-                    )
+                        recompressIcon(
+                                pm!!.getApplicationIcon(app.appPackage!!)
+                                        .toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
+                        )
                 )
             } catch (e: PackageManager.NameNotFoundException) {
             }
@@ -286,14 +313,13 @@ class NewAllApps: Fragment() {
                 val dBlist = dbCall.getJustApps()
                 var pos = 0
                 for (i in 0..<dBlist.size) {
-                    if (dBlist[i].isPlaceholder == true) {
+                    if (dBlist[i].tileType == -1) {
                         pos = i
                         break
                     }
                 }
                 val id = Random.nextLong(1000, 2000000)
                 val item = AppEntity(pos, id, -1, 0,
-                    isPlaceholder = false,
                     isSelected = false,
                     appSize = "small",
                     appLabel = text,
@@ -311,10 +337,10 @@ class NewAllApps: Fragment() {
             return list.size
         }
         override fun getItemViewType(position: Int): Int {
-            return if (list[position].isSection) {
-                letter
-            } else {
-                app
+            return when(list[position].type) {
+                0 -> appHolder
+                1 -> letter
+                else -> appHolder
             }
         }
     }

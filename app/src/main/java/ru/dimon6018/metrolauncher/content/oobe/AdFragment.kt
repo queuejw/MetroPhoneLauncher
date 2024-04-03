@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import coil.load
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.dimon6018.metrolauncher.R
+
 
 class AdFragment: Fragment() {
 
@@ -21,7 +22,8 @@ class AdFragment: Fragment() {
         val view = inflater.inflate(R.layout.oobe_fragment_ad, container, false)
         val back: MaterialButton = view.findViewById(R.id.back)
         val next: MaterialButton = view.findViewById(R.id.next)
-        val open: MaterialButton = view.findViewById(R.id.open)
+        val open: MaterialButton = view.findViewById(R.id.openN11)
+        val screenshotsN11: MaterialButton = view.findViewById(R.id.screenshotsAdButtonNeko11)
         WelcomeActivity.setText(requireActivity(), getString(R.string.advertisement))
         back.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
@@ -36,16 +38,19 @@ class AdFragment: Fragment() {
         open.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/neko11")))
         }
+        screenshotsN11.setOnClickListener {
+            val dialog = MaterialAlertDialogBuilder(requireActivity())
+            val dialogView: View = inflater.inflate(R.layout.ad, null)
+            dialog.setView(dialogView)
+            dialog.setPositiveButton(getString(android.R.string.ok), null)
+            val adImg1 = dialogView.findViewById<ImageView>(R.id.ad_img1)
+            val adImg2 = dialogView.findViewById<ImageView>(R.id.ad_img2)
+            val adImg3 = dialogView.findViewById<ImageView>(R.id.ad_img3)
+            adImg1.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-49-28.jpg")
+            adImg2.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-56-34%20(3).jpg")
+            adImg3.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-56-34.jpg")
+            dialog.show()
+        }
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val adImg1 = view.findViewById<ImageView>(R.id.ad_img1)
-        val adImg2 = view.findViewById<ImageView>(R.id.ad_img2)
-        val adImg3 = view.findViewById<ImageView>(R.id.ad_img3)
-        adImg1.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-49-28.jpg")
-        adImg2.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-56-34%20(3).jpg")
-        adImg3.load("https://raw.githubusercontent.com/queuejw/Neko11/neko11-stable/screenshots/photo_2024-01-16_16-56-34.jpg")
     }
 }

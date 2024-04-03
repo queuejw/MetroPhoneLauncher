@@ -20,12 +20,10 @@ interface AppDao {
     fun updateAllApps(apps: MutableList<AppEntity>)
     @Query("SELECT * FROM apps")
     fun getApps(): Flow<MutableList<AppEntity>>
-    @Query("SELECT * FROM apps WHERE isPlaceholder = :bool")
-    fun getAppsWithoutPlaceholders(bool: Boolean): Flow<MutableList<AppEntity>>
     @Query("SELECT * FROM apps")
     fun getJustApps(): MutableList<AppEntity>
-    @Query("SELECT * FROM apps WHERE isPlaceholder = :bool")
-    fun getJustAppsWithoutPlaceholders(bool: Boolean): MutableList<AppEntity>
+    @Query("SELECT * FROM apps WHERE tileType = -1") //-1
+    fun getJustAppsWithoutPlaceholders(): MutableList<AppEntity>
     @Query("SELECT * FROM apps WHERE appPos = :pos")
     fun getApp(pos: Int): AppEntity
     @Query("SELECT * FROM apps WHERE id = :id")

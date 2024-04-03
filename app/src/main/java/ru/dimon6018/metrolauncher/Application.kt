@@ -199,7 +199,7 @@ class Application : Application() {
                 val app = App()
                 app.appLabel = ri.loadLabel(pManager).toString()
                 app.appPackage = ri.activityInfo.packageName
-                app.isSection = false
+                app.type = 0
                 list.add(app)
             }
             return list
