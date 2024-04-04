@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:gravity="start"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
@@ -75,7 +75,7 @@
                 android:layout_gravity="top"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="6dp"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_0"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -88,7 +88,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_1"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -101,7 +101,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_2"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -114,7 +114,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_3"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -131,7 +131,7 @@
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:text="@string/show_bsods"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         app:cornerRadius="0dp"
         app:strokeColor="?attr/colorOnBackground"
         android:textColor="?attr/colorOnBackground"
@@ -148,7 +148,7 @@
     <com.google.android.material.button.MaterialButton
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:text="@string/delete_bsods"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         app:cornerRadius="0dp"
         app:strokeColor="?attr/colorOnBackground"
         android:textColor="?attr/colorOnBackground"

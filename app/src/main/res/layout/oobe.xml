@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/opensans_regular"
+            android:fontFamily="@font/roboto_regular"
             android:text="Welcome"
             android:textSize="36sp" />
 

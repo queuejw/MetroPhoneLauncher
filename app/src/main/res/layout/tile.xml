@@ -53,7 +53,7 @@
                 android:layout_gravity="bottom|start"
                 android:layout_marginStart="6dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:textColor="@android:color/white"
                 android:textSize="17sp" />
         </FrameLayout>

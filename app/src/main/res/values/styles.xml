@@ -45,7 +45,7 @@
     </style>
     <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="fontFamily">@font/opensans_regular</item>
+        <item name="fontFamily">@font/roboto_regular</item>
     </style>
     <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="colorPrimaryDark">?attr/colorPrimary</item>

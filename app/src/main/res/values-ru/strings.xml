@@ -37,7 +37,7 @@
     <string name="navigation_bar">панель навигации</string>
     <string name="about">сведения об устройстве</string>
     <string name="about_sub">характеристики устройства</string>
-    <string name="settings">настройки</string>
+    <string name="settings">НАСТРОЙКИ</string>
     <string name="preparing_to_install">Подготовка к установке %d</string>
     <string name="up_to_date">Установлены все последние обновления</string>
     <string name="checking_for_updates">Проверка наличия обновлений …</string>

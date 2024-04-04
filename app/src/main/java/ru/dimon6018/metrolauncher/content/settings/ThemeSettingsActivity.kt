@@ -38,6 +38,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private var dark: TextView? = null
     private var accentTip: TextView? = null
     private var context: Context? = null
+    private var tileImg: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
@@ -53,6 +54,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         themeMenu = findViewById(R.id.chooseThemeMenu)
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
+        tileImg = findViewById(R.id.moreTilesImage)
         val accentTip: TextView = findViewById(R.id.accentTip)
         val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
         val spannable: Spannable = SpannableString(textFinal)
@@ -97,6 +99,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             moreTilesSwitch.setChecked(isChecked)
             Prefs.isPrefsChanged = true
+            setImg()
         }
         wallpaperSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setWallpaper(isChecked)
@@ -104,9 +107,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
             wallpaperSwitch.setChecked(isChecked)
             Prefs.isPrefsChanged = true
         }
+        setImg()
        Main.applyWindowInsets(cord)
     }
-
+    private fun setImg() {
+        tileImg?.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
+    }
     private fun restoreThemeButtonsAndApplyChanges() {
         chooseThemeBtn!!.visibility = View.VISIBLE
         themeMenu!!.visibility = View.GONE

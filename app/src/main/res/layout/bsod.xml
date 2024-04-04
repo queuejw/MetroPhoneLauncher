@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/bsod"
-        android:fontFamily="@font/opensans_medium"
+        android:fontFamily="@font/roboto_medium"
         android:text="@string/bsod"
         android:gravity="start"
         android:textColor="@android:color/white"

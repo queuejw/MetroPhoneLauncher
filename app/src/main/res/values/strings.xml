@@ -36,7 +36,7 @@
     <string name="navigation_bar">navigation bar</string>
     <string name="about">about</string>
     <string name="about_sub">information about your phone</string>
-    <string name="settings">settings</string>
+        <string name="settings">SETTINGS</string>
     <string name="preparing_to_install">Preparing to install %d</string>
     <string name="up_to_date">Your phone is up to date.</string>
     <string name="checking_for_updates">Checking for updates …</string>

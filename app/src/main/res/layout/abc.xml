@@ -21,7 +21,7 @@
             android:layout_marginTop="6dp"
             android:textColor="?attr/colorPrimary"
             android:textSize="24sp"
-            android:fontFamily="@font/opensans_medium"
+            android:fontFamily="@font/roboto_medium"
             android:text="a"/>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

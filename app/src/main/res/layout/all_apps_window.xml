@@ -22,7 +22,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="pin to start"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
@@ -38,7 +38,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="share"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
@@ -54,7 +54,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_regular"
+                android:fontFamily="@font/roboto_regular"
                 android:text="uninstall"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"

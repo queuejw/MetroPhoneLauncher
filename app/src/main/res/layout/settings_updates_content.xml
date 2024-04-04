@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/update_status"
         android:textSize="19sp" />
 
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/checking_for_updates"
         android:textSize="19sp" />
 
@@ -40,7 +40,7 @@
             android:id="@+id/progessText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/opensans_regular"
+            android:fontFamily="@font/roboto_regular"
             android:text="@string/preparing_to_install" />
     </LinearLayout>
     <TextView
@@ -48,14 +48,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/cancel_update" />
     <TextView
         android:id="@+id/updateInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/update_info" />
 
     <com.google.android.material.button.MaterialButton
@@ -64,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="64dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/check_for_updates"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
@@ -77,7 +77,7 @@
         android:layout_width="match_parent"
         android:layout_marginTop="64dp"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/notify_update"
         android:textSize="18sp" />
 
@@ -86,7 +86,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/auto_update"
         android:textSize="18sp" />
 </LinearLayout>

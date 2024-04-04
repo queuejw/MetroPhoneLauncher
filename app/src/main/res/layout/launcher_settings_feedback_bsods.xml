@@ -14,10 +14,10 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:text="@string/settings"
             android:layout_height="match_parent"
-            android:fontFamily="@font/opensans_light"
+            android:fontFamily="@font/roboto_bold"
             android:textStyle="bold"/>
         <TextView
             android:layout_width="wrap_content"
@@ -26,7 +26,7 @@
             android:ellipsize="none"
             android:text="@string/saved_issues"
             android:layout_height="match_parent"
-            android:fontFamily="@font/opensans_light"
+            android:fontFamily="@font/roboto_light"
             android:textStyle="bold">
         </TextView>
 

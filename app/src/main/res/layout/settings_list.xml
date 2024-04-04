@@ -22,7 +22,7 @@
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text="@string/start_theme"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
@@ -31,7 +31,7 @@
                         android:id="@+id/theme_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="@string/start_theme_sub"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -50,14 +50,14 @@
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text="@string/feedback"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text="@string/feedback_sub"
                             android:textSize="16sp"/>
                 </LinearLayout>
@@ -77,7 +77,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="weather"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
@@ -86,7 +86,7 @@
                         android:id="@+id/weather_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="weather tile"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -105,14 +105,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="@string/launcher_update"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="@string/launcher_update_sub"
                         android:textSize="16sp"/>
                 </LinearLayout>
@@ -131,7 +131,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="@string/navigation_bar"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
@@ -140,7 +140,7 @@
                         android:id="@+id/navbar_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:textSize="16sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -158,14 +158,14 @@
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text="@string/about"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
                     <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text="@string/about_sub"
                             android:textSize="16sp"/>
                 </LinearLayout>
@@ -184,14 +184,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_light"
                         android:text="LeakCanary"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_light"
+                        android:fontFamily="@font/roboto_medium"
                         android:text="For developers"
                         android:textSize="16sp"/>
                 </LinearLayout>

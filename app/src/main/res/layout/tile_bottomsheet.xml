@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp"
-        android:fontFamily="@font/opensans_regular"
+        android:fontFamily="@font/roboto_regular"
         android:textColor="?attr/colorSurface"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/editTileColor"
@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/edit_app_label"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
@@ -84,7 +84,7 @@
                             android:id="@+id/textEdit"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:fontFamily="@font/opensans_light"
+                            android:fontFamily="@font/roboto_light"
                             android:text=""
                             android:textColor="?attr/colorSurface" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/choose_tile_color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
@@ -138,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/roboto_light"
                 android:text="@string/selected_color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="20sp" />
@@ -146,7 +146,7 @@
                 android:id="@+id/chooseColorRemove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/opensans_light"
+                android:fontFamily="@font/roboto_light"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="12dp"
@@ -173,7 +173,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:fontFamily="@font/opensans_light"
+            android:fontFamily="@font/roboto_light"
             android:text="@string/uninstall"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />

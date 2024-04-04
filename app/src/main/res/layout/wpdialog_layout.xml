@@ -62,7 +62,7 @@
                     android:layout_margin="2dp"
                     android:background="@drawable/background"
                     android:gravity="center"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
@@ -83,7 +83,7 @@
                     android:layout_margin="2dp"
                     android:background="@drawable/background"
                     android:gravity="center"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
@@ -106,7 +106,7 @@
                     android:background="@drawable/background"
                     android:gravity="center"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
         </LinearLayout>

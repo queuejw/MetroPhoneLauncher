@@ -2,7 +2,8 @@
 <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
                 android:orientation="vertical"
@@ -19,18 +20,18 @@
                                 android:layout_marginStart="4dp"
                                 android:layout_height="wrap_content"
                                 android:textSize="20sp"
-                                android:fontFamily="@font/opensans_regular"/>
+                                android:fontFamily="@font/roboto_regular"/>
                 </LinearLayout>
                 <TextView
                         android:text="@string/background"
                         android:layout_marginTop="24dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/roboto_regular"
                         android:textSize="19sp" />
                 <com.google.android.material.button.MaterialButton
                         style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/roboto_regular"
                         app:cornerRadius="0dp"
                         app:strokeColor="?attr/colorOnBackground"
                         android:textColor="?attr/colorOnBackground"
@@ -65,7 +66,7 @@
                                 android:layout_marginTop="6dp"
                                 android:layout_gravity="top"
                                 android:textSize="22sp"
-                                android:fontFamily="@font/opensans_regular"
+                                android:fontFamily="@font/roboto_regular"
                                 android:id="@+id/chooseLight"/>
                         <TextView
                                 android:text="@string/dark"
@@ -77,7 +78,7 @@
                                 android:layout_marginBottom="4dp"
                                 android:layout_marginStart="24dp"
                                 android:textSize="22sp"
-                                android:fontFamily="@font/opensans_regular"
+                                android:fontFamily="@font/roboto_regular"
                                 android:id="@+id/chooseDark"/>
                 </com.google.android.material.card.MaterialCardView>
                 <TextView
@@ -85,7 +86,7 @@
                         android:layout_marginTop="42dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/opensans_regular"
+                        android:fontFamily="@font/roboto_regular"
                         android:textSize="20sp"/>
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/chooseAccent"
@@ -115,7 +116,7 @@
                                     android:layout_gravity="center"
                                     android:paddingStart="6dp"
                                     android:paddingEnd="6dp"
-                                    android:fontFamily="@font/opensans_regular"
+                                    android:fontFamily="@font/roboto_regular"
                                     android:gravity="start"
                                     android:text="accent color label"
                                     android:textColor="?attr/colorOnBackground"
@@ -127,7 +128,7 @@
                 <TextView
                     android:text="@string/wallpaper_setting"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -140,7 +141,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -149,42 +150,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/opensans_regular"
-                    android:text="Off"
-                    android:textSize="24sp" />
-                <TextView
-                        android:text="@string/more_tiles_desc"
-                        android:layout_width="match_parent"
-                        android:fontFamily="@font/opensans_regular"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="54dp"
-                        android:textSize="20sp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"/>
-                <TextView
-                        android:text="@string/show_more_tiles"
-                        android:layout_width="match_parent"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="14dp"
-                        android:textSize="18sp"
-                        android:fontFamily="@font/opensans_regular"
-                        android:layout_height="wrap_content"/>
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/moreTilesSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:text="Off"
                     android:textSize="24sp" />
 
                 <TextView
                     android:text="@string/fast_render_desc"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -197,7 +170,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -206,8 +179,51 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/roboto_regular"
                     android:text="Off"
                     android:textSize="24sp" />
+
+                <TextView
+                    android:text="@string/more_tiles_desc"
+                    android:layout_width="match_parent"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="54dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:text="@string/show_more_tiles"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="14dp"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/moreTilesSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="Off"
+                    android:textSize="24sp" />
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/themeSettingsAccentSize"
+                            android:layout_margin="18dp"
+                            android:background="?attr/colorPrimary"/>
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/moreTilesImage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/themeSettingsImgSize"
+                            app:srcCompat="@mipmap/tiles_default" />
+                </FrameLayout>
         </LinearLayout>
 </ScrollView>
