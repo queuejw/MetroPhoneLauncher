@@ -20,8 +20,15 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.load
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -32,6 +39,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
@@ -85,7 +93,7 @@ class NewAllApps: Fragment() {
             val dbCall = AppData.getAppData(contextFragment!!).getAppDao()
             pm = contextFragment!!.packageManager
             appList = getHeaderListLatter(Application.setUpApps(pm!!))
-            adapter = AppAdapter(appList!!, contextFragment!!.resources, dbCall)
+            adapter = AppAdapter(appList!!, contextFragment!!.resources, dbCall, contextFragment!!)
             val lm = LinearLayoutManager(contextFragment)
             currentActivity?.runOnUiThread {
                 recyclerView!!.layoutManager = lm
@@ -106,7 +114,6 @@ class NewAllApps: Fragment() {
             }
         }
     }
-
     override fun onPause() {
         if(isSearching) {
             disableSearch()
@@ -219,11 +226,27 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao, val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val appHolder: Int = 1
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
+        private val imageLoader = ImageLoader.Builder(context)
+        .memoryCache {
+            MemoryCache.Builder(context)
+                    .maxSizePercent(0.1)
+                    .build()
+        }
+        .diskCache {
+            DiskCache.Builder()
+                    .directory(context.cacheDir.resolve("cache"))
+                    .maxSizePercent(0.05)
+                    .build()
+        }
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .bitmapConfig(PREFS!!.iconBitmapConfig())
+        .dispatcher(Dispatchers.Default)
+        .build()
 
         fun setData(new: MutableList<App>, refresh: Boolean) {
             list = new
@@ -257,12 +280,11 @@ class NewAllApps: Fragment() {
         }
         private fun bindAppHolder(holder: AppHolder, app: App) {
             try {
-                holder.icon.setImageIcon(
-                        recompressIcon(
-                                pm!!.getApplicationIcon(app.appPackage!!)
-                                        .toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig())
-                        )
-                )
+                val request = ImageRequest.Builder(context)
+                        .data(pm?.getApplicationIcon(app.appPackage!!)!!.toBitmap(iconSize, iconSize))
+                        .target(holder.icon)
+                        .build()
+                imageLoader.enqueue(request)
             } catch (e: PackageManager.NameNotFoundException) {
             }
             holder.label.text = app.appLabel

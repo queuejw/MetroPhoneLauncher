@@ -34,6 +34,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.asLiveData
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.arasthel.spannedgridlayoutmanager.SpanSize
@@ -43,7 +45,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
@@ -142,6 +143,17 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         return v
     }
+    private fun startFlow() {
+        appsDbCall!!.getApps().asLiveData().observe(viewLifecycleOwner) {
+            if (!adapter!!.isEditMode && adapter?.list != it) {
+                Log.d("flow", "update list")
+                adapter?.setData(it)
+            }
+        }
+    }
+    private fun stopFlow() {
+        appsDbCall!!.getApps().asLiveData().removeObservers(viewLifecycleOwner)
+    }
     private fun setBackground() {
         if(PREFS!!.isWallpaperUsed) {
             try {
@@ -173,22 +185,7 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     override fun onResume() {
         super.onResume()
-        CoroutineScope(Dispatchers.IO).launch {
-            val new = appsDbCall?.getJustApps()
-            if (new != null) {
-                if (adapter?.list == new) {
-                    cancel("old list == new list")
-                }
-            }
-            runBlocking {
-                requireActivity().runOnUiThread {
-                    if (new != null) {
-                        tiles = new
-                        adapter?.setData(new)
-                    }
-                }
-            }
-        }
+        startFlow()
     }
 
     override fun onPause() {
@@ -196,6 +193,7 @@ class NewStart: Fragment(), OnStartDragListener {
         if(adapter?.isEditMode == true) {
             adapter?.disableEditMode()
         }
+        stopFlow()
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
         if (viewHolder != null) {
@@ -220,14 +218,21 @@ class NewStart: Fragment(), OnStartDragListener {
             setHasStableIds(true)
         }
         fun setData(newData: MutableList<AppEntity>) {
+            val diffUtilCallback = DiffUtilCallback(list, newData)
+            val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
+            diffResult.dispatchUpdatesTo(this)
             list = newData
-            notifyDataSetChanged()
+            tiles = newData
+        }
+        private fun refreshData(newData: MutableList<AppEntity>) {
+            val diffUtilCallback = DiffUtilCallback(list, newData)
+            val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
+            diffResult.dispatchUpdatesTo(this)
         }
         private fun enableEditMode() {
             if(isEditMode) {
                 return
             }
-            Log.d("EDITMODE", "ENTER EDIT MODE")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
             mRecyclerView!!.scaleX = 0.9f
             mRecyclerView!!.scaleY = 0.9f
@@ -240,7 +245,6 @@ class NewStart: Fragment(), OnStartDragListener {
             if(!isEditMode) {
                 return
             }
-            Log.d("EDITMODE", "EXIT EDIT MODE")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_dismiss))
             mRecyclerView!!.scaleX = 1f
             mRecyclerView!!.scaleY = 1f
@@ -378,7 +382,12 @@ class NewStart: Fragment(), OnStartDragListener {
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
                 CoroutineScope(Dispatchers.IO).launch {
                     appsDbCall!!.removeApp(item)
-                    notifyDataSetChanged()
+                    val updatedList = appsDbCall!!.getJustApps()
+                    runBlocking {
+                        requireActivity().runOnUiThread {
+                            setData(updatedList)
+                        }
+                    }
                 }
             }
         }
@@ -456,9 +465,10 @@ class NewStart: Fragment(), OnStartDragListener {
                     appsDbCall?.insertItem(item)
                 }
                 runBlocking {
+                    val updatedList = appsDbCall!!.getJustApps()
                     if (isEditMode) {
                         requireActivity().runOnUiThread {
-                            notifyDataSetChanged()
+                            refreshData(updatedList)
                         }
                     }
                 }
@@ -467,8 +477,8 @@ class NewStart: Fragment(), OnStartDragListener {
         private fun showPopupWindow(holder: TileViewHolder, item: AppEntity, position: Int) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
-            val width = holder.itemView.width
-            val height = holder.itemView.height
+            val width = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) holder.itemView.width * 2 else holder.itemView.width
+            val height = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) holder.itemView.height * 2 else holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow.animationStyle = R.style.enterStyle
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
@@ -536,7 +546,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     list.remove(item)
                     runBlocking {
                         requireActivity().runOnUiThread {
-                            notifyDataSetChanged()
+                            refreshData(list)
                         }
                     }
                 }
@@ -629,6 +639,27 @@ class NewStart: Fragment(), OnStartDragListener {
                 bottomsheet.dismiss()
             }
             bottomsheet.show()
+        }
+    }
+    class DiffUtilCallback(private val old: MutableList<AppEntity>, private val new: MutableList<AppEntity>) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int {
+            return old.size
+        }
+
+        override fun getNewListSize(): Int {
+            return new.size
+        }
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldCats = old[oldItemPosition]
+            val newCats = new[newItemPosition]
+            return oldCats.appPos == newCats.appPos
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            val oldCats = old[oldItemPosition]
+            val newCats = new[newItemPosition]
+            return oldCats.id == newCats.id
         }
     }
     class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
