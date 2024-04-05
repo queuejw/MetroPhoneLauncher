@@ -301,7 +301,7 @@ class UpdateActivity: AppCompatActivity() {
     private fun checkForUpdates() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                downloadXml(URL)
+                downloadXmlActivity()
                 runOnUiThread {
                     refreshUi()
                 }
@@ -312,6 +312,8 @@ class UpdateActivity: AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e("CheckForUpdates", e.toString())
+                saveError(e.toString(), db!!)
+                refreshUi()
             }
         }
     }
@@ -343,10 +345,10 @@ class UpdateActivity: AppCompatActivity() {
     private fun checkDownload() {
         if (UpdateDataParser.isBeta == true) {
             Log.i("CheckForUpdates", "download beta")
-            downloadFile("MPL Beta", URL_BETA)
+            downloadFile("MPL Beta", URL_BETA_FILE)
         } else {
             Log.i("CheckForUpdates", "download release")
-            downloadFile("MPL", URL_RELEASE)
+            downloadFile("MPL", URL_RELEASE_FILE)
         }
     }
     @SuppressLint("Range")
@@ -440,10 +442,27 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
     }
+    private fun downloadXmlActivity() {
+        Log.i("CheckForUpdates", "download xml")
+        try {
+            URL(URL).openStream().use { input ->
+                Log.i("CheckForUpdates", "start parsing")
+                val parser = UpdateDataParser()
+                parser.parse(input)
+                input.close()
+            }
+        } catch (e: Exception) {
+            Log.i("CheckForUpdates", "something went wrong: $e")
+            PREFS!!.setUpdateState(5)
+            runOnUiThread {
+                refreshUi()
+            }
+        }
+    }
     companion object {
         const val URL: String = "https://raw.githubusercontent.com/queuejw/mpl_updates/main/update.xml"
-        const val URL_BETA: String = "https://github.com/queuejw/mpl_updates/releases/download/beta/MPL-beta.apk"
-        const val URL_RELEASE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
+        const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/beta/MPL-beta.apk"
+        const val URL_RELEASE_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
 
         fun downloadXml(link: String) {
             Log.i("CheckForUpdates", "download xml")

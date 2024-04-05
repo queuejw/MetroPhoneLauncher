@@ -175,7 +175,7 @@ class Application : Application() {
         }
 
         fun downloadUpdate(context: Context) {
-            val request = DownloadManager.Request(Uri.parse(UpdateActivity.URL_RELEASE))
+            val request = DownloadManager.Request(Uri.parse(UpdateActivity.URL_RELEASE_FILE))
             request.setDescription(context.getString(R.string.update_notification))
             request.setTitle("MPL")
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)

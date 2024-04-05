@@ -476,9 +476,9 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun showPopupWindow(holder: TileViewHolder, item: AppEntity, position: Int) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
-            val width = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) holder.itemView.width * 2 else holder.itemView.width
-            val height = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) holder.itemView.height * 2 else holder.itemView.height
+            val popupView: View = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val width = holder.itemView.width
+            val height = holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow.animationStyle = R.style.enterStyle
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)

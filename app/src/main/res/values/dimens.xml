@@ -13,5 +13,4 @@
     <dimen name="tile_big_moreTiles_on">70dp</dimen>
     <dimen name="navbarHeight">64dp</dimen>
     <dimen name="themeSettingsImgSize">242dp</dimen>
-    <dimen name="themeSettingsAccentSize">200dp</dimen>
 </resources>
