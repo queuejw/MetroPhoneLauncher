@@ -199,15 +199,15 @@ class NewAllApps: Fragment() {
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(newApps, Comparator.comparing { app: App -> app.appLabel!![0].uppercase(Locale.getDefault()) })
+            Collections.sort(newApps, Comparator.comparing { app: App -> app.appLabel!![0].lowercase(Locale.getDefault()) })
         } else {
-            newApps.sortWith { app1: App, app2: App -> app1.appLabel!![0].uppercase(Locale.getDefault()).compareTo(app2.appLabel!![0].uppercase(Locale.getDefault())) }
+            newApps.sortWith { app1: App, app2: App -> app1.appLabel!![0].lowercase(Locale.getDefault()).compareTo(app2.appLabel!![0].lowercase(Locale.getDefault())) }
         }
         var lastHeader: String? = ""
         val list: MutableList<App> = ArrayList()
         for (i in 0..<newApps.size) {
             val app = newApps[i]
-            val header = app.appLabel!![0].uppercase(Locale.getDefault())
+            val header = app.appLabel!![0].lowercase(Locale.getDefault())
             if (!TextUtils.equals(lastHeader, header)) {
                 lastHeader = header
                 val head = App()
@@ -328,7 +328,7 @@ class NewAllApps: Fragment() {
                 dbCall.insertItem(item)
                 runBlocking {
                     currentActivity?.runOnUiThread {
-                        (requireActivity() as Main).openStart()
+                        (currentActivity as Main).openStart()
                     }
                 }
             }
