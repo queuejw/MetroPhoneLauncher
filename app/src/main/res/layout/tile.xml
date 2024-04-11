@@ -15,7 +15,7 @@
        limitations under the License.
 -->
 <!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<RelativeLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="164dp"
@@ -28,7 +28,7 @@
         android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
         app:cardBackgroundColor="@color/transparent"
         app:cardCornerRadius="0dp"
         app:strokeWidth="4dp">
@@ -44,18 +44,18 @@
                 android:id="@android:id/icon1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@android:id/text1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|start"
-                android:layout_marginStart="6dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginBottom="4dp"
                 android:fontFamily="@font/roboto_regular"
                 android:textColor="@android:color/white"
                 android:textSize="17sp" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
-</RelativeLayout>
+</FrameLayout>

@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,14 +20,16 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.ImageLoader
 import coil.disk.DiskCache
-import coil.load
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
 import coil.request.ImageRequest
@@ -40,7 +44,8 @@ import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
+import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
+import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.App
@@ -49,17 +54,25 @@ import ru.dimon6018.metrolauncher.content.data.AppData
 import ru.dimon6018.metrolauncher.content.data.AppEntity
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
-import java.lang.NullPointerException
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
 
+
 class NewAllApps: Fragment() {
 
     private var recyclerView: RecyclerView? = null
+
+    private var recyclerViewAlphabet: RecyclerView? = null
+    private var alphabetLayout: LinearLayout? = null
+
     private var search: TextInputLayout? = null
+
     private var adapter: AppAdapter? = null
+    private var adapterAlphabet: AlphabetAdapter? = null
+
     private var searchBtn: MaterialCardView? = null
     private var searchBtnBack: MaterialCardView? = null
     private var loadingHolder: LinearLayout? = null
@@ -72,6 +85,10 @@ class NewAllApps: Fragment() {
     private var contextFragment: Context? = null
     private var currentActivity: Activity? = null
 
+    private var isAlphabetVisible = false
+
+    var scrollPoints: MutableList<Int> = ArrayList()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
         progressBar = view.findViewById(R.id.progressBar)
@@ -83,6 +100,8 @@ class NewAllApps: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = view.findViewById(R.id.app_list)
+        recyclerViewAlphabet = view.findViewById(R.id.alphabet_list)
+        alphabetLayout = view.findViewById(R.id.alphabetLayout)
         searchBtn = view.findViewById(R.id.allAppsButton)
         searchBtnBack = view.findViewById(R.id.searchBackBtn)
         search = view.findViewById(R.id.search)
@@ -93,8 +112,9 @@ class NewAllApps: Fragment() {
             val dbCall = AppData.getAppData(contextFragment!!).getAppDao()
             pm = contextFragment!!.packageManager
             appList = getHeaderListLatter(Application.setUpApps(pm!!))
-            adapter = AppAdapter(appList!!, contextFragment!!.resources, dbCall, contextFragment!!)
+            adapter = AppAdapter(appList!!, contextFragment!!.resources, dbCall)
             val lm = LinearLayoutManager(contextFragment)
+            setAlphabetRecyclerView()
             currentActivity?.runOnUiThread {
                 recyclerView!!.layoutManager = lm
                 recyclerView!!.adapter = adapter
@@ -114,11 +134,88 @@ class NewAllApps: Fragment() {
             }
         }
     }
+    private fun setAlphabetRecyclerView() {
+        adapterAlphabet = AlphabetAdapter(getAlphabetList())
+        val lm = GridLayoutManager(contextFragment!!, 4)
+        currentActivity?.runOnUiThread {
+            alphabetLayout!!.setOnClickListener {
+                hideAlphabet()
+            }
+            recyclerViewAlphabet!!.setOnClickListener {
+                hideAlphabet()
+            }
+            recyclerViewAlphabet!!.adapter = adapterAlphabet
+            recyclerViewAlphabet!!.layoutManager = lm
+            recyclerViewAlphabet!!.addItemDecoration(MarginItemDecoration(8))
+        }
+    }
+    private fun showAlphabet() {
+        recyclerView!!.alpha = 0.7f
+        isAlphabetVisible = true
+        alphabetLayout!!.visibility = View.VISIBLE
+        adapterAlphabet?.setNewData(getAlphabetList())
+        (currentActivity as Main).hideNavBar()
+    }
+    private fun hideAlphabet() {
+        recyclerView!!.alpha = 1f
+        isAlphabetVisible = false
+        recyclerViewAlphabet!!.scrollToPosition(0)
+        alphabetLayout!!.visibility = View.GONE
+        (currentActivity as Main).showNavBar()
+    }
+    private fun getAlphabetList(): MutableList<AlphabetLetter> {
+        val alphabetList: MutableList<AlphabetLetter> = ArrayList()
+        var ch = 'A'
+        while (ch <= 'Z') {
+            val a = AlphabetLetter()
+            a.letter = ch.lowercase()
+            alphabetList.add(a)
+            ch++
+        }
+        if (Locale.getDefault().language.equals("ru")) {
+            val alphabet: CharArray? = Character.toChars('А'.code)
+            for (i in 0..31) {
+                val a = AlphabetLetter()
+                a.letter = alphabet!![0].lowercase()
+                alphabetList.add(a)
+                alphabet[0]++
+            }
+        }
+        if (appList != null) {
+            var pos = 0
+            var posInList = 0
+            for(i in appList!!) {
+                alphabetList.forEach {
+                    if (i.appLabel == it.letter) {
+                        it.isActive = true
+                        it.posInList = posInList
+                        scrollPoints.add(posInList, pos)
+                        posInList += 1
+                        return@forEach
+                    }
+                }
+                pos += 1
+            }
+        }
+        return alphabetList
+    }
     override fun onPause() {
         if(isSearching) {
             disableSearch()
         }
+        if(isAlphabetVisible) {
+            hideAlphabet()
+        }
         super.onPause()
+    }
+
+    override fun onResume() {
+        if(isAppOpened && !isStartMenuOpened) {
+            Log.d("resumeStart", "start enter animation")
+            //TODO add normal animation
+            isAppOpened = false
+        }
+        super.onResume()
     }
     private fun disableSearch() {
         isSearching = false
@@ -148,9 +245,9 @@ class NewAllApps: Fragment() {
         search!!.isFocusable = true
         searchBtnBack!!.visibility = View.VISIBLE
         CoroutineScope(Dispatchers.IO).launch {
+            removeHeaders()
             currentActivity?.runOnUiThread {
                 setRecyclerPadding(0)
-                removeHeaders()
             }
             (search!!.editText as? AutoCompleteTextView)?.addTextChangedListener(object : TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -202,7 +299,9 @@ class NewAllApps: Fragment() {
                 appList!!.remove(item)
             }
         }
-        adapter?.setData(appList!!,true)
+        currentActivity?.runOnUiThread {
+            adapter?.setData(appList!!, true)
+        }
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -226,37 +325,38 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao, val context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class AppAdapter(private var list: MutableList<App>, resources: Resources, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val appHolder: Int = 1
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
-        private val imageLoader = ImageLoader.Builder(context)
+        private var iconManager: IconPackManager? = null
+        private val imageLoader = ImageLoader.Builder(contextFragment!!)
         .memoryCache {
-            MemoryCache.Builder(context)
+            MemoryCache.Builder(contextFragment!!)
                     .maxSizePercent(0.1)
                     .build()
         }
         .diskCache {
             DiskCache.Builder()
-                    .directory(context.cacheDir.resolve("cache"))
+                    .directory(contextFragment!!.cacheDir.resolve("cache"))
                     .maxSizePercent(0.05)
                     .build()
         }
         .diskCachePolicy(CachePolicy.ENABLED)
-        .bitmapConfig(PREFS!!.iconBitmapConfig())
-        .dispatcher(Dispatchers.Default)
+        .dispatcher(Dispatchers.IO)
         .build()
-
+        init {
+            if (PREFS!!.iconPackPackage != "") {
+                iconManager = IconPackManager()
+                iconManager!!.setContext(context)
+            }
+        }
         fun setData(new: MutableList<App>, refresh: Boolean) {
             list = new
             if(refresh) {
                 notifyDataSetChanged()
             }
-        }
-        private fun regenerate() {
-            val newAppList = getHeaderListLatter(Application.setUpApps(pm!!))
-            setData(newAppList, true)
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return if (viewType == letter) {
@@ -270,26 +370,38 @@ class NewAllApps: Fragment() {
             when(holder.itemViewType) {
                 letter -> {
                     (holder as LetterHolder).textView.text = app.appLabel
-                    return
+                    holder.itemView.setOnClickListener {
+                        showAlphabet()
+                    }
                 }
                 appHolder -> {
-                    bindAppHolder((holder as AppHolder), app)
-                    return
+                    bindAppHolder((holder as AppHolder), app, position)
                 }
             }
         }
-        private fun bindAppHolder(holder: AppHolder, app: App) {
+        private fun bindAppHolder(holder: AppHolder, app: App, position: Int) {
             try {
-                val request = ImageRequest.Builder(context)
-                        .data(pm?.getApplicationIcon(app.appPackage!!)!!.toBitmap(iconSize, iconSize))
+                val request = ImageRequest.Builder(contextFragment!!)
+                        .data(if(PREFS!!.iconPackPackage == "null") pm?.getApplicationIcon(app.appPackage!!)!!.toBitmap(iconSize, iconSize) else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(app.appPackage, pm?.getApplicationIcon(app.appPackage!!))?.toBitmap(iconSize, iconSize)!!)
                         .target(holder.icon)
                         .build()
                 imageLoader.enqueue(request)
             } catch (e: PackageManager.NameNotFoundException) {
+                list.remove(app)
+                recyclerView!!.stopScroll()
+                notifyItemRemoved(position)
             }
             holder.label.text = app.appLabel
             holder.itemView.setOnClickListener {
-                runApp(app.appPackage!!)
+                try {
+                    isAppOpened = true
+                    runApp(app.appPackage!!)
+                } catch (e: Exception) {
+                    Toast.makeText(contextFragment!!, getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
+                    recyclerView!!.stopScroll()
+                    list.remove(app)
+                    notifyItemRemoved(position)
+                }
             }
             holder.itemView.setOnLongClickListener {
                 showPopupWindow(holder.itemView, app.appPackage!!, app.appLabel!!)
@@ -372,5 +484,77 @@ class NewAllApps: Fragment() {
     }
     class LetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: MaterialTextView = itemView.findViewById(R.id.abc_label)
+    }
+    inner class AlphabetAdapter(private var alphabetList: MutableList<AlphabetLetter>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        private val activeLetter = 10
+        private val activeDrawable = Application.launcherAccentColor(currentActivity!!.theme).toDrawable()
+        private val disabledLetter = 10
+        private val disabledDrawable = ContextCompat.getColor(contextFragment!!, R.color.darkGray).toDrawable()
+        private val size = resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
+        private val params = ViewGroup.LayoutParams(size, size)
+
+        fun setNewData(new: MutableList<AlphabetLetter>) {
+            alphabetList = new
+            notifyDataSetChanged()
+        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            return AlphabetLetterHolder(LayoutInflater.from(parent.context).inflate(R.layout.abc_alphabet, parent, false))
+        }
+
+        override fun getItemCount(): Int {
+            return alphabetList.size
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            val item = alphabetList[position]
+            holder as AlphabetLetterHolder
+            holder.textView.text = item.letter
+            holder.itemView.layoutParams = params
+            if(item.isActive) {
+                holder.backgroundView.background = activeDrawable
+            } else {
+                holder.backgroundView.background = disabledDrawable
+            }
+            if(item.isActive) {
+                holder.itemView.setOnClickListener {
+                    startAnimator()
+                    val scroll = scrollPoints[item.posInList]
+                    if(scroll > adapter!!.itemCount) {
+                        recyclerView!!.smoothScrollToPosition(adapter!!.itemCount)
+                    } else {
+                        recyclerView!!.smoothScrollToPosition(scroll)
+                    }
+                }
+            }
+        }
+        private fun startAnimator() {
+            hideAlphabet()
+        }
+        override fun getItemViewType(position: Int): Int {
+            return if(alphabetList[position].isActive) activeLetter else disabledLetter
+        }
+    }
+    class AlphabetLetter {
+        var letter: String = ""
+        var isActive: Boolean = false
+        var posInList: Int = 0
+    }
+    class AlphabetLetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var textView: MaterialTextView = itemView.findViewById(R.id.alphabetLetter)
+        var backgroundView: View = itemView.findViewById(R.id.alphabetBackground)
+    }
+    class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+                outRect: Rect, view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+        ) {
+            with(outRect) {
+                top = spaceSize
+                left = spaceSize
+                right = spaceSize
+                bottom = spaceSize
+            }
+        }
     }
 }

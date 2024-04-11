@@ -147,6 +147,22 @@ class UpdateActivity: AppCompatActivity() {
             deleteUpdateFile()
             refreshUi()
         }
+        if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
+            WPDialog(this).setTopDialog(true)
+                    .setTitle(getString(R.string.perms_req))
+                    .setCancelable(true)
+                    .setMessage(getString(R.string.perms_req_tip))
+                    .setNegativeButton(getString(R.string.yes)) {
+                        checkPerms()
+                        WPDialog(this).dismiss()
+                        return@setNegativeButton
+                    }
+                    .setNeutralButton(getString(R.string.hide)) {
+                        hideDialog()
+                        return@setNeutralButton
+                    }
+                    .setPositiveButton(getString(R.string.no), null).show()
+        }
     }
     private fun deleteUpdateFile() {
         try {
@@ -169,24 +185,6 @@ class UpdateActivity: AppCompatActivity() {
         coroutineXmlScope.cancel()
         coroutineErrorScope.cancel()
         super.onDestroy()
-    }
-    override fun onStart() {
-        super.onStart()
-        if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
-            WPDialog(this).setTopDialog(true)
-                    .setTitle(getString(R.string.perms_req))
-                    .setCancelable(true)
-                    .setMessage(getString(R.string.perms_req_tip))
-                    .setNegativeButton(getString(R.string.yes)) {
-                        checkPerms()
-                        WPDialog(this).dismiss()
-                        return@setNegativeButton
-                    }
-                    .setNeutralButton(getString(R.string.hide)) {
-                        hideDialog()
-                    }
-                    .setPositiveButton(getString(R.string.no), null).show()
-        }
     }
     private fun hideDialog() {
         PREFS!!.editor.putBoolean("permsDialogUpdateScreenEnabled", false).apply()
@@ -478,7 +476,7 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
         fun isUpdateAvailable(): Boolean {
-            if(UpdateDataParser.verCode == null) {
+            if(UpdateDataParser.verCode == null || Application.VERSION_CODE > UpdateDataParser.verCode!!) {
                 return false
             }
             val boolean: Boolean = if (UpdateDataParser.verCode == Application.VERSION_CODE) {

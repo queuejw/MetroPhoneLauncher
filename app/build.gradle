@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 20
-        versionName "1.0 Pre-Alpha 3"
+        versionCode 22
+        versionName "1.0 Pre-Alpha 4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -31,8 +31,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     setBuildToolsVersion('35.0.0-rc01')
 }
@@ -50,6 +50,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.7.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
+    implementation "androidx.palette:palette-ktx:1.0.0"
     ksp "androidx.room:room-compiler:2.6.1"
 
     implementation project(path: ':SpannedGridLayoutManager')

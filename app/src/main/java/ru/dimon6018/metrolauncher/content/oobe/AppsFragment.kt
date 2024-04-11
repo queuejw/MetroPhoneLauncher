@@ -120,7 +120,7 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
         val item = adapterApps[position]
         holder as OOBEAppHolder
         try {
-            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize, Application.PREFS!!.iconBitmapConfig()))
+            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize))
             holder.icon.setImageIcon(bmp)
         } catch (e: PackageManager.NameNotFoundException) {
             holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))
@@ -132,10 +132,14 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
             AppsFragment.latestItem = position
             if (isChecked) {
                 item.selected = true
-                AppsFragment.selectedItems!!.add(item)
+                if(!AppsFragment.selectedItems!!.contains(item)) {
+                    AppsFragment.selectedItems!!.add(item)
+                }
             } else {
                 item.selected = false
-                AppsFragment.selectedItems!!.remove(item)
+                if(AppsFragment.selectedItems!!.contains(item)) {
+                    AppsFragment.selectedItems!!.remove(item)
+                }
             }
         }
         if (AppsFragment.latestItem != null) {

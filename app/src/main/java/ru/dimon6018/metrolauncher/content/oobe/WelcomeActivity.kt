@@ -23,7 +23,7 @@ class WelcomeActivity: AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         Main.applyWindowInsets(coordinatorLayout)
-        if (savedInstanceState == null) {
+        if (savedInstanceState != null) {
             if(PREFS!!.launcherState != 2) {
                 supportFragmentManager.commit {
                     replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")

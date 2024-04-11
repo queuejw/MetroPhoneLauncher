@@ -107,4 +107,23 @@
             android:text="@string/loading"
             android:textSize="18sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/alphabetLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/alphabet_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="24dp" />
+    </LinearLayout>
 </FrameLayout>

@@ -38,7 +38,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 .setContentTitle(context.getString(R.string.app_name))
                 .setShowWhen(true)
                 .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                .setContentText("A new update is available. We recommend installing it")
+                .setContentText(context.getString(R.string.update_is_available))
                 .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
                 .setAutoCancel(true)
     }
@@ -53,7 +53,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 .setContentTitle(context.getString(R.string.app_name))
                 .setShowWhen(true)
                 .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                .setContentText("A new update is available. We recommend installing it")
+                .setContentText(context.getString(R.string.update_is_available))
                 .setContentIntent(
                         PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
                 .setAutoCancel(true)
@@ -98,7 +98,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         }
         fun scheduleWork(context: Context) {
             Log.i("backgroundWork", "scheduleWork")
-            val time = 360L
+            val time = 390L
             val workFoodRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(UpdateWorker::class.java)
                     .addTag("UPDATE_WORK")
                     .setInitialDelay(time, TimeUnit.MINUTES)

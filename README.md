@@ -1,6 +1,6 @@
 # MetroPhoneLauncher (MPL)
 
-MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible (not so much now). Feel the WP experience on your device right now. Free.
+MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible. Feel the WP experience on your device right now. Free.
 
 Since the launcher isn't ready yet, I can't show a huge list of functionality, but you can already see it:
 
@@ -17,6 +17,8 @@ Since the launcher isn't ready yet, I can't show a huge list of functionality, b
 - Ability to receive "Over-The-Air" updates
 
 - Working app search.
+
+- Icon pack support.
 
 And much more... 
 
@@ -37,4 +39,5 @@ step 3: install.
 #  Community🤬😡😠
 
 🎃 Telegram channel: https://t.me/mplauncher
+
 😡 Neko11: https://github.com/queuejw/Neko11

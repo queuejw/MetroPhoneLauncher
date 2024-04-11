@@ -61,7 +61,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         spannable.setSpan(ForegroundColorSpan(Application.launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
-        val fastIconsSwitch: MaterialSwitch = findViewById(R.id.fastIcons)
         val wallpaperSwitch: MaterialSwitch = findViewById(R.id.wallpaperShowSwtich)
         accentNameTextView!!.text = Application.accentName(this)
         val themeButtonLabel: String = if (PREFS!!.isLightThemeUsed) {
@@ -83,13 +82,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
             restoreThemeButtonsAndApplyChanges()
         }
         chooseAccentBtn!!.setOnClickListener { AccentDialog.display(supportFragmentManager) }
-        fastIconsSwitch.setChecked(PREFS!!.isFastIconsEnabled)
-        fastIconsSwitch.text = if(PREFS!!.isFastIconsEnabled) getString(R.string.on) else getString(R.string.off)
-        fastIconsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setFastIcons(isChecked)
-            fastIconsSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            fastIconsSwitch.setChecked(isChecked)
-        }
         moreTilesSwitch.setChecked(PREFS!!.isMoreTilesEnabled)
         moreTilesSwitch.text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
         wallpaperSwitch.setChecked(PREFS!!.isWallpaperUsed)

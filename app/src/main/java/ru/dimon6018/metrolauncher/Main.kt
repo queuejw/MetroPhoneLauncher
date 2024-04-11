@@ -9,10 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColor
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -20,7 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
@@ -35,8 +37,6 @@ class Main : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
-
-    private val initCoroutine = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
@@ -54,23 +54,19 @@ class Main : AppCompatActivity() {
             }
         }
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        initCoroutine.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
             pagerAdapter = NumberAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
                 viewPager.adapter = pagerAdapter
                 setupNavigationBar()
-            }
-            runBlocking {
-                runOnUiThread {
-                    onBackPressedDispatcher.addCallback(this@Main, object: OnBackPressedCallback(true) {
-                        override fun handleOnBackPressed() {
-                            if (viewPager.currentItem != 0) {
-                                viewPager.currentItem -= 1
-                            }
+                onBackPressedDispatcher.addCallback(this@Main, object: OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        if (viewPager.currentItem != 0) {
+                            viewPager.currentItem -= 1
                         }
-                    })
-                }
+                    }
+                })
             }
         }
     }
@@ -141,7 +137,7 @@ class Main : AppCompatActivity() {
                 return
             }
             else -> {
-                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
+                bottomNavigationView.setBackgroundColor(Application.launcherSurfaceColor(theme))
             }
         }
         bottomNavigationView.selectedItemId = R.id.start_apps
@@ -179,8 +175,10 @@ class Main : AppCompatActivity() {
         if (Prefs.isPrefsChanged) {
             Prefs.isPrefsChanged = false
             recreate()
+            return
         }
     }
+
     companion object {
          fun applyWindowInsets(target: View) {
             ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->

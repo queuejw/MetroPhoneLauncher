@@ -9,5 +9,5 @@
     <item
         android:icon="@drawable/ic_search"
         android:id="@+id/start_apps"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 </menu>

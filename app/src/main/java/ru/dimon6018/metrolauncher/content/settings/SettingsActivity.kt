@@ -15,12 +15,20 @@ import ru.dimon6018.metrolauncher.R
 
 class SettingsActivity : AppCompatActivity() {
 
+    private var themeSub: TextView? = null
+    private var navSub: TextView? = null
+    private var iconsSub: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coord: CoordinatorLayout = findViewById(R.id.coordinator)
+
+        themeSub = findViewById(R.id.theme_sub)
+        iconsSub = findViewById(R.id.icons_sub)
+        navSub = findViewById(R.id.navbar_sub)
+
         val themebtn = findViewById<MaterialCardView>(R.id.themeSetting)
         themebtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
         val aboutbtn = findViewById<MaterialCardView>(R.id.aboutSetting)
@@ -31,6 +39,10 @@ class SettingsActivity : AppCompatActivity() {
         updateBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java)) }
         val navBarBtm = findViewById<MaterialCardView>(R.id.navbarSetting)
         navBarBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java)) }
+        val weatherBtm = findViewById<MaterialCardView>(R.id.weatherSetting)
+        weatherBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java)) }
+        val iconBtn = findViewById<MaterialCardView>(R.id.iconsSetting)
+        iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
         leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
         Main.applyWindowInsets(coord)
@@ -38,16 +50,22 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val themeSub: TextView = findViewById(R.id.theme_sub)
-        themeSub.text = Application.accentName(this)
-        val navbarSub: TextView = findViewById(R.id.navbar_sub)
-        navbarSub.text = when(PREFS!!.navBarColor) {
+        themeSub?.text = Application.accentName(this)
+        navSub?.text = when (PREFS!!.navBarColor) {
             0 -> getString(R.string.always_dark)
             1 -> getString(R.string.always_light)
             2 -> getString(R.string.matches_accent_color)
             3 -> getString(R.string.hide_navbar)
             4 -> getString(R.string.auto)
             else -> getString(R.string.navigation_bar_2)
+        }
+        try {
+            iconsSub?.text =
+                if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub) else packageManager.getApplicationLabel(
+                    packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0)
+                )
+        } catch (e: Exception) {
+            iconsSub?.text = getString(R.string.iconPackNotSelectedSub)
         }
     }
 }

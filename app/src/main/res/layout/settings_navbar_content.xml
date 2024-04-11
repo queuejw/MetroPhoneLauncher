@@ -35,13 +35,13 @@
             android:fontFamily="@font/roboto_regular"
             android:textSize="18sp"
             android:text="@string/always_light"/>
-        <com.google.android.material.radiobutton.MaterialRadioButton
+       <!-- <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/byTheme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="18sp"
             android:fontFamily="@font/roboto_regular"
-            android:text="@string/matches_accent_color"/>
+            android:text="@string/matches_accent_color"/> -->
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/hidden"
             android:layout_width="match_parent"

@@ -71,6 +71,14 @@
             android:exported="true">
         </activity>
         <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.IconSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.WeatherSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.Reset"
             android:exported="true">
         </activity>

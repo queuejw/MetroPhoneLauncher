@@ -59,8 +59,11 @@ class Application : Application() {
         val TIME: Long = Build.TIME
         var PREFS: Prefs? = null
 
+        val LAWNICONS_PACKAGE = "app.lawnchair.lawnicons"
+
         var isUpdateDownloading = false
         var isAppOpened = false
+        var isStartMenuOpened = false
 
         private var accentColors = intArrayOf(
             R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
@@ -146,6 +149,15 @@ class Application : Application() {
         }
 
         fun launcherSurfaceColor(theme: Theme): Int {
+            val typedValue = TypedValue()
+            theme.resolveAttribute(
+                com.google.android.material.R.attr.colorSurface,
+                typedValue,
+                true
+            )
+            return typedValue.data
+        }
+        fun launcherOnSurfaceColor(theme: Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
                 com.google.android.material.R.attr.colorOnSurface,
