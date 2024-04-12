@@ -24,7 +24,7 @@ And much more...
 
 # 📸 Screenshots:
 
-<img src='/screenshots/vb.png' width='300'> <img src='/screenshots/mjm.png' width='300'> <img src='/screenshots/pm.png' width='300'> <img src='/screenshots/hgh.png' width='300'> <img src='/screenshots/jfg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/zz.png' width='300'>  <img src='/screenshots/ww.png' width='300'>
+<img src='/screenshots/vb.png' width='300'> <img src='/screenshots/mjm.png' width='300'> <img src='/github/2.jpg' width='300'> <img src='/screenshots/hgh.png' width='300'> <img src='/screenshots/jfg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/zz.png' width='300'>  <img src='/screenshots/ww.png' width='300'>
 
 More screenshots in /screenshots folder 📷
 
