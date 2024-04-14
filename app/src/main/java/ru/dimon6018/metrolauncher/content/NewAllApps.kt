@@ -28,11 +28,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil.ImageLoader
-import coil.disk.DiskCache
-import coil.memory.MemoryCache
-import coil.request.CachePolicy
-import coil.request.ImageRequest
+import coil3.ImageLoader
+import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.target
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
@@ -59,8 +60,6 @@ import ru.dimon6018.metrolauncher.helpers.WPDialog
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
-
-
 class NewAllApps: Fragment() {
 
     private var recyclerView: RecyclerView? = null
@@ -333,18 +332,15 @@ class NewAllApps: Fragment() {
         private var iconManager: IconPackManager? = null
         private val imageLoader = ImageLoader.Builder(contextFragment!!)
         .memoryCache {
-            MemoryCache.Builder(contextFragment!!)
-                    .maxSizePercent(0.1)
+            MemoryCache.Builder()
+                    .maxSizePercent(contextFragment!!, 0.25)
                     .build()
         }
         .diskCache {
             DiskCache.Builder()
-                    .directory(contextFragment!!.cacheDir.resolve("cache"))
-                    .maxSizePercent(0.05)
+                    .maxSizePercent(0.25)
                     .build()
         }
-        .diskCachePolicy(CachePolicy.ENABLED)
-        .dispatcher(Dispatchers.IO)
         .build()
         init {
             if (PREFS!!.iconPackPackage != "") {

@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+<com.google.android.material.card.MaterialCardView
     android:layout_width="54dp"
-    android:layout_height="54dp">
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="54dp"
-        android:layout_height="54dp"
-        app:cardCornerRadius="0dp"
-        app:strokeColor="?attr/colorPrimary"
-        app:cardBackgroundColor="?android:attr/colorBackground"
-        app:strokeWidth="3dp">
+    android:layout_height="54dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="0dp"
+    app:strokeColor="?attr/colorPrimary"
+    app:cardBackgroundColor="?android:attr/colorBackground"
+    app:strokeWidth="3dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/abc_label"
             android:layout_width="wrap_content"
@@ -23,4 +19,3 @@
             android:fontFamily="@font/roboto_regular"
             android:text="a"/>
     </com.google.android.material.card.MaterialCardView>
-</LinearLayout>

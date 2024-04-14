@@ -15,23 +15,17 @@
        limitations under the License.
 -->
 <!-- NOTE: should use FrameLayout or RelativeLayout for parent of the "@id/container" view (for Android 2.3 compatibility) -->
-<FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="164dp"
-        android:layout_height="164dp"
-        android:layout_margin="4dp"
-        android:orientation="vertical"
-        android:id="@+id/tile_layout">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        app:cardBackgroundColor="@color/transparent"
-        app:cardCornerRadius="0dp"
-        app:strokeWidth="4dp">
+<com.google.android.material.card.MaterialCardView
+    android:id="@+id/cardContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="@color/transparent"
+    app:cardCornerRadius="0dp"
+    app:strokeWidth="4dp"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
         <FrameLayout
             android:id="@+id/container"
@@ -58,4 +52,3 @@
                 android:textSize="17sp" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
-</FrameLayout>
