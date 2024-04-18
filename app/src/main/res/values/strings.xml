@@ -93,7 +93,7 @@
     <string name="perms_req">Permission required</string>
     <string name="perms_req_tip">Updates require some permissions to work. Continue?</string>
     <string name="saved_issues">saved issues</string>
-    <string name="always_dark">always dak</string>
+    <string name="always_dark">always dark</string>
     <string name="always_light">always light</string>
     <string name="matches_accent_color">matches the accent color</string>
     <string name="navigation_bar_2">Navigation bar</string>
@@ -165,4 +165,6 @@
     <string name="icon_packs">icon packs</string>
     <string name="iconPackNotSelectedSub">make the icons even better.</string>
     <string name="feature_isnt_implemented">Sorry, this feature has not been implemented yet. Follow the news: t.me/mplauncher</string>
+    <string name="updates_disabled">Updates are not available to you. Read more: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
+    <string name="app_info">app info</string>
 </resources>

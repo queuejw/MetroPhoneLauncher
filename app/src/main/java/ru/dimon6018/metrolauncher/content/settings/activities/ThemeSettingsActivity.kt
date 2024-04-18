@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.content.Context
 import android.os.Build
@@ -24,7 +24,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import kotlin.system.exitProcess
@@ -90,17 +90,17 @@ class ThemeSettingsActivity : AppCompatActivity() {
             PREFS!!.setMoreTilesPref(isChecked)
             moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             moreTilesSwitch.setChecked(isChecked)
-            Prefs.isPrefsChanged = true
+            PREFS!!.setPrefsChanged(true)
             setImg()
         }
         wallpaperSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setWallpaper(isChecked)
             wallpaperSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             wallpaperSwitch.setChecked(isChecked)
-            Prefs.isPrefsChanged = true
+            PREFS!!.setPrefsChanged(true)
         }
         setImg()
-       Main.applyWindowInsets(cord)
+       applyWindowInsets(cord)
     }
     private fun setImg() {
         tileImg?.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.oobe
+package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,30 +7,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.google.android.material.button.MaterialButton
-import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
-class ConfigureFragment: Fragment() {
-
+class CustomSettingsFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.oobe_fragment_conf, container, false)
+        WelcomeActivity.setText(requireActivity(), getString(R.string.configureCustomPhone))
+        val view = inflater.inflate(R.layout.oobe_fragment_custom_prefs, container, false)
         val back: MaterialButton = view.findViewById(R.id.back)
-        val custom: MaterialButton = view.findViewById(R.id.custom)
-        val recommended: MaterialButton = view.findViewById(R.id.recommended)
+        val next: MaterialButton = view.findViewById(R.id.next)
         WelcomeActivity.setText(requireActivity(), getString(R.string.configurePhone))
-        PREFS!!.setLauncherState(2)
         back.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
+                replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
             }
         }
-        custom.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, CustomSettingsFragment(), "oobe")
-            }
-        }
-        recommended.setOnClickListener {
+        next.setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 replace(R.id.fragment_container_view, AdFragment(), "oobe")
             }

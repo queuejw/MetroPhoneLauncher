@@ -47,35 +47,35 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="ru.dimon6018.metrolauncher.content.settings.ThemeSettingsActivity"
+                android:name="ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity"
                 android:autoRemoveFromRecents="true"
                 android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackSettingsActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.FeedbackBsodListActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackBsodListActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.UpdateActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.NavBarSettingsActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity"
             android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.IconSettingsActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.WeatherSettingsActivity"
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity"
             android:exported="true">
         </activity>
         <activity
@@ -101,7 +101,7 @@
             android:exported="true">
         </activity>
         <activity
-                android:name="ru.dimon6018.metrolauncher.content.settings.AboutSettingsActivity"
+                android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
             android:autoRemoveFromRecents="true"
                 android:exported="true">
         </activity>

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.app.Activity
 import android.content.ClipData
@@ -23,7 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
@@ -39,7 +39,7 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         setContentView(R.layout.launcher_settings_feedback_bsods)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
         Thread {
             val adapter = BSODadapter(db!!.getDao().getBsodList(), this, db!!)
             runOnUiThread {

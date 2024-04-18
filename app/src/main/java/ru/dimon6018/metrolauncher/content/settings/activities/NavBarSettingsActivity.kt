@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.os.Bundle
 import android.widget.RadioGroup
@@ -7,7 +7,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.radiobutton.MaterialRadioButton
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 
@@ -40,7 +40,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                    PREFS!!.setNavBarSetting(4)
                }
            }
-            Prefs.isPrefsChanged = true
+            PREFS!!.setPrefsChanged(true)
         }
         when(PREFS!!.navBarColor) {
             0 -> {
@@ -80,6 +80,6 @@ class NavBarSettingsActivity: AppCompatActivity() {
             }
         }
         val coord: CoordinatorLayout = findViewById(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
     }
 }

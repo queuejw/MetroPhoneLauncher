@@ -33,12 +33,15 @@ class WPDialog(private val mContext: Context) {
     private var cancelButtonListener: View.OnClickListener? = null
     private var neutralListener: View.OnClickListener? = null
     //Show方法
-    fun show(): WPDialog {
+    fun show(): WPDialog? {
+        if(wp == null) {
+            return null
+        }
         Builder()
         if (!wp!!.isShowing) {
-            wp?.show()
+            wp!!.show()
         } else {
-            wp?.dismiss()
+            wp!!.dismiss()
         }
         return this
     }

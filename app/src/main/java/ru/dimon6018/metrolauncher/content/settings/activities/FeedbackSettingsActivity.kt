@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,7 +12,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
@@ -28,7 +28,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         val db = BSOD.getData(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coord: CoordinatorLayout = findViewById(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
         val info: MaterialButton = findViewById(R.id.showBsodInfo)
         info.setOnClickListener {
             startActivity(Intent(this, FeedbackBsodListActivity::class.java))

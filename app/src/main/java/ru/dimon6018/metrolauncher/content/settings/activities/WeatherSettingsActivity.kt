@@ -1,9 +1,9 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 
 class WeatherSettingsActivity: AppCompatActivity() {
@@ -11,6 +11,6 @@ class WeatherSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_weather)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
     }
 }

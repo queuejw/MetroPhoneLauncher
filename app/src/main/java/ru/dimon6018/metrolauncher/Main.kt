@@ -9,10 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
-import androidx.core.graphics.toColor
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -24,12 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
-import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
-import ru.dimon6018.metrolauncher.content.settings.BSODadapter.Companion.sendCrash
+import ru.dimon6018.metrolauncher.content.settings.activities.BSODadapter.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 
 class Main : AppCompatActivity() {
@@ -54,8 +50,8 @@ class Main : AppCompatActivity() {
             }
         }
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        lifecycleScope.launch(Dispatchers.Main) {
-            pagerAdapter = NumberAdapter(this@Main)
+        lifecycleScope.launch(Dispatchers.Default) {
+            pagerAdapter = WinAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
             runOnUiThread {
                 viewPager.adapter = pagerAdapter
@@ -172,24 +168,13 @@ class Main : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        if (Prefs.isPrefsChanged) {
-            Prefs.isPrefsChanged = false
+        if (PREFS!!.isPrefsChanged()) {
+            PREFS!!.setPrefsChanged(true)
             recreate()
             return
         }
     }
-
-    companion object {
-         fun applyWindowInsets(target: View) {
-            ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
-                val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-                val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-                view.setPadding(0, paddingTop, 0, paddingBottom)
-                WindowInsetsCompat.CONSUMED
-            }
-        }
-    }
-    class NumberAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
+    class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {

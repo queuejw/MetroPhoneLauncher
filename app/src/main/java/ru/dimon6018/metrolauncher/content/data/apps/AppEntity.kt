@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.data
+package ru.dimon6018.metrolauncher.content.data.apps
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

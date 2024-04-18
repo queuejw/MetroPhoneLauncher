@@ -60,8 +60,6 @@
     <string name="update_info"><u>Подробности</u></string>
     <string name="notification_channel_name">MPL Updates</string>
     <string name="loading">Загрузка…</string>
-    <string name="fast_render_desc">Если приложение использует много памяти или зависает, попробуйте включить быстрый рендеринг иконок. Это может повлиять на их качество.</string>
-    <string name="fast_icon_rendering">Быстрый рендеринг иконок</string>
     <string name="show_more_tiles">Показывать больше иконок</string>
     <string name="more_tiles_desc">Вы можете изменить размер и количество иконок, доступных на рабочем столе</string>
     <string name="start_background">Фон рабочего стола</string>
@@ -168,4 +166,6 @@
     <string name="icon_packs">наборы значков</string>
     <string name="iconPackNotSelectedSub">сделайте значки ещё лучше</string>
     <string name="feature_isnt_implemented">Извините, эта функция ещё не реализована. Следите за новостями: t.me/mplauncher</string>
+    <string name="updates_disabled">Обновления недоступны для вас. Подробнее: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
+    <string name="app_info">о приложении</string>
 </resources>

@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 
 class Prefs(context: Context) {
+
     private val prefs: SharedPreferences
+    private var isPrefsChanged = false
 
     init {
         prefs = context.getSharedPreferences(FILE_NAME, 0)
@@ -35,7 +37,7 @@ class Prefs(context: Context) {
         // 1 - 5
         // 2 - 10
         // 3 - no limit
-        return prefs.getInt(MAX_CRASH_LOGS, 0)
+        return prefs.getInt(MAX_CRASH_LOGS, 1)
     }
     val isLightThemeUsed: Boolean
         get() = prefs.getBoolean(LAUNCHER_LIGHT_THEME, false)
@@ -150,6 +152,12 @@ class Prefs(context: Context) {
     val pref: SharedPreferences
         get() = prefs
 
+    fun isPrefsChanged(): Boolean {
+        return isPrefsChanged
+    }
+    fun setPrefsChanged(bool: Boolean) {
+        isPrefsChanged = bool
+    }
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -167,6 +175,5 @@ class Prefs(context: Context) {
         const val MORE_TILES = "isMoreTilesEnabled"
         const val WALLPAPER_USING = "wallpaperUsing"
         const val ICON_PACK = "iconPack"
-        var isPrefsChanged = false
     }
 }

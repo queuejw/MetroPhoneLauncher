@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.oobe
+package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -23,12 +23,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import ru.dimon6018.metrolauncher.Application.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.App
-import ru.dimon6018.metrolauncher.content.data.AppData
-import ru.dimon6018.metrolauncher.content.data.AppEntity
+import ru.dimon6018.metrolauncher.content.data.apps.App
+import ru.dimon6018.metrolauncher.content.data.apps.AppData
+import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import kotlin.random.Random
 
 class AppsFragment: Fragment() {
@@ -82,7 +84,7 @@ class AppsFragment: Fragment() {
                     val id = Random.nextLong(1000, 2000000)
                     val entity = AppEntity(pos, id, -1, 0,
                         isSelected = false,
-                        appSize = "small",
+                        appSize = generateRandomTileSize(),
                         appLabel = i.appLabel!!,
                         appPackage = i.appPackage!!
                     )
@@ -119,7 +121,7 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
         val item = adapterApps[position]
         holder as OOBEAppHolder
         try {
-            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize))
+            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize), 25)
             holder.icon.setImageIcon(bmp)
         } catch (e: PackageManager.NameNotFoundException) {
             holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))

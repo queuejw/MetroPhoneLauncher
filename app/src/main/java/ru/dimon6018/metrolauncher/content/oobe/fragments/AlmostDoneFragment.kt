@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.oobe
+package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,7 @@ import com.google.android.material.button.MaterialButton
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 class AlmostDoneFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {

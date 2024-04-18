@@ -8,13 +8,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.AppData
+import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
-import kotlin.system.exitProcess
 
 class Reset : AppCompatActivity() {
 
@@ -29,7 +28,7 @@ class Reset : AppCompatActivity() {
         dbApps = AppData.getAppData(this)
         dbBsod = BSOD.getData(this)
         frame = findViewById(R.id.frameReset)
-        Main.applyWindowInsets(frame!!)
+        applyWindowInsets(frame!!)
         intent = Intent(this, WelcomeActivity::class.java)
         resetPart2()
     }
@@ -44,7 +43,6 @@ class Reset : AppCompatActivity() {
                 intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 finishAffinity()
                 startActivity(intent)
-                exitProcess(0)
             }
             frame!!.postDelayed(oobe, 3000)
         }

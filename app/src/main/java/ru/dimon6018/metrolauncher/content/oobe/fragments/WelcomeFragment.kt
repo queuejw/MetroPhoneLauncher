@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.oobe
+package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +12,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.AppData
-import ru.dimon6018.metrolauncher.content.data.AppEntity
+import ru.dimon6018.metrolauncher.content.data.apps.AppData
+import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
 
 class WelcomeFragment : Fragment() {

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.data
+package ru.dimon6018.metrolauncher.content.data.apps
 
 import androidx.room.Dao
 import androidx.room.Delete

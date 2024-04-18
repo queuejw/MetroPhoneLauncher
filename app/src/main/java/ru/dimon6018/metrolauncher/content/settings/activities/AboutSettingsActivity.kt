@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,8 +20,9 @@ import ru.dimon6018.metrolauncher.Application.Companion.PRODUCT
 import ru.dimon6018.metrolauncher.Application.Companion.TIME
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
-import ru.dimon6018.metrolauncher.Main.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.settings.Reset
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import kotlin.system.exitProcess
 

@@ -19,7 +19,6 @@
         app:itemRippleColor="@null"
         app:itemActiveIndicatorStyle="@color/transparent"
         app:itemIconTint="?attr/colorPrimary"
-        app:compatShadowEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:menu="@menu/start_menu" />

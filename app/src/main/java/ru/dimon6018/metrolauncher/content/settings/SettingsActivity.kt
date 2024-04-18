@@ -10,8 +10,15 @@ import com.google.android.material.card.MaterialCardView
 import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -45,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
         iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
         leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
     }
 
     override fun onResume() {

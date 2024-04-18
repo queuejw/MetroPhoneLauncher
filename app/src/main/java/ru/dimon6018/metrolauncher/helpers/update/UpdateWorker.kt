@@ -19,10 +19,10 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
-import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
-import ru.dimon6018.metrolauncher.content.settings.UpdateActivity.Companion.URL
-import ru.dimon6018.metrolauncher.content.settings.UpdateActivity.Companion.downloadXml
-import ru.dimon6018.metrolauncher.content.settings.UpdateActivity.Companion.isUpdateAvailable
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity.Companion.URL
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity.Companion.downloadXml
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity.Companion.isUpdateAvailable
 import java.util.concurrent.TimeUnit
 
 private const val CHAN_ID = "MPL-updates"

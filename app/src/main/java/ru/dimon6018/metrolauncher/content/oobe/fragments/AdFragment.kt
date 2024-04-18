@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.oobe
+package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.content.Intent
 import android.net.Uri
@@ -13,6 +13,7 @@ import coil3.load
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 
 class AdFragment: Fragment() {

@@ -16,6 +16,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.BRAND
 import ru.dimon6018.metrolauncher.Application.Companion.MODEL
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
@@ -94,7 +95,7 @@ class BsodScreen : AppCompatActivity() {
         setContentView(R.layout.bsod)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val layout: ConstraintLayout = findViewById(R.id.bsodLayout)
-        Main.applyWindowInsets(layout)
+        applyWindowInsets(layout)
 
     }
     override fun onStart() {

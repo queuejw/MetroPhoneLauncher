@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil3.ImageLoader
 import coil3.disk.DiskCache
+import coil3.disk.directory
 import coil3.memory.MemoryCache
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.target
 import com.google.android.material.card.MaterialCardView
@@ -40,19 +40,21 @@ import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.App
-import ru.dimon6018.metrolauncher.content.data.AppDao
-import ru.dimon6018.metrolauncher.content.data.AppData
-import ru.dimon6018.metrolauncher.content.data.AppEntity
+import ru.dimon6018.metrolauncher.content.data.apps.App
+import ru.dimon6018.metrolauncher.content.data.apps.AppDao
+import ru.dimon6018.metrolauncher.content.data.apps.AppData
+import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
@@ -60,6 +62,7 @@ import ru.dimon6018.metrolauncher.helpers.WPDialog
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
+
 class NewAllApps: Fragment() {
 
     private var recyclerView: RecyclerView? = null
@@ -330,6 +333,8 @@ class NewAllApps: Fragment() {
         private val appHolder: Int = 1
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
         private var iconManager: IconPackManager? = null
+
+        @OptIn(ExperimentalCoroutinesApi::class)
         private val imageLoader = ImageLoader.Builder(contextFragment!!)
         .memoryCache {
             MemoryCache.Builder()
@@ -339,11 +344,13 @@ class NewAllApps: Fragment() {
         .diskCache {
             DiskCache.Builder()
                     .maxSizePercent(0.25)
+                    .directory(contextFragment!!.cacheDir.resolve("cache"))
                     .build()
         }
+        .dispatcher(Dispatchers.Default.limitedParallelism(2))
         .build()
         init {
-            if (PREFS!!.iconPackPackage != "") {
+            if (PREFS!!.iconPackPackage != "null") {
                 iconManager = IconPackManager()
                 iconManager!!.setContext(context)
             }
@@ -451,7 +458,7 @@ class NewAllApps: Fragment() {
                 val id = Random.nextLong(1000, 2000000)
                 val item = AppEntity(pos, id, -1, 0,
                     isSelected = false,
-                    appSize = "small",
+                    appSize = generateRandomTileSize(),
                     appLabel = text,
                     appPackage = packag
                 )

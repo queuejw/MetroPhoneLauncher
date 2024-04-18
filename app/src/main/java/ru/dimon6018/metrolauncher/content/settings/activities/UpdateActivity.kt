@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -31,9 +31,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
 import ru.dimon6018.metrolauncher.Application.Companion.saveError
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.helpers.WPDialog
@@ -68,7 +69,7 @@ class UpdateActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_updates)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
         db = BSOD.getData(this)
         progressLayout = findViewById(R.id.updateIndicator)
         progressText = findViewById(R.id.progessText)
@@ -295,6 +296,11 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.GONE
             }
         }
+        if(!BuildConfig.UPDATES_ACITVE) {
+            check!!.visibility = View.GONE
+            checkingSub!!.visibility = View.VISIBLE
+            checkingSub!!.text = getString(R.string.updates_disabled)
+        }
     }
     private fun checkForUpdates() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -476,7 +482,7 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
         fun isUpdateAvailable(): Boolean {
-            if(UpdateDataParser.verCode == null || Application.VERSION_CODE > UpdateDataParser.verCode!!) {
+            if(UpdateDataParser.verCode == null || Application.VERSION_CODE > UpdateDataParser.verCode!! || !BuildConfig.UPDATES_ACITVE) {
                 return false
             }
             val boolean: Boolean = if (UpdateDataParser.verCode == Application.VERSION_CODE) {

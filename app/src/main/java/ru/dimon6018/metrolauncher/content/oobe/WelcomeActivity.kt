@@ -8,8 +8,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.oobe.fragments.ConfigureFragment
+import ru.dimon6018.metrolauncher.content.oobe.fragments.WelcomeFragment
 
 
 class WelcomeActivity: AppCompatActivity() {
@@ -22,7 +24,7 @@ class WelcomeActivity: AppCompatActivity() {
         textLabel = findViewById(R.id.appbarTextView)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        Main.applyWindowInsets(coordinatorLayout)
+        applyWindowInsets(coordinatorLayout)
         if (PREFS!!.launcherState != 2) {
             supportFragmentManager.commit {
                 replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")

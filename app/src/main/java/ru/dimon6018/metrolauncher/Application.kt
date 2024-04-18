@@ -14,29 +14,34 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.dimon6018.metrolauncher.content.data.App
+import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
-import ru.dimon6018.metrolauncher.content.settings.UpdateActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
+import kotlin.random.Random
 
 class Application : Application() {
 
-    private var context: Context? = null
-
     override fun onCreate() {
-        context = applicationContext
-        BsodDetector.setContext(context)
+        if(applicationContext == null) {
+            super.onCreate()
+            return
+        }
+        BsodDetector.setContext(applicationContext)
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
-        PREFS = Prefs(context!!)
+        PREFS = Prefs(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val uiMan: UiModeManager = (context!!.getSystemService(UI_MODE_SERVICE) as UiModeManager)
+            val uiMan: UiModeManager = (applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager)
             if(PREFS!!.isLightThemeUsed) {
                 uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
             } else {
@@ -59,12 +64,18 @@ class Application : Application() {
         val TIME: Long = Build.TIME
         var PREFS: Prefs? = null
 
-        val LAWNICONS_PACKAGE = "app.lawnchair.lawnicons"
-
         var isUpdateDownloading = false
         var isAppOpened = false
         var isStartMenuOpened = false
 
+        fun applyWindowInsets(target: View) {
+            ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
+                val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+                val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+                view.setPadding(0, paddingTop, 0, paddingBottom)
+                WindowInsetsCompat.CONSUMED
+            }
+        }
         private var accentColors = intArrayOf(
             R.color.tile_lime, R.color.tile_green, R.color.tile_emerald, R.color.tile_cyan,
             R.color.tile_teal, R.color.tile_cobalt, R.color.tile_indigo, R.color.tile_violet,
@@ -258,12 +269,21 @@ class Application : Application() {
             }
         }
         // https://github.com/queuejw/Neko11/blob/neko11-stable/app/src/main/java/ru/dimon6018/neko11/workers/Cat.kt#L494
-        fun recompressIcon(bitmap: Bitmap): Icon? {
+        fun recompressIcon(bitmap: Bitmap, size: Int): Icon? {
             val ostream = ByteArrayOutputStream(
                 bitmap.width * bitmap.height * 2
             ) // guess 50% compression
-            val ok = bitmap.compress(Bitmap.CompressFormat.PNG, 50, ostream)
+            val ok = bitmap.compress(Bitmap.CompressFormat.PNG, size, ostream)
             return if (ok) Icon.createWithData(ostream.toByteArray(), 0, ostream.size()) else null
+        }
+        fun generateRandomTileSize(): String {
+            val int = Random.nextInt(0, 2)
+            return when(int) {
+                0 -> "small"
+                1 -> "medium"
+                2 -> "big"
+                else -> "medium"
+            }
         }
     }
 }

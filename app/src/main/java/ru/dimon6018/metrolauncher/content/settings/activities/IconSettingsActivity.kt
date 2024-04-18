@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content.settings
+package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -17,10 +17,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
-import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 
 
@@ -41,13 +40,14 @@ class IconSettingsActivity: AppCompatActivity() {
 
     private var isIconPackListEmpty = false
     private var isListVisible = false
+    private var isError = false
     private var packageMgr: PackageManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_icon)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        Main.applyWindowInsets(coord)
+        applyWindowInsets(coord)
         packageMgr = packageManager
         iconPackManager = IconPackManager()
         iconPackManager?.setContext(this)
@@ -81,8 +81,10 @@ class IconSettingsActivity: AppCompatActivity() {
 
     private fun setIconPacks() {
         if (iconPackManager == null) {
+            isError = true
             return
         }
+        isError = false
         iconPackArrayList = iconPackManager!!.getAvailableIconPacks(true)
         isIconPackListEmpty = iconPackArrayList.isEmpty()
         setUi()
@@ -105,7 +107,11 @@ class IconSettingsActivity: AppCompatActivity() {
         if (isIconPackListEmpty) {
             currentPackTextView!!.visibility = View.GONE
             currentPackErrorTextView!!.visibility = View.VISIBLE
-            currentPackErrorTextView!!.text = getString(R.string.error)
+            if(isError) {
+                currentPackErrorTextView!!.text = "error"
+            } else {
+                currentPackErrorTextView!!.text = getString(R.string.iconpack_error)
+            }
             removePack!!.visibility = View.GONE
         } else {
             val label = if(PREFS!!.iconPackPackage == "null") {
@@ -152,10 +158,10 @@ class IconSettingsActivity: AppCompatActivity() {
             holder as IconPackHolder
             val item = list[position]
             holder.label.text = item.name
-            holder.icon.setImageIcon(recompressIcon(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize)))
+            holder.icon.setImageIcon(recompressIcon(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize), 25))
             holder.itemView.setOnClickListener {
                 PREFS!!.setIconPack(item.appPackage)
-                Prefs.isPrefsChanged = true
+                PREFS!!.setPrefsChanged(true)
                 mRecyclerView!!.visibility = View.GONE
                 isListVisible = false
                 setUi()
