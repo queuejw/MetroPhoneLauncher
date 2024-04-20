@@ -20,8 +20,8 @@ import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
@@ -244,18 +244,17 @@ class Application : Application() {
 
                         1 -> {
                             if (db.getDao().getBsodList().size >= 5) {
-                                db.clearAllTables()
+                                db.getDao().removeLog(db.getDao().getBSOD(0))
                             }
                             pos = db.getDao().getBsodList().size
                         }
 
                         2 -> {
                             if (db.getDao().getBsodList().size >= 10) {
-                                db.clearAllTables()
+                                db.getDao().removeLog(db.getDao().getBSOD(0))
                             }
                             pos = db.getDao().getBsodList().size
                         }
-
                         3 -> {
                             pos = db.getDao().getBsodList().size
                         }

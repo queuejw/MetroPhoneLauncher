@@ -18,8 +18,11 @@ android {
         debugWithoutUpdates {
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
 }
-
 dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation "androidx.viewpager2:viewpager2:1.1.0-beta02"

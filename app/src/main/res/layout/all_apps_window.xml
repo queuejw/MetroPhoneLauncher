@@ -23,14 +23,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
-                android:text="pin to start"
+                android:text="@string/pin_to_start"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
                 android:textSize="25sp"/>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:id="@+id/shareApp"
+            android:id="@+id/infoApp"
             app:cardCornerRadius="0dp"
             app:strokeWidth="0dp"
             android:layout_height="55dp"
@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
-                android:text="share"
+                android:text="@string/app_info"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
                 android:textSize="25sp"/>
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
-                android:text="uninstall"
+                android:text="@string/uninstall"
                 android:textColor="?attr/colorSurface"
                 android:layout_marginStart="12dp"
                 android:textSize="25sp"/>

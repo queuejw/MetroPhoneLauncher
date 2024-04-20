@@ -44,7 +44,7 @@ class WelcomeFragment : Fragment() {
             for (i in 0..size) {
                 val placeholder = AppEntity(i, (i + 1).toLong(), -1, -1,
                     isSelected = false,
-                    appSize = "small",
+                    tileSize = "small",
                     appLabel = "",
                     appPackage = ""
                 )

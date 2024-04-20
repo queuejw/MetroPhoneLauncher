@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertItem(app: AppEntity)
+    suspend fun insertItem(app: AppEntity)
     @Delete
-    fun removeApp(app: AppEntity)
+    suspend fun removeApp(app: AppEntity)
     @Update
-    fun updateApp(app: AppEntity)
+    suspend fun updateApp(app: AppEntity)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun updateAllApps(apps: MutableList<AppEntity>)
     @Query("SELECT * FROM apps")
@@ -29,5 +29,5 @@ interface AppDao {
     @Query("SELECT * FROM apps WHERE id = :id")
     fun getAppById(id: Int): AppEntity
     @Query("DELETE FROM apps")
-    fun removeAllApps()
+    suspend fun removeAllApps()
 }

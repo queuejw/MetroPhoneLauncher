@@ -39,8 +39,8 @@ class AboutSettingsActivity : AppCompatActivity() {
         val moreinfolayout = findViewById<LinearLayout>(R.id.moreinfoLayout)
         val shortPhoneInfo = findViewById<TextView>(R.id.phoneinfo)
         shortPhoneInfo.text = getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
-        moreinfo.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
         moreinfobtn.setOnClickListener {
+            moreinfo.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
             moreinfobtn.visibility = View.GONE
             moreinfolayout.visibility = View.VISIBLE
         }

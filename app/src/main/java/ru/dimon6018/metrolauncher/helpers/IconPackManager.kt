@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.helpers
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -40,6 +41,7 @@ class IconPackManager {
         @get:Suppress("unused")
         private var totalIcons = 0
         private var iconPackRes: Resources? = null
+        @SuppressLint("DiscouragedApi")
         private fun load() {
             // load appfilter.xml from the icon pack package
             val pm = mContext!!.packageManager
@@ -117,6 +119,7 @@ class IconPackManager {
             }
         }
 
+        @SuppressLint("DiscouragedApi")
         private fun loadBitmap(drawableName: String): Bitmap? {
             val id = iconPackRes!!.getIdentifier(drawableName, "drawable", packageName)
             if (id > 0) {
@@ -126,6 +129,7 @@ class IconPackManager {
             return null
         }
 
+        @SuppressLint("DiscouragedApi")
         private fun loadDrawable(drawableName: String): Drawable? {
             val id = iconPackRes!!.getIdentifier(drawableName, "drawable", packageName)
             return if (id > 0) {
@@ -133,6 +137,7 @@ class IconPackManager {
             } else null
         }
 
+        @SuppressLint("DiscouragedApi")
         fun getDrawableIconForPackage(appPackageName: String?, defaultDrawable: Drawable?): Drawable? {
             if (!mLoaded) load()
             val pm = mContext!!.packageManager
@@ -156,6 +161,7 @@ class IconPackManager {
             return defaultDrawable
         }
 
+        @SuppressLint("DiscouragedApi")
         @Suppress("unused")
         fun getIconForPackage(appPackageName: String?, defaultBitmap: Bitmap): Bitmap? {
             if (!mLoaded) load()

@@ -5,10 +5,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity( tableName = "bsod_list" )
-class BSODEntity {
+data class BSODEntity (
     @PrimaryKey
-    var pos: Int? = null
+    var pos: Int? = null,
     @ColumnInfo
-    var log: String = ""
+    var log: String = "",
     var date: String? = null
-}
+)

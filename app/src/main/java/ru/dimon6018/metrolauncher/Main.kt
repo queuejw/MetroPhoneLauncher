@@ -33,7 +33,6 @@ class Main : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Application.launcherAccentTheme())
         super.onCreate(savedInstanceState)
@@ -65,18 +64,7 @@ class Main : AppCompatActivity() {
                 })
             }
         }
-    }
-    fun openAllApps() {
-        bottomNavigationView.selectedItemId = R.id.start_apps
-    }
-    fun openStart() {
-        bottomNavigationView.selectedItemId = R.id.start_win
-    }
-    fun hideNavBar() {
-        bottomNavigationView.visibility = View.GONE
-    }
-    fun showNavBar() {
-        bottomNavigationView.visibility = View.VISIBLE
+        otherTasks()
     }
     private fun otherTasks() {
         if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
@@ -164,7 +152,6 @@ class Main : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        otherTasks()
     }
     override fun onResume() {
         super.onResume()

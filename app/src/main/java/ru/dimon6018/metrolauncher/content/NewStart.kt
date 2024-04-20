@@ -52,7 +52,6 @@ import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
-import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.AppDao
@@ -71,26 +70,27 @@ class NewStart: Fragment(), OnStartDragListener {
     private var mRecyclerView: RecyclerView? = null
     private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
     private var adapter: NewStartAdapter? = null
+    private var tiles: MutableList<AppEntity>? = null
     private var mItemTouchHelper: ItemTouchHelper? = null
     private var appsDbCall: AppDao? = null
-    private var appsDB: AppData? = null
 
     private lateinit var frame: ConstraintLayout
 
     private var allAppsButton: MaterialCardView? = null
     private var currentActivity: Activity? = null
+    private lateinit var v: View
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         currentActivity = activity
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = inflater.inflate(R.layout.start_screen, container, false)
+        v = inflater.inflate(R.layout.start_screen, container, false)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
         frame = v.findViewById(R.id.startFrame)
         CoroutineScope(Dispatchers.Default).launch {
             appsDbCall = AppData.getAppData(requireContext()).getAppDao()
-            appsDB = AppData.getAppData(requireContext())
-            val tiles = appsDbCall!!.getJustApps()
+            tiles = appsDbCall!!.getJustApps()
             mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
@@ -107,7 +107,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mSpannedLayoutManager!!.itemOrderIsStable = true
             mSpannedLayoutManager!!.spanSizeLookup =
                 SpannedGridLayoutManager.SpanSizeLookup { position ->
-                    when (tiles[position].appSize) {
+                    when (tiles!![position].tileSize) {
                         "small" -> {
                             SpanSize(1, 1)
                         }
@@ -125,15 +125,12 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                     }
                 }
-            adapter = NewStartAdapter(requireContext(), tiles)
+            adapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
             setBackground()
             currentActivity?.runOnUiThread {
                 allAppsButton = v.findViewById(R.id.allAppsButton)
-                allAppsButton!!.setOnClickListener {
-                    (requireActivity() as Main).openAllApps()
-                }
                 mRecyclerView!!.layoutManager = mSpannedLayoutManager
                 mRecyclerView!!.adapter = adapter
                 mItemTouchHelper!!.attachToRecyclerView(mRecyclerView)
@@ -161,6 +158,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private fun observe() {
         appsDbCall?.getApps()?.asLiveData()?.observe(viewLifecycleOwner) {
             if (!adapter?.isEditMode!! && adapter?.list != it) {
+                Log.d("flow", "update list")
                 adapter?.setData(it)
             }
         }
@@ -238,7 +236,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
         init {
             setHasStableIds(true)
-            if (PREFS!!.iconPackPackage != "null") {
+            if (PREFS!!.iconPackPackage != "") {
                 iconManager = IconPackManager()
                 iconManager!!.setContext(context)
             }
@@ -248,6 +246,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
             diffResult.dispatchUpdatesTo(this)
             list = newData
+            tiles = newData
         }
         private fun refreshData(newData: MutableList<AppEntity>) {
             val diffUtilCallback = DiffUtilCallback(list, newData)
@@ -263,7 +262,6 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.scaleY = 0.9f
             mRecyclerView!!.setBackgroundColor(backgroundColor)
             isEditMode = true
-            (currentActivity as Main).hideNavBar()
             notifyDataSetChanged()
         }
         fun disableEditMode() {
@@ -277,7 +275,6 @@ class NewStart: Fragment(), OnStartDragListener {
             setBackground()
             isEditMode = false
             clearItems()
-            (currentActivity as Main).showNavBar()
             for(anim in animList) {
                 anim.cancel()
             }
@@ -332,7 +329,6 @@ class NewStart: Fragment(), OnStartDragListener {
                     holder.mContainer.setBackgroundColor(Application.getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
                     holder.mContainer.setBackgroundColor(Application.accentColorFromPrefs(context))
-                    holder.mContainer.alpha = 0.95f
                 }
                 if(item.isSelected == false) {
                     if (position % 2 == 0) {
@@ -351,10 +347,9 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                 }
             } else {
-                holder.mContainer.alpha = 1f
                 holder.itemView.rotation = 0f
             }
-            when (item.appSize) {
+            when (item.tileSize) {
                 "small" -> {
                     holder.mTextView.text = ""
                 }
@@ -369,8 +364,26 @@ class NewStart: Fragment(), OnStartDragListener {
                     holder.mTextView.text = item.appLabel
                 }
             }
+            holder.mCardContainer.strokeColor = backgroundColor
             holder.mContainer.setOnClickListener {
-                tileClick(holder, item, position)
+                if (isEditMode) {
+                    holder.itemView.rotation = 0f
+                    CoroutineScope(Dispatchers.IO).launch {
+                        item.isSelected = true
+                        appsDbCall!!.insertItem(item)
+                        runBlocking {
+                            currentActivity?.runOnUiThread {
+                                showPopupWindow(holder, item, position)
+                                notifyItemChanged(position)
+                            }
+                        }
+                    }
+                } else {
+                    val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
+                    intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    isAppOpened = true
+                    context.startActivity(intent)
+                }
             }
             holder.mContainer.setOnLongClickListener {
                 if(!isEditMode) {
@@ -390,7 +403,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             try {
-              holder.mAppIcon.setImageIcon(recompressIcon(getAppIcon(item.appPackage, item.appSize, context.packageManager), 50))
+                holder.mAppIcon.setImageBitmap(getAppIcon(item.appPackage, item.tileSize, context.packageManager))
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
@@ -411,26 +424,6 @@ class NewStart: Fragment(), OnStartDragListener {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_alert))
                 PREFS!!.setIconPack("null")
-            }
-        }
-        private fun tileClick(holder: TileViewHolder, item: AppEntity, position: Int) {
-            if (isEditMode) {
-                holder.itemView.rotation = 0f
-                CoroutineScope(Dispatchers.IO).launch {
-                    item.isSelected = true
-                    appsDbCall!!.insertItem(item)
-                    runBlocking {
-                        currentActivity?.runOnUiThread {
-                            showPopupWindow(holder, item, position)
-                            notifyItemChanged(position)
-                        }
-                    }
-                }
-            } else {
-                val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
-                intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                isAppOpened = true
-                context.startActivity(intent)
             }
         }
         private fun getAppIcon(appPackage: String, size: String, pm: PackageManager): Bitmap {
@@ -465,11 +458,11 @@ class NewStart: Fragment(), OnStartDragListener {
             return bmp
         }
         override fun getItemViewType(position: Int): Int {
-           return when(list[position].tileType) {
-               -1 -> spaceType
-               0 -> defaultTileType
-               else -> defaultTileType
-           }
+            return when(list[position].tileType) {
+                -1 -> spaceType
+                0 -> defaultTileType
+                else -> defaultTileType
+            }
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if(!isEditMode) {
@@ -477,9 +470,6 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             Log.d("ItemMove", "from pos: $fromPosition")
             Log.d("ItemMove", "to pos: $toPosition")
-            if(fromPosition == toPosition) {
-                return
-            }
             if (fromPosition < toPosition) {
                 for (i in fromPosition until toPosition) {
                     Collections.swap(list, i, i + 1)
@@ -522,7 +512,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun showPopupWindow(holder: TileViewHolder, item: AppEntity, position: Int) {
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = if(item.appSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val popupView: View = if(item.tileSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
             val width = holder.itemView.width
             val height = holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
@@ -538,7 +528,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             popupWindow.showAsDropDown(holder.itemView, 0, ((-1 * holder.itemView.height)), Gravity.CENTER)
-            val arrow = when(item.appSize) {
+            val arrow = when(item.tileSize) {
                 "small" -> {
                     resizeIcon.rotation = 45f
                     ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right)
@@ -558,23 +548,23 @@ class NewStart: Fragment(), OnStartDragListener {
             resizeIcon.setImageDrawable(arrow)
             resize.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
-                    when (item.appSize) {
+                    when (item.tileSize) {
                         "small" -> {
-                            item.appSize = "medium"
+                            item.tileSize = "medium"
                             appsDbCall!!.updateApp(item)
                             holder.mTextView.post {
                                 holder.mTextView.text = item.appLabel
                             }
                         }
                         "medium" -> {
-                            item.appSize = "big"
+                            item.tileSize = "big"
                             appsDbCall!!.updateApp(item)
                             holder.mTextView.post {
                                 holder.mTextView.text = item.appLabel
                             }
                         }
                         "big" -> {
-                            item.appSize = "small"
+                            item.tileSize = "small"
                             appsDbCall!!.updateApp(item)
                         }
                     }
@@ -589,6 +579,7 @@ class NewStart: Fragment(), OnStartDragListener {
             remove.setOnClickListener {
                 CoroutineScope(Dispatchers.IO).launch {
                     item.tileType = -1
+                    item.tileSize = "small"
                     item.appPackage = ""
                     item.tileColor = -1
                     item.appLabel = ""
@@ -684,15 +675,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 bottomsheet.dismiss()
             }
             uninstall.setOnClickListener {
-                val intent = Intent(Intent.ACTION_DELETE)
-                intent.setData(Uri.parse("package:" + item.appPackage))
-                startActivity(intent)
+                startActivity(Intent(Intent.ACTION_DELETE).setData(Uri.parse("package:" + item.appPackage)))
                 bottomsheet.dismiss()
             }
             appInfo.setOnClickListener {
-                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.setData(Uri.parse("package:" + item.appPackage))
-                startActivity(intent)
+                startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + item.appPackage)))
                 bottomsheet.dismiss()
             }
             bottomsheet.show()

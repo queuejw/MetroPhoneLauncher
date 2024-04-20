@@ -167,4 +167,5 @@
     <string name="feature_isnt_implemented">Sorry, this feature has not been implemented yet. Follow the news: t.me/mplauncher</string>
     <string name="updates_disabled">Updates are not available to you. Read more: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
     <string name="app_info">app info</string>
+    <string name="pin_to_start">pin to start</string>
 </resources>

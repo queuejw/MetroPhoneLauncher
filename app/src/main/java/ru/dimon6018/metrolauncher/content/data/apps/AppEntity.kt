@@ -13,7 +13,7 @@ data class AppEntity (
     var tileColor: Int? = null, //-1 - theme color, ... see Prefs.kt
     var tileType: Int? = null, // -1 - placeholder, 0 - default, 1 - weather ...
     var isSelected: Boolean? = null,
-    var appSize: String = "", //big, medium, small
+    var tileSize: String = "", //big, medium, small
     var appLabel: String = "",
     var appPackage: String = ""
 )

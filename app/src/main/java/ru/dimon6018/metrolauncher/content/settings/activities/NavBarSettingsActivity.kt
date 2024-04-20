@@ -9,7 +9,6 @@ import com.google.android.material.radiobutton.MaterialRadioButton
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.Prefs
 
 class NavBarSettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

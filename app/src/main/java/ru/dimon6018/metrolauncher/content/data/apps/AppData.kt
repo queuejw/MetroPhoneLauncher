@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [AppEntity::class], version = 3)
+@Database(entities = [AppEntity::class], version = 4)
 abstract class AppData: RoomDatabase() {
 
     abstract fun getAppDao(): AppDao
@@ -14,7 +14,7 @@ abstract class AppData: RoomDatabase() {
         private const val DB: String = "AppData.db"
 
         fun getAppData(context: Context): AppData {
-            return Room.databaseBuilder(context, AppData::class.java, DB).build()
+            return Room.databaseBuilder(context, AppData::class.java, DB).fallbackToDestructiveMigration().build()
         }
     }
 }

@@ -84,7 +84,7 @@ class AppsFragment: Fragment() {
                     val id = Random.nextLong(1000, 2000000)
                     val entity = AppEntity(pos, id, -1, 0,
                         isSelected = false,
-                        appSize = generateRandomTileSize(),
+                        tileSize = generateRandomTileSize(),
                         appLabel = i.appLabel!!,
                         appPackage = i.appPackage!!
                     )
