@@ -9,27 +9,27 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.button.MaterialButton
-import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Application.Companion.BRAND
-import ru.dimon6018.metrolauncher.Application.Companion.BUILD
-import ru.dimon6018.metrolauncher.Application.Companion.DEVICE
-import ru.dimon6018.metrolauncher.Application.Companion.HARDWARE
-import ru.dimon6018.metrolauncher.Application.Companion.MANUFACTURER
-import ru.dimon6018.metrolauncher.Application.Companion.MODEL
-import ru.dimon6018.metrolauncher.Application.Companion.PRODUCT
-import ru.dimon6018.metrolauncher.Application.Companion.TIME
-import ru.dimon6018.metrolauncher.Application.Companion.VERSION_CODE
-import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
 import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BUILD
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.DEVICE
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.HARDWARE
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MANUFACTURER
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MODEL
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.PRODUCT
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.TIME
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_NAME
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme())
+        setTheme(launcherAccentTheme() )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_about)
         WindowCompat.setDecorFitsSystemWindows(window, false)

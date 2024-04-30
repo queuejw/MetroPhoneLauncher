@@ -12,25 +12,25 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
-import ru.dimon6018.metrolauncher.Application.Companion.generateRandomTileSize
-import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
-import ru.dimon6018.metrolauncher.Application.Companion.setUpApps
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import kotlin.random.Random
 
 class AppsFragment: Fragment() {
@@ -55,15 +55,17 @@ class AppsFragment: Fragment() {
         val back: MaterialButton = view.findViewById(R.id.back)
         val next: MaterialButton = view.findViewById(R.id.next)
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
             val appList = setUpApps(fragmentContext!!.packageManager)
-            val adapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
+            val mAdapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
             activity?.runOnUiThread {
-                recyclerView!!.layoutManager = lm
-                recyclerView!!.adapter = adapter
-                OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+                recyclerView?.apply {
+                    layoutManager = lm
+                    adapter = mAdapter
+                    OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+                }
             }
             runBlocking {
                 activity?.runOnUiThread {
@@ -78,13 +80,13 @@ class AppsFragment: Fragment() {
             }
         }
         next.setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.Default) {
                 var pos = 0
                 for (i in selectedItems!!) {
                     val id = Random.nextLong(1000, 2000000)
                     val entity = AppEntity(pos, id, -1, 0,
                         isSelected = false,
-                        tileSize = generateRandomTileSize(),
+                        tileSize = generateRandomTileSize(false),
                         appLabel = i.appLabel!!,
                         appPackage = i.appPackage!!
                     )

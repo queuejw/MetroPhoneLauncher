@@ -29,17 +29,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
-import ru.dimon6018.metrolauncher.Application.Companion.saveError
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.update.UpdateDataParser
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
+import ru.dimon6018.metrolauncher.helpers.utils.Utils
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -66,6 +67,7 @@ class UpdateActivity: AppCompatActivity() {
     private var coroutineDownloadingScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_updates)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
@@ -134,7 +136,7 @@ class UpdateActivity: AppCompatActivity() {
             } else {
                 UpdateDataParser.verCode
             }
-            if (ver == Application.VERSION_CODE) {
+            if (ver == VERSION_CODE) {
                 PREFS!!.setUpdateState(3)
             } else {
                 PREFS!!.setUpdateState(0)
@@ -142,7 +144,6 @@ class UpdateActivity: AppCompatActivity() {
             if (PREFS!!.updateState == 1) {
                 return@setOnClickListener
             }
-
             isUpdateDownloading = false
             manager?.remove(downloadId!!)
             deleteUpdateFile()
@@ -327,11 +328,11 @@ class UpdateActivity: AppCompatActivity() {
                 PREFS!!.setUpdateState(5)
                 return@launch
             }
-            if (UpdateDataParser.verCode == Application.VERSION_CODE) {
+            if (UpdateDataParser.verCode == VERSION_CODE) {
                 PREFS!!.setUpdateState(3)
-            } else if (Application.VERSION_CODE > UpdateDataParser.verCode!!) {
+            } else if (VERSION_CODE > UpdateDataParser.verCode!!) {
                 PREFS!!.setUpdateState(8)
-            } else if(UpdateDataParser.verCode!! > Application.VERSION_CODE) {
+            } else if(UpdateDataParser.verCode!! > VERSION_CODE) {
                 if (UpdateDataParser.isBeta == true) {
                     PREFS!!.setUpdateState(7)
                 } else {
@@ -482,10 +483,10 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
         fun isUpdateAvailable(): Boolean {
-            if(UpdateDataParser.verCode == null || Application.VERSION_CODE > UpdateDataParser.verCode!! || !BuildConfig.UPDATES_ACITVE) {
+            if(UpdateDataParser.verCode == null || VERSION_CODE > UpdateDataParser.verCode!! || !BuildConfig.UPDATES_ACITVE) {
                 return false
             }
-            val boolean: Boolean = if (UpdateDataParser.verCode == Application.VERSION_CODE) {
+            val boolean: Boolean = if (UpdateDataParser.verCode == VERSION_CODE) {
                 Log.i("CheckForUpdates", "up-to-date")
                 false
             } else {

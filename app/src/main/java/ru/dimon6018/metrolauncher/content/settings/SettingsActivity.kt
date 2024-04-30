@@ -8,17 +8,20 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
 import leakcanary.LeakCanary
-import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -26,7 +29,7 @@ class SettingsActivity : AppCompatActivity() {
     private var navSub: TextView? = null
     private var iconsSub: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme())
+        setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -36,10 +39,14 @@ class SettingsActivity : AppCompatActivity() {
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
 
-        val themebtn = findViewById<MaterialCardView>(R.id.themeSetting)
-        themebtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
-        val aboutbtn = findViewById<MaterialCardView>(R.id.aboutSetting)
-        aboutbtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java)) }
+        val themeBtn = findViewById<MaterialCardView>(R.id.themeSetting)
+        themeBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
+        val allAppsBtn = findViewById<MaterialCardView>(R.id.allAppsSetting)
+        allAppsBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java)) }
+        val tilesBtn = findViewById<MaterialCardView>(R.id.tilesSetting)
+        tilesBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java)) }
+        val aboutBtn = findViewById<MaterialCardView>(R.id.aboutSetting)
+        aboutBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java)) }
         val feedbackBtn = findViewById<MaterialCardView>(R.id.feedbackSetting)
         feedbackBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java)) }
         val updateBtn = findViewById<MaterialCardView>(R.id.updatesSetting)
@@ -57,7 +64,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        themeSub?.text = Application.accentName(this)
+        themeSub?.text = accentName(this)
         navSub?.text = when (PREFS!!.navBarColor) {
             0 -> getString(R.string.always_dark)
             1 -> getString(R.string.always_light)

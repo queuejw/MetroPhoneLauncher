@@ -169,4 +169,18 @@
     <string name="updates_disabled">Обновления недоступны для вас. Подробнее: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
     <string name="app_info">о приложении</string>
     <string name="pin_to_start">на рабочий стол</string>
+    <string name="newAppsToStart">Включите, если хотите, чтобы новые приложения автоматически появлялись на рабочем столе</string>
+    <string name="newAppsToStart_sub">Закреплять новые приложения автоматически</string>
+    <string name="tipIconPackError">Мы не смогли найти наборы значков на вашем устройстве.</string>
+    <string name="settingsBtnInAllApps">Вы можете получить быстрый доступ к настройкам MPL, включив показ кнопки настроек.</string>
+    <string name="settingsBtnInAllApps_sub">Включить кнопку настроек</string>
+    <string name="alphabetSetting">Вы можете отключить алфавит в списке приложений, если он мешает.</string>
+    <string name="alphabetSetting_sub">Показывать алфавит в списке приложений</string>
+    <string name="transparent_background_allapps_switch">Включить прозрачный фон</string>
+    <string name="transparent_background_allapps_settings">Вы можете включить прозрачный фон, если хотите видеть фон рабочего стола в списке приложений</string>
+    <string name="all_apps_list">список приложений</string>
+    <string name="change_your_app_list">измените список приложений</string>
+    <string name="tiles">плитки</string>
+    <string name="customize_tiles">настройте плитки</string>
+    <string name="tile_transparency">Прозрачность плиток</string>
 </resources>

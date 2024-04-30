@@ -6,9 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity( tableName = "bsod_list" )
 data class BSODEntity (
-    @PrimaryKey
-    var pos: Int? = null,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     @ColumnInfo
+    var pos: Int? = null,
     var log: String = "",
     var date: String? = null
 )

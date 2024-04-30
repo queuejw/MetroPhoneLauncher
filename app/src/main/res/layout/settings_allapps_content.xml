@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:text="@string/settingsBtnInAllApps"
+        android:layout_width="match_parent"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+    <TextView
+        android:text="@string/settingsBtnInAllApps_sub"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/settingsBtnSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Off"
+        android:textSize="24sp" />
+    <TextView
+        android:text="@string/alphabetSetting"
+        android:layout_width="match_parent"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+    <TextView
+        android:text="@string/alphabetSetting_sub"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/alphabetSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Off"
+        android:textSize="24sp" />
+
+    <TextView
+        android:text="@string/transparent_background_allapps_settings"
+        android:layout_width="match_parent"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="32dp"
+        android:textSize="20sp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+    <TextView
+        android:text="@string/transparent_background_allapps_switch"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_regular"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/allAppsBackgroundSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Off"
+        android:textSize="24sp" />
+</LinearLayout>

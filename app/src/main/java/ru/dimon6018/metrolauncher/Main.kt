@@ -1,14 +1,22 @@
 package ru.dimon6018.metrolauncher
 
+import android.Manifest
+import android.app.WallpaperManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,22 +28,33 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
-import ru.dimon6018.metrolauncher.content.settings.activities.BSODadapter.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
+import ru.dimon6018.metrolauncher.helpers.utils.Utils
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
+import kotlin.system.exitProcess
 
 class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
+
+    private val packageReceiver = PackageChangesReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme())
+        setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setAppTheme()
         setContentView(R.layout.main_screen_laucnher)
         viewPager = findViewById(R.id.pager)
@@ -52,6 +71,22 @@ class Main : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Default) {
             pagerAdapter = WinAdapter(this@Main)
             applyWindowInsets(coordinatorLayout)
+            if(PREFS!!.isWallpaperUsed) {
+                try {
+                    getPermission()
+                    val wallpaperManager = WallpaperManager.getInstance(this@Main)
+                    val bmp = wallpaperManager.drawable
+                    runOnUiThread {
+                        coordinatorLayout.background = bmp
+                    }
+                } catch (e: Exception) {
+                    Log.e("Start", e.toString())
+                }
+            } else {
+                runOnUiThread {
+                    coordinatorLayout.background = null
+                }
+            }
             runOnUiThread {
                 viewPager.adapter = pagerAdapter
                 setupNavigationBar()
@@ -64,10 +99,24 @@ class Main : AppCompatActivity() {
                 })
             }
         }
+        Utils.registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
+    private fun getPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if(ContextCompat.checkSelfPermission(this@Main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Main, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                startActivityForResult(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                    .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
+                ActivityCompat.requestPermissions(this@Main, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1507)
+            }
+        } else {
+            if(ContextCompat.checkSelfPermission(this@Main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Main, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this@Main, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1507)
+            }
+        }
+    }
     private fun otherTasks() {
-        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == Application.VERSION_CODE) {
+        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == VERSION_CODE) {
             PREFS!!.setUpdateState(3)
         }
         if (PREFS!!.pref.getBoolean("tip1Enabled", true)) {
@@ -88,16 +137,22 @@ class Main : AppCompatActivity() {
                     val pos = (dbCall.getBsodList().size) - 1
                     val text = dbCall.getBSOD(pos).log
                     runOnUiThread {
-                        viewPager.visibility = View.VISIBLE
+                        viewPager.visibility = View.INVISIBLE
                         WPDialog(this@Main).setTopDialog(true)
                                 .setTitle(getString(R.string.bsodDialogTitle))
                                 .setMessage(getString(R.string.bsodDialogMessage))
-                                .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                                .setNegativeButton(getString(R.string.bsodDialogDismiss)) {
+                                    viewPager.visibility = View.VISIBLE
+                                    return@setNegativeButton
+                                }
                                 .setOnDismissListener {
                                     viewPager.visibility = View.VISIBLE
+                                    return@setOnDismissListener
                                 }
                                 .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                                    viewPager.visibility = View.VISIBLE
                                     sendCrash(text, this@Main)
+                                    return@setPositiveButton
                                 }.show()
                     }
                 }
@@ -114,14 +169,14 @@ class Main : AppCompatActivity() {
                 bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light))
             }
             2 -> {
-                bottomNavigationView.setBackgroundColor(Application.accentColorFromPrefs(this))
+                bottomNavigationView.setBackgroundColor(accentColorFromPrefs(this))
             }
             3 -> {
                 bottomNavigationView.visibility = View.GONE
                 return
             }
             else -> {
-                bottomNavigationView.setBackgroundColor(Application.launcherSurfaceColor(theme))
+                bottomNavigationView.setBackgroundColor(launcherSurfaceColor(theme))
             }
         }
         bottomNavigationView.selectedItemId = R.id.start_apps
@@ -149,21 +204,19 @@ class Main : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-    }
     override fun onResume() {
         super.onResume()
         if (PREFS!!.isPrefsChanged()) {
-            PREFS!!.setPrefsChanged(true)
-            recreate()
-            return
+            PREFS!!.setPrefsChanged(false)
+            exitProcess(0)
         }
+    }
+    override fun onStop() {
+        Utils.unregisterPackageReceiver(this, packageReceiver)
+        super.onStop()
     }
     class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2
-
         override fun createFragment(position: Int): Fragment {
             return if (position == 1) NewAllApps() else NewStart()
         }

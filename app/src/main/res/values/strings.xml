@@ -168,4 +168,18 @@
     <string name="updates_disabled">Updates are not available to you. Read more: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
     <string name="app_info">app info</string>
     <string name="pin_to_start">pin to start</string>
+    <string name="newAppsToStart">Enable if you want new apps to be automatically pinned to your desktop</string>
+    <string name="newAppsToStart_sub">Pin new apps automatically</string>
+    <string name="tipIconPackError">We could not find the icon packs on your device.</string>
+    <string name="settingsBtnInAllApps">You can get quick access to MPL settings by enabling the display of the settings button.</string>
+    <string name="settingsBtnInAllApps_sub">Enable the settings button</string>
+    <string name="alphabetSetting">You can disable the alphabet in the app list if it gets in the way.</string>
+    <string name="alphabetSetting_sub">Show the alphabet in the app list</string>
+    <string name="transparent_background_allapps_switch">Enable transparent background</string>
+    <string name="transparent_background_allapps_settings">You can enable transparent background if you want to see the desktop wallpaper in the apps list</string>
+    <string name="all_apps_list">all apps list</string>
+    <string name="change_your_app_list">change your app list</string>
+    <string name="tiles">tiles</string>
+    <string name="customize_tiles">customize tiles</string>
+    <string name="tile_transparency">Tile transparency</string>
 </resources>

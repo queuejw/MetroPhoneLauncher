@@ -5,7 +5,6 @@
     android:id="@+id/frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
     android:orientation="vertical">
 
 <LinearLayout
@@ -64,25 +63,47 @@
         android:nestedScrollingEnabled="true"/>
 </LinearLayout>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/allAppsButton"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginStart="12dp"
-        app:cardBackgroundColor="?android:attr/colorBackground"
-        app:cardCornerRadius="48dp"
-        app:strokeColor="?attr/colorOnSurface"
-        app:strokeWidth="3dp">
+        android:orientation="vertical">
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/allAppsButton"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardBackgroundColor="?android:attr/colorBackground"
+            app:cardCornerRadius="48dp"
+            app:strokeColor="?attr/colorOnSurface"
+            app:strokeWidth="3dp">
 
-        <ImageView
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:layout_gravity="center"
-            android:scaleX="-1"
-            android:src="@drawable/ic_search"
-            app:tint="?attr/colorOnSurface" />
-    </com.google.android.material.card.MaterialCardView>
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:scaleX="-1"
+                android:src="@drawable/ic_search"
+                app:tint="?attr/colorOnSurface" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/settingsBtn"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="?android:attr/colorBackground"
+            app:cardCornerRadius="48dp"
+            app:strokeColor="?attr/colorOnSurface"
+            app:strokeWidth="3dp">
+            <ImageView
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_settings"
+                app:tint="?attr/colorOnSurface" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/loadingHolder"

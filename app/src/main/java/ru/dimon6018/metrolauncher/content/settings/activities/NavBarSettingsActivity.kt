@@ -7,11 +7,13 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.radiobutton.MaterialRadioButton
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.helpers.utils.Utils
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class NavBarSettingsActivity: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.launcher_settings_navbar)

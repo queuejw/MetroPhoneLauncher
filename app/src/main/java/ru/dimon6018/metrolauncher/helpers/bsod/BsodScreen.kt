@@ -11,19 +11,17 @@ import androidx.core.view.WindowCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ru.dimon6018.metrolauncher.Application.Companion.ANDROID_VERSION
-import ru.dimon6018.metrolauncher.Application.Companion.BRAND
-import ru.dimon6018.metrolauncher.Application.Companion.MODEL
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.VERSION_NAME
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
-import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery
-import java.util.Calendar
-import java.util.Date
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.ANDROID_VERSION
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MODEL
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_NAME
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import kotlin.system.exitProcess
 
 class BsodScreen : AppCompatActivity() {
@@ -47,41 +45,7 @@ class BsodScreen : AppCompatActivity() {
             val error = "Your launcher ran into a problem and needs to restart. We're just\n" +
                     "collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
             Log.e("BSOD", error)
-            val time: Date = Calendar.getInstance().time
-            val entity = BSODEntity()
-            entity.date = time.toString()
-            entity.log = error
-            val pos: Int
-            when (PREFS!!.getMaxCrashLogs()) {
-                0 -> {
-                    db!!.clearAllTables()
-                    pos = db!!.getDao().getBsodList().size
-                }
-
-                1 -> {
-                    if (db!!.getDao().getBsodList().size >= 5) {
-                        db!!.clearAllTables()
-                    }
-                    pos = db!!.getDao().getBsodList().size
-                }
-
-                2 -> {
-                    if (db!!.getDao().getBsodList().size >= 10) {
-                        db!!.clearAllTables()
-                    }
-                    pos = db!!.getDao().getBsodList().size
-                }
-
-                3 -> {
-                    pos = db!!.getDao().getBsodList().size
-                }
-
-                else -> {
-                    pos = db!!.getDao().getBsodList().size
-                }
-            }
-            entity.pos = pos
-            db!!.getDao().insertLog(entity)
+            saveError(error, db!!)
         }
         setTheme(R.style.bsod)
         super.onCreate(savedInstanceState)

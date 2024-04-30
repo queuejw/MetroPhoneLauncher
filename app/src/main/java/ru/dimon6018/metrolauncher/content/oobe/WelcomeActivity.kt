@@ -8,10 +8,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.fragments.ConfigureFragment
 import ru.dimon6018.metrolauncher.content.oobe.fragments.WelcomeFragment
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 
 class WelcomeActivity: AppCompatActivity() {

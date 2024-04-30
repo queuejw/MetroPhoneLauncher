@@ -11,10 +11,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
-import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.downloadUpdate
 
 class RecoveryOptions: AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,8 +44,8 @@ class RecoveryOptions: AppCompatActivity() {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1)
             }
-            Application.PREFS!!.reset()
-            Application.downloadUpdate(this)
+            PREFS!!.reset()
+            downloadUpdate(this)
         }
     }
 }

@@ -19,6 +19,12 @@ class Prefs(context: Context) {
     val isWallpaperUsed: Boolean
         get() = prefs.getBoolean(WALLPAPER_USING, false)
 
+    fun setTransparentTiles(bool: Boolean) {
+        prefs.edit().putBoolean(TRANSPARENT_TILES, bool).apply()
+    }
+    val isTilesTransparent: Boolean
+        get() = prefs.getBoolean(TRANSPARENT_TILES, false)
+
     fun setMoreTilesPref(bool: Boolean) {
         prefs.edit().putBoolean(MORE_TILES, bool).apply()
     }
@@ -158,6 +164,36 @@ class Prefs(context: Context) {
     fun setPrefsChanged(bool: Boolean) {
         isPrefsChanged = bool
     }
+    fun setPinNewApps(value: Boolean) {
+        prefs.edit().putBoolean(PIN_NEW_APP, value).apply()
+    }
+    val pinNewApps: Boolean
+        get() = prefs.getBoolean(PIN_NEW_APP, false)
+
+    fun setAllAppsSettingsBtn(value: Boolean) {
+        prefs.edit().putBoolean(ALL_APPS_SETTINGS_BTN, value).apply()
+    }
+    val isSettingsBtnEnabled: Boolean
+        get() = prefs.getBoolean(ALL_APPS_SETTINGS_BTN, false)
+
+    fun setAlphabetActive(value: Boolean) {
+        prefs.edit().putBoolean(ALPHABET_ENABLED, value).apply()
+    }
+    val isAlphabetEnabled: Boolean
+        get() = prefs.getBoolean(ALPHABET_ENABLED, true)
+
+    fun setAllAppsBackground(value: Boolean) {
+        prefs.edit().putBoolean(ALL_APPS_BACKGROUND, value).apply()
+    }
+    val isAllAppsBackgroundEnabled: Boolean
+        get() = prefs.getBoolean(ALL_APPS_BACKGROUND, false)
+
+    fun setTileTransparency(value: Float) {
+        prefs.edit().putFloat(TILES_TRANSPARENCY, value).apply()
+    }
+    val getTilesTransparency: Float
+        get() = prefs.getFloat(TILES_TRANSPARENCY, 1.0f)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -175,5 +211,11 @@ class Prefs(context: Context) {
         const val MORE_TILES = "isMoreTilesEnabled"
         const val WALLPAPER_USING = "wallpaperUsing"
         const val ICON_PACK = "iconPack"
+        const val PIN_NEW_APP = "pinNewAppsToStart"
+        const val ALL_APPS_SETTINGS_BTN = "allAppsSettingsBtnEnabled"
+        const val ALPHABET_ENABLED = "alphabetEnabled"
+        const val TRANSPARENT_TILES = "isTilesTransparent"
+        const val ALL_APPS_BACKGROUND = "allAppsWallpaperBackground"
+        const val TILES_TRANSPARENCY = "tilesTransparency"
     }
 }

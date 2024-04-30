@@ -14,12 +14,12 @@
 
     <application
         android:name="ru.dimon6018.metrolauncher.Application"
+        android:theme="@style/AppTheme.Cobalt"
         android:testOnly="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.Cobalt">
+        android:supportsRtl="true">
         <activity
             android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
@@ -101,6 +101,14 @@
             android:exported="true">
         </activity>
         <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
             android:autoRemoveFromRecents="true"
                 android:exported="true">
@@ -114,5 +122,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <receiver
+            android:name=".helpers.receivers.PackageChangesReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.QUERY_ALL_PACKAGES">
+            <intent-filter>
+                <action android:name="ru.dimon6018.metrolauncher.PACKAGE_CHANGE_BROADCAST" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

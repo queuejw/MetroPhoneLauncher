@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="0dp"
     app:strokeColor="?attr/colorPrimary"
-    app:cardBackgroundColor="?android:attr/colorBackground"
+    app:cardBackgroundColor="@color/transparent"
     app:strokeWidth="3dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
         <com.google.android.material.textview.MaterialTextView

@@ -12,7 +12,6 @@
         android:id="@+id/startFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:attr/colorBackground"
         android:animateLayoutChanges="true">
 
         <androidx.recyclerview.widget.RecyclerView

@@ -4,7 +4,6 @@
     <dimen name="navbar_app_icon_size">32dp</dimen>
     <dimen name="recyclerViewPadding">64dp</dimen>
     <dimen name="iconAppsListSize">42dp</dimen>
-    <dimen name="iconAppsListSize_lawnicons">84dp</dimen>
     <dimen name="bottom_sheet_size">400dp</dimen>
     <dimen name="tile_small_moreTiles_off">62dp</dimen>
     <dimen name="tile_small_moreTiles_on">38dp</dimen>
@@ -15,4 +14,6 @@
     <dimen name="navbarHeight">48dp</dimen>
     <dimen name="themeSettingsImgSize">242dp</dimen>
     <dimen name="alphabetHolderSize">72dp</dimen>
+    <dimen name="tileStrokeWidth">4dp</dimen>
+    <dimen name="tileStrokeWidthDisabled">0dp</dimen>
 </resources>

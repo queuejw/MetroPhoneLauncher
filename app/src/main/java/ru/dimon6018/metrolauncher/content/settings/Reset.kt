@@ -4,16 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class Reset : AppCompatActivity() {
 
@@ -33,7 +33,7 @@ class Reset : AppCompatActivity() {
         resetPart2()
     }
     private fun resetPart2() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             dbApps!!.clearAllTables()
             dbBsod!!.clearAllTables()
             Prefs(this@Reset).reset()

@@ -7,22 +7,25 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
-import ru.dimon6018.metrolauncher.Application
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class FeedbackSettingsActivity: AppCompatActivity()  {
 
     private var setCrashLogLimitBtn: MaterialButton? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Application.launcherAccentTheme())
+        setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_feedback)
         val db = BSOD.getData(this)
@@ -35,7 +38,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
         val delInfo: MaterialButton = findViewById(R.id.deleteBsodInfo)
         delInfo.setOnClickListener {
-           Thread {
+           lifecycleScope.launch(Dispatchers.IO) {
                 db.clearAllTables()
            }.start()
         }

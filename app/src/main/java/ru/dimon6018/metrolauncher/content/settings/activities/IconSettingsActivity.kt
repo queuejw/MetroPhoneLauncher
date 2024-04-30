@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.applyWindowInsets
-import ru.dimon6018.metrolauncher.Application.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 
 
 class IconSettingsActivity: AppCompatActivity() {
@@ -36,14 +38,17 @@ class IconSettingsActivity: AppCompatActivity() {
     private var iconPackArrayList: ArrayList<IconPackManager.IconPack> = ArrayList()
 
     private var mRecyclerView: RecyclerView? = null
-    private var adapter: IconPackAdapterList? = null
+    private var mAdapter: IconPackAdapterList? = null
 
     private var isIconPackListEmpty = false
     private var isListVisible = false
     private var isError = false
     private var packageMgr: PackageManager? = null
 
+    private var dialog: WPDialog? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_icon)
         val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
@@ -57,7 +62,12 @@ class IconSettingsActivity: AppCompatActivity() {
         currentPackErrorTextView = findViewById(R.id.currentIconPackError)
         downloadBtn = findViewById(R.id.downloadIconPacks)
         mRecyclerView = findViewById(R.id.iconPackList)
+        dialog = WPDialog(this).setTopDialog(true)
+            .setTitle(getString(R.string.tip))
+            .setMessage(getString(R.string.tipIconPackError))
+            .setPositiveButton(getString(android.R.string.ok), null)
         chooseBtn!!.setOnClickListener {
+            setIconPacks()
             if(!isIconPackListEmpty) {
                 if(!isListVisible) {
                     isListVisible = true
@@ -66,6 +76,8 @@ class IconSettingsActivity: AppCompatActivity() {
                     isListVisible = false
                     mRecyclerView!!.visibility = View.GONE
                 }
+            } else {
+                dialog?.show()
             }
             setUi()
         }
@@ -97,10 +109,14 @@ class IconSettingsActivity: AppCompatActivity() {
                 appList.add(app)
             }
         }
-        adapter = IconPackAdapterList(appList)
-        val lm = LinearLayoutManager(this)
-        mRecyclerView!!.layoutManager = lm
-        mRecyclerView!!.adapter = adapter
+        if(mAdapter != null) {
+            mAdapter = null
+        }
+        mAdapter = IconPackAdapterList(appList)
+        mRecyclerView?.apply {
+            layoutManager = LinearLayoutManager(this@IconSettingsActivity)
+            adapter = mAdapter
+        }
     }
 
     private fun setUi() {
