@@ -150,15 +150,6 @@ class Utils {
             )
             return typedValue.data
         }
-        fun launcherBackgroundColor(theme: Resources.Theme): Int {
-            val typedValue = TypedValue()
-            theme.resolveAttribute(
-                com.google.android.material.R.color.design_default_color_background,
-                typedValue,
-                true
-            )
-            return typedValue.data
-        }
         fun launcherOnSurfaceColor(theme: Resources.Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
@@ -205,17 +196,22 @@ class Utils {
             q.setFilterById(downloadId)
         }
 
-        fun setUpApps(pManager: PackageManager): MutableList<App> {
+        fun setUpApps(pManager: PackageManager, context: Context): MutableList<App> {
             val list = ArrayList<App>()
-            val i = Intent(Intent.ACTION_MAIN, null)
-            i.addCategory(Intent.CATEGORY_LAUNCHER)
+            val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
-            for (ri in allApps) {
-                val app = App()
-                app.appLabel = ri.loadLabel(pManager).toString()
-                app.appPackage = ri.activityInfo.packageName
-                app.type = 0
-                list.add(app)
+            for (app in allApps) {
+                val item = App()
+                item.appLabel = app.loadLabel(pManager).toString()
+                item.appPackage = app.activityInfo.packageName
+                if (item.appPackage == context.packageName && item.appLabel == "Leaks") {
+                    continue
+                }
+                if (item.appPackage == context.packageName && item.appLabel == context.getString(R.string.app_name)) {
+                    continue
+                }
+                item.type = 0
+                list.add(item)
             }
             return list
         }

@@ -103,6 +103,12 @@ class UpdateActivity: AppCompatActivity() {
                     .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         check!!.setOnClickListener {
+            if(!checkStoragePermissions()) {
+                PREFS!!.setUpdateState(5)
+                refreshUi()
+                showPermsDialog()
+                return@setOnClickListener
+            }
             when(PREFS!!.updateState) {
                 4 -> {
                     try {
@@ -150,21 +156,26 @@ class UpdateActivity: AppCompatActivity() {
             refreshUi()
         }
         if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
-            WPDialog(this).setTopDialog(true)
-                    .setTitle(getString(R.string.perms_req))
-                    .setCancelable(true)
-                    .setMessage(getString(R.string.perms_req_tip))
-                    .setNegativeButton(getString(R.string.yes)) {
-                        checkPerms()
-                        WPDialog(this).dismiss()
-                        return@setNegativeButton
-                    }
-                    .setNeutralButton(getString(R.string.hide)) {
-                        hideDialog()
-                        return@setNeutralButton
-                    }
-                    .setPositiveButton(getString(R.string.no), null).show()
+            showPermsDialog()
         }
+    }
+    private fun showPermsDialog() {
+        val dialog = WPDialog(this).setTopDialog(true)
+            .setTitle(getString(R.string.perms_req))
+            .setCancelable(true)
+            .setMessage(getString(R.string.perms_req_tip))
+        dialog.setNegativeButton(getString(R.string.yes)) {
+            getPermission()
+            WPDialog(this).dismiss()
+            dialog.dismiss()
+        }
+            .setNeutralButton(getString(R.string.hide)) {
+                hideDialogForever()
+                dialog.dismiss()
+            }
+            .setPositiveButton(getString(R.string.no)){ dialog.dismiss()
+            }
+        dialog.show()
     }
     private fun deleteUpdateFile() {
         try {
@@ -188,23 +199,32 @@ class UpdateActivity: AppCompatActivity() {
         coroutineErrorScope.cancel()
         super.onDestroy()
     }
-    private fun hideDialog() {
+    private fun hideDialogForever() {
         PREFS!!.editor.putBoolean("permsDialogUpdateScreenEnabled", false).apply()
     }
-    private fun checkPerms() {
-        hideDialog()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!packageManager.canRequestPackageInstalls()) {
-                startActivityForResult(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
-            }
+    private fun checkStoragePermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val write =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val read =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1507)
-        }
+    }
+    private fun getPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            startActivityForResult(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                    .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", packageName)))
+            startActivity(intent)
+        } else {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                1507
+            )
         }
     }
     private fun refreshUi() {
@@ -318,7 +338,9 @@ class UpdateActivity: AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("CheckForUpdates", e.toString())
                 saveError(e.toString(), db!!)
-                refreshUi()
+                runOnUiThread {
+                    refreshUi()
+                }
             }
         }
     }

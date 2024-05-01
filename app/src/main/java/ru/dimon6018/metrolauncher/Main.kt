@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.view.View
@@ -40,8 +41,10 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromP
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import kotlin.system.exitProcess
+
 
 class Main : AppCompatActivity() {
 
@@ -57,7 +60,6 @@ class Main : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setAppTheme()
         setContentView(R.layout.main_screen_laucnher)
-        viewPager = findViewById(R.id.pager)
         when(PREFS!!.launcherState) {
             0 -> {
                 val intent = Intent(this, WelcomeActivity::class.java)
@@ -67,20 +69,28 @@ class Main : AppCompatActivity() {
                 return
             }
         }
+        viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
+        applyWindowInsets(coordinatorLayout)
         lifecycleScope.launch(Dispatchers.Default) {
             pagerAdapter = WinAdapter(this@Main)
-            applyWindowInsets(coordinatorLayout)
             if(PREFS!!.isWallpaperUsed) {
                 try {
-                    getPermission()
-                    val wallpaperManager = WallpaperManager.getInstance(this@Main)
-                    val bmp = wallpaperManager.drawable
-                    runOnUiThread {
-                        coordinatorLayout.background = bmp
+                    if(checkStoragePermissions()) {
+                        val wallpaperManager = WallpaperManager.getInstance(this@Main)
+                        val bmp = wallpaperManager.drawable
+                        runOnUiThread {
+                            coordinatorLayout.background = bmp
+                        }
+                    } else {
+                        permsDialog()
+                        runOnUiThread {
+                            getPermission()
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("Start", e.toString())
+                    saveError(e.toString(), BSOD.getData(this@Main))
                 }
             } else {
                 runOnUiThread {
@@ -88,7 +98,9 @@ class Main : AppCompatActivity() {
                 }
             }
             runOnUiThread {
-                viewPager.adapter = pagerAdapter
+                viewPager.apply {
+                    adapter = pagerAdapter
+                }
                 setupNavigationBar()
                 onBackPressedDispatcher.addCallback(this@Main, object: OnBackPressedCallback(true) {
                     override fun handleOnBackPressed() {
@@ -102,17 +114,38 @@ class Main : AppCompatActivity() {
         Utils.registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
+    private fun permsDialog() {
+        val dialog = WPDialog(this@Main).setTopDialog(false)
+            .setTitle(getString(R.string.tip))
+            .setMessage(getString(R.string.permissionsError))
+        dialog.setPositiveButton(getString(android.R.string.ok)) {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+    private fun checkStoragePermissions(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val write =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val read =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
+        }
+    }
     private fun getPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if(ContextCompat.checkSelfPermission(this@Main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Main, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                startActivityForResult(Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                    .setData(Uri.parse(String.format("package:%s", packageName))), 1507)
-                ActivityCompat.requestPermissions(this@Main, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.MANAGE_EXTERNAL_STORAGE), 1507)
-            }
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", packageName)))
+            startActivity(intent)
         } else {
-            if(ContextCompat.checkSelfPermission(this@Main, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this@Main, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this@Main, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 1507)
-            }
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ),
+                1507
+            )
         }
     }
     private fun otherTasks() {
@@ -138,22 +171,20 @@ class Main : AppCompatActivity() {
                     val text = dbCall.getBSOD(pos).log
                     runOnUiThread {
                         viewPager.visibility = View.INVISIBLE
-                        WPDialog(this@Main).setTopDialog(true)
-                                .setTitle(getString(R.string.bsodDialogTitle))
-                                .setMessage(getString(R.string.bsodDialogMessage))
-                                .setNegativeButton(getString(R.string.bsodDialogDismiss)) {
-                                    viewPager.visibility = View.VISIBLE
-                                    return@setNegativeButton
-                                }
-                                .setOnDismissListener {
-                                    viewPager.visibility = View.VISIBLE
-                                    return@setOnDismissListener
-                                }
-                                .setPositiveButton(getString(R.string.bsodDialogSend)) {
-                                    viewPager.visibility = View.VISIBLE
-                                    sendCrash(text, this@Main)
-                                    return@setPositiveButton
-                                }.show()
+                        val dialog = WPDialog(this@Main).setTopDialog(true)
+                            .setTitle(getString(R.string.bsodDialogTitle))
+                            .setMessage(getString(R.string.bsodDialogMessage))
+                        dialog.setNegativeButton(getString(R.string.bsodDialogDismiss)) {
+                            viewPager.visibility = View.VISIBLE
+                            dialog.dismiss()
+                        }.setOnDismissListener {
+                            viewPager.visibility = View.VISIBLE
+                        }.setPositiveButton(getString(R.string.bsodDialogSend)) {
+                            viewPager.visibility = View.VISIBLE
+                            sendCrash(text, this@Main)
+                            dialog.dismiss()
+                        }
+                        dialog.show()
                     }
                 }
             }

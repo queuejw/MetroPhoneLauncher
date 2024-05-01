@@ -183,4 +183,6 @@
     <string name="tiles">плитки</string>
     <string name="customize_tiles">настройте плитки</string>
     <string name="tile_transparency">Прозрачность плиток</string>
+    <string name="wallpaperTransparentTiles">Включить прозрачные плитки с непрозрачным фоном</string>
+    <string name="permissionsError">Для работы некоторых функций приложения требуется выдать разрешения</string>
 </resources>

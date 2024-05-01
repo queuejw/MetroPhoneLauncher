@@ -182,4 +182,6 @@
     <string name="tiles">tiles</string>
     <string name="customize_tiles">customize tiles</string>
     <string name="tile_transparency">Tile transparency</string>
+    <string name="wallpaperTransparentTiles">Enable transparent tiles with opaque background</string>
+    <string name="permissionsError">Some MPL functions require permissions to operate</string>
 </resources>

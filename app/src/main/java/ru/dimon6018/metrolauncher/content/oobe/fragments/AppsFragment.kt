@@ -3,7 +3,6 @@ package ru.dimon6018.metrolauncher.content.oobe.fragments
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,7 +56,7 @@ class AppsFragment: Fragment() {
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
-            val appList = setUpApps(fragmentContext!!.packageManager)
+            val appList = setUpApps(fragmentContext!!.packageManager, fragmentContext!!)
             val mAdapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
             activity?.runOnUiThread {
@@ -90,7 +89,6 @@ class AppsFragment: Fragment() {
                         appLabel = i.appLabel!!,
                         appPackage = i.appPackage!!
                     )
-                    Log.d("OOBE", "insets item: ${i.appLabel} , pos: $pos")
                     call.insertItem(entity)
                     pos += 1
                 }

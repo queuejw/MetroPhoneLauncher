@@ -22,6 +22,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.textview.MaterialTextView
+import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -29,7 +30,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
-import kotlin.system.exitProcess
 
 class ThemeSettingsActivity : AppCompatActivity() {
     private var themeMenu: MaterialCardView? = null
@@ -81,10 +81,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
         light!!.setOnClickListener {
             PREFS!!.useLightTheme(true)
+            PREFS!!.setPrefsChanged(true)
             restoreThemeButtonsAndApplyChanges()
         }
         dark!!.setOnClickListener {
             PREFS!!.useLightTheme(false)
+            PREFS!!.setPrefsChanged(true)
             restoreThemeButtonsAndApplyChanges()
         }
         chooseAccentBtn!!.setOnClickListener { AccentDialog.display(supportFragmentManager) }
@@ -141,18 +143,18 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private fun setAppTheme() {
         if (Prefs(this).isLightThemeUsed) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                exitProcess(0)
+                (application as Application).setNightMode()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                exitProcess(0)
+                (application as Application).setNightMode()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
             }
         }
-        PREFS!!.setPrefsChanged(true)
     }
     class AccentDialog : DialogFragment() {
         override fun onCreate(savedInstanceState: Bundle?) {

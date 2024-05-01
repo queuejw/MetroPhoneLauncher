@@ -38,16 +38,18 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         applyWindowInsets(coord)
         lifecycleScope.launch(Dispatchers.IO) {
             db = BSOD.getData(this@FeedbackBsodListActivity)
-            val adapter =
+            val mAdapter =
                 BSODadapter(db!!.getDao().getBsodList(), db!!)
             runOnUiThread {
                 val recyclerView: RecyclerView = findViewById(R.id.bsodlist_recycler)
-                recyclerView.layoutManager = LinearLayoutManager(
-                    this@FeedbackBsodListActivity,
-                    LinearLayoutManager.VERTICAL,
-                    false
-                )
-                recyclerView.adapter = adapter
+                recyclerView.apply {
+                    layoutManager = LinearLayoutManager(
+                        this@FeedbackBsodListActivity,
+                        LinearLayoutManager.VERTICAL,
+                        false
+                    )
+                    adapter = mAdapter
+                }
             }
         }
     }

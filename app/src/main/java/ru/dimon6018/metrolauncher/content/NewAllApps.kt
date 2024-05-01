@@ -153,9 +153,12 @@ class NewAllApps: Fragment() {
         searchBtn!!.setOnClickListener { searchFunction() }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         lifecycleScope.launch(Dispatchers.Default) {
+            if(contextFragment == null) {
+                contextFragment = context
+            }
             val dbCall = AppData.getAppData(contextFragment!!).getAppDao()
-            appList = getHeaderListLatter(setUpApps(pm))
-            appAdapter = AppAdapter(appList!!, dbCall, resources)
+            appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
+            appAdapter = AppAdapter(appList!!, dbCall, contextFragment!!.resources)
             val lm = LinearLayoutManager(contextFragment)
             setAlphabetRecyclerView()
             activity?.runOnUiThread {
@@ -203,7 +206,7 @@ class NewAllApps: Fragment() {
         }
     }
     private fun broadcastListUpdater() {
-        appList = getHeaderListLatter(setUpApps(pm))
+        appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
         appAdapter.setData(appList!!, true)
     }
     private fun unregisterBroadcast() {
@@ -220,6 +223,9 @@ class NewAllApps: Fragment() {
         unregisterBroadcast()
     }
     private fun setAlphabetRecyclerView() {
+        if(contextFragment == null) {
+            contextFragment = context
+        }
         adapterAlphabet = AlphabetAdapter(getAlphabetList())
         val lm = GridLayoutManager(contextFragment!!, 4)
         activity?.runOnUiThread {
@@ -323,7 +329,7 @@ class NewAllApps: Fragment() {
             settingsBtn!!.visibility = View.VISIBLE
         }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        appList = getHeaderListLatter(setUpApps(pm))
+        appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
         appAdapter.setData(appList!!, true)
     }
     private fun setRecyclerPadding(pad: Int) {
@@ -355,7 +361,7 @@ class NewAllApps: Fragment() {
         val locale = Locale.getDefault()
         if(appList == null) {
             try {
-                appList = setUpApps(pm)
+                appList = setUpApps(pm, contextFragment!!)
                 appAdapter.setData(appList!!, true)
             } catch (e: NullPointerException) {
                 if (contextFragment != null) {

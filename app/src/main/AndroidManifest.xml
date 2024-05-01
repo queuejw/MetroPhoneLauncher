@@ -25,7 +25,6 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
-            android:resumeWhilePausing="true"
             android:taskAffinity="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +35,6 @@
         </activity>
         <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.SettingsActivity"
-                android:autoRemoveFromRecents="true"
                 android:exported="true"
                 android:label="@string/settings_app_title"
                 android:icon="@mipmap/settings"
@@ -48,17 +46,14 @@
         </activity>
         <activity
                 android:name="ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity"
-                android:autoRemoveFromRecents="true"
                 android:exported="true">
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity"
-            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackBsodListActivity"
-            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -67,7 +62,6 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity"
-            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -84,7 +78,6 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.helpers.bsod.BsodScreen"
-            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -93,7 +86,6 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.RecoveryOptions"
-            android:autoRemoveFromRecents="true"
             android:exported="true">
         </activity>
         <activity
@@ -109,9 +101,8 @@
             android:exported="true">
         </activity>
         <activity
-                android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
-            android:autoRemoveFromRecents="true"
-                android:exported="true">
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
+            android:exported="true">
         </activity>
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -1,15 +1,19 @@
 package ru.dimon6018.metrolauncher.content.settings
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
 import leakcanary.LeakCanary
+import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
@@ -22,6 +26,7 @@ import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsAct
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -30,6 +35,7 @@ class SettingsActivity : AppCompatActivity() {
     private var iconsSub: TextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
+        setAppTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -61,7 +67,22 @@ class SettingsActivity : AppCompatActivity() {
         leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
         applyWindowInsets(coord)
     }
+    private fun setAppTheme() {
+        if (Prefs(this).isLightThemeUsed) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                (application as Application).setNightMode()
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                (application as Application).setNightMode()
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
+            }
+        }
+    }
     override fun onResume() {
         super.onResume()
         themeSub?.text = accentName(this)

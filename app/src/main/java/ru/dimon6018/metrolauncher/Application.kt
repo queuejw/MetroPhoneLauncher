@@ -16,6 +16,10 @@ class Application : Application() {
         BsodDetector.setContext(applicationContext)
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         PREFS = Prefs(applicationContext)
+        setNightMode()
+        super.onCreate()
+    }
+    fun setNightMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val uiMan: UiModeManager = (applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager)
             if(PREFS!!.isLightThemeUsed) {
@@ -24,7 +28,6 @@ class Application : Application() {
                 uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
             }
         }
-        super.onCreate()
     }
     companion object {
         var PREFS: Prefs? = null

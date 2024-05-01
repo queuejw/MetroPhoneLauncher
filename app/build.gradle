@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 27
-        versionName "1.0 Pre-Alpha 4.5"
+        versionCode 28
+        versionName "1.0 Pre-Alpha 4.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false

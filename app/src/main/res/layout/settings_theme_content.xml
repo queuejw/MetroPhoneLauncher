@@ -155,7 +155,7 @@
                     android:textSize="24sp" />
 
                 <TextView
-                    android:text="Включить прозрачные плитки с непрозрачным фоном"
+                    android:text="@string/wallpaperTransparentTiles"
                     android:layout_width="match_parent"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"

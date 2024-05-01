@@ -14,6 +14,7 @@ import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 class AlmostDoneFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        Application.PREFS!!.setLauncherState(2)
         super.onCreate(savedInstanceState)
     }
 

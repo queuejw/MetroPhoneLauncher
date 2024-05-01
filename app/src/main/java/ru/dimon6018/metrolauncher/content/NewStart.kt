@@ -64,7 +64,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherBackgroundColor
 import java.util.Collections
 import kotlin.random.Random
 
@@ -347,7 +346,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
             mRecyclerView!!.scaleX = 0.9f
             mRecyclerView!!.scaleY = 0.9f
-            mRecyclerView!!.setBackgroundColor(launcherBackgroundColor(requireActivity().theme))
+            mRecyclerView!!.setBackgroundColor(if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light) else ContextCompat.getColor(context, android.R.color.background_dark))
             frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light).toDrawable() else ContextCompat.getColor(context, android.R.color.background_dark).toDrawable()
             isEditMode = true
             notifyDataSetChanged()
