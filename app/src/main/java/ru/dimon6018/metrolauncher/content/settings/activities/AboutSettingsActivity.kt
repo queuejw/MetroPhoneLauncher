@@ -59,6 +59,12 @@ class AboutSettingsActivity : AppCompatActivity() {
         restart.setOnClickListener {
             exitProcess(0)
         }
+        val crash = findViewById<MaterialButton>(R.id.crashLauncher)
+        crash.setOnClickListener {
+            // NullPointerException crash
+            val crashElement: MaterialButton = findViewById(R.id.refresh)
+            crashElement.visibility = View.GONE
+        }
         applyWindowInsets(coord)
     }
     private fun resetPart1() {

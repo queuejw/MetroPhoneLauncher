@@ -24,7 +24,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -149,19 +148,23 @@ class Main : AppCompatActivity() {
         }
     }
     private fun otherTasks() {
-        if(PREFS!!.pref.getBoolean("updateInstalled", false) && PREFS!!.versionCode == VERSION_CODE) {
+        if (PREFS!!.pref.getBoolean(
+                "updateInstalled",
+                false
+            ) && PREFS!!.versionCode == VERSION_CODE
+        ) {
             PREFS!!.setUpdateState(3)
         }
         if (PREFS!!.pref.getBoolean("tip1Enabled", true)) {
             WPDialog(this@Main).setTopDialog(false)
-                    .setTitle(getString(R.string.tip))
-                    .setMessage(getString(R.string.tip1))
-                    .setPositiveButton(getString(android.R.string.ok), null)
-                    .show()
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.tip1))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
             PREFS!!.editor.putBoolean("tip1Enabled", false).apply()
         }
         if (PREFS!!.pref.getBoolean("app_crashed", false)) {
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 delay(5000)
                 PREFS!!.editor.putBoolean("app_crashed", false).apply()
                 PREFS!!.editor.putInt("crashCounter", 0).apply()
@@ -170,21 +173,13 @@ class Main : AppCompatActivity() {
                     val pos = (dbCall.getBsodList().size) - 1
                     val text = dbCall.getBSOD(pos).log
                     runOnUiThread {
-                        viewPager.visibility = View.INVISIBLE
-                        val dialog = WPDialog(this@Main).setTopDialog(true)
+                        WPDialog(this@Main).setTopDialog(true)
                             .setTitle(getString(R.string.bsodDialogTitle))
                             .setMessage(getString(R.string.bsodDialogMessage))
-                        dialog.setNegativeButton(getString(R.string.bsodDialogDismiss)) {
-                            viewPager.visibility = View.VISIBLE
-                            dialog.dismiss()
-                        }.setOnDismissListener {
-                            viewPager.visibility = View.VISIBLE
-                        }.setPositiveButton(getString(R.string.bsodDialogSend)) {
-                            viewPager.visibility = View.VISIBLE
-                            sendCrash(text, this@Main)
-                            dialog.dismiss()
-                        }
-                        dialog.show()
+                            .setNegativeButton(getString(R.string.bsodDialogDismiss), null)
+                            .setPositiveButton(getString(R.string.bsodDialogSend)) {
+                                sendCrash(text, this@Main)
+                            }.show()
                     }
                 }
             }

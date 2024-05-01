@@ -432,7 +432,7 @@ class NewAllApps: Fragment() {
         private val appHolder: Int = 1
         private var iconSize: Int = 42
         private var iconManager: IconPackManager? = null
-        private val accentColor: Int
+        private var accentColor: Int = 0
 
         init {
             if (PREFS!!.iconPackPackage != "null") {
@@ -440,7 +440,9 @@ class NewAllApps: Fragment() {
                 iconManager!!.setContext(context)
             }
             iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
-            accentColor = launcherAccentColor(requireActivity().theme)
+            if (PREFS!!.isAllAppsBackgroundEnabled) {
+                accentColor = launcherAccentColor(requireActivity().theme)
+            }
         }
         fun setData(new: MutableList<App>, refresh: Boolean) {
             list = new
@@ -491,7 +493,6 @@ class NewAllApps: Fragment() {
             val height = LinearLayout.LayoutParams.WRAP_CONTENT
             val popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow.isFocusable = true
-            popupView.elevation = 4f
             popupWindow.animationStyle = R.style.enterStyle
             popupWindow.showAsDropDown(view, 0, 0)
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
@@ -500,7 +501,7 @@ class NewAllApps: Fragment() {
             pin.setOnClickListener {
                 insertNewApp(label, appPackage)
                 popupWindow.dismiss()
-                requireActivity().onBackPressedDispatcher.onBackPressed()
+                activity?.onBackPressedDispatcher?.onBackPressed()
             }
             uninstall.setOnClickListener {
                 popupWindow.dismiss()

@@ -64,7 +64,7 @@ class BsodScreen : AppCompatActivity() {
     }
     override fun onStart() {
         super.onStart()
-        Handler(Looper.getMainLooper()).postDelayed({ restartApplication() }, 5000)
+        Handler(Looper.getMainLooper()).postDelayed({ restartApplication() }, 3000)
     }
 
     override fun onPause() {

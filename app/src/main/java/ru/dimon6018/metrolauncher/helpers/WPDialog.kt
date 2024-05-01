@@ -2,7 +2,6 @@ package ru.dimon6018.metrolauncher.helpers
 
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -10,6 +9,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 
 /*
@@ -34,6 +34,9 @@ class WPDialog(private val mContext: Context) {
     private var neutralListener: View.OnClickListener? = null
     //Show方法
     fun show(): WPDialog {
+        if(PREFS!!.isLightThemeUsed) {
+            setLightTheme()
+        }
         Builder()
         if (wp?.isShowing == false) {
             wp?.show()
@@ -101,9 +104,9 @@ class WPDialog(private val mContext: Context) {
                 okLayout.setBackgroundResource(R.color.wp_bg)
                 neutralLayout.setBackgroundResource(R.color.wp_bg)
                 cancleLayout.setBackgroundResource(R.color.wp_bg)
-                wpOk.setBackgroundResource(R.drawable.background_light)
-                wpNeutral.setBackgroundResource(R.drawable.background_light)
-                wpCancel.setBackgroundResource(R.drawable.background_light)
+                wpOk.setBackgroundResource(R.drawable.dialog_background_light)
+                wpNeutral.setBackgroundResource(R.drawable.dialog_background_light)
+                wpCancel.setBackgroundResource(R.drawable.dialog_background_light)
                 wpTitle.setTextColor(wpBg)
                 wpMessage.setTextColor(wpBg)
                 wpOk.setTextColor(wpBg)
@@ -188,10 +191,6 @@ class WPDialog(private val mContext: Context) {
         return this
     }
 
-    fun setOnDismissListener(listener: DialogInterface.OnDismissListener?): WPDialog {
-        return this
-    }
-
     fun setCancelable(cancelable: Boolean): WPDialog {
         this.cancelable = cancelable
         if (wp != null) {
@@ -205,7 +204,7 @@ class WPDialog(private val mContext: Context) {
         return this
     }
 
-    fun setLightTheme(): WPDialog {
+    private fun setLightTheme(): WPDialog {
         light = true
         return this
     }
