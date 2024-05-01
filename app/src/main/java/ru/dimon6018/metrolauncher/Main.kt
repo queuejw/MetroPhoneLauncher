@@ -82,8 +82,8 @@ class Main : AppCompatActivity() {
                             coordinatorLayout.background = bmp
                         }
                     } else {
-                        permsDialog()
                         runOnUiThread {
+                            permsDialog()
                             getPermission()
                         }
                     }
@@ -114,13 +114,10 @@ class Main : AppCompatActivity() {
         otherTasks()
     }
     private fun permsDialog() {
-        val dialog = WPDialog(this@Main).setTopDialog(false)
+        WPDialog(this).setTopDialog(false)
             .setTitle(getString(R.string.tip))
             .setMessage(getString(R.string.permissionsError))
-        dialog.setPositiveButton(getString(android.R.string.ok)) {
-            dialog.dismiss()
-        }
-        dialog.show()
+            .setPositiveButton(getString(android.R.string.ok), null).show()
     }
     private fun checkStoragePermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
