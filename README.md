@@ -1,3 +1,5 @@
+<img src='/screenshots/start.jpg' width='500'>
+
 # MetroPhoneLauncher (MPL)
 
 MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible. Feel the WP experience on your device right now. Free.
@@ -24,7 +26,7 @@ And much more...
 
 # 📸 Screenshots:
 
-<img src='/screenshots/vb.png' width='300'> <img src='/screenshots/mjm.png' width='300'> <img src='/github/2.jpg' width='300'> <img src='/screenshots/hgh.png' width='300'> <img src='/screenshots/jfg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/zz.png' width='300'>  <img src='/screenshots/ww.png' width='300'>
+ <img src='/screenshots/mjm.png' width='300'> <img src='/github/2.jpg' width='300'> <img src='/screenshots/hgh.png' width='300'> <img src='/screenshots/jfg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/zz.png' width='300'>  <img src='/screenshots/ww.png' width='300'>
 
 More screenshots in /screenshots folder 📷
 
