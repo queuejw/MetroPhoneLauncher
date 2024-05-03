@@ -29,12 +29,16 @@ class WelcomeFragment : Fragment() {
                 replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
             }
         }
-        generatePlaceholders()
         if(!Application.PREFS!!.pref.getBoolean("channelConfigured", false)) {
             UpdateWorker.setupNotificationChannels(requireActivity())
             Application.PREFS!!.editor.putBoolean("channelConfigured", true).apply()
         }
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        generatePlaceholders()
     }
     private fun generatePlaceholders() {
         CoroutineScope(Dispatchers.IO).launch {

@@ -26,7 +26,6 @@ import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsAct
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
-import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -39,12 +38,16 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val coord: CoordinatorLayout = findViewById(R.id.coordinator)
+        val cord: CoordinatorLayout = findViewById(R.id.coordinator)
 
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
 
+        applyWindowInsets(cord)
+    }
+    override fun onStart() {
+        super.onStart()
         val themeBtn = findViewById<MaterialCardView>(R.id.themeSetting)
         themeBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
         val allAppsBtn = findViewById<MaterialCardView>(R.id.allAppsSetting)
@@ -65,7 +68,6 @@ class SettingsActivity : AppCompatActivity() {
         iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
         leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
-        applyWindowInsets(coord)
     }
     private fun setAppTheme() {
         if (Prefs(this).isLightThemeUsed) {

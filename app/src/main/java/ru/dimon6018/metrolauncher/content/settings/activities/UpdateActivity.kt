@@ -28,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
 import ru.dimon6018.metrolauncher.BuildConfig
@@ -330,15 +330,13 @@ class UpdateActivity: AppCompatActivity() {
                 runOnUiThread {
                     refreshUi()
                 }
-                runBlocking {
-                    runOnUiThread {
-                        checkUpdateInfo()
-                    }
+                withContext(Dispatchers.Main) {
+                    checkUpdateInfo()
                 }
             } catch (e: Exception) {
                 Log.e("CheckForUpdates", e.toString())
                 saveError(e.toString(), db!!)
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
                     refreshUi()
                 }
             }
@@ -361,11 +359,9 @@ class UpdateActivity: AppCompatActivity() {
                     PREFS!!.setUpdateState(6)
                 }
             }
-            runBlocking {
-                runOnUiThread {
-                    progressBar!!.isIndeterminate = false
-                    refreshUi()
-                }
+            withContext(Dispatchers.Main) {
+                progressBar!!.isIndeterminate = false
+                refreshUi()
             }
         }
     }
@@ -412,6 +408,7 @@ class UpdateActivity: AppCompatActivity() {
                 val q = DownloadManager.Query()
                 q.setFilterById(downloadId!!)
                 var cursor: Cursor?
+                val isGreaterThanN = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
                 while (isUpdateDownloading) {
                     cursor = manager!!.query(q)
                     if (cursor != null && cursor.moveToFirst()) {
@@ -422,7 +419,7 @@ class UpdateActivity: AppCompatActivity() {
                         PREFS!!.setUpdateProgressLevel(progress)
                         runOnUiThread {
                             progressText?.text = progressString
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            if (isGreaterThanN) {
                                 progressBar?.setProgress(progress, true)
                             } else {
                                 progressBar?.progress = progress
@@ -459,7 +456,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
                 isUpdateDownloading = false
                 PREFS!!.setUpdateState(5)
-                runOnUiThread {
+                withContext(Dispatchers.Main) {
                     refreshUi()
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                             .setTitle(getString(R.string.error))

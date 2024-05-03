@@ -1,21 +1,15 @@
 package ru.dimon6018.metrolauncher
 
-import android.Manifest
-import android.app.WallpaperManager
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
@@ -27,6 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
@@ -34,14 +29,15 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 import kotlin.system.exitProcess
 
 
@@ -55,10 +51,8 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
-        super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         setAppTheme()
-        setContentView(R.layout.main_screen_laucnher)
+        super.onCreate(savedInstanceState)
         when(PREFS!!.launcherState) {
             0 -> {
                 val intent = Intent(this, WelcomeActivity::class.java)
@@ -68,6 +62,8 @@ class Main : AppCompatActivity() {
                 return
             }
         }
+        setContentView(R.layout.main_screen_laucnher)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         applyWindowInsets(coordinatorLayout)
@@ -75,28 +71,19 @@ class Main : AppCompatActivity() {
             pagerAdapter = WinAdapter(this@Main)
             if(PREFS!!.isWallpaperUsed) {
                 try {
-                    if(checkStoragePermissions()) {
-                        val wallpaperManager = WallpaperManager.getInstance(this@Main)
-                        val bmp = wallpaperManager.drawable
-                        runOnUiThread {
-                            coordinatorLayout.background = bmp
-                        }
-                    } else {
-                        runOnUiThread {
-                            permsDialog()
-                            getPermission()
-                        }
-                    }
+                    window?.setBackgroundDrawable(
+                        ContextCompat.getDrawable(
+                            this@Main,
+                            R.drawable.start_transparent
+                        )
+                    )
+                    window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
                 } catch (e: Exception) {
                     Log.e("Start", e.toString())
                     saveError(e.toString(), BSOD.getData(this@Main))
                 }
-            } else {
-                runOnUiThread {
-                    coordinatorLayout.background = null
-                }
             }
-            runOnUiThread {
+            withContext(Dispatchers.Main) {
                 viewPager.apply {
                     adapter = pagerAdapter
                 }
@@ -110,39 +97,8 @@ class Main : AppCompatActivity() {
                 })
             }
         }
-        Utils.registerPackageReceiver(this, packageReceiver)
+        registerPackageReceiver(this, packageReceiver)
         otherTasks()
-    }
-    private fun permsDialog() {
-        WPDialog(this).setTopDialog(false)
-            .setTitle(getString(R.string.tip))
-            .setMessage(getString(R.string.permissionsError))
-            .setPositiveButton(getString(android.R.string.ok), null).show()
-    }
-    private fun checkStoragePermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            val write =
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            val read =
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
-        }
-    }
-    private fun getPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", packageName)))
-            startActivity(intent)
-        } else {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                1507
-            )
-        }
     }
     private fun otherTasks() {
         if (PREFS!!.pref.getBoolean(
@@ -235,7 +191,7 @@ class Main : AppCompatActivity() {
         }
     }
     override fun onStop() {
-        Utils.unregisterPackageReceiver(this, packageReceiver)
+        unregisterPackageReceiver(this, packageReceiver)
         super.onStop()
     }
     class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {

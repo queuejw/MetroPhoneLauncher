@@ -43,10 +43,10 @@ import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -54,6 +54,7 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.AppDao
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
@@ -92,7 +93,7 @@ class NewStart: Fragment(), OnStartDragListener {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
         frame = v.findViewById(R.id.startFrame)
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch(Dispatchers.Default) {
             appsDbCall = AppData.getAppData(requireContext()).getAppDao()
             tiles = appsDbCall!!.getJustApps()
             mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
@@ -132,7 +133,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mAdapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
-            currentActivity?.runOnUiThread {
+            withContext(Dispatchers.Main) {
                 allAppsButton = v.findViewById(R.id.allAppsButton)
                 mRecyclerView?.apply {
                     layoutManager = mSpannedLayoutManager
@@ -215,19 +216,21 @@ class NewStart: Fragment(), OnStartDragListener {
                 val action = intent.getIntExtra("action", 42)
                 // End early if it has anything to do with us.
                 if (! packageName.isNullOrEmpty() && packageName.contains(requireContext().packageName)) return
-                if (action == PackageChangesReceiver.PACKAGE_REMOVED) {
-                    packageName?.apply { broadcastListUpdater(packageName, true) }
-                }
-                if (action == PackageChangesReceiver.PACKAGE_INSTALLED) {
-                    if (PREFS!!.pinNewApps) {
-                        if (packageName != null) {
-                            pinApp(packageName)
+                when(action) {
+                    PackageChangesReceiver.PACKAGE_REMOVED -> {
+                        packageName?.apply { broadcastListUpdater(packageName, true) }
+                    }
+                    PackageChangesReceiver.PACKAGE_INSTALLED -> {
+                        if (PREFS!!.pinNewApps) {
+                            if (packageName != null) {
+                                pinApp(packageName)
+                            }
                         }
                     }
-                }
-                if (action == PackageChangesReceiver.PACKAGE_UPDATED) {
-                    packageName?.apply {
-                        broadcastListUpdater(packageName, false)
+                    PackageChangesReceiver.PACKAGE_UPDATED -> {
+                        packageName?.apply {
+                            broadcastListUpdater(packageName, false)
+                        }
                     }
                 }
             }
@@ -289,10 +292,8 @@ class NewStart: Fragment(), OnStartDragListener {
             )
             appsDbCall!!.insertItem(item)
             val newData = appsDbCall!!.getJustApps()
-            runBlocking {
-                activity?.runOnUiThread {
-                    mAdapter?.setData(newData)
-                }
+            withContext(Dispatchers.Main) {
+                mAdapter?.setData(newData)
             }
         }
     }
@@ -477,13 +478,11 @@ class NewStart: Fragment(), OnStartDragListener {
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     appsDbCall!!.removeApp(item)
                     val updatedList = appsDbCall!!.getJustApps()
-                    runBlocking {
-                        activity?.runOnUiThread {
-                            setData(updatedList)
-                        }
+                    withContext(Dispatchers.Main) {
+                        setData(updatedList)
                     }
                 }
             } catch (e: Resources.NotFoundException) {
@@ -560,22 +559,20 @@ class NewStart: Fragment(), OnStartDragListener {
         }
 
         override fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?) {
-            if(!isEditMode) {
+            if (!isEditMode) {
                 return
             }
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val itemsReserved = list
                 for (i in 0 until itemsReserved.size) {
                     val item = itemsReserved[i]
                     item.appPos = i
                     appsDbCall?.insertItem(item)
                 }
-                runBlocking {
-                    val updatedList = appsDbCall!!.getJustApps()
+                val updatedList = appsDbCall!!.getJustApps()
+                withContext(Dispatchers.Main) {
                     if (isEditMode) {
-                        currentActivity?.runOnUiThread {
-                            refreshData(updatedList)
-                        }
+                        refreshData(updatedList)
                     }
                 }
             }
@@ -617,7 +614,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             resizeIcon.setImageDrawable(arrow)
             resize.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     when (item.tileSize) {
                         "small" -> {
                             item.tileSize = "medium"
@@ -638,16 +635,14 @@ class NewStart: Fragment(), OnStartDragListener {
                             appsDbCall!!.updateApp(item)
                         }
                     }
-                    runBlocking {
-                        requireActivity().runOnUiThread {
-                            popupWindow.dismiss()
-                            notifyItemChanged(position)
-                        }
+                    withContext(Dispatchers.Main) {
+                        popupWindow.dismiss()
+                        notifyItemChanged(position)
                     }
                 }
             }
             remove.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileType = -1
                     item.tileSize = "small"
                     item.appPackage = ""
@@ -655,10 +650,8 @@ class NewStart: Fragment(), OnStartDragListener {
                     item.appLabel = ""
                     item.id = item.id!! / 2
                     appsDbCall!!.insertItem(item)
-                    runBlocking {
-                        requireActivity().runOnUiThread {
-                            refreshData(list)
-                        }
+                    withContext(Dispatchers.Main) {
+                        refreshData(list)
                     }
                 }
                 popupWindow.dismiss()
@@ -670,7 +663,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
 
         private fun clearItems() {
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 for (itemList in list) {
                     itemList.isSelected = false
                     appsDbCall!!.insertItem(itemList)
@@ -713,26 +706,24 @@ class NewStart: Fragment(), OnStartDragListener {
                 labellayout.visibility = View.VISIBLE
             }
             labelChangeBtn.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     if(editor.text.toString() == "") {
                         item.appLabel = originalLabel
                     } else {
                         item.appLabel = editor.text.toString()
                     }
                     appsDbCall!!.updateApp(item)
-                    runBlocking {
-                        requireActivity().runOnUiThread {
-                            bottomsheet.dismiss()
-                            notifyItemRemoved(position)
-                        }
+                    withContext(Dispatchers.Main) {
+                        bottomsheet.dismiss()
+                        notifyItemRemoved(position)
                     }
                 }
             }
             removeColor.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = -1
                     appsDbCall!!.updateApp(item)
-                    requireActivity().runOnUiThread {
+                    withContext(Dispatchers.Main) {
                         notifyItemRemoved(position)
                     }
                 }
@@ -765,21 +756,17 @@ class NewStart: Fragment(), OnStartDragListener {
                     val item = list[absoluteAdapterPosition]
                     if (isEditMode) {
                         itemView.rotation = 0f
-                        CoroutineScope(Dispatchers.IO).launch {
+                        lifecycleScope.launch(Dispatchers.IO) {
                             item.isSelected = true
                             appsDbCall!!.insertItem(item)
-                            runBlocking {
-                                currentActivity?.runOnUiThread {
-                                    showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
-                                    notifyItemChanged(absoluteAdapterPosition)
-                                }
+                            withContext(Dispatchers.Main) {
+                                showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
+                                notifyItemChanged(absoluteAdapterPosition)
                             }
                         }
                     } else {
-                        val intent = context.packageManager!!.getLaunchIntentForPackage(item.appPackage)
-                        intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         isAppOpened = true
-                        context.startActivity(intent)
+                        startApp(item.appPackage)
                     }
                 }
                 mContainer.setOnLongClickListener {
@@ -787,6 +774,18 @@ class NewStart: Fragment(), OnStartDragListener {
                         enableEditMode()
                     }
                     true
+                }
+            }
+            private fun startApp(packageName: String) {
+                when (packageName) {
+                    "ru.dimon6018.metrolauncher" -> {
+                        startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                    }
+                    else -> {
+                        val intent = context.packageManager!!.getLaunchIntentForPackage(packageName)
+                        intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    }
                 }
             }
             override fun onItemSelected() {}
@@ -871,7 +870,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
             lime.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 0
                     dbCall.updateApp(item)
                 }
@@ -879,7 +878,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 1
                     dbCall.updateApp(item)
                 }
@@ -887,7 +886,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 2
                     dbCall.updateApp(item)
                 }
@@ -895,7 +894,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 3
                     dbCall.updateApp(item)
                 }
@@ -903,7 +902,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 4
                     dbCall.updateApp(item)
                 }
@@ -911,7 +910,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 5
                     dbCall.updateApp(item)
                 }
@@ -919,7 +918,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                 lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 6
                     dbCall.updateApp(item)
                 }
@@ -927,7 +926,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 7
                     dbCall.updateApp(item)
                 }
@@ -935,7 +934,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 8
                     dbCall.updateApp(item)
                 }
@@ -943,7 +942,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 9
                     dbCall.updateApp(item)
                 }
@@ -951,7 +950,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 10
                     dbCall.updateApp(item)
                 }
@@ -959,7 +958,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 11
                     dbCall.updateApp(item)
                 }
@@ -967,7 +966,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 12
                     dbCall.updateApp(item)
                 }
@@ -975,7 +974,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 13
                     dbCall.updateApp(item)
                 }
@@ -983,7 +982,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 14
                     dbCall.updateApp(item)
                 }
@@ -991,7 +990,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 15
                     dbCall.updateApp(item)
                 }
@@ -999,7 +998,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 16
                     dbCall.updateApp(item)
                 }
@@ -1007,7 +1006,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 17
                     dbCall.updateApp(item)
                 }
@@ -1015,7 +1014,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 18
                     dbCall.updateApp(item)
                 }
@@ -1023,7 +1022,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
-                CoroutineScope(Dispatchers.IO).launch {
+                lifecycleScope.launch(Dispatchers.IO) {
                     item.tileColor = 19
                     dbCall.updateApp(item)
                 }

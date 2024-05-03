@@ -24,11 +24,15 @@ android {
         debugWithoutUpdates {
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
+    implementation 'androidx.appcompat:appcompat:1.7.0-beta01'
     implementation 'androidx.annotation:annotation:1.7.1'
 
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
