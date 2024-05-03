@@ -1,4 +1,4 @@
-<img src='/screenshots/start.jpg' width='500'>
+<img src='/screenshots/start.jpg' width='1000'>
 
 # MetroPhoneLauncher (MPL)
 
@@ -26,7 +26,7 @@ And much more...
 
 # 📸 Screenshots:
 
- <img src='/screenshots/mjm.png' width='300'> <img src='/github/2.jpg' width='300'> <img src='/screenshots/hgh.png' width='300'> <img src='/screenshots/jfg.png' width='300'> <img src='/screenshots/mm.png' width='300'> <img src='/screenshots/zz.png' width='300'>  <img src='/screenshots/ww.png' width='300'>
+ <img src='/screenshots/allapps.png' width='700'>  <img src='/screenshots/allapps_alphabet.png' width='250'> <img src='/screenshots/theme.png' width='250'> <img src='/screenshots/editmode.png' width='250'> <img src='/screenshots/oobe.png' width='250'>
 
 More screenshots in /screenshots folder 📷
 
