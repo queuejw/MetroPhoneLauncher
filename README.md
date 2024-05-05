@@ -22,7 +22,7 @@ And much more...
 - [ ] Great optimization.
 - [ ] Animations that are as similar to Windows Phone animations as possible.
 - [ ] Live tiles.
-- [ ] Weather widget.
+- [ ] Weather tile.
 
 # 📸 Screenshots:
 
