@@ -3,7 +3,6 @@ package ru.dimon6018.metrolauncher
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
@@ -35,7 +34,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 import kotlin.system.exitProcess
@@ -66,24 +64,19 @@ class Main : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        applyWindowInsets(coordinatorLayout)
         lifecycleScope.launch(Dispatchers.Default) {
             pagerAdapter = WinAdapter(this@Main)
             if(PREFS!!.isWallpaperUsed) {
-                try {
-                    window?.setBackgroundDrawable(
-                        ContextCompat.getDrawable(
-                            this@Main,
-                            R.drawable.start_transparent
-                        )
+                window?.setBackgroundDrawable(
+                    ContextCompat.getDrawable(
+                        this@Main,
+                        R.drawable.start_transparent
                     )
-                    window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
-                } catch (e: Exception) {
-                    Log.e("Start", e.toString())
-                    saveError(e.toString(), BSOD.getData(this@Main))
-                }
+                )
+                window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
             }
             withContext(Dispatchers.Main) {
+                applyWindowInsets(coordinatorLayout)
                 viewPager.apply {
                     adapter = pagerAdapter
                 }

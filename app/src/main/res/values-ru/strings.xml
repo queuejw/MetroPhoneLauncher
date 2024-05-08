@@ -24,7 +24,7 @@
     <string name="auto_repair_tip">Нажмите \'Перезагрузить\', чтобы перезапустить лаунчер. Иногда это решает проблему. Также можно нажать \'Дополнительные параметры\' и попробовать другие варианты восстановления лаунчера.</string>
     <string name="restart">Перезагрузить</string>
     <string name="advanced_options">Дополнительные параметы</string>
-    <string name="feedback_limit_0">Только последнюю</string>
+    <string name="feedback_limit_0">только последнюю</string>
     <string name="feedback_limit_1">последние 5</string>
     <string name="feedback_limit_2">последние 10</string>
     <string name="feedback_limit_3">как можно больше</string>

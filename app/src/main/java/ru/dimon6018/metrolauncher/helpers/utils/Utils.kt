@@ -17,6 +17,8 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -31,6 +34,7 @@ import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
+import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
@@ -124,7 +128,7 @@ class Utils {
         }
 
         fun launcherAccentTheme(): Int {
-            val selectedColor = Application.PREFS!!.accentColor
+            val selectedColor = PREFS!!.accentColor
             return if (selectedColor >= 0 && selectedColor < themeStyles.size) {
                 themeStyles[selectedColor]
             } else {
@@ -161,7 +165,7 @@ class Utils {
         }
 
         fun accentName(context: Context): String {
-            val selectedColor = Application.PREFS!!.accentColor
+            val selectedColor = PREFS!!.accentColor
             return if (selectedColor >= 0 && selectedColor < accentNames.size) {
                 context.getString(accentNames[selectedColor])
             } else {
@@ -200,10 +204,30 @@ class Utils {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
+            var isCustomIconsInstalled = false
+            var iconManager: IconPackManager? = null
+            if (PREFS!!.iconPackPackage != "null") {
+                iconManager = IconPackManager()
+                iconManager.setContext(context)
+                isCustomIconsInstalled = true
+            }
+            val iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             for (app in allApps) {
                 val item = App()
                 item.appLabel = app.loadLabel(pManager).toString()
                 item.appPackage = app.activityInfo.packageName
+                var bmp = if(!isCustomIconsInstalled) pManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize)
+                else
+                    iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(item.appPackage!!, null)?.toBitmap(iconSize, iconSize)
+                if(bmp == null) {
+                    bmp = pManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize)
+                }
+                if(item.appPackage != context.packageName) {
+                    item.bitmap = bmp
+                } else {
+                    bmp = ContextCompat.getDrawable(context, R.drawable.ic_settings)?.toBitmap(iconSize * 2, iconSize * 2)
+                    item.bitmap = bmp
+                }
                 if (item.appPackage == context.packageName && item.appLabel == "Leaks") {
                     continue
                 }
@@ -218,14 +242,14 @@ class Utils {
 
         fun saveError(e: String, db: BSOD) {
             CoroutineScope(Dispatchers.IO).launch {
-                if (Application.PREFS!!.isFeedbackEnabled) {
+                if (PREFS!!.isFeedbackEnabled) {
                     Log.e("UpdateService", e)
                     val entity = BSODEntity()
                     entity.date = Calendar.getInstance().time.toString()
                     entity.log = e
                     val dao = db.getDao()
                     val pos: Int
-                    when (Application.PREFS!!.getMaxCrashLogs()) {
+                    when (PREFS!!.getMaxCrashLogs()) {
                         0 -> {
                             db.clearAllTables()
                             pos = 0

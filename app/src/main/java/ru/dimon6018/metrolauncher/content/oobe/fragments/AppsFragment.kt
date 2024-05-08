@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +20,7 @@ import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.App
@@ -28,7 +28,6 @@ import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import kotlin.random.Random
 
@@ -57,9 +56,9 @@ class AppsFragment: Fragment() {
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
             val appList = setUpApps(fragmentContext!!.packageManager, fragmentContext!!)
-            val mAdapter = AppAdapter(appList, fragmentContext!!.packageManager, fragmentContext!!)
+            val mAdapter = AppAdapter(appList, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
-            activity?.runOnUiThread {
+            withContext(Dispatchers.Main) {
                 recyclerView?.apply {
                     layoutManager = lm
                     adapter = mAdapter
@@ -67,7 +66,7 @@ class AppsFragment: Fragment() {
                 }
             }
             runBlocking {
-                activity?.runOnUiThread {
+                withContext(Dispatchers.Main) {
                     loading!!.hideProgressBar()
                     loading!!.visibility = View.GONE
                 }
@@ -105,9 +104,7 @@ class AppsFragment: Fragment() {
         var latestItem: Int? = null
     }
 }
-class AppAdapter(private var adapterApps: MutableList<App>, private val packageManager: PackageManager, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
-
-    private var iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
+class AppAdapter(private var adapterApps: MutableList<App>, private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return OOBEAppHolder(LayoutInflater.from(parent.context).inflate(R.layout.oobe_app_item, parent, false))
@@ -121,8 +118,7 @@ class AppAdapter(private var adapterApps: MutableList<App>, private val packageM
         val item = adapterApps[position]
         holder as OOBEAppHolder
         try {
-            val bmp = recompressIcon(packageManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize), 25)
-            holder.icon.setImageIcon(bmp)
+            holder.icon.setImageBitmap(item.bitmap)
         } catch (e: PackageManager.NameNotFoundException) {
             holder.icon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_os_android))
             adapterApps.remove(item)

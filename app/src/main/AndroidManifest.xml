@@ -38,6 +38,7 @@
                 android:exported="true"
                 android:label="@string/settings_app_title"
                 android:icon="@mipmap/settings"
+                android:launchMode="singleTask"
                 android:taskAffinity=".content.settings.SettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -43,6 +44,7 @@ import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -77,6 +79,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private var tiles: MutableList<AppEntity>? = null
     private var mItemTouchHelper: ItemTouchHelper? = null
     private var appsDbCall: AppDao? = null
+    private var loadingProgressBar: WP7ProgressBar? = null
 
     private lateinit var frame: ConstraintLayout
 
@@ -84,18 +87,33 @@ class NewStart: Fragment(), OnStartDragListener {
     private var currentActivity: Activity? = null
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
+    private val hashCache = HashMap<String, Bitmap?>()
+    private var iconManager: IconPackManager? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         currentActivity = activity
+        if (PREFS!!.iconPackPackage != "") {
+            iconManager = IconPackManager()
+            iconManager!!.setContext(context)
+        }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
+        loadingProgressBar = v.findViewById(R.id.progressBarStart)
+        loadingProgressBar?.showProgressBar()
         frame = v.findViewById(R.id.startFrame)
         lifecycleScope.launch(Dispatchers.Default) {
             appsDbCall = AppData.getAppData(requireContext()).getAppDao()
             tiles = appsDbCall!!.getJustApps()
+            //attempt to optimize icon loading
+            tiles?.forEach {
+                if(it.tileType != -1) {
+                    hashCache[it.appPackage] = getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources)
+                }
+            }
+            //
             mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
@@ -130,7 +148,7 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                     }
                 }
-            mAdapter = NewStartAdapter(requireContext(), tiles!!)
+            mAdapter = NewStartAdapter(requireContext(), tiles!!, resources)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
             withContext(Dispatchers.Main) {
@@ -160,6 +178,8 @@ class NewStart: Fragment(), OnStartDragListener {
                         mAdapter?.disableEditMode()
                     }
                 }
+                observe()
+                loadingProgressBar?.hideProgressBar()
             }
         }
         return v
@@ -188,7 +208,6 @@ class NewStart: Fragment(), OnStartDragListener {
             //TODO add normal animation
             isAppOpened = false
         }
-        observe()
     }
 
     override fun onPause() {
@@ -310,22 +329,88 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onDestroyView()
         unregisterBroadcast()
     }
-    inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
+    private fun getIconSize(size: String, mRes: Resources): Int {
+        return when (size) {
+            "small" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
+                } else {
+                    mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
+                }
+            }
+            "medium" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on)
+                } else {
+                    mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                }
+            }
+            "big" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on)
+                } else {
+                    mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off)
+                }
+            }
+            else -> {
+                mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+            }
+        }
+    }
+    private fun getAppIcon(appPackage: String, size: String, pm: PackageManager, mRes: Resources): Bitmap {
+        var drawable = if(PREFS!!.iconPackPackage == "null") pm.getApplicationIcon(appPackage) else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
+        if(drawable == null) {
+            drawable = pm.getApplicationIcon(appPackage)
+        }
+        return when (size) {
+            "small" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on))
+                } else {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off))
+                }
+            }
+            "medium" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on))
+                } else {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
+                }
+            }
+            "big" -> {
+                if (PREFS!!.isMoreTilesEnabled) {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on))
+                } else {
+                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off))
+                }
+            }
+            else -> {
+                drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
+            }
+        }
+    }
+    private fun destroyTile(it: AppEntity) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            it.tileType = -1
+            it.tileSize = "small"
+            it.appPackage = ""
+            it.tileColor = -1
+            it.appLabel = ""
+            it.id = it.id!! / 2
+            appsDbCall!!.updateApp(it)
+        }
+    }
+    inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>, private val mRes: Resources): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         private val defaultTileType: Int = 0
         val spaceType: Int = 1
 
         var isEditMode = false
         private val animList: MutableList<ObjectAnimator> = ArrayList()
-        private var iconManager: IconPackManager? = null
         private var transparentColor: Int? = null
 
         init {
             setHasStableIds(true)
-            if (PREFS!!.iconPackPackage != "") {
-                iconManager = IconPackManager()
-                iconManager!!.setContext(context)
-            }
             transparentColor = ContextCompat.getColor(context, R.color.transparent)
         }
         fun setData(newData: MutableList<AppEntity>) {
@@ -439,11 +524,11 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             when (item.tileSize) {
                 "small" -> {
-                    holder.mTextView.text = ""
+                    holder.mTextView.text = null
                 }
                 "medium" -> {
                     if (PREFS!!.isMoreTilesEnabled) {
-                        holder.mTextView.text = ""
+                        holder.mTextView.text = null
                     } else {
                         holder.mTextView.text = item.appLabel
                     }
@@ -474,17 +559,16 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             try {
-                holder.mAppIcon.setImageBitmap(getAppIcon(item.appPackage, item.tileSize, context.packageManager))
+                if(hashCache.containsKey(item.appPackage) && hashCache[item.appPackage] != null) {
+                    holder.mAppIcon.setImageBitmap(hashCache[item.appPackage])
+                } else {
+                    hashCache[item.appPackage] = getAppIcon(item.appPackage, item.tileSize, context.packageManager, context.resources)
+                    holder.mAppIcon.setImageBitmap(hashCache[item.appPackage])
+                }
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
-                lifecycleScope.launch(Dispatchers.IO) {
-                    appsDbCall!!.removeApp(item)
-                    val updatedList = appsDbCall!!.getJustApps()
-                    withContext(Dispatchers.Main) {
-                        setData(updatedList)
-                    }
-                }
+                destroyTile(item)
             } catch (e: Resources.NotFoundException) {
                 Log.e("Start Adapter", e.toString())
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_alert))
@@ -494,37 +578,6 @@ class NewStart: Fragment(), OnStartDragListener {
                 holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_alert))
                 PREFS!!.setIconPack("null")
             }
-        }
-        private fun getAppIcon(appPackage: String, size: String, pm: PackageManager): Bitmap {
-            val drawable = if(PREFS!!.iconPackPackage == "null") pm.getApplicationIcon(appPackage) else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, pm.getApplicationIcon(appPackage))
-            val bmp: Bitmap
-            when (size) {
-                "small" -> {
-                    bmp = if (PREFS!!.isMoreTilesEnabled) {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on))
-                    } else {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off))
-                    }
-                }
-                "medium" -> {
-                    bmp = if (PREFS!!.isMoreTilesEnabled) {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on))
-                    } else {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
-                    }
-                }
-                "big" -> {
-                    bmp = if (PREFS!!.isMoreTilesEnabled) {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on), resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on))
-                    } else {
-                        drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off))
-                    }
-                }
-                else -> {
-                    bmp = drawable!!.toBitmap(resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), resources.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
-                }
-            }
-            return bmp
         }
         override fun getItemViewType(position: Int): Int {
             return when(list[position].tileType) {

@@ -23,6 +23,7 @@ import java.util.Locale
 import java.util.Random
 
 class IconPackManager {
+
     private var mContext: Context? = null
     fun setContext(c: Context?) {
         mContext = c
@@ -38,8 +39,6 @@ class IconPackManager {
         private var mFrontImage: Bitmap? = null
         private var mFactor = 1.0f
 
-        @get:Suppress("unused")
-        private var totalIcons = 0
         private var iconPackRes: Resources? = null
         @SuppressLint("DiscouragedApi")
         private fun load() {
@@ -67,42 +66,46 @@ class IconPackManager {
                     var eventType = xpp.eventType
                     while (eventType != XmlPullParser.END_DOCUMENT) {
                         if (eventType == XmlPullParser.START_TAG) {
-                            if (xpp.name == "iconback") {
-                                for (i in 0 until xpp.attributeCount) {
-                                    if (xpp.getAttributeName(i).startsWith("img")) {
-                                        val drawableName = xpp.getAttributeValue(i)
-                                        val iconback = loadBitmap(drawableName)
-                                        if (iconback != null) mBackImages.add(iconback)
+                            when(xpp.name) {
+                                "iconback" -> {
+                                    for (i in 0 until xpp.attributeCount) {
+                                        if (xpp.getAttributeName(i).startsWith("img")) {
+                                            val drawableName = xpp.getAttributeValue(i)
+                                            val iconback = loadBitmap(drawableName)
+                                            if (iconback != null) mBackImages.add(iconback)
+                                        }
                                     }
                                 }
-                            } else if (xpp.name == "iconmask") {
-                                if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
-                                    val drawableName = xpp.getAttributeValue(0)
-                                    mMaskImage = loadBitmap(drawableName)
-                                }
-                            } else if (xpp.name == "iconupon") {
-                                if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
-                                    val drawableName = xpp.getAttributeValue(0)
-                                    mFrontImage = loadBitmap(drawableName)
-                                }
-                            } else if (xpp.name == "scale") {
-                                // mFactor
-                                if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "factor") {
-                                    mFactor = xpp.getAttributeValue(0).toFloat()
-                                }
-                            } else if (xpp.name == "item") {
-                                var componentName: String? = null
-                                var drawableName: String? = null
-                                for (i in 0 until xpp.attributeCount) {
-                                    if (xpp.getAttributeName(i) == "component") {
-                                        componentName = xpp.getAttributeValue(i)
-                                    } else if (xpp.getAttributeName(i) == "drawable") {
-                                        drawableName = xpp.getAttributeValue(i)
+                                "iconmask" -> {
+                                    if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
+                                        val drawableName = xpp.getAttributeValue(0)
+                                        mMaskImage = loadBitmap(drawableName)
                                     }
                                 }
-                                if (!mPackagesDrawables.containsKey(componentName)) {
-                                    mPackagesDrawables[componentName] = drawableName
-                                    totalIcons += 1
+                                "iconupon" -> {
+                                    if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
+                                        val drawableName = xpp.getAttributeValue(0)
+                                        mFrontImage = loadBitmap(drawableName)
+                                    }
+                                }
+                                "scale" -> {
+                                    if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "factor") {
+                                        mFactor = xpp.getAttributeValue(0).toFloat()
+                                    }
+                                }
+                                "item" -> {
+                                    var componentName: String? = null
+                                    var drawableName: String? = null
+                                    for (i in 0 until xpp.attributeCount) {
+                                        if (xpp.getAttributeName(i) == "component") {
+                                            componentName = xpp.getAttributeValue(i)
+                                        } else if (xpp.getAttributeName(i) == "drawable") {
+                                            drawableName = xpp.getAttributeValue(i)
+                                        }
+                                    }
+                                    if (!mPackagesDrawables.containsKey(componentName)) {
+                                        mPackagesDrawables[componentName] = drawableName
+                                    }
                                 }
                             }
                         }
@@ -130,7 +133,7 @@ class IconPackManager {
         }
 
         @SuppressLint("DiscouragedApi")
-        private fun loadDrawable(drawableName: String): Drawable? {
+        fun loadDrawable(drawableName: String): Drawable? {
             val id = iconPackRes!!.getIdentifier(drawableName, "drawable", packageName)
             return if (id > 0) {
                 ResourcesCompat.getDrawable(iconPackRes!!, id, null)
@@ -239,7 +242,7 @@ class IconPackManager {
             }
 
             // store the bitmap in cache
-//            BitmapCache.getInstance(mContext).putBitmap(key, result);
+            //BitmapCache.getInstance(mContext).putBitmap(key, result);
 
             // return it
             return result

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="app_icon_size">48dp</dimen>
+    <dimen name="app_icon_size">50dp</dimen>
     <dimen name="navbar_app_icon_size">32dp</dimen>
     <dimen name="recyclerViewPadding">64dp</dimen>
     <dimen name="iconAppsListSize">42dp</dimen>

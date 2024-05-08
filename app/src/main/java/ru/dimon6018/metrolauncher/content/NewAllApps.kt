@@ -21,29 +21,23 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import coil3.ImageLoader
-import coil3.disk.DiskCache
-import coil3.disk.directory
-import coil3.memory.MemoryCache
-import coil3.request.ImageRequest
-import coil3.request.target
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
@@ -55,7 +49,6 @@ import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -66,6 +59,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
+
 
 class NewAllApps: Fragment() {
 
@@ -86,6 +80,7 @@ class NewAllApps: Fragment() {
 
     private var loadingHolder: LinearLayout? = null
     private var progressBar: WP7ProgressBar? = null
+    private var loadingText: TextView? = null
     private var appList: MutableList<App>? = null
 
     private var isSearching = false
@@ -96,29 +91,12 @@ class NewAllApps: Fragment() {
 
     var scrollPoints: MutableList<Int> = ArrayList()
 
-    private lateinit var imageLoader: ImageLoader
-
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         contextFragment = context
         pm = context.packageManager
-        @OptIn(ExperimentalCoroutinesApi::class)
-        imageLoader = ImageLoader.Builder(context)
-            .memoryCache {
-                MemoryCache.Builder()
-                    .maxSizePercent(context, 0.25)
-                    .build()
-            }
-            .diskCache {
-                DiskCache.Builder()
-                    .maxSizePercent(1.0)
-                    .directory(context.cacheDir.resolve("cache"))
-                    .build()
-            }
-            .dispatcher(Dispatchers.Default.limitedParallelism(2))
-            .build()
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
@@ -129,6 +107,7 @@ class NewAllApps: Fragment() {
             frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(contextFragment!!, android.R.color.background_light).toDrawable() else ContextCompat.getColor(contextFragment!!, android.R.color.background_dark).toDrawable()
         }
         progressBar = view.findViewById(R.id.progressBar)
+        loadingText = view.findViewById(R.id.loadingText)
         progressBar!!.showProgressBar()
         return view
     }
@@ -171,10 +150,8 @@ class NewAllApps: Fragment() {
                     OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                     visibility = View.VISIBLE
                 }
-                progressBar!!.hideProgressBar()
-                progressBar = null
-                loadingHolder!!.visibility = View.GONE
-                loadingHolder = null
+                progressBar?.hideProgressBar()
+                loadingText?.visibility = View.GONE
             }
         }
         registerBroadcast()
@@ -329,8 +306,16 @@ class NewAllApps: Fragment() {
             settingsBtn!!.visibility = View.VISIBLE
         }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
-        appAdapter.setData(appList!!, true)
+        progressBar!!.showProgressBar()
+        recyclerView?.alpha = 0.5f
+        lifecycleScope.launch(Dispatchers.IO) {
+            appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
+            withContext(Dispatchers.Main) {
+                appAdapter.setData(appList!!, true)
+                progressBar!!.hideProgressBar()
+                recyclerView?.alpha = 1f
+            }
+        }
     }
     private fun setRecyclerPadding(pad: Int) {
         recyclerView!!.setPadding(pad, 0, 0 ,0)
@@ -342,7 +327,7 @@ class NewAllApps: Fragment() {
         search!!.visibility = View.VISIBLE
         search!!.isFocusable = true
         searchBtnBack!!.visibility = View.VISIBLE
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             removeHeaders()
             activity?.runOnUiThread {
                 setRecyclerPadding(0)
@@ -365,7 +350,7 @@ class NewAllApps: Fragment() {
                 appAdapter.setData(appList!!, true)
             } catch (e: NullPointerException) {
                 if (contextFragment != null) {
-                    CoroutineScope(Dispatchers.IO).launch {
+                    lifecycleScope.launch(Dispatchers.IO) {
                         saveError(e.toString(), BSOD.getData(contextFragment!!))
                     }
                     WPDialog(contextFragment!!).setTopDialog(false)
@@ -389,16 +374,20 @@ class NewAllApps: Fragment() {
         if(appList == null) {
             return
         }
-        var temp = appList!!.size
-        while (temp != 0) {
-            temp -= 1
-            val item = appList!![temp]
-            if(item.type == 1) {
-                appList!!.remove(item)
+        progressBar!!.showProgressBar()
+        lifecycleScope.launch(Dispatchers.IO) {
+            var temp = appList!!.size
+            while (temp != 0) {
+                temp -= 1
+                val item = appList!![temp]
+                if (item.type == 1) {
+                    appList!!.remove(item)
+                }
             }
-        }
-        activity?.runOnUiThread {
-            appAdapter.setData(appList!!, true)
+            withContext(Dispatchers.Main) {
+                appAdapter.setData(appList!!, true)
+                progressBar!!.hideProgressBar()
+            }
         }
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
@@ -426,19 +415,14 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    inner class AppAdapter(var list: MutableList<App>, private val dbCall: AppDao, resources: Resources): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    open inner class AppAdapter(var list: MutableList<App>, private val dbCall: AppDao, resources: Resources): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val appHolder: Int = 1
         private var iconSize: Int = 42
-        private var iconManager: IconPackManager? = null
         private var accentColor: Int = 0
 
         init {
-            if (PREFS!!.iconPackPackage != "null") {
-                iconManager = IconPackManager()
-                iconManager!!.setContext(context)
-            }
             iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             if (PREFS!!.isAllAppsBackgroundEnabled) {
                 accentColor = launcherAccentColor(requireActivity().theme)
@@ -472,15 +456,7 @@ class NewAllApps: Fragment() {
             }
         }
         private fun bindAppHolder(holder: AppHolder, app: App) {
-            try {
-                val request = ImageRequest.Builder(contextFragment!!)
-                        .data(if(PREFS!!.iconPackPackage == "null") pm.getApplicationIcon(app.appPackage!!).toBitmap(iconSize, iconSize) else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(app.appPackage, pm.getApplicationIcon(app.appPackage!!))?.toBitmap(iconSize, iconSize)!!)
-                        .target(holder.icon)
-                        .build()
-                imageLoader.enqueue(request)
-            } catch (e: Exception) {
-                list.remove(app)
-            }
+            holder.icon.setImageBitmap(app.bitmap)
             holder.label.text = app.appLabel
             if(PREFS!!.isAllAppsBackgroundEnabled) {
                 holder.label.setTextColor(accentColor)
