@@ -2,44 +2,51 @@
 
 # MetroPhoneLauncher (MPL)
 
-MPL (MetroPhoneLauncher, MPLaucnher) is a launcher that looks as much like Windows Phone 8 as possible. Feel the WP experience on your device right now. Free.
+MPL (MetroPhoneLauncher, MPLaucnher) is an Android launcher that looks like Windows Phone 8.
 
-Since the launcher isn't ready yet, I can't show a huge list of functionality, but you can already see it:
+*If you want to use it on your real device as your default launcher, then be prepared for possible bugs (including critical ones). Don't be lazy and send all possible ideas/errors to my email or to our Telegram group*
+
+MPL isn't ready yet, but it already has some cool features you might like. See what's currently available:
 
 - A design as similar as possible to the original Windows Phone.
-
 - 20 different colors so you can make your device the most unique and unusual.
-
-- Light and dark theme to save your battery and eyes at night =)
-
 - Unique desktop - customize it the way you want. Make tiles bigger, wider, smaller, move and do whatever you want.
-
+- Light and dark theme to save your battery and eyes at night =)
 - Lots of customizations to make the launcher perfect
-
 - Ability to receive "Over-The-Air" updates
+- Support icon packs to make icons prettier 
 
-- Working app search.
+And much more...
 
-- Icon pack support.
-
-And much more... 
+**It will be very soon:**
+- [ ] Great optimization.
+- [ ] Animations that are as similar to Windows Phone animations as possible.
+- [ ] Live tiles.
+- [ ] Weather tile.
 
 # 📸 Screenshots:
 
- <img src='/screenshots/allapps.png' width='700'>  <img src='/screenshots/allapps_alphabet.png' width='250'> <img src='/screenshots/theme.png' width='250'> <img src='/screenshots/editmode.png' width='250'> <img src='/screenshots/oobe.png' width='250'>
+ <img src='/screenshots/allapps.png' width='700'>  <img src='/screenshots/allapps_alphabet.png' width='250'>
+ <img src='/screenshots/theme.png' width='250'> <img src='/screenshots/editmode.png' width='250'>
 
-More screenshots in /screenshots folder 📷
+***More screenshots in the /screenshots folder*** 📷
 
-# Download (free) 💙💜💚
+# Download:
 
-step 1: click here: https://github.com/queuejw/MetroPhoneLauncher/releases/latest
+As a reminder, MPL is still in development and some features may not work or may be missing.
 
-step 2: download file.apk
+1. [Follow this link and download the MPL.apk file](https://github.com/queuejw/MetroPhoneLauncher/releases/latest)
 
-step 3: install.
+2. Install the app on your device
 
-#  Community🤬😡😠
+3.  Launch the MPLauncher application. Then follow the on-screen instructions.
+  
+*Where can I find the Launcher settings?*
+ 
+*- Open the "MPL Settings" application*
 
-🎃 Telegram channel: https://t.me/mplauncher
+#  Community:
 
-😡 Neko11: https://github.com/queuejw/Neko11
+:airplane: [Telegram channel](https://t.me/mplauncher)
+
+:smiley_cat: [Neko11](https://github.com/queuejw/Neko11)
