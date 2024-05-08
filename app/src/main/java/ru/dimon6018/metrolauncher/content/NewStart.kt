@@ -10,7 +10,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -271,13 +270,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 if(isDelete) {
                     newList.forEach {
                         if(it.appPackage == packageName) {
-                            it.tileType = -1
-                            it.tileSize = "small"
-                            it.appPackage = ""
-                            it.tileColor = -1
-                            it.appLabel = ""
-                            it.id = it.id!! / 2
-                            appsDbCall!!.updateApp(it)
+                            destroyTile(it)
                             return@forEach
                         }
                     }
@@ -328,34 +321,6 @@ class NewStart: Fragment(), OnStartDragListener {
     override fun onDestroyView() {
         super.onDestroyView()
         unregisterBroadcast()
-    }
-    private fun getIconSize(size: String, mRes: Resources): Int {
-        return when (size) {
-            "small" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
-                } else {
-                    mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
-                }
-            }
-            "medium" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on)
-                } else {
-                    mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
-                }
-            }
-            "big" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on)
-                } else {
-                    mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off)
-                }
-            }
-            else -> {
-                mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
-            }
-        }
     }
     private fun getAppIcon(appPackage: String, size: String, pm: PackageManager, mRes: Resources): Bitmap {
         var drawable = if(PREFS!!.iconPackPackage == "null") pm.getApplicationIcon(appPackage) else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
