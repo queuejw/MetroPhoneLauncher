@@ -17,8 +17,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +32,6 @@ import ru.dimon6018.metrolauncher.content.data.apps.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
-import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
@@ -53,6 +50,7 @@ class Utils {
         val HARDWARE: String = Build.HARDWARE
         val MANUFACTURER: String = Build.MANUFACTURER
         val TIME: Long = Build.TIME
+        private val isLowerR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
         fun applyWindowInsets(target: View) {
             ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
@@ -204,30 +202,10 @@ class Utils {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
-            var isCustomIconsInstalled = false
-            var iconManager: IconPackManager? = null
-            if (PREFS!!.iconPackPackage != "null") {
-                iconManager = IconPackManager()
-                iconManager.setContext(context)
-                isCustomIconsInstalled = true
-            }
-            val iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             for (app in allApps) {
                 val item = App()
-                item.appLabel = app.loadLabel(pManager).toString()
                 item.appPackage = app.activityInfo.packageName
-                var bmp = if(!isCustomIconsInstalled) pManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize)
-                else
-                    iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(item.appPackage!!, null)?.toBitmap(iconSize, iconSize)
-                if(bmp == null) {
-                    bmp = pManager.getApplicationIcon(item.appPackage!!).toBitmap(iconSize, iconSize)
-                }
-                if(item.appPackage != context.packageName) {
-                    item.bitmap = bmp
-                } else {
-                    bmp = ContextCompat.getDrawable(context, R.drawable.ic_settings)?.toBitmap(iconSize * 2, iconSize * 2)
-                    item.bitmap = bmp
-                }
+                item.appLabel = app.loadLabel(pManager).toString()
                 if (item.appPackage == context.packageName && item.appLabel == "Leaks") {
                     continue
                 }
@@ -243,7 +221,7 @@ class Utils {
         fun saveError(e: String, db: BSOD) {
             CoroutineScope(Dispatchers.IO).launch {
                 if (PREFS!!.isFeedbackEnabled) {
-                    Log.e("UpdateService", e)
+                    Log.e("BSOD", e)
                     val entity = BSODEntity()
                     entity.date = Calendar.getInstance().time.toString()
                     entity.log = e
@@ -284,12 +262,24 @@ class Utils {
         }
 
         // https://github.com/queuejw/Neko11/blob/neko11-stable/app/src/main/java/ru/dimon6018/neko11/workers/Cat.kt#L494
-        fun recompressIcon(bitmap: Bitmap, size: Int): Icon? {
-            val ostream = ByteArrayOutputStream(
-                bitmap.width * bitmap.height * 2
-            ) // guess 50% compression
-            val ok = bitmap.compress(Bitmap.CompressFormat.PNG, size, ostream)
-            return if (ok) Icon.createWithData(ostream.toByteArray(), 0, ostream.size()) else null
+        fun recompressIcon(bitmap: Bitmap?, size: Int): Icon? {
+            if (bitmap != null) {
+                val ostream = ByteArrayOutputStream(
+                    bitmap.width * bitmap.height
+                ) // guess 50% compression
+                val ok = if (isLowerR) {
+                    bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, size, ostream)
+                } else {
+                    bitmap.compress(Bitmap.CompressFormat.WEBP, size, ostream)
+                }
+                return if (ok) Icon.createWithData(
+                    ostream.toByteArray(),
+                    0,
+                    ostream.size()
+                ) else null
+            } else {
+                return bitmap
+            }
         }
 
         fun generateRandomTileSize(genBigTiles: Boolean): String {

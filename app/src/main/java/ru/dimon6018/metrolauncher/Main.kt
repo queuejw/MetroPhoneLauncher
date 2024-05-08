@@ -115,9 +115,11 @@ class Main : AppCompatActivity() {
                 PREFS!!.editor.putBoolean("app_crashed", false).apply()
                 PREFS!!.editor.putInt("crashCounter", 0).apply()
                 if (PREFS!!.isFeedbackEnabled) {
-                    val dbCall = BSOD.getData(this@Main).getDao()
-                    val pos = (dbCall.getBsodList().size) - 1
-                    val text = dbCall.getBSOD(pos).log
+                    var pos = (BSOD.getData(this@Main).getDao().getBsodList().size) - 1
+                    if(pos < 0) {
+                        pos = 0
+                    }
+                    val text = BSOD.getData(this@Main).getDao().getBSOD(pos).log
                     runOnUiThread {
                         WPDialog(this@Main).setTopDialog(true)
                             .setTitle(getString(R.string.bsodDialogTitle))

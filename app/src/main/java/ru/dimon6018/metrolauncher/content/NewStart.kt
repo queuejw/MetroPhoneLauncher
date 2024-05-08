@@ -8,8 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.NameNotFoundException
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -26,7 +28,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
+import androidx.collection.ArrayMap
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -55,6 +57,7 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.AppDao
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
@@ -66,6 +69,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import java.util.Collections
 import kotlin.random.Random
 
@@ -86,7 +90,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private var currentActivity: Activity? = null
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
-    private val hashCache = HashMap<String, Bitmap?>()
+    private val hashCache = ArrayMap<String, Icon?>()
     private var iconManager: IconPackManager? = null
 
     override fun onAttach(context: Context) {
@@ -109,7 +113,11 @@ class NewStart: Fragment(), OnStartDragListener {
             //attempt to optimize icon loading
             tiles?.forEach {
                 if(it.tileType != -1) {
-                    hashCache[it.appPackage] = getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources)
+                    try {
+                        hashCache[it.appPackage] = recompressIcon(getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources), 80)
+                    } catch (e: NameNotFoundException) {
+                        Log.e("Start", e.toString())
+                    }
                 }
             }
             //
@@ -147,7 +155,7 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                     }
                 }
-            mAdapter = NewStartAdapter(requireContext(), tiles!!, resources)
+            mAdapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
             withContext(Dispatchers.Main) {
@@ -177,8 +185,8 @@ class NewStart: Fragment(), OnStartDragListener {
                         mAdapter?.disableEditMode()
                     }
                 }
-                observe()
                 loadingProgressBar?.hideProgressBar()
+                Log.d("Start", "launch observer function")
             }
         }
         return v
@@ -189,14 +197,18 @@ class NewStart: Fragment(), OnStartDragListener {
         registerBroadcast()
     }
     private fun observe() {
+        Log.d("Start", "start observer")
         appsDbCall?.getApps()?.asLiveData()?.observe(viewLifecycleOwner) {
-            if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
-                Log.d("flow", "update list")
-                mAdapter?.setData(it)
+            if (mAdapter != null) {
+                if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
+                    Log.d("flow", "update list")
+                    mAdapter?.setData(it)
+                }
             }
         }
     }
     private fun stopObserver() {
+        Log.d("Start", "stop observer")
         appsDbCall?.getApps()?.asLiveData()?.removeObservers(viewLifecycleOwner)
     }
     override fun onResume() {
@@ -207,6 +219,7 @@ class NewStart: Fragment(), OnStartDragListener {
             //TODO add normal animation
             isAppOpened = false
         }
+        observe()
     }
 
     override fun onPause() {
@@ -215,7 +228,11 @@ class NewStart: Fragment(), OnStartDragListener {
             mAdapter?.disableEditMode()
         }
         isStartMenuOpened = false
+    }
+    override fun onStop() {
+        Log.d("Start", "stop")
         stopObserver()
+        super.onStop()
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
         if (viewHolder != null) {
@@ -365,7 +382,7 @@ class NewStart: Fragment(), OnStartDragListener {
             appsDbCall!!.updateApp(it)
         }
     }
-    inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>, private val mRes: Resources): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
+    inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         private val defaultTileType: Int = 0
         val spaceType: Int = 1
@@ -421,12 +438,15 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return if(viewType == defaultTileType) {
-                val v = inflater.inflate(R.layout.tile, parent, false)
-                TileViewHolder(v)
-            } else {
-                val v = inflater.inflate(R.layout.space, parent, false)
-                SpaceViewHolder(v)
+            return when(viewType) {
+                defaultTileType -> {
+                    val v = inflater.inflate(R.layout.tile, parent, false)
+                    TileViewHolder(v)
+                }
+                else -> {
+                    val v = inflater.inflate(R.layout.space, parent, false)
+                    SpaceViewHolder(v)
+                }
             }
         }
 
@@ -449,18 +469,41 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when(holder.itemViewType) {
-                spaceType -> {
-                    if(PREFS!!.isWallpaperUsed) {
-                        if(!PREFS!!.isTilesTransparent) {
-                            transparentColor?.apply { holder.itemView.setBackgroundColor(this) }
-                        }
-                    }
-                }
-                defaultTileType -> bindDefaultTile(holder as TileViewHolder, position)
+                defaultTileType -> bindDefaultTile(holder as TileViewHolder, position, list[position])
             }
         }
-        private fun bindDefaultTile(holder: TileViewHolder, position: Int) {
-            val item = list[position]
+        private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
+            setTileSize(item, holder.mTextView)
+            setTileEditModeAnim(holder, item, position)
+            setTileColor(holder, item)
+            setTileIcon(holder, item)
+        }
+        private fun setTileIcon(holder: TileViewHolder, item: AppEntity) {
+            try {
+                holder.mAppIcon.setImageIcon(hashCache[item.appPackage])
+            } catch (e: Exception) {
+                Log.e("Adapter", e.toString())
+                Utils.saveError(e.toString(), BSOD.getData(context))
+            }
+        }
+        private fun setTileColor(holder: TileViewHolder, item: AppEntity) {
+            if(!isEditMode) {
+                if (item.tileColor != -1) {
+                    holder.mContainer.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
+                } else {
+                    if (PREFS!!.isWallpaperUsed) {
+                        if(PREFS!!.isTilesTransparent) {
+                            holder.mContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                        } else {
+                            holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
+                        }
+                    } else {
+                        holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
+                    }
+                }
+            }
+        }
+        private fun setTileEditModeAnim(holder: TileViewHolder, item: AppEntity, position: Int) {
             if(isEditMode) {
                 val anim = createBaseWobble(holder.itemView)
                 if (item.tileColor != -1) {
@@ -487,68 +530,29 @@ class NewStart: Fragment(), OnStartDragListener {
             } else {
                 holder.itemView.rotation = 0f
             }
+        }
+        private fun setTileSize(item: AppEntity, mTextView: TextView) {
             when (item.tileSize) {
                 "small" -> {
-                    holder.mTextView.text = null
+                    mTextView.text = null
                 }
                 "medium" -> {
                     if (PREFS!!.isMoreTilesEnabled) {
-                        holder.mTextView.text = null
+                        mTextView.text = null
                     } else {
-                        holder.mTextView.text = item.appLabel
+                        mTextView.text = item.appLabel
                     }
                 }
                 "big" -> {
-                    holder.mTextView.text = item.appLabel
+                    mTextView.text = item.appLabel
                 }
-            }
-            if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
-                holder.mCardContainer.strokeWidth = context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!!
-            } else {
-                holder.mCardContainer.strokeWidth = context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
-            }
-            holder.mContainer.alpha = PREFS!!.getTilesTransparency
-            if(!isEditMode) {
-                if (item.tileColor != -1) {
-                    holder.mContainer.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
-                } else {
-                    if (PREFS!!.isWallpaperUsed) {
-                        if(PREFS!!.isTilesTransparent) {
-                            holder.mContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
-                        } else {
-                            holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
-                        }
-                    } else {
-                        holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
-                    }
-                }
-            }
-            try {
-                if(hashCache.containsKey(item.appPackage) && hashCache[item.appPackage] != null) {
-                    holder.mAppIcon.setImageBitmap(hashCache[item.appPackage])
-                } else {
-                    hashCache[item.appPackage] = getAppIcon(item.appPackage, item.tileSize, context.packageManager, context.resources)
-                    holder.mAppIcon.setImageBitmap(hashCache[item.appPackage])
-                }
-            } catch (e: PackageManager.NameNotFoundException) {
-                Log.e("Start Adapter", e.toString())
-                holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_close))
-                destroyTile(item)
-            } catch (e: Resources.NotFoundException) {
-                Log.e("Start Adapter", e.toString())
-                holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_alert))
-                PREFS!!.setIconPack("null")
-            } catch (e: NullPointerException) {
-                Log.e("Start Adapter", e.toString())
-                holder.mAppIcon.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_alert))
-                PREFS!!.setIconPack("null")
             }
         }
         override fun getItemViewType(position: Int): Int {
             return when(list[position].tileType) {
                 -1 -> spaceType
                 0 -> defaultTileType
-                else -> defaultTileType
+                else -> spaceType
             }
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
@@ -653,21 +657,17 @@ class NewStart: Fragment(), OnStartDragListener {
                             appsDbCall!!.updateApp(item)
                         }
                     }
+                    hashCache[item.appPackage] = recompressIcon(getAppIcon(item.appPackage, item.tileSize, requireContext().packageManager, resources), 80)
                     withContext(Dispatchers.Main) {
                         popupWindow.dismiss()
+                        holder.mAppIcon.setImageIcon(hashCache[item.appPackage])
                         notifyItemChanged(position)
                     }
                 }
             }
             remove.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    item.tileType = -1
-                    item.tileSize = "small"
-                    item.appPackage = ""
-                    item.tileColor = -1
-                    item.appLabel = ""
-                    item.id = item.id!! / 2
-                    appsDbCall!!.insertItem(item)
+                    destroyTile(item)
                     withContext(Dispatchers.Main) {
                         refreshData(list)
                     }
@@ -764,12 +764,16 @@ class NewStart: Fragment(), OnStartDragListener {
             bottomsheet.show()
         }
         inner class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
-            val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
+            private val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
             val mContainer: FrameLayout = v.findViewById(R.id.container)
             val mTextView: TextView = v.findViewById(android.R.id.text1)
             val mAppIcon: ImageView = v.findViewById(android.R.id.icon1)
 
             init {
+                mContainer.alpha = PREFS!!.getTilesTransparency
+                mCardContainer.apply {
+                    strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
+                }
                 mContainer.setOnClickListener {
                     val item = list[absoluteAdapterPosition]
                     if (isEditMode) {
@@ -825,6 +829,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 itemView.setOnClickListener {
                     if (isEditMode) {
                         disableEditMode()
+                    }
+                }
+                if(PREFS!!.isWallpaperUsed) {
+                    if(!PREFS!!.isTilesTransparent) {
+                        transparentColor?.apply { itemView.setBackgroundColor(this) }
                     }
                 }
             }

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.content.res.Resources
+import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -23,7 +23,9 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
+import androidx.collection.ArrayMap
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -49,11 +51,13 @@ import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import java.util.Collections
@@ -92,6 +96,8 @@ class NewAllApps: Fragment() {
     var scrollPoints: MutableList<Int> = ArrayList()
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
+
+    private val hashCache = ArrayMap<String, Icon?>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -137,10 +143,39 @@ class NewAllApps: Fragment() {
             }
             val dbCall = AppData.getAppData(contextFragment!!).getAppDao()
             appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
-            appAdapter = AppAdapter(appList!!, dbCall, contextFragment!!.resources)
+            var iconManager: IconPackManager? = null
+            var isCustomIconsInstalled = false
+            if (PREFS!!.iconPackPackage != "null") {
+                iconManager = IconPackManager()
+                iconManager.setContext(contextFragment!!)
+                isCustomIconsInstalled = true
+            }
+            val iconSize = contextFragment!!.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
+            appList?.forEach {
+                if (it.type != 1) {
+                    var bmp = if (!isCustomIconsInstalled) recompressIcon(
+                        pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
+                        75
+                    )
+                    else
+                        recompressIcon(
+                            iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
+                                ?.getDrawableIconForPackage(it.appPackage!!, null)
+                                ?.toBitmap(iconSize, iconSize), 75
+                        )
+                    if (bmp == null) {
+                        bmp = recompressIcon(
+                            pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
+                            75
+                        )
+                    }
+                    hashCache[it.appPackage] = bmp
+                }
+            }
+            appAdapter = AppAdapter(appList!!, dbCall)
             val lm = LinearLayoutManager(contextFragment)
             setAlphabetRecyclerView()
-            activity?.runOnUiThread {
+            withContext(Dispatchers.Main) {
                 searchBtnBack!!.setOnClickListener {
                     disableSearch()
                 }
@@ -415,15 +450,13 @@ class NewAllApps: Fragment() {
         }
         return list
     }
-    open inner class AppAdapter(var list: MutableList<App>, private val dbCall: AppDao, resources: Resources): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    open inner class AppAdapter(var list: MutableList<App>, private val dbCall: AppDao): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private val letter: Int = 0
         private val appHolder: Int = 1
-        private var iconSize: Int = 42
         private var accentColor: Int = 0
 
         init {
-            iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             if (PREFS!!.isAllAppsBackgroundEnabled) {
                 accentColor = launcherAccentColor(requireActivity().theme)
             }
@@ -456,11 +489,8 @@ class NewAllApps: Fragment() {
             }
         }
         private fun bindAppHolder(holder: AppHolder, app: App) {
-            holder.icon.setImageBitmap(app.bitmap)
+            holder.icon.setImageIcon(hashCache[app.appPackage])
             holder.label.text = app.appLabel
-            if(PREFS!!.isAllAppsBackgroundEnabled) {
-                holder.label.setTextColor(accentColor)
-            }
         }
         private fun showPopupWindow(view: View, appPackage: String, label: String) {
             val inflater = view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -533,6 +563,9 @@ class NewAllApps: Fragment() {
             val icon: ImageView = itemView.findViewById(R.id.app_icon)
             val label: MaterialTextView = itemView.findViewById(R.id.app_label)
             init {
+                if(PREFS!!.isAllAppsBackgroundEnabled) {
+                    label.setTextColor(accentColor)
+                }
                 itemView.setOnClickListener {
                     val app = list[absoluteAdapterPosition]
                     try {

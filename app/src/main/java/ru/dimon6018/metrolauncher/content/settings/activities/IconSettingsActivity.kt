@@ -174,7 +174,7 @@ class IconSettingsActivity: AppCompatActivity() {
             holder as IconPackHolder
             val item = list[position]
             holder.label.text = item.name
-            holder.icon.setImageIcon(recompressIcon(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize), 25))
+            holder.icon.setImageIcon(recompressIcon(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize), 75))
             holder.itemView.setOnClickListener {
                 PREFS!!.setIconPack(item.appPackage)
                 PREFS!!.setPrefsChanged(true)
