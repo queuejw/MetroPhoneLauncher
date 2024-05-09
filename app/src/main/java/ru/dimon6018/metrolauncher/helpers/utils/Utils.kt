@@ -311,7 +311,7 @@ class Utils {
                 addAction(Intent.ACTION_PACKAGE_CHANGED)
                 addDataScheme("package")
             }.also {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     activity.registerReceiver(packageReceiver, it, Context.RECEIVER_EXPORTED)
                 } else {
                     activity.registerReceiver(packageReceiver, it)

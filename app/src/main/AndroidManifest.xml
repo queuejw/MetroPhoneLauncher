@@ -23,9 +23,8 @@
         <activity
             android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:taskAffinity="">
+            android:launchMode="singleInstance"
+            android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -38,8 +37,7 @@
                 android:exported="true"
                 android:label="@string/settings_app_title"
                 android:icon="@mipmap/settings"
-                android:launchMode="singleTask"
-                android:taskAffinity=".content.settings.SettingsActivity">
+                android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>

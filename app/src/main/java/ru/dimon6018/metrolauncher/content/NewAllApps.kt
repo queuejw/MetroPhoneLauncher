@@ -36,7 +36,6 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -98,11 +97,22 @@ class NewAllApps: Fragment() {
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
     private val hashCache = ArrayMap<String, Icon?>()
+    private var isListLoaded = false
+    private var isBroadcasterRegistered = false
+    private var iconManager: IconPackManager? = null
+    private var isCustomIconsInstalled = false
+    private var iconSize: Int? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         contextFragment = context
         pm = context.packageManager
+        if (PREFS!!.iconPackPackage != "null") {
+            iconManager = IconPackManager()
+            iconManager?.setContext(contextFragment!!)
+            isCustomIconsInstalled = true
+        }
+        iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
@@ -128,7 +138,9 @@ class NewAllApps: Fragment() {
         loadingHolder = view.findViewById(R.id.loadingHolder)
         settingsBtn = view.findViewById(R.id.settingsBtn)
         settingsBtn!!.setOnClickListener {
-            activity?.startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            if(isListLoaded) {
+                activity?.startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            }
         }
         if(!PREFS!!.isSettingsBtnEnabled) {
             settingsBtn!!.visibility = View.GONE
@@ -143,33 +155,9 @@ class NewAllApps: Fragment() {
             }
             val dbCall = AppData.getAppData(contextFragment!!).getAppDao()
             appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
-            var iconManager: IconPackManager? = null
-            var isCustomIconsInstalled = false
-            if (PREFS!!.iconPackPackage != "null") {
-                iconManager = IconPackManager()
-                iconManager.setContext(contextFragment!!)
-                isCustomIconsInstalled = true
-            }
-            val iconSize = contextFragment!!.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             appList?.forEach {
                 if (it.type != 1) {
-                    var bmp = if (!isCustomIconsInstalled) recompressIcon(
-                        pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-                        75
-                    )
-                    else
-                        recompressIcon(
-                            iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
-                                ?.getDrawableIconForPackage(it.appPackage!!, null)
-                                ?.toBitmap(iconSize, iconSize), 75
-                        )
-                    if (bmp == null) {
-                        bmp = recompressIcon(
-                            pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-                            75
-                        )
-                    }
-                    hashCache[it.appPackage] = bmp
+                    hashCache[it.appPackage] = generateIcon(it)
                 }
             }
             appAdapter = AppAdapter(appList!!, dbCall)
@@ -177,7 +165,9 @@ class NewAllApps: Fragment() {
             setAlphabetRecyclerView()
             withContext(Dispatchers.Main) {
                 searchBtnBack!!.setOnClickListener {
-                    disableSearch()
+                    if(isListLoaded) {
+                        disableSearch()
+                    }
                 }
                 recyclerView?.apply {
                     layoutManager = lm
@@ -187,41 +177,94 @@ class NewAllApps: Fragment() {
                 }
                 progressBar?.hideProgressBar()
                 loadingText?.visibility = View.GONE
+                isListLoaded = true
             }
         }
         registerBroadcast()
     }
+    private fun generateIcon(it: App): Icon? {
+        if(iconSize != null) {
+            var bmp = if (!isCustomIconsInstalled) recompressIcon(
+                pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize!!, iconSize!!),
+                75
+            )
+            else
+                recompressIcon(
+                    iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
+                        ?.getDrawableIconForPackage(it.appPackage, null)
+                        ?.toBitmap(iconSize!!, iconSize!!), 75
+                )
+            if (bmp == null) {
+                bmp = recompressIcon(
+                    pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize!!, iconSize!!),
+                    75
+                )
+            }
+            return bmp
+        } else {
+            return null
+        }
+    }
     private fun registerBroadcast() {
         Log.d("AllApps", "register")
-        packageBroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                Log.d("AllApps", "on receive")
-                val packageName = intent.getStringExtra("package")
-                val action = intent.getIntExtra("action", 42)
-                // End early if it has anything to do with us.
-                if (! packageName.isNullOrEmpty() && packageName.contains(requireContext().packageName)) return
-                if (action == PackageChangesReceiver.PACKAGE_REMOVED || action == PackageChangesReceiver.PACKAGE_INSTALLED || action == PackageChangesReceiver.PACKAGE_UPDATED) {
-                    broadcastListUpdater()
+        if(!isBroadcasterRegistered) {
+            isBroadcasterRegistered = true
+            packageBroadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    Log.d("AllApps", "on receive")
+                    val packageName = intent.getStringExtra("package")
+                    // End early if it has anything to do with us.
+                    if (packageName.isNullOrEmpty()) return
+                    val action = intent.getIntExtra("action", 42)
+                    when (action) {
+                        PackageChangesReceiver.PACKAGE_REMOVED -> {
+                            Log.d("AllApps", "pkg uninstalled")
+                            packageName.apply {
+                                broadcastListUpdater()
+                            }
+                        }
+
+                        PackageChangesReceiver.PACKAGE_INSTALLED -> {
+                            Log.d("AllApps", "pkg installed")
+                            packageName.apply {
+                                broadcastListUpdater()
+                            }
+                        }
+
+                        else -> {
+                            Log.d("AllApps", "pkg other variant")
+                            packageName.apply {
+                                broadcastListUpdater()
+                            }
+                        }
+                    }
                 }
             }
-        }
-        // We want this fragment to receive the package change broadcast,
-        // since otherwise it won't be notified when there are changes to that.
-        IntentFilter().apply {
-            addAction("ru.dimon6018.metrolauncher.PACKAGE_CHANGE_BROADCAST")
-        }.also {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requireActivity().registerReceiver(packageBroadcastReceiver, it, Context.RECEIVER_EXPORTED)
-            } else {
-                requireActivity().registerReceiver(packageBroadcastReceiver, it)
+            // We want this fragment to receive the package change broadcast,
+            // since otherwise it won't be notified when there are changes to that.
+            IntentFilter().apply {
+                addAction("ru.dimon6018.metrolauncher.PACKAGE_CHANGE_BROADCAST")
+            }.also {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    requireActivity().registerReceiver(
+                        packageBroadcastReceiver,
+                        it,
+                        Context.RECEIVER_EXPORTED
+                    )
+                } else {
+                    requireActivity().registerReceiver(packageBroadcastReceiver, it)
+                }
             }
         }
     }
     private fun broadcastListUpdater() {
+        Log.d("AllApps", "update list")
         appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
         appAdapter.setData(appList!!, true)
     }
     private fun unregisterBroadcast() {
+        Log.d("AllApps", "unreg broadcaster")
+        isBroadcasterRegistered = false
         packageBroadcastReceiver?.apply {
             requireActivity().unregisterReceiver(packageBroadcastReceiver)
             packageBroadcastReceiver = null
@@ -328,9 +371,13 @@ class NewAllApps: Fragment() {
             //TODO add normal animation
             isAppOpened = false
         }
+        registerBroadcast()
         super.onResume()
     }
     private fun disableSearch() {
+        if(!isListLoaded) {
+            return
+        }
         isSearching = false
         searchBtn!!.visibility = View.VISIBLE
         search!!.visibility = View.GONE
@@ -356,6 +403,9 @@ class NewAllApps: Fragment() {
         recyclerView!!.setPadding(pad, 0, 0 ,0)
     }
     private fun searchFunction() {
+        if(!isListLoaded) {
+            return
+        }
         isSearching = true
         searchBtn!!.visibility = View.GONE
         settingsBtn!!.visibility = View.GONE
@@ -406,7 +456,7 @@ class NewAllApps: Fragment() {
         }
     }
     private fun removeHeaders() {
-        if(appList == null) {
+        if(appList == null || !isListLoaded) {
             return
         }
         progressBar!!.showProgressBar()
@@ -427,18 +477,22 @@ class NewAllApps: Fragment() {
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Collections.sort(newApps, Comparator.comparing { app: App -> app.appLabel!![0].lowercase(Locale.getDefault()) })
+            Collections.sort(
+                newApps,
+                Comparator.comparing { app: App -> app.appLabel!![0].lowercase(Locale.getDefault()) })
         } else {
-            newApps.sortWith { app1: App, app2: App -> app1.appLabel!![0].lowercase(Locale.getDefault()).compareTo(app2.appLabel!![0].lowercase(Locale.getDefault())) }
+            newApps.sortWith { app1: App, app2: App ->
+                app1.appLabel!![0].lowercase(Locale.getDefault())
+                    .compareTo(app2.appLabel!![0].lowercase(Locale.getDefault()))
+            }
         }
-        if(!PREFS!!.isAlphabetEnabled) {
+        if (!PREFS!!.isAlphabetEnabled) {
             return newApps
         }
         var lastHeader: String? = ""
         val list: MutableList<App> = ArrayList()
-        for (i in 0..<newApps.size) {
-            val app = newApps[i]
-            val header = app.appLabel!![0].lowercase(Locale.getDefault())
+        newApps.forEach {
+            val header = it.appLabel!![0].lowercase(Locale.getDefault())
             if (!TextUtils.equals(lastHeader, header)) {
                 lastHeader = header
                 val head = App()
@@ -446,7 +500,7 @@ class NewAllApps: Fragment() {
                 head.type = 1
                 list.add(head)
             }
-            list.add(app)
+            list.add(it)
         }
         return list
     }
@@ -489,7 +543,17 @@ class NewAllApps: Fragment() {
             }
         }
         private fun bindAppHolder(holder: AppHolder, app: App) {
-            holder.icon.setImageIcon(hashCache[app.appPackage])
+            try {
+                val bmp = hashCache[app.appPackage]
+                if(bmp != null) {
+                    holder.icon.setImageIcon(bmp)
+                } else {
+                    hashCache[app.appPackage] = generateIcon(app)
+                    holder.icon.setImageIcon(hashCache[app.appPackage])
+                }
+            } catch (e: Exception) {
+                Log.e("AllAppsAdapter", e.toString())
+            }
             holder.label.text = app.appLabel
         }
         private fun showPopupWindow(view: View, appPackage: String, label: String) {
@@ -504,10 +568,29 @@ class NewAllApps: Fragment() {
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
             val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
             val info = popupView.findViewById<MaterialCardView>(R.id.infoApp)
-            pin.setOnClickListener {
-                insertNewApp(label, appPackage)
-                popupWindow.dismiss()
-                activity?.onBackPressedDispatcher?.onBackPressed()
+            var isAppAlreadyPinned = false
+            lifecycleScope.launch(Dispatchers.IO) {
+                val dbList = dbCall.getJustApps()
+                dbList.forEach {
+                    if (it.appPackage == appPackage) {
+                        isAppAlreadyPinned = true
+                        return@forEach
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    if(isAppAlreadyPinned) {
+                        pin.isEnabled = false
+                        pin.alpha = 0.5f
+                    } else {
+                        pin.isEnabled = true
+                        pin.alpha = 1f
+                        pin.setOnClickListener {
+                            insertNewApp(label, appPackage)
+                            popupWindow.dismiss()
+                            activity?.onBackPressedDispatcher?.onBackPressed()
+                        }
+                    }
+                }
             }
             uninstall.setOnClickListener {
                 popupWindow.dismiss()
@@ -530,8 +613,14 @@ class NewAllApps: Fragment() {
             }
         }
         private fun insertNewApp(text: String, packag: String) {
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 val dBlist = dbCall.getJustApps()
+                dBlist.forEach {
+                    if(it.appPackage == packag) {
+                        //db already has this app. we must stop this
+                        return@launch
+                    }
+                }
                 var pos = 0
                 for (i in 0..<dBlist.size) {
                     if (dBlist[i].tileType == -1) {

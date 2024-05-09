@@ -92,6 +92,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private var packageBroadcastReceiver: BroadcastReceiver? = null
     private val hashCache = ArrayMap<String, Icon?>()
     private var iconManager: IconPackManager? = null
+    private var isBroadcasterRegistered = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -114,7 +115,7 @@ class NewStart: Fragment(), OnStartDragListener {
             tiles?.forEach {
                 if(it.tileType != -1) {
                     try {
-                        hashCache[it.appPackage] = recompressIcon(getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources), 80)
+                        hashCache[it.appPackage] = generateIcon(it)
                     } catch (e: NameNotFoundException) {
                         Log.e("Start", e.toString())
                     }
@@ -187,22 +188,24 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
                 loadingProgressBar?.hideProgressBar()
                 Log.d("Start", "launch observer function")
+                observe()
             }
         }
         return v
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        registerBroadcast()
+    private fun generateIcon(it: AppEntity): Icon? {
+        return recompressIcon(getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources), 90)
     }
     private fun observe() {
         Log.d("Start", "start observer")
-        appsDbCall?.getApps()?.asLiveData()?.observe(viewLifecycleOwner) {
-            if (mAdapter != null) {
-                if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
-                    Log.d("flow", "update list")
-                    mAdapter?.setData(it)
+        if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
+            Log.d("Start", "observer has not observers. continue")
+            appsDbCall?.getApps()?.asLiveData()?.observe(viewLifecycleOwner) {
+                if (mAdapter != null) {
+                    if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
+                        Log.d("flow", "update list")
+                        mAdapter?.setData(it)
+                    }
                 }
             }
         }
@@ -220,6 +223,7 @@ class NewStart: Fragment(), OnStartDragListener {
             isAppOpened = false
         }
         observe()
+        registerBroadcast()
     }
 
     override fun onPause() {
@@ -245,58 +249,69 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun registerBroadcast() {
-        packageBroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                val packageName = intent.getStringExtra("package")
-                val action = intent.getIntExtra("action", 42)
-                // End early if it has anything to do with us.
-                if (! packageName.isNullOrEmpty() && packageName.contains(requireContext().packageName)) return
-                when(action) {
-                    PackageChangesReceiver.PACKAGE_REMOVED -> {
-                        packageName?.apply { broadcastListUpdater(packageName, true) }
-                    }
-                    PackageChangesReceiver.PACKAGE_INSTALLED -> {
-                        if (PREFS!!.pinNewApps) {
-                            if (packageName != null) {
+        Log.d("Start", "reg broadcaster")
+        if(!isBroadcasterRegistered) {
+            isBroadcasterRegistered = true
+            packageBroadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val packageName = intent.getStringExtra("package")
+                    // End early if it has anything to do with us.
+                    if (packageName.isNullOrEmpty()) return
+                    val action = intent.getIntExtra("action", 42)
+                    when (action) {
+                        PackageChangesReceiver.PACKAGE_REMOVED -> {
+                            Log.d("Start", "pkg uninstalled")
+                            packageName.apply { broadcastListUpdater(packageName, true) }
+                        }
+
+                        PackageChangesReceiver.PACKAGE_INSTALLED -> {
+                            Log.d("Start", "pkg installed")
+                            if (PREFS!!.pinNewApps) {
+                                Log.d("Start", "auto pin enabled. i should pin it.")
+                                Log.d("Start", "pin app")
                                 pinApp(packageName)
                             }
                         }
-                    }
-                    PackageChangesReceiver.PACKAGE_UPDATED -> {
-                        packageName?.apply {
-                            broadcastListUpdater(packageName, false)
+
+                        PackageChangesReceiver.PACKAGE_UPDATED -> {
+                            packageName.apply {
+                                broadcastListUpdater(packageName, false)
+                            }
                         }
                     }
                 }
             }
-        }
-        IntentFilter().apply {
-            addAction("ru.dimon6018.metrolauncher.PACKAGE_CHANGE_BROADCAST")
-        }.also {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requireActivity().registerReceiver(packageBroadcastReceiver, it, Context.RECEIVER_EXPORTED)
-            } else {
-                requireActivity().registerReceiver(packageBroadcastReceiver, it)
+            IntentFilter().apply {
+                addAction("ru.dimon6018.metrolauncher.PACKAGE_CHANGE_BROADCAST")
+            }.also {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    requireActivity().registerReceiver(
+                        packageBroadcastReceiver,
+                        it,
+                        Context.RECEIVER_EXPORTED
+                    )
+                } else {
+                    requireActivity().registerReceiver(packageBroadcastReceiver, it)
+                }
             }
         }
     }
     private fun broadcastListUpdater(packageName: String, isDelete: Boolean) {
         packageName.apply {
+            Log.d("Start", "update list by broadcaster")
             lifecycleScope.launch(Dispatchers.IO) {
                 var newList = appsDbCall!!.getJustApps()
                 if(isDelete) {
                     newList.forEach {
                         if(it.appPackage == packageName) {
+                            Log.d("Start", "delete")
                             destroyTile(it)
-                            return@forEach
                         }
                     }
                     newList = appsDbCall!!.getJustApps()
                 }
-                runBlocking {
-                    activity?.runOnUiThread {
-                        mAdapter?.setData(newList)
-                    }
+                withContext(Dispatchers.Main) {
+                    mAdapter?.setData(newList)
                 }
             }
         }
@@ -327,6 +342,8 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun unregisterBroadcast() {
+        Log.d("Start", "unreg broadcaster")
+        isBroadcasterRegistered = false
         packageBroadcastReceiver?.apply {
             requireActivity().unregisterReceiver(packageBroadcastReceiver)
             packageBroadcastReceiver = null
@@ -371,16 +388,15 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
     }
-    private fun destroyTile(it: AppEntity) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            it.tileType = -1
-            it.tileSize = "small"
-            it.appPackage = ""
-            it.tileColor = -1
-            it.appLabel = ""
-            it.id = it.id!! / 2
-            appsDbCall!!.updateApp(it)
-        }
+    private suspend fun destroyTile(it: AppEntity) {
+        it.tileType = -1
+        it.tileSize = "small"
+        hashCache.remove(it.appPackage)
+        it.appPackage = ""
+        it.tileColor = -1
+        it.appLabel = ""
+        it.id = it.id!! / 2
+        appsDbCall!!.updateApp(it)
     }
     inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
@@ -480,7 +496,13 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun setTileIcon(holder: TileViewHolder, item: AppEntity) {
             try {
-                holder.mAppIcon.setImageIcon(hashCache[item.appPackage])
+                val bmp = hashCache[item.appPackage]
+                if(bmp != null) {
+                    holder.mAppIcon.setImageIcon(bmp)
+                } else {
+                    hashCache[item.appPackage] = generateIcon(item)
+                    holder.mAppIcon.setImageIcon(hashCache[item.appPackage])
+                }
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 Utils.saveError(e.toString(), BSOD.getData(context))
@@ -561,14 +583,10 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             Log.d("ItemMove", "from pos: $fromPosition")
             Log.d("ItemMove", "to pos: $toPosition")
-            if (fromPosition < toPosition) {
-                for (i in fromPosition until toPosition) {
-                    Collections.swap(list, i, i + 1)
-                }
+            if (fromPosition <= toPosition) {
+                Collections.rotate(list.subList(fromPosition, toPosition + 1), -1);
             } else {
-                for (i in fromPosition downTo toPosition + 1) {
-                    Collections.swap(list, i, i - 1)
-                }
+                Collections.rotate(list.subList(toPosition, fromPosition + 1), 1);
             }
             notifyItemMoved(fromPosition, toPosition)
         }
@@ -585,9 +603,8 @@ class NewStart: Fragment(), OnStartDragListener {
                 return
             }
             lifecycleScope.launch(Dispatchers.IO) {
-                val itemsReserved = list
-                for (i in 0 until itemsReserved.size) {
-                    val item = itemsReserved[i]
+                for (i in 0 until list.size) {
+                    val item = list[i]
                     item.appPos = i
                     appsDbCall?.insertItem(item)
                 }
@@ -657,7 +674,7 @@ class NewStart: Fragment(), OnStartDragListener {
                             appsDbCall!!.updateApp(item)
                         }
                     }
-                    hashCache[item.appPackage] = recompressIcon(getAppIcon(item.appPackage, item.tileSize, requireContext().packageManager, resources), 80)
+                    hashCache[item.appPackage] = recompressIcon(getAppIcon(item.appPackage, item.tileSize, context.packageManager, context.resources), 80)
                     withContext(Dispatchers.Main) {
                         popupWindow.dismiss()
                         holder.mAppIcon.setImageIcon(hashCache[item.appPackage])

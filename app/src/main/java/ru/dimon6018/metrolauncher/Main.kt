@@ -90,7 +90,6 @@ class Main : AppCompatActivity() {
                 })
             }
         }
-        registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
     private fun otherTasks() {
@@ -184,6 +183,7 @@ class Main : AppCompatActivity() {
             PREFS!!.setPrefsChanged(false)
             exitProcess(0)
         }
+        registerPackageReceiver(this, packageReceiver)
     }
     override fun onStop() {
         unregisterPackageReceiver(this, packageReceiver)

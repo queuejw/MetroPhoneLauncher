@@ -99,6 +99,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         wallpaperSwitch?.setOnCheckedChangeListener { _, check ->
             PREFS!!.setWallpaper(check)
             PREFS!!.setPrefsChanged(true)
+            refreshWallpaperSwitches()
         }
         wallpaperTransparentTilesSwitch?.setOnCheckedChangeListener { _, check ->
             PREFS!!.setTransparentTiles(check)
