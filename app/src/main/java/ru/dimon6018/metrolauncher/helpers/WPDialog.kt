@@ -38,11 +38,8 @@ class WPDialog(private val mContext: Context) {
             setLightTheme()
         }
         Builder()
-        if (wp?.isShowing == false) {
-            wp?.show()
-        } else {
-            wp?.dismiss()
-        }
+        wp?.dismiss()
+        wp?.show()
         return this
     }
     //SnackBar消失方法

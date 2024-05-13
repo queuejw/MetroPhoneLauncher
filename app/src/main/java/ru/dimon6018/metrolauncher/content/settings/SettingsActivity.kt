@@ -3,6 +3,7 @@ package ru.dimon6018.metrolauncher.content.settings
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,15 +24,20 @@ import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActiv
 import ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
+import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+
 
 class SettingsActivity : AppCompatActivity() {
 
     private var themeSub: TextView? = null
     private var navSub: TextView? = null
     private var iconsSub: TextView? = null
+
+    private var isDialogEnabled = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         setAppTheme()
@@ -85,6 +91,13 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+    private fun isHomeApp(): Boolean {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        val res = packageManager.resolveActivity(intent, 0)
+        return res!!.activityInfo != null && (packageName
+                == res.activityInfo.packageName)
+    }
     override fun onResume() {
         super.onResume()
         themeSub?.text = accentName(this)
@@ -103,6 +116,16 @@ class SettingsActivity : AppCompatActivity() {
                 )
         } catch (e: Exception) {
             iconsSub?.text = getString(R.string.iconPackNotSelectedSub)
+        }
+        if(!isHomeApp() && isDialogEnabled) {
+            isDialogEnabled = false
+            WPDialog(this).setTopDialog(false)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.setAsDefaultLauncher))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes)) {
+                    startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+                }.show()
         }
     }
 }

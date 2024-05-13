@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 33
-        versionName "Experiment 7740_02"
+        versionCode 35
+        versionName "1.0 Pre-Alpha 4.99"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -45,7 +45,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.7.0-beta01'
     implementation 'androidx.annotation:annotation:1.8.0-rc01'
-    implementation 'com.google.android.material:material:1.13.0-alpha01'
+    implementation 'com.google.android.material:material:1.13.0-alpha02'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.fragment:fragment-ktx:1.7.0'

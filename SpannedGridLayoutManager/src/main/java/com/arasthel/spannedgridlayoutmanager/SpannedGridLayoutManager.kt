@@ -640,17 +640,22 @@ open class SpannedGridLayoutManager(
      * Recycle any views that are out of bounds
      */
     protected open fun recycleChildrenOutOfBounds(direction: Direction, recycler: RecyclerView.Recycler) {
+        //No more lag.
+        /**
         if (direction == Direction.END) {
             recycleChildrenFromStart(direction, recycler)
         } else {
             recycleChildrenFromEnd(direction, recycler)
         }
+         */
     }
 
     /**
      * Recycle views from start to first visible item
      */
     protected open fun recycleChildrenFromStart(direction: Direction, recycler: RecyclerView.Recycler) {
+        //No more lag.
+        /**
         val childCount = childCount
         val start = getPaddingStartForOrientation()
 
@@ -670,7 +675,7 @@ open class SpannedGridLayoutManager(
         for (child in toDetach) {
             removeAndRecycleView(child, recycler)
             updateEdgesWithRemovedChild(child, direction)
-        }
+        } */
     }
 
     /**
@@ -702,6 +707,8 @@ open class SpannedGridLayoutManager(
      * Update layout edges when views are recycled
      */
     protected open fun updateEdgesWithRemovedChild(view: View, direction: Direction) {
+//No more lag.
+/**
         val childStart = getChildStart(view) + scroll
         val childEnd = getChildEnd(view) + scroll
 
@@ -710,6 +717,7 @@ open class SpannedGridLayoutManager(
         } else if (direction == Direction.START) { // Removed from end
             layoutEnd = getPaddingStartForOrientation() + childStart
         }
+ **/
     }
 
     override fun computeVerticalScrollOffset(state: RecyclerView.State): Int {
@@ -785,7 +793,6 @@ open class SpannedGridLayoutManager(
         val canScrollForward = lastVisiblePosition <= state.itemCount &&
                 (size) < (childEnd) &&
                 delta > 0
-
         // If can't scroll forward or backwards, return
         if (!(canScrollBackwards || canScrollForward)) {
             return 0
@@ -825,7 +832,7 @@ open class SpannedGridLayoutManager(
 
         orientationHelper.offsetChildren(correctedDistance)
 
-        return correctedDistance
+        return distance
     }
 
     override fun scrollToPosition(position: Int) {

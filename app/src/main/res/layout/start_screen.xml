@@ -15,7 +15,10 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/start_apps_tiles"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="0dp"
+            android:nestedScrollingEnabled="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/loadingHolderStart"

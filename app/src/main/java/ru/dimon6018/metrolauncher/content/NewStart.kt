@@ -490,9 +490,9 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
             setTileSize(item, holder.mTextView)
-            setTileEditModeAnim(holder, item, position)
             setTileColor(holder, item)
             setTileIcon(holder, item)
+            setTileEditModeAnim(holder, item, position)
         }
         private fun setTileIcon(holder: TileViewHolder, item: AppEntity) {
             try {
@@ -506,6 +506,9 @@ class NewStart: Fragment(), OnStartDragListener {
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 Utils.saveError(e.toString(), BSOD.getData(context))
+                lifecycleScope.launch(Dispatchers.IO) {
+                    destroyTile(item)
+                }
             }
         }
         private fun setTileColor(holder: TileViewHolder, item: AppEntity) {

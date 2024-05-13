@@ -23,7 +23,8 @@
         <activity
             android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

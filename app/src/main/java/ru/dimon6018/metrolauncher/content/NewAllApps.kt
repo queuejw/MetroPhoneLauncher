@@ -139,7 +139,7 @@ class NewAllApps: Fragment() {
         settingsBtn = view.findViewById(R.id.settingsBtn)
         settingsBtn!!.setOnClickListener {
             if(isListLoaded) {
-                activity?.startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                activity?.startActivity(Intent(requireActivity(), SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             }
         }
         if(!PREFS!!.isSettingsBtnEnabled) {
