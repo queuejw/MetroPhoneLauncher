@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
-import leakcanary.LeakCanary
+//import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
@@ -73,7 +73,7 @@ class SettingsActivity : AppCompatActivity() {
         val iconBtn = findViewById<MaterialCardView>(R.id.iconsSetting)
         iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
-        leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
+      //  leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
     }
     private fun setAppTheme() {
         if (Prefs(this).isLightThemeUsed) {

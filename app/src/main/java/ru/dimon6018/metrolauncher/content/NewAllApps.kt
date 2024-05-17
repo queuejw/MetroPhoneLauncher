@@ -16,6 +16,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
+import android.view.animation.AnimationUtils
+import android.view.animation.OvershootInterpolator
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -37,6 +41,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
@@ -52,6 +57,8 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationHorizontal
+import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationVertical
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
@@ -65,6 +72,8 @@ import kotlin.random.Random
 
 
 class NewAllApps: Fragment() {
+
+    private var frame: FrameLayout? = null
 
     private var recyclerView: RecyclerView? = null
 
@@ -116,11 +125,11 @@ class NewAllApps: Fragment() {
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
-        val frame = view.findViewById<FrameLayout>(R.id.frame)
+        frame = view.findViewById(R.id.frame)
         if(PREFS!!.isAllAppsBackgroundEnabled) {
-            frame.background = ContextCompat.getColor(contextFragment!!, R.color.transparent).toDrawable()
+            frame?.background = ContextCompat.getColor(contextFragment!!, R.color.transparent).toDrawable()
         } else {
-            frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(contextFragment!!, android.R.color.background_light).toDrawable() else ContextCompat.getColor(contextFragment!!, android.R.color.background_dark).toDrawable()
+            frame?.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(contextFragment!!, android.R.color.background_light).toDrawable() else ContextCompat.getColor(contextFragment!!, android.R.color.background_dark).toDrawable()
         }
         progressBar = view.findViewById(R.id.progressBar)
         loadingText = view.findViewById(R.id.loadingText)
@@ -368,8 +377,8 @@ class NewAllApps: Fragment() {
     override fun onResume() {
         if(isAppOpened && !isStartMenuOpened) {
             Log.d("resumeStart", "start enter animation")
-            //TODO add normal animation
-            isAppOpened = false
+            activity?.onBackPressedDispatcher?.onBackPressed()
+            frame?.visibility = View.VISIBLE
         }
         registerBroadcast()
         super.onResume()
@@ -533,9 +542,6 @@ class NewAllApps: Fragment() {
             when(holder.itemViewType) {
                 letter -> {
                     (holder as LetterHolder).textView.text = app.appLabel
-                    holder.itemView.setOnClickListener {
-                        showAlphabet()
-                    }
                 }
                 appHolder -> {
                     bindAppHolder((holder as AppHolder), app)
@@ -603,12 +609,51 @@ class NewAllApps: Fragment() {
             }
         }
         private fun runApp(packag: String) {
+            val animSet = AnimationSet(false)
+            val slideLeftAnim: Animation = AnimationUtils.loadAnimation(contextFragment, R.anim.slide_left)
+            slideLeftAnim.duration = 100
+            slideLeftAnim.interpolator = OvershootInterpolator()
+            val anim = Flip3dAnimationHorizontal(0f, -90f, 0f, -100f)
+            anim.fillAfter = true
+            var dur = anim.duration
+            animSet.addAnimation(slideLeftAnim)
+            animSet.addAnimation(anim)
             when (packag) {
                 "ru.dimon6018.metrolauncher" -> {
-                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                    lifecycleScope.launch {
+                        for(i in 0..<list.size) {
+                            val holder = recyclerView?.findViewHolderForAdapterPosition(i)
+                            if(holder != null) {
+                                dur += 30
+                                slideLeftAnim.duration = dur
+                                holder.itemView.startAnimation(slideLeftAnim)
+                            }
+                        }
+                        delay(400)
+                        withContext(Dispatchers.Main) {
+                            frame?.visibility = View.INVISIBLE
+                            startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                            isAppOpened = true
+                        }
+                    }
                 }
                 else -> {
-                    startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    lifecycleScope.launch {
+                        for(i in 0..<list.size) {
+                            val holder = recyclerView?.findViewHolderForAdapterPosition(i)
+                            if(holder != null) {
+                                dur += 30
+                                slideLeftAnim.duration = dur
+                                holder.itemView.startAnimation(slideLeftAnim)
+                            }
+                        }
+                        delay(400)
+                        withContext(Dispatchers.Main) {
+                            frame?.visibility = View.INVISIBLE
+                            startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                            isAppOpened = true
+                        }
+                    }
                 }
             }
         }
@@ -676,6 +721,12 @@ class NewAllApps: Fragment() {
         }
         inner class LetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var textView: MaterialTextView = itemView.findViewById(R.id.abc_label)
+            init {
+                itemView.setOnClickListener {
+                    showAlphabet()
+                    Log.d("scroll", "items ${adapterAlphabet.itemCount}")
+                }
+            }
         }
     }
     inner class AlphabetAdapter(private var alphabetList: MutableList<AlphabetLetter>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -685,7 +736,12 @@ class NewAllApps: Fragment() {
         private val disabledDrawable = ContextCompat.getColor(contextFragment!!, R.color.darkGray).toDrawable()
         private val size = contextFragment!!.resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
         private val params = ViewGroup.LayoutParams(size, size)
+        private val rotation = Flip3dAnimationVertical(90f, 0f, 0f, 0f)
 
+        init {
+            rotation.duration = 500
+            rotation.fillAfter = true
+        }
         fun setNewData(new: MutableList<AlphabetLetter>) {
             alphabetList = new
             notifyDataSetChanged()
@@ -710,7 +766,7 @@ class NewAllApps: Fragment() {
             }
             if(item.isActive) {
                 holder.itemView.setOnClickListener {
-                    startAnimator()
+                    hideAlphabet()
                     val scroll = scrollPoints[item.posInList]
                     if(scroll > appAdapter.itemCount) {
                         recyclerView!!.smoothScrollToPosition(appAdapter.itemCount)
@@ -719,20 +775,22 @@ class NewAllApps: Fragment() {
                     }
                 }
             }
-        }
-        private fun startAnimator() {
-            hideAlphabet()
+            if(!item.isAnimationEnded) {
+                holder.itemView.startAnimation(rotation)
+                item.isAnimationEnded = true
+            }
         }
         override fun getItemViewType(position: Int): Int {
             return if(alphabetList[position].isActive) activeLetter else disabledLetter
         }
     }
-    class AlphabetLetter {
+    inner class AlphabetLetter {
         var letter: String = ""
         var isActive: Boolean = false
+        var isAnimationEnded: Boolean = false
         var posInList: Int = 0
     }
-    class AlphabetLetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class AlphabetLetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textView: MaterialTextView = itemView.findViewById(R.id.alphabetLetter)
         var backgroundView: View = itemView.findViewById(R.id.alphabetBackground)
     }

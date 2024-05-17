@@ -64,6 +64,7 @@ import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
+import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationHorizontal
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
@@ -220,6 +221,10 @@ class NewStart: Fragment(), OnStartDragListener {
         if(isAppOpened) {
             Log.d("resumeStart", "start enter animation")
             //TODO add normal animation
+            val anim = Flip3dAnimationHorizontal(-90f, 0f, 0f, 0f)
+            anim.fillAfter = true
+            anim.duration = 500
+            frame.startAnimation(anim)
             isAppOpened = false
         }
         observe()
