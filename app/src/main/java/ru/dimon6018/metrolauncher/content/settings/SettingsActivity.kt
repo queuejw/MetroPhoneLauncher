@@ -17,6 +17,7 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity
@@ -72,6 +73,8 @@ class SettingsActivity : AppCompatActivity() {
         weatherBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java)) }
         val iconBtn = findViewById<MaterialCardView>(R.id.iconsSetting)
         iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
+        val expBtn = findViewById<MaterialCardView>(R.id.expSetting)
+        expBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
       //  leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
     }

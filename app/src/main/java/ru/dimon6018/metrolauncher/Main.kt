@@ -75,6 +75,13 @@ class Main : AppCompatActivity() {
                 )
                 window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
             }
+            if (PREFS!!.pref.getBoolean(
+                    "updateInstalled",
+                    false
+                ) && PREFS!!.versionCode == VERSION_CODE
+            ) {
+                PREFS!!.setUpdateState(3)
+            }
             withContext(Dispatchers.Main) {
                 applyWindowInsets(coordinatorLayout)
                 viewPager.apply {
@@ -93,13 +100,6 @@ class Main : AppCompatActivity() {
         otherTasks()
     }
     private fun otherTasks() {
-        if (PREFS!!.pref.getBoolean(
-                "updateInstalled",
-                false
-            ) && PREFS!!.versionCode == VERSION_CODE
-        ) {
-            PREFS!!.setUpdateState(3)
-        }
         if (PREFS!!.pref.getBoolean("tip1Enabled", true)) {
             WPDialog(this@Main).setTopDialog(false)
                 .setTitle(getString(R.string.tip))

@@ -43,8 +43,8 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import java.io.File
 import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URL
-
 
 class UpdateActivity: AppCompatActivity() {
     private var check: MaterialButton? = null
@@ -468,15 +468,16 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun downloadXmlActivity() {
         Log.i("CheckForUpdates", "download xml")
+        val url = URL(URL)
+        val connection = url.openConnection() as HttpURLConnection
+        connection.connectTimeout = 15000
         try {
-            URL(URL).openStream().use { input ->
-                Log.i("CheckForUpdates", "start parsing")
-                val parser = UpdateDataParser()
-                parser.parse(input)
-                input.close()
-            }
+            val input = connection.inputStream
+            val parser = UpdateDataParser()
+            parser.parse(input)
+            input.close()
         } catch (e: Exception) {
-            Log.i("CheckForUpdates", "something went wrong: $e")
+            Log.e("CheckForUpdates", "something went wrong: $e")
             PREFS!!.setUpdateState(5)
             runOnUiThread {
                 refreshUi()
@@ -484,21 +485,22 @@ class UpdateActivity: AppCompatActivity() {
         }
     }
     companion object {
-        const val URL: String = "https://raw.githubusercontent.com/queuejw/mpl_updates/main/update.xml"
+        const val URL: String = "https://github.com/queuejw/mpl_updates/releases/download/release/update.xml"
         const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/beta/MPL-beta.apk"
         const val URL_RELEASE_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
 
         fun downloadXml(link: String) {
             Log.i("CheckForUpdates", "download xml")
+            val url = URL(link)
+            val connection = url.openConnection() as HttpURLConnection
+            connection.connectTimeout = 15000
             try {
-                URL(link).openStream().use { input ->
-                    Log.i("CheckForUpdates", "start parsing")
-                    val parser = UpdateDataParser()
-                    parser.parse(input)
-                    input.close()
-                }
+                val input = connection.inputStream
+                val parser = UpdateDataParser()
+                parser.parse(input)
+                input.close()
             } catch (e: Exception) {
-                Log.i("CheckForUpdates", "something went wrong: $e")
+                Log.e("CheckForUpdates", "something went wrong: $e")
             }
         }
         fun isUpdateAvailable(): Boolean {

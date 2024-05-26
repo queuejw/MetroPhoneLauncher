@@ -283,7 +283,7 @@
             <com.google.android.material.card.MaterialCardView
                 app:cardBackgroundColor="?android:attr/colorBackground"
                 android:layout_width="match_parent"
-                android:id="@+id/exp"
+                android:id="@+id/expSetting"
                 app:cardCornerRadius="0dp"
                 app:strokeWidth="0dp"
                 android:layout_height="64dp" android:layout_marginTop="12dp">

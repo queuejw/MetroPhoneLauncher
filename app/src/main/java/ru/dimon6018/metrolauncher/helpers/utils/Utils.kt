@@ -35,6 +35,7 @@ import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
+import java.util.Locale
 import kotlin.random.Random
 
 class Utils {
@@ -326,6 +327,16 @@ class Utils {
                 activity.unregisterReceiver(packageReceiver)
             } catch (w: IllegalArgumentException) {
                 Log.w("Utils", "unregisterPackageReceiver error: $w")
+            }
+        }
+        fun getSupportedRuLang(): Boolean {
+            return when(Locale.getDefault().language) {
+                "ru" -> true
+                "ru_BY" -> true
+                "ru_KZ" -> true
+                "be" -> true
+                "be_BY" -> true
+                else -> false
             }
         }
     }

@@ -4,7 +4,10 @@
 
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -102,6 +105,10 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity"
             android:exported="true">
         </activity>
         <provider

@@ -186,4 +186,5 @@
     <string name="wallpaperTransparentTiles">Включить прозрачные плитки с непрозрачным фоном</string>
     <string name="permissionsError">Для работы некоторых функций приложения требуется выдать разрешения</string>
     <string name="setAsDefaultLauncher">Желаете установить MPL в качестве основного лаунчера?</string>
+    <string name="tip2">Чтобы закрепить приложение, удерживайте его.</string>
 </resources>

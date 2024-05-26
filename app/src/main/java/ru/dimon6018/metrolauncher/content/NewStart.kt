@@ -20,6 +20,8 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.widget.EditText
@@ -47,6 +49,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -111,7 +114,7 @@ class NewStart: Fragment(), OnStartDragListener {
         frame = v.findViewById(R.id.startFrame)
         lifecycleScope.launch(Dispatchers.Default) {
             appsDbCall = AppData.getAppData(requireContext()).getAppDao()
-            tiles = appsDbCall!!.getJustApps()
+            tiles = appsDbCall?.getJustApps()
             //attempt to optimize icon loading
             tiles?.forEach {
                 if(it.tileType != -1) {
@@ -161,7 +164,6 @@ class NewStart: Fragment(), OnStartDragListener {
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
             withContext(Dispatchers.Main) {
-                allAppsButton = v.findViewById(R.id.allAppsButton)
                 mRecyclerView?.apply {
                     layoutManager = mSpannedLayoutManager
                     adapter = mAdapter
@@ -169,18 +171,6 @@ class NewStart: Fragment(), OnStartDragListener {
                         addItemDecoration(Utils.MarginItemDecoration(6))
                     }
                     mItemTouchHelper!!.attachToRecyclerView(this)
-                    addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                            super.onScrolled(recyclerView, dx, dy)
-                            if (mAdapter?.isEditMode == false) {
-                                if (!recyclerView.canScrollVertically(-1)) {
-                                    allAppsButton!!.visibility = View.INVISIBLE
-                                } else {
-                                    allAppsButton!!.visibility = View.VISIBLE
-                                }
-                            }
-                        }
-                    })
                 }
                 frame.setOnClickListener {
                     if (mAdapter?.isEditMode == true) {
@@ -188,7 +178,6 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                 }
                 loadingProgressBar?.hideProgressBar()
-                Log.d("Start", "launch observer function")
                 observe()
             }
         }
@@ -221,10 +210,6 @@ class NewStart: Fragment(), OnStartDragListener {
         if(isAppOpened) {
             Log.d("resumeStart", "start enter animation")
             //TODO add normal animation
-            val anim = Flip3dAnimationHorizontal(-90f, 0f, 0f, 0f)
-            anim.fillAfter = true
-            anim.duration = 500
-            frame.startAnimation(anim)
             isAppOpened = false
         }
         observe()
@@ -428,10 +413,8 @@ class NewStart: Fragment(), OnStartDragListener {
             val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
             diffResult.dispatchUpdatesTo(this)
         }
-        private fun enableEditMode() {
-            if(isEditMode) {
-                return
-            }
+        fun enableEditMode() {
+            Log.d("EditMode", "enter edit mode")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
             mRecyclerView!!.scaleX = 0.9f
             mRecyclerView!!.scaleY = 0.9f
@@ -441,9 +424,7 @@ class NewStart: Fragment(), OnStartDragListener {
             notifyDataSetChanged()
         }
         fun disableEditMode() {
-            if(!isEditMode) {
-                return
-            }
+            Log.d("EditMode", "exit edit mode")
             mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_dismiss))
             mRecyclerView!!.scaleX = 1f
             mRecyclerView!!.scaleY = 1f
@@ -491,6 +472,36 @@ class NewStart: Fragment(), OnStartDragListener {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when(holder.itemViewType) {
                 defaultTileType -> bindDefaultTile(holder as TileViewHolder, position, list[position])
+            }
+        }
+        fun startDismissTilesAnim(item: AppEntity) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val animSet = AnimationSet(false)
+                val slideLeftAnim: Animation =
+                    AnimationUtils.loadAnimation(context, R.anim.slide_left)
+                slideLeftAnim.duration = 150
+                val anim = Flip3dAnimationHorizontal(0f, -90f, 0f, 0f)
+                anim.duration = 360
+                var dur = 0L
+                animSet.addAnimation(slideLeftAnim)
+                animSet.addAnimation(anim)
+                for (i in 0..<list.size) {
+                    val holder = mRecyclerView?.findViewHolderForAdapterPosition(i)
+                    if (holder != null) {
+                        if (holder.itemViewType != spaceType) {
+                            Log.d("anim", "holder pos: $i , name: ${list[i].appLabel}")
+                            dur += 50L
+                            anim.startOffset = dur
+                            Log.d("anim", "offset: ${anim.startOffset}")
+                            withContext(Dispatchers.Main) {
+                                Log.d("anim", "play anim")
+                                holder.itemView.startAnimation(anim)
+                                delay(100)
+                            }
+                        }
+                    }
+                }
+                // startApp(item.appPackage)
             }
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
@@ -587,6 +598,8 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if(!isEditMode) {
+                Log.d("onItemMove", "edit mode disabled. enabling...")
+                enableEditMode()
                 return
             }
             Log.d("ItemMove", "from pos: $fromPosition")
@@ -788,6 +801,19 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             bottomsheet.show()
         }
+        private fun startApp(packageName: String) {
+            isAppOpened = true
+            when (packageName) {
+                "ru.dimon6018.metrolauncher" -> {
+                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                }
+                else -> {
+                    val intent = context.packageManager!!.getLaunchIntentForPackage(packageName)
+                    intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                }
+            }
+        }
         inner class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
             private val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
             val mContainer: FrameLayout = v.findViewById(R.id.container)
@@ -812,7 +838,7 @@ class NewStart: Fragment(), OnStartDragListener {
                             }
                         }
                     } else {
-                        isAppOpened = true
+                       // mAdapter?.startDismissTilesAnim(item)
                         startApp(item.appPackage)
                     }
                 }
@@ -821,18 +847,6 @@ class NewStart: Fragment(), OnStartDragListener {
                         enableEditMode()
                     }
                     true
-                }
-            }
-            private fun startApp(packageName: String) {
-                when (packageName) {
-                    "ru.dimon6018.metrolauncher" -> {
-                        startActivity(Intent(requireActivity(), SettingsActivity::class.java))
-                    }
-                    else -> {
-                        val intent = context.packageManager!!.getLaunchIntentForPackage(packageName)
-                        intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    }
                 }
             }
             override fun onItemSelected() {}

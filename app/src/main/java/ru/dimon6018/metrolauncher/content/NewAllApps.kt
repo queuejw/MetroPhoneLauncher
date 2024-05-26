@@ -13,13 +13,10 @@ import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
-import android.view.animation.AnimationUtils
-import android.view.animation.OvershootInterpolator
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -31,6 +28,7 @@ import androidx.collection.ArrayMap
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.widget.PopupWindowCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,7 +39,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
@@ -57,7 +54,6 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
-import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationHorizontal
 import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationVertical
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -82,8 +78,8 @@ class NewAllApps: Fragment() {
 
     private var search: TextInputLayout? = null
 
-    private lateinit var appAdapter: AppAdapter
-    private lateinit var adapterAlphabet: AlphabetAdapter
+    private var appAdapter: AppAdapter? = null
+    private var adapterAlphabet: AlphabetAdapter? = null
     private lateinit var pm: PackageManager
 
     private var searchBtn: MaterialCardView? = null
@@ -111,6 +107,8 @@ class NewAllApps: Fragment() {
     private var iconManager: IconPackManager? = null
     private var isCustomIconsInstalled = false
     private var iconSize: Int? = null
+
+    private var shouldShowTip = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -172,6 +170,7 @@ class NewAllApps: Fragment() {
             appAdapter = AppAdapter(appList!!, dbCall)
             val lm = LinearLayoutManager(contextFragment)
             setAlphabetRecyclerView()
+            shouldShowTip = PREFS!!.pref.getBoolean("tip2Enabled", true)
             withContext(Dispatchers.Main) {
                 searchBtnBack!!.setOnClickListener {
                     if(isListLoaded) {
@@ -187,6 +186,14 @@ class NewAllApps: Fragment() {
                 progressBar?.hideProgressBar()
                 loadingText?.visibility = View.GONE
                 isListLoaded = true
+                if (shouldShowTip) {
+                    WPDialog(requireActivity()).setTopDialog(true)
+                        .setTitle(getString(R.string.tip))
+                        .setMessage(getString(R.string.tip2))
+                        .setPositiveButton(getString(android.R.string.ok), null)
+                        .show()
+                    PREFS!!.editor.putBoolean("tip2Enabled", false).apply()
+                }
             }
         }
         registerBroadcast()
@@ -269,7 +276,7 @@ class NewAllApps: Fragment() {
     private fun broadcastListUpdater() {
         Log.d("AllApps", "update list")
         appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
-        appAdapter.setData(appList!!, true)
+        appAdapter?.setData(appList!!, true)
     }
     private fun unregisterBroadcast() {
         Log.d("AllApps", "unreg broadcaster")
@@ -310,7 +317,7 @@ class NewAllApps: Fragment() {
         recyclerView!!.alpha = 0.7f
         isAlphabetVisible = true
         alphabetLayout!!.visibility = View.VISIBLE
-        adapterAlphabet.setNewData(getAlphabetList())
+        adapterAlphabet?.setNewData(getAlphabetList())
     }
     private fun hideAlphabet() {
         recyclerView!!.alpha = 1f
@@ -327,7 +334,7 @@ class NewAllApps: Fragment() {
             alphabetList.add(a)
             ch++
         }
-        if (getSupportedRuLang()) {
+        if (Utils.getSupportedRuLang()) {
             val alphabet: CharArray? = Character.toChars('А'.code)
             for (i in 0..31) {
                 val a = AlphabetLetter()
@@ -354,22 +361,16 @@ class NewAllApps: Fragment() {
         }
         return alphabetList
     }
-    private fun getSupportedRuLang(): Boolean {
-        return when(Locale.getDefault().language) {
-            "ru" -> true
-            "ru_BY" -> true
-            "ru_KZ" -> true
-            "be" -> true
-            "be_BY" -> true
-            else -> false
-        }
-    }
     override fun onPause() {
         if(isSearching) {
             disableSearch()
         }
         if(isAlphabetVisible) {
             hideAlphabet()
+        }
+        if(appAdapter?.isWindowVisible == true) {
+            appAdapter?.popupWindow?.dismiss()
+            appAdapter?.popupWindow = null
         }
         super.onPause()
     }
@@ -402,7 +403,7 @@ class NewAllApps: Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
             appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
             withContext(Dispatchers.Main) {
-                appAdapter.setData(appList!!, true)
+                appAdapter?.setData(appList!!, true)
                 progressBar!!.hideProgressBar()
                 recyclerView?.alpha = 1f
             }
@@ -441,7 +442,7 @@ class NewAllApps: Fragment() {
         if(appList == null) {
             try {
                 appList = setUpApps(pm, contextFragment!!)
-                appAdapter.setData(appList!!, true)
+                appAdapter?.setData(appList!!, true)
             } catch (e: NullPointerException) {
                 if (contextFragment != null) {
                     lifecycleScope.launch(Dispatchers.IO) {
@@ -461,7 +462,7 @@ class NewAllApps: Fragment() {
             }
         }
         if (filteredlist.isNotEmpty()) {
-            appAdapter.setData(filteredlist, true)
+            appAdapter?.setData(filteredlist, true)
         }
     }
     private fun removeHeaders() {
@@ -479,7 +480,7 @@ class NewAllApps: Fragment() {
                 }
             }
             withContext(Dispatchers.Main) {
-                appAdapter.setData(appList!!, true)
+                appAdapter?.setData(appList!!, true)
                 progressBar!!.hideProgressBar()
             }
         }
@@ -518,6 +519,9 @@ class NewAllApps: Fragment() {
         private val letter: Int = 0
         private val appHolder: Int = 1
         private var accentColor: Int = 0
+
+        var popupWindow: PopupWindow? = null
+        var isWindowVisible = false
 
         init {
             if (PREFS!!.isAllAppsBackgroundEnabled) {
@@ -567,10 +571,11 @@ class NewAllApps: Fragment() {
             val popupView: View = inflater.inflate(R.layout.all_apps_window, null, false)
             val width = LinearLayout.LayoutParams.MATCH_PARENT
             val height = LinearLayout.LayoutParams.WRAP_CONTENT
-            val popupWindow = PopupWindow(popupView, width, height, true)
-            popupWindow.isFocusable = true
-            popupWindow.animationStyle = R.style.enterStyle
-            popupWindow.showAsDropDown(view, 0, 0)
+            popupWindow = PopupWindow(popupView, width, height, true)
+            popupWindow?.isFocusable = true
+            popupWindow?.animationStyle = R.style.enterStyle
+            PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
+            isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
             val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
             val info = popupView.findViewById<MaterialCardView>(R.id.infoApp)
@@ -592,68 +597,33 @@ class NewAllApps: Fragment() {
                         pin.alpha = 1f
                         pin.setOnClickListener {
                             insertNewApp(label, appPackage)
-                            popupWindow.dismiss()
+                            popupWindow?.dismiss()
                             activity?.onBackPressedDispatcher?.onBackPressed()
                         }
                     }
                 }
             }
             uninstall.setOnClickListener {
-                popupWindow.dismiss()
+                popupWindow?.dismiss()
                 startActivity(Intent(Intent.ACTION_DELETE).setData(Uri.parse("package:$appPackage")))
             }
             info.setOnClickListener {
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$appPackage")))
             }
-            popupWindow.setOnDismissListener {
+            popupWindow?.setOnDismissListener {
+                isWindowVisible = false
             }
         }
         private fun runApp(packag: String) {
-            val animSet = AnimationSet(false)
-            val slideLeftAnim: Animation = AnimationUtils.loadAnimation(contextFragment, R.anim.slide_left)
-            slideLeftAnim.duration = 100
-            slideLeftAnim.interpolator = OvershootInterpolator()
-            val anim = Flip3dAnimationHorizontal(0f, -90f, 0f, -100f)
-            anim.fillAfter = true
-            var dur = anim.duration
-            animSet.addAnimation(slideLeftAnim)
-            animSet.addAnimation(anim)
+            frame?.visibility = View.INVISIBLE
             when (packag) {
                 "ru.dimon6018.metrolauncher" -> {
-                    lifecycleScope.launch {
-                        for(i in 0..<list.size) {
-                            val holder = recyclerView?.findViewHolderForAdapterPosition(i)
-                            if(holder != null) {
-                                dur += 30
-                                slideLeftAnim.duration = dur
-                                holder.itemView.startAnimation(slideLeftAnim)
-                            }
-                        }
-                        delay(400)
-                        withContext(Dispatchers.Main) {
-                            frame?.visibility = View.INVISIBLE
-                            startActivity(Intent(requireActivity(), SettingsActivity::class.java))
-                            isAppOpened = true
-                        }
-                    }
+                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                    isAppOpened = true
                 }
                 else -> {
-                    lifecycleScope.launch {
-                        for(i in 0..<list.size) {
-                            val holder = recyclerView?.findViewHolderForAdapterPosition(i)
-                            if(holder != null) {
-                                dur += 30
-                                slideLeftAnim.duration = dur
-                                holder.itemView.startAnimation(slideLeftAnim)
-                            }
-                        }
-                        delay(400)
-                        withContext(Dispatchers.Main) {
-                            frame?.visibility = View.INVISIBLE
-                            startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                            isAppOpened = true
-                        }
-                    }
+                    startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    isAppOpened = true
                 }
             }
         }
@@ -724,7 +694,7 @@ class NewAllApps: Fragment() {
             init {
                 itemView.setOnClickListener {
                     showAlphabet()
-                    Log.d("scroll", "items ${adapterAlphabet.itemCount}")
+                    Log.d("scroll", "items ${adapterAlphabet?.itemCount}")
                 }
             }
         }
@@ -768,8 +738,8 @@ class NewAllApps: Fragment() {
                 holder.itemView.setOnClickListener {
                     hideAlphabet()
                     val scroll = scrollPoints[item.posInList]
-                    if(scroll > appAdapter.itemCount) {
-                        recyclerView!!.smoothScrollToPosition(appAdapter.itemCount)
+                    if(scroll > appAdapter?.itemCount!!) {
+                        recyclerView!!.smoothScrollToPosition(appAdapter?.itemCount!!)
                     } else {
                         recyclerView!!.smoothScrollToPosition(scroll)
                     }

@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 36
-        versionName "Animation Test 1"
+        versionCode 40
+        versionName "1.0 Pre-Alpha 4.9.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -39,7 +39,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
     }
-    setBuildToolsVersion('35.0.0-rc01')
+    setBuildToolsVersion('35.0.0-rc04')
 }
 dependencies {
 
