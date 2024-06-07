@@ -10,11 +10,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
-//import leakcanary.LeakCanary
+import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity
@@ -76,10 +75,10 @@ class SettingsActivity : AppCompatActivity() {
         val expBtn = findViewById<MaterialCardView>(R.id.expSetting)
         expBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java)) }
         val leaks = findViewById<MaterialCardView>(R.id.leaks)
-      //  leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
+        leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
     }
     private fun setAppTheme() {
-        if (Prefs(this).isLightThemeUsed) {
+        if (PREFS!!.isLightThemeUsed) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 (application as Application).setNightMode()
             } else {

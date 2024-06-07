@@ -48,6 +48,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -98,6 +99,9 @@ class NewStart: Fragment(), OnStartDragListener {
     private var iconManager: IconPackManager? = null
     private var isBroadcasterRegistered = false
 
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         currentActivity = activity
@@ -112,7 +116,7 @@ class NewStart: Fragment(), OnStartDragListener {
         loadingProgressBar = v.findViewById(R.id.progressBarStart)
         loadingProgressBar?.showProgressBar()
         frame = v.findViewById(R.id.startFrame)
-        lifecycleScope.launch(Dispatchers.Default) {
+        lifecycleScope.launch(defaultDispatcher) {
             appsDbCall = AppData.getAppData(requireContext()).getAppDao()
             tiles = appsDbCall?.getJustApps()
             //attempt to optimize icon loading
@@ -163,7 +167,7 @@ class NewStart: Fragment(), OnStartDragListener {
             mAdapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 mRecyclerView?.apply {
                     layoutManager = mSpannedLayoutManager
                     adapter = mAdapter
@@ -475,7 +479,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         fun startDismissTilesAnim(item: AppEntity) {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(defaultDispatcher) {
                 val animSet = AnimationSet(false)
                 val slideLeftAnim: Animation =
                     AnimationUtils.loadAnimation(context, R.anim.slide_left)
@@ -522,7 +526,7 @@ class NewStart: Fragment(), OnStartDragListener {
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 Utils.saveError(e.toString(), BSOD.getData(context))
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(defaultDispatcher) {
                     destroyTile(item)
                 }
             }
@@ -623,7 +627,7 @@ class NewStart: Fragment(), OnStartDragListener {
             if (!isEditMode) {
                 return
             }
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(defaultDispatcher) {
                 for (i in 0 until list.size) {
                     val item = list[i]
                     item.appPos = i
@@ -674,7 +678,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             resizeIcon.setImageDrawable(arrow)
             resize.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(defaultDispatcher) {
                     when (item.tileSize) {
                         "small" -> {
                             item.tileSize = "medium"
@@ -704,7 +708,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             remove.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(defaultDispatcher) {
                     destroyTile(item)
                     withContext(Dispatchers.Main) {
                         refreshData(list)
@@ -719,7 +723,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
 
         private fun clearItems() {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(defaultDispatcher) {
                 for (itemList in list) {
                     itemList.isSelected = false
                     appsDbCall!!.insertItem(itemList)
@@ -762,7 +766,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 labellayout.visibility = View.VISIBLE
             }
             labelChangeBtn.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(defaultDispatcher) {
                     if(editor.text.toString() == "") {
                         item.appLabel = originalLabel
                     } else {
@@ -776,7 +780,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             removeColor.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(defaultDispatcher) {
                     item.tileColor = -1
                     appsDbCall!!.updateApp(item)
                     withContext(Dispatchers.Main) {
@@ -829,7 +833,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     val item = list[absoluteAdapterPosition]
                     if (isEditMode) {
                         itemView.rotation = 0f
-                        lifecycleScope.launch(Dispatchers.IO) {
+                        lifecycleScope.launch(defaultDispatcher) {
                             item.isSelected = true
                             appsDbCall!!.insertItem(item)
                             withContext(Dispatchers.Main) {
@@ -904,6 +908,7 @@ class NewStart: Fragment(), OnStartDragListener {
         private lateinit var item: AppEntity
         private lateinit var dbCall: AppDao
         private lateinit var adapter: NewStartAdapter
+        private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -936,7 +941,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
             lime.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 0
                     dbCall.updateApp(item)
                 }
@@ -944,7 +949,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 1
                     dbCall.updateApp(item)
                 }
@@ -952,7 +957,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 2
                     dbCall.updateApp(item)
                 }
@@ -960,7 +965,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 3
                     dbCall.updateApp(item)
                 }
@@ -968,7 +973,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 4
                     dbCall.updateApp(item)
                 }
@@ -976,7 +981,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 5
                     dbCall.updateApp(item)
                 }
@@ -984,7 +989,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
-                 lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 6
                     dbCall.updateApp(item)
                 }
@@ -992,7 +997,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 7
                     dbCall.updateApp(item)
                 }
@@ -1000,7 +1005,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 8
                     dbCall.updateApp(item)
                 }
@@ -1008,7 +1013,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 9
                     dbCall.updateApp(item)
                 }
@@ -1016,7 +1021,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 10
                     dbCall.updateApp(item)
                 }
@@ -1024,7 +1029,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 11
                     dbCall.updateApp(item)
                 }
@@ -1032,7 +1037,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 12
                     dbCall.updateApp(item)
                 }
@@ -1040,7 +1045,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 13
                     dbCall.updateApp(item)
                 }
@@ -1048,7 +1053,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 14
                     dbCall.updateApp(item)
                 }
@@ -1056,7 +1061,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 15
                     dbCall.updateApp(item)
                 }
@@ -1064,7 +1069,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 16
                     dbCall.updateApp(item)
                 }
@@ -1072,7 +1077,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 17
                     dbCall.updateApp(item)
                 }
@@ -1080,7 +1085,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 18
                     dbCall.updateApp(item)
                 }
@@ -1088,7 +1093,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = 19
                     dbCall.updateApp(item)
                 }

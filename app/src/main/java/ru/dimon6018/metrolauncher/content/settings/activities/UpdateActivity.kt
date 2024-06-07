@@ -233,6 +233,7 @@ class UpdateActivity: AppCompatActivity() {
         autoUpdateCheckBox?.isEnabled = PREFS!!.isUpdateNotificationEnabled
         when (PREFS!!.updateState) {
             1 -> {
+                //checking for updates state
                 check!!.visibility = View.GONE
                 checkingSub!!.visibility = View.VISIBLE
                 progressLayout!!.visibility = View.GONE
@@ -241,6 +242,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.VISIBLE
             }
             2 -> {
+                // dowloading state
                 checkingSub!!.visibility = View.GONE
                 check!!.visibility = View.GONE
                 progressLayout!!.visibility = View.VISIBLE
@@ -255,6 +257,7 @@ class UpdateActivity: AppCompatActivity() {
                 updateDetails!!.visibility = View.GONE
             }
             3 -> {
+                // up to date
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.up_to_date)
                 check!!.visibility = View.VISIBLE
@@ -264,6 +267,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.GONE
             }
             4 -> {
+                // ready to install
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.ready_to_install)
                 check!!.visibility = View.VISIBLE
@@ -273,6 +277,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.VISIBLE
             }
             5 -> {
+                // error
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.update_failed)
                 check!!.visibility = View.VISIBLE
@@ -282,6 +287,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.GONE
             }
             6 -> {
+                // ready for download
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.ready_to_download)
                 check!!.visibility = View.VISIBLE
@@ -291,6 +297,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.VISIBLE
             }
             7 -> {
+                // BETA is ready for download
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.ready_to_download_beta)
                 check!!.visibility = View.VISIBLE
@@ -300,6 +307,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.VISIBLE
             }
             8 -> {
+                // current version is newer
                 checkingSub!!.visibility = View.VISIBLE
                 checkingSub!!.text = getString(R.string.update_failed_version_bigger_than_server)
                 check!!.visibility = View.VISIBLE
@@ -309,6 +317,7 @@ class UpdateActivity: AppCompatActivity() {
                 cancelDownload!!.visibility = View.GONE
             }
             0 -> {
+                // default
                 check!!.visibility = View.VISIBLE
                 check!!.text = getString(R.string.check_for_updates)
                 checkingSub!!.visibility = View.GONE
@@ -486,15 +495,16 @@ class UpdateActivity: AppCompatActivity() {
     }
     companion object {
         const val URL: String = "https://github.com/queuejw/mpl_updates/releases/download/release/update.xml"
-        const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/beta/MPL-beta.apk"
+        const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-beta.apk"
+        const val URL_EXP_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-exp.apk"
         const val URL_RELEASE_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
 
         fun downloadXml(link: String) {
             Log.i("CheckForUpdates", "download xml")
             val url = URL(link)
-            val connection = url.openConnection() as HttpURLConnection
-            connection.connectTimeout = 15000
             try {
+                val connection = url.openConnection() as HttpURLConnection
+                connection.connectTimeout = 15000
                 val input = connection.inputStream
                 val parser = UpdateDataParser()
                 parser.parse(input)

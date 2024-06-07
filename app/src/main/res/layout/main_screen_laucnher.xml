@@ -21,10 +21,10 @@
         android:layout_height="@dimen/navbarHeight"
         android:layout_gravity="bottom"
         app:itemIconSize="32dp"
+        app:itemPaddingTop="24dp"
         app:itemRippleColor="@null"
         app:itemActiveIndicatorStyle="@color/transparent"
         app:itemIconTint="?attr/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:menu="@menu/start_menu" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

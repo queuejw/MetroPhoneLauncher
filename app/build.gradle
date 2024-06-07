@@ -15,8 +15,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 34
-        versionCode 40
-        versionName "1.0 Pre-Alpha 4.9.1"
+        versionCode 41
+        versionName "1.0 Pre-Alpha 4.9.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -43,19 +43,20 @@ android {
 }
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.7.0-rc01'
+    ksp "androidx.room:room-compiler:2.6.1"
+
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.annotation:annotation:1.8.0'
-    implementation 'com.google.android.material:material:1.13.0-alpha02'
+    implementation 'com.google.android.material:material:1.13.0-alpha03'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.fragment:fragment-ktx:1.7.1'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.0"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
-    ksp "androidx.room:room-compiler:2.6.1"
 
     implementation project(path: ':SpannedGridLayoutManager')
     implementation project(path: ':liboverscroll')
@@ -64,8 +65,7 @@ dependencies {
     implementation 'io.coil-kt.coil3:coil:3.0.0-alpha06'
     implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06'
 
-    //Crash with ViewModel 2.8.0 https://github.com/square/leakcanary/issues/2677
-    //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

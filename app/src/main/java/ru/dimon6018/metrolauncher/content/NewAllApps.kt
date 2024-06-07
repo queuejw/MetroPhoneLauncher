@@ -38,6 +38,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -110,6 +111,9 @@ class NewAllApps: Fragment() {
 
     private var shouldShowTip = false
 
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         contextFragment = context
@@ -156,7 +160,7 @@ class NewAllApps: Fragment() {
         }
         searchBtn!!.setOnClickListener { searchFunction() }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        lifecycleScope.launch(Dispatchers.Default) {
+        lifecycleScope.launch(defaultDispatcher) {
             if(contextFragment == null) {
                 contextFragment = context
             }
@@ -171,7 +175,7 @@ class NewAllApps: Fragment() {
             val lm = LinearLayoutManager(contextFragment)
             setAlphabetRecyclerView()
             shouldShowTip = PREFS!!.pref.getBoolean("tip2Enabled", true)
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 searchBtnBack!!.setOnClickListener {
                     if(isListLoaded) {
                         disableSearch()
@@ -293,13 +297,13 @@ class NewAllApps: Fragment() {
         super.onDestroyView()
         unregisterBroadcast()
     }
-    private fun setAlphabetRecyclerView() {
+    private suspend fun setAlphabetRecyclerView() {
         if(contextFragment == null) {
             contextFragment = context
         }
         adapterAlphabet = AlphabetAdapter(getAlphabetList())
         val lm = GridLayoutManager(contextFragment!!, 4)
-        activity?.runOnUiThread {
+        withContext(mainDispatcher) {
             alphabetLayout?.setOnClickListener {
                 hideAlphabet()
             }
@@ -400,7 +404,7 @@ class NewAllApps: Fragment() {
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         progressBar!!.showProgressBar()
         recyclerView?.alpha = 0.5f
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(defaultDispatcher) {
             appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
             withContext(Dispatchers.Main) {
                 appAdapter?.setData(appList!!, true)
@@ -422,7 +426,7 @@ class NewAllApps: Fragment() {
         search!!.visibility = View.VISIBLE
         search!!.isFocusable = true
         searchBtnBack!!.visibility = View.VISIBLE
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(defaultDispatcher) {
             removeHeaders()
             activity?.runOnUiThread {
                 setRecyclerPadding(0)
@@ -470,7 +474,7 @@ class NewAllApps: Fragment() {
             return
         }
         progressBar!!.showProgressBar()
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(defaultDispatcher) {
             var temp = appList!!.size
             while (temp != 0) {
                 temp -= 1
@@ -479,7 +483,7 @@ class NewAllApps: Fragment() {
                     appList!!.remove(item)
                 }
             }
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 appAdapter?.setData(appList!!, true)
                 progressBar!!.hideProgressBar()
             }
@@ -580,7 +584,7 @@ class NewAllApps: Fragment() {
             val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
             val info = popupView.findViewById<MaterialCardView>(R.id.infoApp)
             var isAppAlreadyPinned = false
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(defaultDispatcher) {
                 val dbList = dbCall.getJustApps()
                 dbList.forEach {
                     if (it.appPackage == appPackage) {
@@ -588,7 +592,7 @@ class NewAllApps: Fragment() {
                         return@forEach
                     }
                 }
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     if(isAppAlreadyPinned) {
                         pin.isEnabled = false
                         pin.alpha = 0.5f
@@ -628,7 +632,7 @@ class NewAllApps: Fragment() {
             }
         }
         private fun insertNewApp(text: String, packag: String) {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch(defaultDispatcher) {
                 val dBlist = dbCall.getJustApps()
                 dBlist.forEach {
                     if(it.appPackage == packag) {
