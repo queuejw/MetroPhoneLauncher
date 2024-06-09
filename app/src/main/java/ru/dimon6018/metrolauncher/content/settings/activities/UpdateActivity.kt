@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -152,7 +153,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             isUpdateDownloading = false
             manager?.remove(downloadId!!)
-            deleteUpdateFile()
+            deleteUpdateFile(this)
             refreshUi()
         }
         if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
@@ -176,16 +177,6 @@ class UpdateActivity: AppCompatActivity() {
             .setPositiveButton(getString(R.string.no)){ dialog.dismiss()
             }
         dialog.show()
-    }
-    private fun deleteUpdateFile() {
-        try {
-            val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-            val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
-            this.contentResolver.delete(uri, null, null)
-        } catch (e: IOException) {
-            saveError(e.toString(), db!!)
-            refreshUi()
-        }
     }
     private fun getUpdateMessage(): String {
         return if(UpdateDataParser.updateMsg == null) {
@@ -387,7 +378,7 @@ class UpdateActivity: AppCompatActivity() {
     private fun downloadFile(fileName: String, url: String) {
         coroutineDownloadingScope.launch {
             try {
-                deleteUpdateFile()
+                deleteUpdateFile(this@UpdateActivity)
             } catch (e: IOException) {
                 saveError(e.toString(), db!!)
                 PREFS!!.setUpdateState(5)
@@ -535,6 +526,15 @@ class UpdateActivity: AppCompatActivity() {
                 activity.startActivity(intent)
             } catch (e: Exception) {
                 Log.e("installAPK", e.toString())
+            }
+        }
+        fun deleteUpdateFile(context: Context) {
+            try {
+                val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
+                val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+                context.contentResolver.delete(uri, null, null)
+            } catch (e: IOException) {
+                Log.e("Update", e.toString())
             }
         }
     }

@@ -15,6 +15,7 @@ MPL isn't ready yet, but it already has some cool features you might like. See w
 - Lots of customizations to make the launcher perfect
 - Ability to receive "Over-The-Air" updates
 - Support icon packs to make icons prettier 
+- Monet (Dynamic Colors) support
 
 And much more...
 
@@ -35,11 +36,11 @@ And much more...
 
 As a reminder, MPL is still in development and some features may not work or may be missing.
 
-1. [Follow this link and download the MPL.apk file](https://github.com/queuejw/MetroPhoneLauncher/releases/latest)
+1. [Open this link and download the MPL.apk file](https://github.com/queuejw/MetroPhoneLauncher/releases/latest)
 
 2. Install the app on your device
 
-3.  Launch the MPLauncher application. Then follow the on-screen instructions.
+3. Launch the MPLauncher application. Then follow the on-screen instructions.
   
 *Where can I find the Launcher settings?*
  

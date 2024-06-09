@@ -126,6 +126,34 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <TextView
+                    android:text="@string/dynamicColor_setting"
+                    android:layout_width="match_parent"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="54dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"/>
+                <TextView
+                    android:text="@string/dynamicColor_switch"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="14dp"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:layout_height="wrap_content"/>
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/dynamicColorSwtich"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:fontFamily="@font/roboto_regular"
+                    android:text="Off"
+                    android:textSize="24sp" />
+
+                <TextView
                     android:text="@string/wallpaper_setting"
                     android:layout_width="match_parent"
                     android:fontFamily="@font/roboto_regular"

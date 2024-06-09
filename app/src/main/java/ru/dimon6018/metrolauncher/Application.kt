@@ -3,6 +3,7 @@ package ru.dimon6018.metrolauncher
 import android.app.Application
 import android.app.UiModeManager
 import android.os.Build
+import com.google.android.material.color.DynamicColors
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 
@@ -17,6 +18,9 @@ class Application : Application() {
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         PREFS = Prefs(applicationContext)
         setNightMode()
+        if(PREFS!!.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
+            DynamicColors.applyToActivitiesIfAvailable(this)
+        }
         super.onCreate()
     }
     fun setNightMode() {

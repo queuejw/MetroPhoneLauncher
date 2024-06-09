@@ -5,12 +5,8 @@ import android.content.SharedPreferences
 
 class Prefs(context: Context) {
 
-    private val prefs: SharedPreferences
+    private val prefs: SharedPreferences = context.getSharedPreferences(FILE_NAME, 0)
     private var isPrefsChanged = false
-
-    init {
-        prefs = context.getSharedPreferences(FILE_NAME, 0)
-    }
 
     fun setWallpaper(bool: Boolean) {
         prefs.edit().putBoolean(WALLPAPER_USING, bool).apply()
@@ -117,7 +113,11 @@ class Prefs(context: Context) {
             // 17 - steel
             // 18 - mauve
             // 19 - taupe
+            // 20 - dynamic colors
             isPrefsChanged = true
+            prefs.edit()
+                .putInt("previous_accent_color", prefs.getInt(ACCENT_COLOR, 5))
+                .apply()
             prefs.edit()
                     .putInt(ACCENT_COLOR, color)
                     .apply()

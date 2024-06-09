@@ -90,7 +90,8 @@ class Utils {
             R.string.color_olive,
             R.string.color_steel,
             R.string.color_mauve,
-            R.string.color_taupe
+            R.string.color_taupe,
+            R.string.color_dynamic
         )
         private val themeStyles = intArrayOf(
             R.style.AppTheme_Lime, R.style.AppTheme_Green, R.style.AppTheme_Emerald,
@@ -99,11 +100,14 @@ class Utils {
             R.style.AppTheme_Magenta, R.style.AppTheme_Crimson, R.style.AppTheme_Red,
             R.style.AppTheme_Orange, R.style.AppTheme_Amber, R.style.AppTheme_Yellow,
             R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
-            R.style.AppTheme_Mauve, R.style.AppTheme_Taupe
+            R.style.AppTheme_Mauve, R.style.AppTheme_Taupe,  R.style.AppTheme_Dynamic
         )
 
         fun accentColorFromPrefs(context: Context): Int {
             val selectedColor = Prefs(context).accentColor
+            if(selectedColor == 20) {
+                return launcherAccentColor(context.theme)
+            }
             return if (selectedColor >= 0 && selectedColor < accentColors.size) {
                 context.getColor(accentColors[selectedColor])
             } else {

@@ -20,7 +20,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -119,6 +121,25 @@ class ThemeSettingsActivity : AppCompatActivity() {
             pinAppsToStartSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             pinAppsToStartSwitch.setChecked(isChecked)
         }
+        val dynamicColorSwitch: MaterialSwitch = findViewById(R.id.dynamicColorSwtich)
+        dynamicColorSwitch.setChecked(PREFS!!.accentColor == 20)
+        dynamicColorSwitch.text = if(PREFS!!.accentColor == 20) getString(R.string.on) else getString(R.string.off)
+        dynamicColorSwitch.setOnCheckedChangeListener { _, isChecked ->
+            if(DynamicColors.isDynamicColorAvailable()) {
+                if (isChecked) {
+                    PREFS!!.accentColor = 20
+                } else {
+                    PREFS!!.accentColor = PREFS!!.pref.getInt("previous_accent_color", 5)
+                }
+                dynamicColorSwitch.text =
+                    if (isChecked) getString(R.string.on) else getString(R.string.off)
+                dynamicColorSwitch.setChecked(isChecked)
+                recreate()
+            } else {
+                Snackbar.make(dynamicColorSwitch, getString(R.string.dynamicColor_error), Snackbar.LENGTH_LONG).show()
+            }
+        }
+
         setImg()
        applyWindowInsets(cord)
     }

@@ -186,4 +186,8 @@
     <string name="permissionsError">Some MPL functions require permissions to operate</string>
     <string name="setAsDefaultLauncher">Want to install MPL as your default launcher?</string>
     <string name="tip2">To pin the app, hold it down</string>
+    <string name="dynamicColor_setting">You can use the color of your wallpaper for an accent color</string>
+    <string name="dynamicColor_switch">Use dynamic colors</string>
+    <string name="color_dynamic">dynamic</string>
+    <string name="dynamicColor_error">This feature is not supported on your device.</string>
 </resources>
