@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 34
         versionCode 42
-        versionName "1.0 Pre-Alpha 4.9.3"
+        versionName "1.0 Pre-Alpha 4.9.3.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -50,12 +50,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0-alpha03'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.fragment:fragment-ktx:1.7.1'
+    implementation 'androidx.fragment:fragment-ktx:1.8.0'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.1"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.2"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.2"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
 
     implementation project(path: ':SpannedGridLayoutManager')
@@ -65,7 +65,7 @@ dependencies {
     implementation 'io.coil-kt.coil3:coil:3.0.0-alpha06'
     implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06'
 
-  //  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
