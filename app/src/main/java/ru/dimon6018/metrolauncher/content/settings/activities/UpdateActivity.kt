@@ -156,7 +156,7 @@ class UpdateActivity: AppCompatActivity() {
             deleteUpdateFile(this)
             refreshUi()
         }
-        if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true)) {
+        if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions()) {
             showPermsDialog()
         }
     }

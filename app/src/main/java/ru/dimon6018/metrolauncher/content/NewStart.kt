@@ -54,6 +54,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -194,7 +195,7 @@ class NewStart: Fragment(), OnStartDragListener {
         Log.d("Start", "start observer")
         if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
             Log.d("Start", "observer has not observers. continue")
-            appsDbCall?.getApps()?.asLiveData()?.observe(viewLifecycleOwner) {
+            appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
                         Log.d("flow", "update list")
@@ -206,7 +207,7 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun stopObserver() {
         Log.d("Start", "stop observer")
-        appsDbCall?.getApps()?.asLiveData()?.removeObservers(viewLifecycleOwner)
+        appsDbCall?.getApps()?.asLiveData()?.removeObservers(this.viewLifecycleOwner)
     }
     override fun onResume() {
         super.onResume()
@@ -237,9 +238,10 @@ class NewStart: Fragment(), OnStartDragListener {
             if (viewHolder.itemViewType == mAdapter?.spaceType) {
                 return
             }
-            if (mAdapter?.isEditMode == true) {
-                mItemTouchHelper!!.startDrag(viewHolder)
+            if (mAdapter?.isEditMode == false) {
+                mAdapter?.enableEditMode()
             }
+            mItemTouchHelper!!.startDrag(viewHolder)
         }
     }
     private fun registerBroadcast() {
@@ -480,32 +482,10 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         fun startDismissTilesAnim(item: AppEntity) {
             lifecycleScope.launch(defaultDispatcher) {
-                val animSet = AnimationSet(false)
-                val slideLeftAnim: Animation =
-                    AnimationUtils.loadAnimation(context, R.anim.slide_left)
-                slideLeftAnim.duration = 150
-                val anim = Flip3dAnimationHorizontal(0f, -90f, 0f, 0f)
-                anim.duration = 360
-                var dur = 0L
-                animSet.addAnimation(slideLeftAnim)
-                animSet.addAnimation(anim)
-                for (i in 0..<list.size) {
-                    val holder = mRecyclerView?.findViewHolderForAdapterPosition(i)
-                    if (holder != null) {
-                        if (holder.itemViewType != spaceType) {
-                            Log.d("anim", "holder pos: $i , name: ${list[i].appLabel}")
-                            dur += 50L
-                            anim.startOffset = dur
-                            Log.d("anim", "offset: ${anim.startOffset}")
-                            withContext(Dispatchers.Main) {
-                                Log.d("anim", "play anim")
-                                holder.itemView.startAnimation(anim)
-                                delay(100)
-                            }
-                        }
-                    }
+                //TODO animation
+                withContext(mainDispatcher) {
+                    startApp(item.appPackage)
                 }
-                // startApp(item.appPackage)
             }
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
@@ -842,8 +822,11 @@ class NewStart: Fragment(), OnStartDragListener {
                             }
                         }
                     } else {
-                       // mAdapter?.startDismissTilesAnim(item)
-                        startApp(item.appPackage)
+                        if(EXP_PREFS!!.getAnimationPref) {
+                            mAdapter?.startDismissTilesAnim(item)
+                        } else {
+                            startApp(item.appPackage)
+                        }
                     }
                 }
                 mContainer.setOnLongClickListener {
