@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -40,9 +42,11 @@ import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
+import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -66,7 +70,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
-
 
 class NewAllApps: Fragment() {
 
@@ -381,7 +384,6 @@ class NewAllApps: Fragment() {
 
     override fun onResume() {
         if(isAppOpened && !isStartMenuOpened) {
-            Log.d("resumeStart", "start enter animation")
             activity?.onBackPressedDispatcher?.onBackPressed()
             frame?.visibility = View.VISIBLE
         }
@@ -618,16 +620,66 @@ class NewAllApps: Fragment() {
                 isWindowVisible = false
             }
         }
+        private fun startDismissAnim(item: App) {
+            if (recyclerView == null || appAdapter == null) {
+                Log.d("resumeStart", "something is null")
+                return
+            }
+            for(i in 0..<recyclerView!!.childCount) {
+                val itemView = recyclerView!!.getChildAt(i) ?: continue
+                val animatorSet = AnimatorSet()
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
+                    ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                )
+                animatorSet.setDuration((200 + (i * 2)).toLong())
+                animatorSet.start()
+            }
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(recyclerView!!, "rotationY", 0f, -90f),
+                ObjectAnimator.ofFloat(recyclerView!!, "translationX", 0f, -600f),
+                ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0f)
+            )
+            animatorSet.setDuration(325)
+            animatorSet.start()
+            startAppDelay(item)
+        }
+        private fun startAppDelay(item: App) {
+            lifecycleScope.launch {
+                delay(300)
+                runApp(item.appPackage!!)
+                for(i in 0..<recyclerView!!.childCount) {
+                    val itemView = recyclerView!!.getChildAt(i) ?: return@launch
+                    val animatorSet = AnimatorSet()
+                    animatorSet.playTogether(
+                        ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
+                        ObjectAnimator.ofFloat(itemView, "rotation", 45f, 0f),
+                        ObjectAnimator.ofFloat(itemView, "translationX", -500f, 0f),
+                        ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                    )
+                    animatorSet.setDuration(1)
+                    animatorSet.start()
+                }
+                val animatorSet = AnimatorSet()
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(recyclerView!!, "rotationY", -90f, 0f),
+                    ObjectAnimator.ofFloat(recyclerView!!, "translationX", -600f, -0f),
+                    ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0f, 1f)
+                )
+                animatorSet.setDuration(1)
+                animatorSet.start()
+            }
+        }
         private fun runApp(packag: String) {
             frame?.visibility = View.INVISIBLE
+            isAppOpened = true
             when (packag) {
                 "ru.dimon6018.metrolauncher" -> {
                     startActivity(Intent(requireActivity(), SettingsActivity::class.java))
-                    isAppOpened = true
                 }
                 else -> {
                     startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                    isAppOpened = true
                 }
             }
         }
@@ -671,14 +723,14 @@ class NewAllApps: Fragment() {
             val icon: ImageView = itemView.findViewById(R.id.app_icon)
             val label: MaterialTextView = itemView.findViewById(R.id.app_label)
             init {
-                if(PREFS!!.isAllAppsBackgroundEnabled) {
-                    label.setTextColor(accentColor)
-                }
                 itemView.setOnClickListener {
                     val app = list[absoluteAdapterPosition]
                     try {
-                        isAppOpened = true
+                        if(EXP_PREFS!!.getAnimationPref) {
+                            startDismissAnim(app)
+                        } else {
                         runApp(app.appPackage!!)
+                            }
                     } catch (e: Exception) {
                         Toast.makeText(contextFragment!!, getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
                         recyclerView!!.stopScroll()

@@ -1,7 +1,9 @@
 package ru.dimon6018.metrolauncher.content
 
+import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -18,10 +20,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.widget.EditText
@@ -69,7 +70,6 @@ import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
-import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationHorizontal
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
@@ -114,6 +114,8 @@ class NewStart: Fragment(), OnStartDragListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.start_screen, container, false)
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
+        allAppsButton = v.findViewById(R.id.allAppsButton)
+        allAppsButton?.visibility = View.GONE
         loadingProgressBar = v.findViewById(R.id.progressBarStart)
         loadingProgressBar?.showProgressBar()
         frame = v.findViewById(R.id.startFrame)
@@ -185,6 +187,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 loadingProgressBar?.hideProgressBar()
                 observe()
             }
+
         }
         return v
     }
@@ -194,7 +197,14 @@ class NewStart: Fragment(), OnStartDragListener {
     private fun observe() {
         Log.d("Start", "start observer")
         if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
-            Log.d("Start", "observer has not observers. continue")
+            if(isAppOpened) {
+                if (EXP_PREFS!!.getAnimationPref && mAdapter != null) {
+                    if(!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
+                        mAdapter!!.isTopRight = true
+                    }
+                    setEnterAnim()
+                }
+            }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
@@ -211,16 +221,104 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     override fun onResume() {
         super.onResume()
-        isStartMenuOpened = true
+        observe()
         if(isAppOpened) {
-            Log.d("resumeStart", "start enter animation")
-            //TODO add normal animation
             isAppOpened = false
         }
-        observe()
+        mAdapter?.apply {
+            isBottomRight = false
+            isBottomLeft = false
+            isTopRight = false
+            isTopLeft = false
+        }
         registerBroadcast()
+        isStartMenuOpened = true
     }
-
+    private fun setEnterAnim() {
+        if (mRecyclerView == null || mAdapter == null) {
+            Log.d("resumeStart", "something is null")
+            return
+        }
+        for(i in 0..<mRecyclerView!!.childCount) {
+            Log.d("resumeStart", "start anim")
+            val itemView = mRecyclerView!!.getChildAt(i) ?: continue
+            val animatorSet = AnimatorSet()
+            if (mAdapter!!.isTopLeft) {
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "rotation",
+                        Random.nextInt(25, 45).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "translationX",
+                        Random.nextInt(-500, -250).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                )
+            }
+            if (mAdapter!!.isTopRight) {
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(itemView, "rotationY", -0f, 0f),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "rotation",
+                        Random.nextInt(-45, -25).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "translationX",
+                        Random.nextInt(-500, -250).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                )
+            }
+            if (mAdapter!!.isBottomLeft) {
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "rotation",
+                        Random.nextInt(-45, -25).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "translationX",
+                        Random.nextInt(-500, -250).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                )
+            }
+            if (mAdapter!!.isBottomRight) {
+                animatorSet.playTogether(
+                    ObjectAnimator.ofFloat(itemView, "rotationY", 90f, 0f),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "rotation",
+                        Random.nextInt(25, 45).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(
+                        itemView,
+                        "translationX",
+                        Random.nextInt(-500, -250).toFloat(),
+                        0f
+                    ),
+                    ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                )
+            }
+            animatorSet.setDuration(Random.nextLong(250, 700))
+            animatorSet.start()
+        }
+    }
     override fun onPause() {
         super.onPause()
         if(mAdapter?.isEditMode == true) {
@@ -231,6 +329,7 @@ class NewStart: Fragment(), OnStartDragListener {
     override fun onStop() {
         Log.d("Start", "stop")
         stopObserver()
+        isStartMenuOpened = false
         super.onStop()
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
@@ -403,6 +502,11 @@ class NewStart: Fragment(), OnStartDragListener {
         private val animList: MutableList<ObjectAnimator> = ArrayList()
         private var transparentColor: Int? = null
 
+        var isTopLeft = false
+        var isTopRight = false
+        var isBottomLeft = false
+        var isBottomRight = false
+
         init {
             setHasStableIds(true)
             transparentColor = ContextCompat.getColor(context, R.color.transparent)
@@ -480,12 +584,57 @@ class NewStart: Fragment(), OnStartDragListener {
                 defaultTileType -> bindDefaultTile(holder as TileViewHolder, position, list[position])
             }
         }
-        fun startDismissTilesAnim(item: AppEntity) {
-            lifecycleScope.launch(defaultDispatcher) {
-                //TODO animation
-                withContext(mainDispatcher) {
-                    startApp(item.appPackage)
+        private fun startDismissTilesAnim(startPos: Int, item: AppEntity) {
+            if (startPos < mRecyclerView!!.childCount) {
+                val itemView = mRecyclerView!!.getChildAt(startPos)
+                if(list[startPos].tileType == -1 || itemView == null) {
+                    startDismissTilesAnim(startPos + 1, item)
+                    return
                 }
+                val animatorSet = AnimatorSet()
+                if(isTopLeft) {
+                    animatorSet.playTogether(
+                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
+                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(25, 45).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                    )
+                }
+                if(isTopRight) {
+                    animatorSet.playTogether(
+                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
+                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(-45, -25).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                    )
+                }
+                if(isBottomLeft) {
+                    animatorSet.playTogether(
+                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
+                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(-45, -25).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                    )
+                }
+                if(isBottomRight) {
+                    animatorSet.playTogether(
+                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
+                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(25, 45).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
+                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                    )
+                }
+                animatorSet.setDuration(Random.nextLong(300, 400))
+                animatorSet.start()
+                startDismissTilesAnim(startPos + 1, item)
+            } else {
+                startAppDelay(item)
+            }
+        }
+        private fun startAppDelay(item: AppEntity) {
+            lifecycleScope.launch {
+                delay(350)
+                startApp(item.appPackage)
             }
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
@@ -589,9 +738,9 @@ class NewStart: Fragment(), OnStartDragListener {
             Log.d("ItemMove", "from pos: $fromPosition")
             Log.d("ItemMove", "to pos: $toPosition")
             if (fromPosition <= toPosition) {
-                Collections.rotate(list.subList(fromPosition, toPosition + 1), -1);
+                Collections.rotate(list.subList(fromPosition, toPosition + 1), -1)
             } else {
-                Collections.rotate(list.subList(toPosition, fromPosition + 1), 1);
+                Collections.rotate(list.subList(toPosition, fromPosition + 1), 1)
             }
             notifyItemMoved(fromPosition, toPosition)
         }
@@ -798,6 +947,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
         }
+        @SuppressLint("ClickableViewAccessibility")
         inner class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
             private val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
             val mContainer: FrameLayout = v.findViewById(R.id.container)
@@ -809,31 +959,62 @@ class NewStart: Fragment(), OnStartDragListener {
                 mCardContainer.apply {
                     strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
-                mContainer.setOnClickListener {
-                    val item = list[absoluteAdapterPosition]
-                    if (isEditMode) {
-                        itemView.rotation = 0f
-                        lifecycleScope.launch(defaultDispatcher) {
-                            item.isSelected = true
-                            appsDbCall!!.insertItem(item)
-                            withContext(Dispatchers.Main) {
-                                showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
-                                notifyItemChanged(absoluteAdapterPosition)
-                            }
-                        }
-                    } else {
-                        if(EXP_PREFS!!.getAnimationPref) {
-                            mAdapter?.startDismissTilesAnim(item)
-                        } else {
-                            startApp(item.appPackage)
+                mContainer.setOnTouchListener { view, event ->
+                    val x = event.x
+                    val y = event.y
+                    val left = view.left
+                    val top = view.top
+                    val right = view.right
+                    val bottom = view.bottom
+
+                    isTopLeft =
+                        x >= left && x <= left + view.width / 2 && y >= top && y <= top + view.height/ 2
+
+                    isTopRight =
+                        x >= (left + view.width / 2) && x <= right && y >= top && y <= top + view.height / 2
+
+                    isBottomLeft =
+                        x >= left && x <= left + view.width / 2 && y >= top + view.height / 2 && y <= bottom
+
+                    isBottomRight =
+                        x >= (left + view.width / 2) && x <= right && y >= top + view.height / 2 && y <= bottom
+
+                    when(event.action) {
+                        MotionEvent.ACTION_UP -> {
+                            handleClick()
                         }
                     }
+                    return@setOnTouchListener true
                 }
                 mContainer.setOnLongClickListener {
-                    if(!isEditMode) {
-                        enableEditMode()
-                    }
+                    handleLongClick()
                     true
+                }
+            }
+            private fun handleClick() {
+                val item = list[absoluteAdapterPosition]
+                if (isEditMode) {
+                    itemView.rotation = 0f
+                    lifecycleScope.launch(defaultDispatcher) {
+                        item.isSelected = true
+                        appsDbCall!!.insertItem(item)
+                        withContext(Dispatchers.Main) {
+                            showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
+                            notifyItemChanged(absoluteAdapterPosition)
+                        }
+                    }
+                } else {
+                    if(EXP_PREFS!!.getAnimationPref) {
+                        mAdapter?.startDismissTilesAnim(0, item)
+                    } else {
+                        startApp(item.appPackage)
+                    }
+                }
+            }
+
+            private fun handleLongClick() {
+                if(!isEditMode) {
+                    enableEditMode()
                 }
             }
             override fun onItemSelected() {}

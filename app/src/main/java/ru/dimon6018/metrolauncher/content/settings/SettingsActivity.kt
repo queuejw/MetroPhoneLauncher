@@ -1,9 +1,12 @@
 package ru.dimon6018.metrolauncher.content.settings
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -12,6 +15,7 @@ import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
 import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
@@ -29,7 +33,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
-
 class SettingsActivity : AppCompatActivity() {
 
     private var themeSub: TextView? = null
@@ -37,6 +40,22 @@ class SettingsActivity : AppCompatActivity() {
     private var iconsSub: TextView? = null
 
     private var isDialogEnabled = true
+    private var animationEnabled = true
+    private var isEnter = false
+
+    private var themeBtn: MaterialCardView? = null
+    private var allAppsBtn: MaterialCardView? = null
+    private var tilesBtn: MaterialCardView? = null
+    private var aboutBtn: MaterialCardView? = null
+    private var feedbackBtn: MaterialCardView? = null
+    private var updateBtn: MaterialCardView? = null
+    private var navBarBtn: MaterialCardView? = null
+    private var weatherBtm: MaterialCardView? = null
+    private var iconBtn: MaterialCardView? = null
+    private var expBtn: MaterialCardView? = null
+    private var leaks: MaterialCardView? = null
+
+    private var cord: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
@@ -44,38 +63,121 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val cord: CoordinatorLayout = findViewById(R.id.coordinator)
+        cord = findViewById(R.id.coordinator)
 
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
 
-        applyWindowInsets(cord)
+        applyWindowInsets(cord!!)
     }
     override fun onStart() {
         super.onStart()
-        val themeBtn = findViewById<MaterialCardView>(R.id.themeSetting)
-        themeBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)) }
-        val allAppsBtn = findViewById<MaterialCardView>(R.id.allAppsSetting)
-        allAppsBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java)) }
-        val tilesBtn = findViewById<MaterialCardView>(R.id.tilesSetting)
-        tilesBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java)) }
-        val aboutBtn = findViewById<MaterialCardView>(R.id.aboutSetting)
-        aboutBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java)) }
-        val feedbackBtn = findViewById<MaterialCardView>(R.id.feedbackSetting)
-        feedbackBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java)) }
-        val updateBtn = findViewById<MaterialCardView>(R.id.updatesSetting)
-        updateBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java)) }
-        val navBarBtm = findViewById<MaterialCardView>(R.id.navbarSetting)
-        navBarBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java)) }
-        val weatherBtm = findViewById<MaterialCardView>(R.id.weatherSetting)
-        weatherBtm.setOnClickListener { startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java)) }
-        val iconBtn = findViewById<MaterialCardView>(R.id.iconsSetting)
-        iconBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java)) }
-        val expBtn = findViewById<MaterialCardView>(R.id.expSetting)
-        expBtn.setOnClickListener { startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java)) }
-        val leaks = findViewById<MaterialCardView>(R.id.leaks)
-        leaks.setOnClickListener { startActivity(LeakCanary.newLeakDisplayActivityIntent()) }
+        themeBtn = findViewById(R.id.themeSetting)
+        themeBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
+        }
+        allAppsBtn = findViewById(R.id.allAppsSetting)
+        allAppsBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
+        }
+        tilesBtn = findViewById(R.id.tilesSetting)
+        tilesBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
+        }
+        aboutBtn = findViewById(R.id.aboutSetting)
+        aboutBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
+        }
+        feedbackBtn = findViewById(R.id.feedbackSetting)
+        feedbackBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
+        }
+        updateBtn = findViewById(R.id.updatesSetting)
+        updateBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
+        }
+        navBarBtn = findViewById(R.id.navbarSetting)
+        navBarBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
+        }
+        weatherBtm = findViewById(R.id.weatherSetting)
+        weatherBtm?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
+        }
+        iconBtn = findViewById(R.id.iconsSetting)
+        iconBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
+        }
+        expBtn = findViewById(R.id.expSetting)
+        expBtn?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
+        }
+        leaks = findViewById(R.id.leaks)
+        leaks?.setOnClickListener {
+            isEnter = true
+            startAnim()
+            startActivity(LeakCanary.newLeakDisplayActivityIntent())
+        }
+    }
+    private fun startAnim() {
+        if(animationEnabled && EXP_PREFS!!.getAnimationPref) {
+            setupAnim(cord!!, 320)
+            setupAnim(themeBtn!!, 300)
+            setupAnim(allAppsBtn!!, 320)
+            setupAnim(tilesBtn!!, 340)
+            setupAnim(iconBtn!!, 360)
+            setupAnim(feedbackBtn!!, 380)
+            setupAnim(weatherBtm!!, 400)
+            setupAnim(updateBtn!!, 420)
+            setupAnim(navBarBtn!!, 440)
+            setupAnim(aboutBtn!!, 460)
+            setupAnim(leaks!!, 480)
+            setupAnim(expBtn!!, 500)
+            animationEnabled = false
+            isEnter = false
+        }
+    }
+    private fun setupAnim(view: View?, duration: Long) {
+        if(view == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(!isEnter) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(view, "rotationY", 30f, 0f),
+                ObjectAnimator.ofFloat(view, "rotation", 10f, 0f),
+                ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(view, "rotationY", 30f, 0f),
+                ObjectAnimator.ofFloat(view, "rotation", -10f, 0f),
+                ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+            )
+        }
+        animatorSet.setDuration(duration)
+        animatorSet.start()
     }
     private fun setAppTheme() {
         if (PREFS!!.isLightThemeUsed) {
@@ -89,7 +191,6 @@ class SettingsActivity : AppCompatActivity() {
                 (application as Application).setNightMode()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
             }
         }
     }
@@ -129,5 +230,10 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
                 }.show()
         }
+        startAnim()
+    }
+    override fun onPause() {
+        super.onPause()
+        animationEnabled = true
     }
 }
