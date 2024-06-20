@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.helpers
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 
 class ItemTouchCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
     override fun getMovementFlags(recyclerView: RecyclerView,
@@ -12,8 +13,12 @@ class ItemTouchCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouc
         return makeMovementFlags(dragFlags, swipeFlags)
     }
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
-        mAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
-        return true
+        if(!PREFS!!.isStartBlocked) {
+            mAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+            return true
+        } else {
+            return false
+        }
     }
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {
     }

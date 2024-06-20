@@ -7,12 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textview.MaterialTextView
 import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
@@ -35,9 +35,9 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTh
 
 class SettingsActivity : AppCompatActivity() {
 
-    private var themeSub: TextView? = null
-    private var navSub: TextView? = null
-    private var iconsSub: TextView? = null
+    private var themeSub: MaterialTextView? = null
+    private var navSub: MaterialTextView? = null
+    private var iconsSub: MaterialTextView? = null
 
     private var isDialogEnabled = true
     private var animationEnabled = true

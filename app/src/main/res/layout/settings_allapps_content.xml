@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/settingsBtnInAllApps"
         android:layout_width="match_parent"
         android:fontFamily="@font/roboto_regular"
@@ -14,7 +14,7 @@
         android:textSize="20sp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"/>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/settingsBtnInAllApps_sub"
         android:layout_width="match_parent"
         android:layout_marginStart="8dp"
@@ -32,7 +32,7 @@
         android:fontFamily="@font/roboto_regular"
         android:text="Off"
         android:textSize="24sp" />
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/alphabetSetting"
         android:layout_width="match_parent"
         android:fontFamily="@font/roboto_regular"
@@ -42,7 +42,7 @@
         android:textSize="20sp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"/>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/alphabetSetting_sub"
         android:layout_width="match_parent"
         android:layout_marginStart="8dp"
@@ -61,7 +61,7 @@
         android:text="Off"
         android:textSize="24sp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/transparent_background_allapps_settings"
         android:layout_width="match_parent"
         android:fontFamily="@font/roboto_regular"
@@ -71,7 +71,7 @@
         android:textSize="20sp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"/>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:text="@string/transparent_background_allapps_switch"
         android:layout_width="match_parent"
         android:layout_marginStart="8dp"

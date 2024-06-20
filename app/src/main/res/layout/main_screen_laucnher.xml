@@ -10,21 +10,69 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <!-- Bottom bar -->
+    <FrameLayout
         android:id="@+id/navigation"
         android:layout_width="match_parent"
         android:layout_height="@dimen/navbarHeight"
         android:layout_gravity="bottom"
-        app:itemIconSize="32dp"
-        app:itemPaddingTop="24dp"
-        app:itemRippleColor="@null"
-        app:itemActiveIndicatorStyle="@color/transparent"
-        app:itemIconTint="?attr/colorPrimary"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        app:menu="@menu/start_menu" />
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" >
+
+        <!-- Control buttons-->
+        <LinearLayout
+            android:id="@+id/navigation_main"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/navigation_start_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_os_windows_8" />
+            <ImageView
+                android:id="@+id/navigation_search_btn"
+                android:layout_width="40dp"
+                android:layout_marginStart="64dp"
+                android:layout_height="40dp"
+                android:scaleX="-1"
+                android:src="@drawable/ic_search" />
+        </LinearLayout>
+        <!-- Search bar in progress-->
+        <LinearLayout
+            android:id="@+id/navigation_searchBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                app:boxStrokeWidth="3dp"
+                app:endIconMode="none">
+
+                <AutoCompleteTextView
+                    android:hint="Search for apps"
+                    android:inputType="text"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="14sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+    </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

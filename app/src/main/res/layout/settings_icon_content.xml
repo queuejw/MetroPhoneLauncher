@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currentIconPackText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,7 +13,7 @@
         android:textSize="20sp"
         android:fontFamily="@font/roboto_regular"
         android:text="@string/current_iconpack"/>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/currentIconPackError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:fontFamily="@font/roboto_light"
         android:text="@string/iconpack_error"/>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/removeIconPack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         app:cornerRadius="0dp"
         app:strokeColor="?attr/colorOnBackground"
         app:strokeWidth="2dp" />
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"

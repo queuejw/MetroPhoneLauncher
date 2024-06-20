@@ -191,4 +191,11 @@
     <string name="dynamicColor_switch">Использовать динамические цвета</string>
     <string name="color_dynamic">динамический</string>
     <string name="dynamicColor_error">Эта функция не поддерживается на вашем устройстве.</string>
+    <string name="change_navbar_icon_tip">Вы можете изменить иконку меню Пуск</string>
+    <string name="current_icon">Текущая иконка:</string>
+    <string name="choose_icon">выбрать иконку</string>
+    <string name="search_bar_tip">Вы можете использовать строку поиска, вместо кнопок навигации</string>
+    <string name="use_search_bar">Использовать строку поиска</string>
+    <string name="block_start_tip">Вы можете отключить редактирование рабочего стола, чтобы защитить его от изменений</string>
+    <string name="block_start">Заблокировать рабочий стол</string>
 </resources>

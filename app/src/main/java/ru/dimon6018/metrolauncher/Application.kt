@@ -4,7 +4,7 @@ import android.app.Application
 import android.app.UiModeManager
 import android.os.Build
 import com.google.android.material.color.DynamicColors
-import ru.dimon6018.metrolauncher.content.ExperimentPrefs
+import ru.dimon6018.metrolauncher.content.data.ExperimentPrefs
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 

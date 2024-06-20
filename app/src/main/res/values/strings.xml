@@ -190,4 +190,11 @@
     <string name="dynamicColor_switch">Use dynamic colors</string>
     <string name="color_dynamic">dynamic</string>
     <string name="dynamicColor_error">This feature is not supported on your device.</string>
+    <string name="change_navbar_icon_tip">You can change the Start menu icon</string>
+    <string name="current_icon">Current icon:</string>
+    <string name="choose_icon">choose an icon</string>
+    <string name="search_bar_tip">You can use the search bar instead of the navigation buttons</string>
+    <string name="use_search_bar">Use the search bar</string>
+    <string name="block_start_tip">You can lock desktop editing to protect it from being modified</string>
+    <string name="block_start">Lock the Start screen</string>
 </resources>

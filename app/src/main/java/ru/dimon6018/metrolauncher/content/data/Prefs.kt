@@ -194,6 +194,27 @@ class Prefs(context: Context) {
     val getTilesTransparency: Float
         get() = prefs.getFloat(TILES_TRANSPARENCY, 1.0f)
 
+    fun setNavBarIcon(icon: Int) {
+        // 0 - windows (default)
+        // 1 - windows old
+        // 2 - android
+        prefs.edit().putInt(BOTTOM_BAR_MAIN_ICON, icon).apply()
+    }
+    val navBarIconValue: Int
+        get() = prefs.getInt(BOTTOM_BAR_MAIN_ICON, 0)
+
+    fun setSearchBar(value: Boolean) {
+        prefs.edit().putBoolean(SEARCH_BAR, value).apply()
+    }
+    val isSearchBarEnabled: Boolean
+        get() = prefs.getBoolean(SEARCH_BAR, false)
+
+    fun blockStartScreen(value: Boolean) {
+        prefs.edit().putBoolean(START_BLOCKED, value).apply()
+    }
+    val isStartBlocked: Boolean
+        get() = prefs.getBoolean(START_BLOCKED, false)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -217,5 +238,8 @@ class Prefs(context: Context) {
         const val TRANSPARENT_TILES = "isTilesTransparent"
         const val ALL_APPS_BACKGROUND = "allAppsWallpaperBackground"
         const val TILES_TRANSPARENCY = "tilesTransparency"
+        const val SEARCH_BAR = "searchBar"
+        const val BOTTOM_BAR_MAIN_ICON = "bottomBarIcon"
+        const val START_BLOCKED = "isStartScreenBlocked"
     }
 }

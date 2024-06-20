@@ -19,7 +19,7 @@
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_light"
@@ -27,7 +27,7 @@
                             android:textSize="24sp"
                             android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/theme_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -55,7 +55,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/allApps_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -83,7 +83,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tiles_Setting_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -111,7 +111,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/icons_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -131,14 +131,14 @@
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_light"
                             android:text="@string/feedback"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_light"
@@ -158,7 +158,7 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -166,7 +166,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/weather_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -186,14 +186,14 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
                         android:text="@string/launcher_update"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -212,7 +212,7 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
@@ -220,7 +220,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"/>
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/navbar_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -239,14 +239,14 @@
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_light"
                             android:text="@string/about"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_light"
@@ -265,14 +265,14 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
                         android:text="LeakCanary"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_medium"
@@ -291,14 +291,14 @@
                     android:layout_width="match_parent"
                     android:orientation="vertical"
                     android:layout_height="match_parent">
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_light"
                         android:text="Experiments"
                         android:textSize="24sp"
                         android:textStyle="bold"/>
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_medium"

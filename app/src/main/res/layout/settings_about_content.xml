@@ -10,14 +10,14 @@
             android:animateLayoutChanges="true"
             android:layout_height="wrap_content">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/phone_information"
             android:textSize="24sp" />
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="@string/phone_info"
                 android:layout_width="match_parent"
                 android:id="@+id/phoneinfo"
@@ -47,7 +47,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:visibility="gone">
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                     android:text="@string/phone_moreinfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,46 +55,46 @@
                     android:fontFamily="@font/roboto_regular"
                     android:textSize="17sp"/>
         </LinearLayout>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="@string/help_contacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="@string/get_help"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="17sp"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="Email: dimon6018t@gmail.com"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="17sp" android:autoLink="email"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="@string/online_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="GitHub: github.com/queuejw/metrophonelauncher/"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="17sp" android:autoLink="web"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="Telegram: t.me/mplauncher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="17sp" android:autoLink="web"/>
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
                 android:text="2023-2024 queuejw &amp; dimon6018"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,6 +126,7 @@
             app:strokeColor="?attr/colorOnBackground"
             android:textColor="?attr/colorOnBackground"
             app:strokeWidth="2dp"
+            android:alpha="0.5"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="24dp"
@@ -143,6 +144,7 @@
             app:strokeColor="?attr/colorOnBackground"
             android:textColor="?attr/colorOnBackground"
             app:strokeWidth="2dp"
+            android:alpha="0.5"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="8dp"

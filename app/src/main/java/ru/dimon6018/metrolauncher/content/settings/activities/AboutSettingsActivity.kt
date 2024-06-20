@@ -4,11 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
 import ru.dimon6018.metrolauncher.helpers.WPDialog
@@ -33,11 +33,11 @@ class AboutSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_about)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val moreinfo = findViewById<TextView>(R.id.phoneinfo_more)
+        val moreinfo = findViewById<MaterialTextView>(R.id.phoneinfo_more)
         val coord: CoordinatorLayout = findViewById(R.id.coordinator)
         val moreinfobtn = findViewById<MaterialButton>(R.id.moreInfobtn)
         val moreinfolayout = findViewById<LinearLayout>(R.id.moreinfoLayout)
-        val shortPhoneInfo = findViewById<TextView>(R.id.phoneinfo)
+        val shortPhoneInfo = findViewById<MaterialTextView>(R.id.phoneinfo)
         shortPhoneInfo.text = getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
         moreinfobtn.setOnClickListener {
             moreinfo.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)

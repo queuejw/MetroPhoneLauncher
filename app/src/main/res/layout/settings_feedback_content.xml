@@ -6,14 +6,14 @@
     android:animateLayoutChanges="true"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="21sp"
         android:layout_marginTop="2dp"
         android:text="@string/send_launcher_usage" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:textSize="16sp"
         android:alpha="0.8"
         android:layout_marginTop="16dp"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:textSize="24sp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:alpha="0.8"
         android:textSize="18sp"
         android:layout_width="match_parent"
@@ -68,7 +68,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/save1bsod"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
@@ -80,7 +80,7 @@
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/save5bsod"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
@@ -93,7 +93,7 @@
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/save10bsod"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
@@ -106,7 +106,7 @@
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/saveallbsods"
                 android:layout_width="match_parent"
                 android:layout_height="36dp"
@@ -121,7 +121,7 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:alpha="0.8"
         android:layout_height="wrap_content"

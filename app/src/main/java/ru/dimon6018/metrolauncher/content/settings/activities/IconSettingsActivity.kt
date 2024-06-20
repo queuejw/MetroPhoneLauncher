@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.drawable.toBitmap
@@ -28,9 +27,9 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 class IconSettingsActivity: AppCompatActivity() {
 
     private var chooseBtn: MaterialButton? = null
-    private var currentPackTextView: TextView? = null
-    private var currentPackErrorTextView: TextView? = null
-    private var removePack: TextView? = null
+    private var currentPackTextView: MaterialTextView? = null
+    private var currentPackErrorTextView: MaterialTextView? = null
+    private var removePack: MaterialTextView? = null
 
     private var downloadBtn: MaterialButton? = null
 

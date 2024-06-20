@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -14,7 +14,7 @@
         android:text="@string/update_status"
         android:textSize="19sp" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cheking_updates_sub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,28 +29,28 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ProgressBar
+        <androidx.core.widget.ContentLoadingProgressBar
             android:id="@+id/progress"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:progressTint="?attr/colorPrimary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/progessText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/preparing_to_install" />
     </LinearLayout>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/cancel_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/roboto_regular"
         android:text="@string/cancel_update" />
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/updateInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

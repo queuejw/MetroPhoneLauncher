@@ -16,15 +16,15 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.widget.ContentLoadingProgressBar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -49,15 +49,15 @@ import java.net.URL
 
 class UpdateActivity: AppCompatActivity() {
     private var check: MaterialButton? = null
-    private var checkingSub: TextView? = null
+    private var checkingSub: MaterialTextView? = null
     private var autoUpdateCheckBox: MaterialCheckBox? = null
     private var updateNotificationCheckBox: MaterialCheckBox? = null
 
     private var progressLayout: LinearLayout? = null
-    private var progressText: TextView? = null
-    private var cancelDownload: TextView? = null
-    private var updateDetails: TextView? = null
-    private var progressBar: ProgressBar? = null
+    private var progressText: MaterialTextView? = null
+    private var cancelDownload: MaterialTextView? = null
+    private var updateDetails: MaterialTextView? = null
+    private var progressBar: ContentLoadingProgressBar? = null
 
     private var db: BSOD? = null
     private var manager: DownloadManager? = null
@@ -487,7 +487,6 @@ class UpdateActivity: AppCompatActivity() {
     companion object {
         const val URL: String = "https://github.com/queuejw/mpl_updates/releases/download/release/update.xml"
         const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-beta.apk"
-        const val URL_EXP_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-exp.apk"
         const val URL_RELEASE_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
 
         fun downloadXml(link: String) {

@@ -93,7 +93,6 @@ class NewStart: Fragment(), OnStartDragListener {
     private lateinit var frame: ConstraintLayout
 
     private var allAppsButton: MaterialCardView? = null
-    private var currentActivity: Activity? = null
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
     private val hashCache = ArrayMap<String, Icon?>()
@@ -105,7 +104,6 @@ class NewStart: Fragment(), OnStartDragListener {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        currentActivity = activity
         if (PREFS!!.iconPackPackage != "") {
             iconManager = IconPackManager()
             iconManager!!.setContext(context)
@@ -192,7 +190,18 @@ class NewStart: Fragment(), OnStartDragListener {
         return v
     }
     private fun generateIcon(it: AppEntity): Icon? {
-        return recompressIcon(getAppIcon(it.appPackage, it.tileSize, requireContext().packageManager, resources), 90)
+        return if (context != null) {
+            recompressIcon(
+                getAppIcon(
+                    it.appPackage,
+                    it.tileSize,
+                    requireContext().packageManager,
+                    requireContext().resources
+                ), 90
+            )
+        } else {
+            null
+        }
     }
     private fun observe() {
         Log.d("Start", "start observer")
@@ -333,7 +342,7 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onStop()
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
-        if (viewHolder != null) {
+        if (viewHolder != null && !PREFS!!.isStartBlocked) {
             if (viewHolder.itemViewType == mAdapter?.spaceType) {
                 return
             }
@@ -341,6 +350,8 @@ class NewStart: Fragment(), OnStartDragListener {
                 mAdapter?.enableEditMode()
             }
             mItemTouchHelper!!.startDrag(viewHolder)
+        } else {
+            return
         }
     }
     private fun registerBroadcast() {
@@ -1013,7 +1024,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
 
             private fun handleLongClick() {
-                if(!isEditMode) {
+                if(!isEditMode && !PREFS!!.isStartBlocked) {
                     enableEditMode()
                 }
             }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="?attr/colorOnSurface"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <ImageView
+            android:id="@+id/icon0"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_os_windows"
+            app:tint="?attr/colorSurface" />
+
+        <ImageView
+            android:id="@+id/icon1"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="32dp"
+            android:src="@drawable/ic_os_windows_8"
+            app:tint="?attr/colorSurface" />
+
+        <ImageView
+            android:id="@+id/icon2"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="32dp"
+            android:src="@drawable/ic_os_android"
+            app:tint="?attr/colorSurface" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+    </FrameLayout>
+
+</LinearLayout>

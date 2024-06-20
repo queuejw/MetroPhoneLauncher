@@ -38,9 +38,9 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private var chooseThemeBtn: MaterialButton? = null
     private var chooseAccentBtn: MaterialCardView? = null
     private var accentNameTextView: MaterialTextView? = null
-    private var light: TextView? = null
-    private var dark: TextView? = null
-    private var accentTip: TextView? = null
+    private var light: MaterialTextView? = null
+    private var dark: MaterialTextView? = null
+    private var accentTip: MaterialTextView? = null
     private var context: Context? = null
     private var tileImg: ImageView? = null
 
@@ -62,11 +62,11 @@ class ThemeSettingsActivity : AppCompatActivity() {
         light = findViewById(R.id.chooseLight)
         dark = findViewById(R.id.chooseDark)
         tileImg = findViewById(R.id.moreTilesImage)
-        val accentTip: TextView = findViewById(R.id.accentTip)
+        accentTip = findViewById(R.id.accentTip)
         val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
         val spannable: Spannable = SpannableString(textFinal)
         spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
+        accentTip?.setText(spannable, TextView.BufferType.SPANNABLE)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         wallpaperSwitch = findViewById(R.id.wallpaperShowSwtich)
         val pinAppsToStartSwitch: MaterialSwitch = findViewById(R.id.newAppsToStartSwitch)
@@ -92,9 +92,9 @@ class ThemeSettingsActivity : AppCompatActivity() {
             restoreThemeButtonsAndApplyChanges()
         }
         chooseAccentBtn!!.setOnClickListener { AccentDialog.display(supportFragmentManager) }
-        moreTilesSwitch.setChecked(PREFS!!.isMoreTilesEnabled)
+        moreTilesSwitch.isChecked = PREFS!!.isMoreTilesEnabled
         moreTilesSwitch.text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
-        pinAppsToStartSwitch.setChecked(PREFS!!.pinNewApps)
+        pinAppsToStartSwitch.isChecked = PREFS!!.pinNewApps
         pinAppsToStartSwitch.text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
         wallpaperTransparentTilesSwitch = findViewById(R.id.wallpaperTransparentTilesSwtich)
         //wallpaper switches
@@ -139,7 +139,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 Snackbar.make(dynamicColorSwitch, getString(R.string.dynamicColor_error), Snackbar.LENGTH_LONG).show()
             }
         }
-
+        val lockDesktopSwitch: MaterialSwitch = findViewById(R.id.blockStartSwitch)
+        lockDesktopSwitch.isChecked = PREFS!!.isStartBlocked
+        lockDesktopSwitch.text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
+        lockDesktopSwitch.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.blockStartScreen(isChecked)
+            lockDesktopSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+        }
         setImg()
        applyWindowInsets(cord)
     }

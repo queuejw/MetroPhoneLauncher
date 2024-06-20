@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.content
+package ru.dimon6018.metrolauncher.content.data
 
 import android.content.Context
 import android.content.SharedPreferences

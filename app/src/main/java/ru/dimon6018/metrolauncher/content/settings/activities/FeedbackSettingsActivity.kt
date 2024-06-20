@@ -3,7 +3,6 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
@@ -11,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -57,28 +57,28 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             chooseBsodInfoLimitCard.visibility = View.VISIBLE
             setCrashLogLimitBtn!!.visibility = View.GONE
         }
-        val save1bsod: TextView = findViewById(R.id.save1bsod)
+        val save1bsod: MaterialTextView = findViewById(R.id.save1bsod)
         save1bsod.setOnClickListener {
             PREFS!!.setMaxCrashLogs(0)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
             setButtonText(PREFS!!)
         }
-        val save5bsod: TextView = findViewById(R.id.save5bsod)
+        val save5bsod: MaterialTextView = findViewById(R.id.save5bsod)
         save5bsod.setOnClickListener {
             PREFS!!.setMaxCrashLogs(1)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
             setButtonText(PREFS!!)
         }
-        val save10bsod: TextView = findViewById(R.id.save10bsod)
+        val save10bsod: MaterialTextView = findViewById(R.id.save10bsod)
         save10bsod.setOnClickListener {
             PREFS!!.setMaxCrashLogs(2)
             chooseBsodInfoLimitCard.visibility = View.GONE
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
             setButtonText(PREFS!!)
         }
-        val saveallbsods: TextView = findViewById(R.id.saveallbsods)
+        val saveallbsods: MaterialTextView = findViewById(R.id.saveallbsods)
         saveallbsods.setOnClickListener {
             PREFS!!.setMaxCrashLogs(3)
             chooseBsodInfoLimitCard.visibility = View.GONE

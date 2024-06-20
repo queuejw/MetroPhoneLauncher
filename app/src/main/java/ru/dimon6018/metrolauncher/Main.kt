@@ -5,12 +5,16 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +47,16 @@ class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
-    private lateinit var bottomNavigationView: BottomNavigationView
+
+    // bottom bar
+    private lateinit var bottomView: FrameLayout
+    private var bottomMainView: LinearLayout? = null
+    private var bottomViewStartBtn: ImageView? = null
+    private var bottomViewSearchBtn: ImageView? = null
+
+    private var bottomViewSearchBarView: LinearLayout? = null
+
+
 
     private val packageReceiver = PackageChangesReceiver()
 
@@ -133,38 +146,60 @@ class Main : AppCompatActivity() {
         }
     }
     private fun setupNavigationBar() {
-        bottomNavigationView = findViewById(R.id.navigation)
+        bottomView = findViewById(R.id.navigation)
         when(PREFS!!.navBarColor) {
             0 -> {
-                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
+                bottomView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
             }
             1 -> {
-                bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light))
+                bottomView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_light))
             }
             2 -> {
-                bottomNavigationView.setBackgroundColor(accentColorFromPrefs(this))
+                bottomView.setBackgroundColor(accentColorFromPrefs(this))
             }
             3 -> {
-                bottomNavigationView.visibility = View.GONE
+                bottomView.visibility = View.GONE
                 return
             }
             else -> {
-                bottomNavigationView.setBackgroundColor(launcherSurfaceColor(theme))
+                bottomView.setBackgroundColor(launcherSurfaceColor(theme))
             }
         }
-        bottomNavigationView.selectedItemId = R.id.start_apps
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.start_win -> {
-                    viewPager.currentItem = 0
-                    true
+        if(!PREFS!!.isSearchBarEnabled) {
+            bottomMainView = findViewById(R.id.navigation_main)
+            bottomMainView?.visibility = View.VISIBLE
+            bottomViewStartBtn = findViewById(R.id.navigation_start_btn)
+            bottomViewSearchBtn = findViewById(R.id.navigation_search_btn)
+            bottomViewStartBtn?.setImageDrawable(when(PREFS!!.navBarIconValue) {
+                0 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
                 }
-                R.id.start_apps -> {
-                    viewPager.currentItem = 1
-                    true
+                1 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows)
                 }
-                else -> false
+                2 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_android)
+                }
+                else -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
+                }
+            })
+            if(PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
+                bottomViewStartBtn?.setColorFilter(ContextCompat.getColor(this, android.R.color.black))
+                bottomViewSearchBtn?.setColorFilter(ContextCompat.getColor(this, android.R.color.black))
+            } else {
+                bottomViewStartBtn?.setColorFilter(ContextCompat.getColor(this, android.R.color.white))
+                bottomViewSearchBtn?.setColorFilter(ContextCompat.getColor(this, android.R.color.white))
             }
+            bottomViewStartBtn?.setOnClickListener {
+                viewPager.currentItem = 0
+            }
+            bottomViewSearchBtn?.setOnClickListener {
+                viewPager.currentItem = 1
+            }
+        } else {
+            bottomViewSearchBarView = findViewById(R.id.navigation_searchBar)
+            bottomViewSearchBarView?.visibility = View.VISIBLE
         }
     }
     private fun setAppTheme() {
