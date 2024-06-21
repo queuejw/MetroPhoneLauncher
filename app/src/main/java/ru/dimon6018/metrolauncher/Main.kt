@@ -14,13 +14,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -220,9 +218,9 @@ class Main : AppCompatActivity() {
         }
         registerPackageReceiver(this, packageReceiver)
     }
-    override fun onStop() {
+    override fun onDestroy() {
+        super.onDestroy()
         unregisterPackageReceiver(this, packageReceiver)
-        super.onStop()
     }
     class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 2

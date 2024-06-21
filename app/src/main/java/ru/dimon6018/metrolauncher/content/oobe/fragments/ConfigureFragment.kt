@@ -1,39 +1,83 @@
 package ru.dimon6018.metrolauncher.content.oobe.fragments
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 class ConfigureFragment: Fragment() {
 
+    private var main: View? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.oobe_fragment_conf, container, false)
+        main = view
         val back: MaterialButton = view.findViewById(R.id.back)
         val custom: MaterialButton = view.findViewById(R.id.custom)
         val recommended: MaterialButton = view.findViewById(R.id.recommended)
         WelcomeActivity.setText(requireActivity(), getString(R.string.configurePhone))
         back.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
+                }
             }
         }
         custom.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, CustomSettingsFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, CustomSettingsFragment(), "oobe")
+                }
             }
         }
         recommended.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, AdFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, AdFragment(), "oobe")
+                }
             }
         }
         return view
+    }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+            )
+        }
+        animatorSet.setDuration(300)
+        animatorSet.start()
+    }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
     }
 }

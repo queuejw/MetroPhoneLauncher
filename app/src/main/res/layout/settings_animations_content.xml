@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:fontFamily="@font/roboto_regular"
+        android:alpha="0.7"
+        android:text="@string/animations_settings_label"/>
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/tiles_animation_settings_label"
+        android:textSize="20sp" />
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/allapps_animation_settings_label"
+        android:textSize="20sp" />
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/transition_animation_settings_label"
+        android:textSize="20sp" />
+
+</LinearLayout>

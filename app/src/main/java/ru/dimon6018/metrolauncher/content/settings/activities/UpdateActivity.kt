@@ -1,6 +1,8 @@
 package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
@@ -67,12 +69,12 @@ class UpdateActivity: AppCompatActivity() {
     private var coroutineErrorScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var coroutineDownloadingScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
+    private var main: CoordinatorLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_updates)
-        val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        applyWindowInsets(coord)
         db = BSOD.getData(this)
         progressLayout = findViewById(R.id.updateIndicator)
         progressText = findViewById(R.id.progessText)
@@ -159,6 +161,43 @@ class UpdateActivity: AppCompatActivity() {
         if(PREFS!!.pref.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions()) {
             showPermsDialog()
         }
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
+    }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+            )
+        }
+        animatorSet.setDuration(400)
+        animatorSet.start()
+    }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
     }
     private fun showPermsDialog() {
         val dialog = WPDialog(this).setTopDialog(true)

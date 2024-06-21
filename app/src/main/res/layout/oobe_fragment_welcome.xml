@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayoutOOBE"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/roboto_regular"
-        android:textSize="20sp"
         android:text="@string/welcome_1"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,8 +23,8 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -42,8 +43,8 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginEnd="24dp"
             android:layout_gravity="center"
+            android:layout_marginEnd="24dp"
             android:orientation="vertical">
 
             <TextView
@@ -74,6 +75,7 @@
                 android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,7 +102,6 @@
             app:strokeWidth="2dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:visibility="invisible"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -110,6 +111,7 @@
             android:text="@string/next"
             android:textColor="?attr/colorOnBackground"
             android:textSize="18sp"
+            android:visibility="invisible"
             app:cornerRadius="0dp"
             app:strokeColor="?attr/colorOnBackground"
             app:strokeWidth="2dp" />

@@ -13,6 +13,7 @@ import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.PowerManager
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -37,6 +38,7 @@ import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import java.util.Locale
 import kotlin.random.Random
+
 
 class Utils {
     companion object {
@@ -341,6 +343,22 @@ class Utils {
                 "be" -> true
                 "be_BY" -> true
                 else -> false
+            }
+        }
+        fun isScreenOn(context: Context?): Boolean {
+            if (context != null) {
+                Log.d("ScreenStatus", "context is not null")
+                val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                if(powerManager != null) {
+                    Log.d("ScreenStatus", "screen interactive = ${powerManager.isInteractive}")
+                    return powerManager.isInteractive
+                } else {
+                    Log.d("ScreenStatus", "powerManager is null, return false")
+                    return false
+                }
+            } else {
+                Log.d("ScreenStatus", "context is null, return false")
+                return false
             }
         }
     }

@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.oobe.fragments
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,36 +11,61 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import coil3.load
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 
 
 class AdFragment: Fragment() {
 
+    private var main: View? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.oobe_fragment_ad, container, false)
+        main = view
         val back: MaterialButton = view.findViewById(R.id.back)
         val next: MaterialButton = view.findViewById(R.id.next)
         val open: MaterialButton = view.findViewById(R.id.openN11)
         val screenshotsN11: MaterialButton = view.findViewById(R.id.screenshotsAdButtonNeko11)
         WelcomeActivity.setText(requireActivity(), getString(R.string.advertisement))
         back.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
+                }
             }
         }
         next.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, AppsFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, AppsFragment(), "oobe")
+                }
             }
         }
         open.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/neko11")))
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://github.com/queuejw/neko11")
+                    )
+                )
+            }
         }
+
+
         screenshotsN11.setOnClickListener {
             val dialog = MaterialAlertDialogBuilder(requireActivity())
             val dialogView: View = inflater.inflate(R.layout.ad, null)
@@ -53,5 +80,34 @@ class AdFragment: Fragment() {
             dialog.show()
         }
         return view
+    }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+            )
+        }
+        animatorSet.setDuration(300)
+        animatorSet.start()
+    }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
     }
 }

@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/coordinator"
-        android:layout_marginStart="4dp"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginStart="4dp">
 
-<com.google.android.material.appbar.AppBarLayout
-android:layout_width="match_parent"
-android:backgroundTint="?android:attr/colorBackground"
-android:layout_height="wrap_content">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="?android:attr/colorBackground">
 
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:textSize="20sp"
-            android:text="@string/settings"
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="@string/settings"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="4dp"
+                    android:ellipsize="none"
+                    android:fontFamily="@font/roboto_light"
+                    android:singleLine="true"
+                    android:text="@string/launcher"
+                    android:textSize="52sp"
+                    android:textStyle="bold" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fontFamily="@font/roboto_bold"
-            android:textStyle="bold"/>
-        <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:textSize="52sp"
-                android:singleLine="true"
-                android:ellipsize="none"
-                android:text="@string/launcher"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/roboto_light"
-                android:layout_marginStart="4dp"
-                android:textStyle="bold"/>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-</com.google.android.material.appbar.AppBarLayout>
-
-<androidx.core.widget.NestedScrollView
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-<include layout="@layout/settings_list"/>
-</androidx.core.widget.NestedScrollView>
+                <include layout="@layout/settings_list" />
+        </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

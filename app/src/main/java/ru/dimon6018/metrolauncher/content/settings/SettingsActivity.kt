@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.AnimationSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity
@@ -44,7 +46,6 @@ class SettingsActivity : AppCompatActivity() {
     private var iconsSub: MaterialTextView? = null
 
     private var isDialogEnabled = true
-    private var animationEnabled = true
     private var isEnter = false
 
     private var themeBtn: MaterialCardView? = null
@@ -58,6 +59,9 @@ class SettingsActivity : AppCompatActivity() {
     private var iconBtn: MaterialCardView? = null
     private var expBtn: MaterialCardView? = null
     private var leaks: MaterialCardView? = null
+    private var animsBtn: MaterialCardView? = null
+
+    private var appBar: AppBarLayout? = null
 
     private var cord: CoordinatorLayout? = null
 
@@ -68,7 +72,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         cord = findViewById(R.id.coordinator)
-
+        appBar = findViewById(R.id.appBarSettings)
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
@@ -176,39 +180,51 @@ class SettingsActivity : AppCompatActivity() {
                 startActivity(LeakCanary.newLeakDisplayActivityIntent())
             }
         }
+        animsBtn = findViewById(R.id.animSetting)
+        animsBtn?.setOnClickListener {
+            lifecycleScope.launch {
+                isEnter = true
+                startAnim()
+                delay(200)
+                startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
+            }
+        }
         startAnim()
     }
     private fun startAnim() {
-        if(animationEnabled && EXP_PREFS!!.getAnimationPref) {
-            setupAnim(cord!!, 320)
+        if(EXP_PREFS!!.getAnimationPref) {
+            setupAnim(appBar!!, 260)
             setupAnim(themeBtn!!, 300)
             setupAnim(allAppsBtn!!, 320)
             setupAnim(tilesBtn!!, 340)
             setupAnim(iconBtn!!, 360)
-            setupAnim(feedbackBtn!!, 380)
-            setupAnim(weatherBtm!!, 400)
-            setupAnim(updateBtn!!, 420)
-            setupAnim(navBarBtn!!, 440)
-            setupAnim(aboutBtn!!, 460)
-            setupAnim(leaks!!, 480)
+            setupAnim(animsBtn!!, 380)
+            setupAnim(feedbackBtn!!, 400)
+            setupAnim(weatherBtm!!, 420)
+            setupAnim(updateBtn!!, 440)
+            setupAnim(navBarBtn!!, 460)
+            setupAnim(aboutBtn!!, 480)
+            setupAnim(leaks!!, 490)
             setupAnim(expBtn!!, 500)
             isEnter = false
         }
     }
     private fun hideViews() {
-        hideAnim(cord!!)
-        hideAnim(themeBtn!!)
-        hideAnim(allAppsBtn!!)
-        hideAnim(tilesBtn!!)
-        hideAnim(iconBtn!!)
-        hideAnim(feedbackBtn!!)
-        hideAnim(weatherBtm!!)
-        hideAnim(updateBtn!!)
-        hideAnim(navBarBtn!!)
-        hideAnim(aboutBtn!!)
-        hideAnim(leaks!!)
-        hideAnim(expBtn!!)
-        animationEnabled = true
+        if(EXP_PREFS!!.getAnimationPref) {
+            hideAnim(appBar!!)
+            hideAnim(themeBtn!!)
+            hideAnim(allAppsBtn!!)
+            hideAnim(tilesBtn!!)
+            hideAnim(iconBtn!!)
+            hideAnim(animsBtn!!)
+            hideAnim(feedbackBtn!!)
+            hideAnim(weatherBtm!!)
+            hideAnim(updateBtn!!)
+            hideAnim(navBarBtn!!)
+            hideAnim(aboutBtn!!)
+            hideAnim(leaks!!)
+            hideAnim(expBtn!!)
+        }
     }
     private fun setupAnim(view: View?, duration: Long) {
         if(view == null) {
@@ -218,13 +234,13 @@ class SettingsActivity : AppCompatActivity() {
         if(!isEnter) {
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(view, "rotationY", 30f, 0f),
-                ObjectAnimator.ofFloat(view, "rotation", 10f, 0f),
+                ObjectAnimator.ofFloat(view, "translationX", -1000f, 0f),
                 ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(view, "rotationY", 0f, 20f),
-                ObjectAnimator.ofFloat(view, "rotation", 0f, -10f),
+                ObjectAnimator.ofFloat(view, "rotationY", 0f, 30f),
+                ObjectAnimator.ofFloat(view, "translationX", 0f, -1000f),
                 ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
             )
         }
@@ -290,13 +306,8 @@ class SettingsActivity : AppCompatActivity() {
         }
         startAnim()
     }
-    override fun onPause() {
-        super.onPause()
-    }
-
     override fun onStop() {
         hideViews()
-        animationEnabled = true
         super.onStop()
     }
 }

@@ -5,33 +5,20 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.google.android.material.slider.Slider
-import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
-class TileSettingsActivity: AppCompatActivity() {
+class AnimationSettingsActivity: AppCompatActivity() {
 
-    private var alphaSlider: Slider? = null
     private var main: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_tiles)
-        alphaSlider = findViewById(R.id.alphaSlider)
-        alphaSlider!!.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-            PREFS!!.setTileTransparency(value)
-        })
+        setContentView(R.layout.launcher_settings_animations)
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        enterAnimation(false)
-        alphaSlider!!.value = PREFS!!.getTilesTransparency
     }
     private fun enterAnimation(exit: Boolean) {
         if(main == null) {
@@ -58,6 +45,12 @@ class TileSettingsActivity: AppCompatActivity() {
         animatorSet.setDuration(400)
         animatorSet.start()
     }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
     override fun onPause() {
         enterAnimation(true)
         super.onPause()

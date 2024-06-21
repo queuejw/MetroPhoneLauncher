@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.oobe.fragments
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
@@ -21,6 +23,7 @@ import com.google.android.material.checkbox.MaterialCheckBox
 import com.google.android.material.textview.MaterialTextView
 import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -43,12 +46,14 @@ class AppsFragment: Fragment() {
     private var loading: WP7ProgressBar? = null
     private var fragmentContext: Context? = null
     private val hashCache = ArrayMap<String, Icon?>()
+    private var main: View? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.oobe_fragment_apps, container, false)
+        main = view
         fragmentContext = requireContext()
         WelcomeActivity.setText(requireActivity(), getString(R.string.configureApps))
         recyclerView = view.findViewById(R.id.oobeRecycler)
@@ -116,11 +121,16 @@ class AppsFragment: Fragment() {
             }
         }
         back.setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                replace(R.id.fragment_container_view, AdFragment(), "oobe")
+            lifecycleScope.launch {
+                enterAnimation(true)
+                delay(200)
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, AdFragment(), "oobe")
+                }
             }
         }
         next.setOnClickListener {
+            enterAnimation(true)
             lifecycleScope.launch(Dispatchers.Default) {
                 var pos = 0
                 for (i in selectedItems!!) {
@@ -135,7 +145,7 @@ class AppsFragment: Fragment() {
                     call.insertItem(entity)
                     pos += 1
                 }
-                runBlocking {
+                withContext(Dispatchers.Main) {
                     requireActivity().supportFragmentManager.commit {
                         replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
                     }
@@ -143,7 +153,30 @@ class AppsFragment: Fragment() {
             }
         }
     }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+            )
+        }
+        animatorSet.setDuration(300)
+        animatorSet.start()
+    }
 
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
     companion object {
         var selectedItems: MutableList<App>? = null
         var latestItem: Int? = null

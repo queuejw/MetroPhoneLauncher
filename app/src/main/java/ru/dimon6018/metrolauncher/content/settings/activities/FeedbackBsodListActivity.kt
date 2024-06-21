@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.settings.activities
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
@@ -28,14 +30,15 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 class FeedbackBsodListActivity: AppCompatActivity() {
 
     private var db: BSOD? = null
+    private var main: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_feedback_bsods)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        applyWindowInsets(coord)
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
         lifecycleScope.launch(Dispatchers.IO) {
             db = BSOD.getData(this@FeedbackBsodListActivity)
             val mAdapter =
@@ -53,6 +56,41 @@ class FeedbackBsodListActivity: AppCompatActivity() {
             }
         }
     }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+            )
+        }
+        animatorSet.setDuration(400)
+        animatorSet.start()
+    }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
+    }
     inner class BSODadapter(
         private var data: List<BSODEntity>,
         private val db: BSOD
@@ -60,19 +98,11 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         RecyclerView.Adapter<BSODadapter.ViewHolder>() {
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val log: TextView
-            var date: TextView
-            val delete: MaterialCardView
-            val share: MaterialCardView
-
-            init {
-                log = view.findViewById(R.id.log)
-                date = view.findViewById(R.id.date)
-                share = view.findViewById(R.id.share)
-                delete = view.findViewById(R.id.delete)
-            }
+            val log: TextView = view.findViewById(R.id.log)
+            var date: TextView = view.findViewById(R.id.date)
+            val delete: MaterialCardView = view.findViewById(R.id.delete)
+            val share: MaterialCardView = view.findViewById(R.id.share)
         }
-
         private fun updateList() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val newList = db.getDao().getBsodList()

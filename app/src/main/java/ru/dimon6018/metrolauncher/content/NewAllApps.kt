@@ -239,27 +239,9 @@ class NewAllApps: Fragment() {
                     // End early if it has anything to do with us.
                     if (packageName.isNullOrEmpty()) return
                     val action = intent.getIntExtra("action", 42)
-                    when (action) {
-                        PackageChangesReceiver.PACKAGE_REMOVED -> {
-                            Log.d("AllApps", "pkg uninstalled")
-                            packageName.apply {
-                                broadcastListUpdater()
-                            }
-                        }
-
-                        PackageChangesReceiver.PACKAGE_INSTALLED -> {
-                            Log.d("AllApps", "pkg installed")
-                            packageName.apply {
-                                broadcastListUpdater()
-                            }
-                        }
-
-                        else -> {
-                            Log.d("AllApps", "pkg other variant")
-                            packageName.apply {
-                                broadcastListUpdater()
-                            }
-                        }
+                    packageName.apply {
+                        Log.d("AllApps Broadcaster", "$action , app: $this")
+                        broadcastListUpdater()
                     }
                 }
             }
@@ -278,6 +260,8 @@ class NewAllApps: Fragment() {
                     requireActivity().registerReceiver(packageBroadcastReceiver, it)
                 }
             }
+        } else {
+            Log.d("AllApps", "register canceled because it already registered")
         }
     }
     private fun broadcastListUpdater() {
@@ -295,9 +279,8 @@ class NewAllApps: Fragment() {
             Log.d("AllApps", "unregisterBroadcast() was called to a null receiver.")
         }
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         unregisterBroadcast()
     }
     private suspend fun setAlphabetRecyclerView() {

@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.settings.activities
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -47,12 +49,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private var wallpaperSwitch: MaterialSwitch? = null
     private var wallpaperTransparentTilesSwitch: MaterialSwitch? = null
 
+    private var main: CoordinatorLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val cord: CoordinatorLayout = findViewById(R.id.coordinator)
         context = this
         chooseThemeBtn = findViewById(R.id.chooseTheme)
         accentTip = findViewById(R.id.accentTip)
@@ -147,11 +150,41 @@ class ThemeSettingsActivity : AppCompatActivity() {
             lockDesktopSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
         }
         setImg()
-       applyWindowInsets(cord)
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
     }
-
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+            )
+        }
+        animatorSet.setDuration(400)
+        animatorSet.start()
+    }
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
+    }
     override fun onResume() {
         super.onResume()
+        enterAnimation(false)
         refreshWallpaperSwitches()
     }
     private fun refreshWallpaperSwitches() {

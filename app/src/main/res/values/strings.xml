@@ -197,4 +197,14 @@
     <string name="use_search_bar">Use the search bar</string>
     <string name="block_start_tip">You can lock desktop editing to protect it from being modified</string>
     <string name="block_start">Lock the Start screen</string>
+    <string name="navigation_bar_3">Additional options</string>
+    <string name="animations">animations</string>
+    <string name="animations_settings_label">Animations</string>
+    <string name="tiles_animation_settings_label">Allow animation of opening and closing applications in the Start screen</string>
+    <string name="allapps_animation_settings_label">Allow animation of opening applications in the app list</string>
+    <string name="transition_animation_settings_label">Enable animation of transitions between MPL screens</string>
+    <string name="experiments">experiments</string>
+    <string name="experiments_tip">Preview of new functions</string>
+    <string name="for_developers">For developers</string>
+    <string name="animations_tip">smooth transitions</string>
 </resources>

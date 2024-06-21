@@ -26,7 +26,6 @@
         <activity
             android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
             android:resizeableActivity="true">
@@ -38,10 +37,10 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="ru.dimon6018.metrolauncher.content.settings.SettingsActivity"
-                android:exported="true"
-                android:label="@string/settings_app_title"
-                android:icon="@mipmap/settings">
+            android:name="ru.dimon6018.metrolauncher.content.settings.SettingsActivity"
+            android:exported="true"
+            android:label="@string/settings_app_title"
+            android:icon="@mipmap/settings">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -109,6 +108,10 @@
         </activity>
         <activity
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AnimationSettingsActivity"
             android:exported="true">
         </activity>
         <provider

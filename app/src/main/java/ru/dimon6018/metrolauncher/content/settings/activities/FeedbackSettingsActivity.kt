@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.settings.activities
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -23,15 +25,14 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTh
 class FeedbackSettingsActivity: AppCompatActivity()  {
 
     private var setCrashLogLimitBtn: MaterialButton? = null
-    
+    private var main: CoordinatorLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_feedback)
         val db = BSOD.getData(this)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val coord: CoordinatorLayout = findViewById(R.id.coordinator)
-        applyWindowInsets(coord)
         val info: MaterialButton = findViewById(R.id.showBsodInfo)
         info.setOnClickListener {
             startActivity(Intent(this, FeedbackBsodListActivity::class.java))
@@ -85,6 +86,8 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             setCrashLogLimitBtn!!.visibility = View.VISIBLE
             setButtonText(PREFS!!)
         }
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
     }
     private fun setButtonText(prefs: Prefs) {
         setCrashLogLimitBtn!!.text = when(prefs.getMaxCrashLogs()) {
@@ -94,5 +97,40 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             3 -> getString(R.string.feedback_limit_3)
             else -> getString(R.string.feedback_limit_0)
         }
+    }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+            )
+        }
+        animatorSet.setDuration(400)
+        animatorSet.start()
+    }
+
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
     }
 }

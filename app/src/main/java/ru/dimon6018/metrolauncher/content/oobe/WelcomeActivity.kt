@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.oobe
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView
@@ -17,14 +19,15 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 class WelcomeActivity: AppCompatActivity() {
 
     private var textLabel: TextView? = null
+    private var main: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.oobe)
         textLabel = findViewById(R.id.appbarTextView)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        applyWindowInsets(coordinatorLayout)
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
         if (PREFS!!.launcherState != 2) {
             supportFragmentManager.commit {
                 replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")

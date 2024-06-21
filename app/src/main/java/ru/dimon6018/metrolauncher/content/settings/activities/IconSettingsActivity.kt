@@ -1,5 +1,7 @@
 package ru.dimon6018.metrolauncher.content.settings.activities
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -46,12 +48,12 @@ class IconSettingsActivity: AppCompatActivity() {
 
     private var dialog: WPDialog? = null
 
+    private var main: CoordinatorLayout? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_icon)
-        val coord = findViewById<CoordinatorLayout>(R.id.coordinator)
-        applyWindowInsets(coord)
         packageMgr = packageManager
         iconPackManager = IconPackManager()
         iconPackManager?.setContext(this)
@@ -88,6 +90,8 @@ class IconSettingsActivity: AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/lawnicons-m/releases/latest")))
         }
         setIconPacks()
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
     }
 
     private fun setIconPacks() {
@@ -123,7 +127,7 @@ class IconSettingsActivity: AppCompatActivity() {
             currentPackTextView!!.visibility = View.GONE
             currentPackErrorTextView!!.visibility = View.VISIBLE
             if(isError) {
-                currentPackErrorTextView!!.text = "error"
+                currentPackErrorTextView!!.text = getString(R.string.error)
             } else {
                 currentPackErrorTextView!!.text = getString(R.string.iconpack_error)
             }
@@ -156,7 +160,41 @@ class IconSettingsActivity: AppCompatActivity() {
             chooseBtn!!.text = getString(R.string.choose_icon_pack)
         }
     }
+    private fun enterAnimation(exit: Boolean) {
+        if(main == null) {
+            return
+        }
+        val animatorSet = AnimatorSet()
+        if(exit) {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+            )
+        } else {
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+            )
+        }
+        animatorSet.setDuration(400)
+        animatorSet.start()
+    }
 
+    override fun onResume() {
+        enterAnimation(false)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        enterAnimation(true)
+        super.onPause()
+    }
     inner class IconPackAdapterList(private var list: MutableList<IconPackItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)

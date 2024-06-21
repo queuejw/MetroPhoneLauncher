@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -75,6 +74,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import java.util.Collections
 import kotlin.random.Random
@@ -98,6 +98,8 @@ class NewStart: Fragment(), OnStartDragListener {
     private val hashCache = ArrayMap<String, Icon?>()
     private var iconManager: IconPackManager? = null
     private var isBroadcasterRegistered = false
+
+    private var screenIsOff = false
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
@@ -206,14 +208,17 @@ class NewStart: Fragment(), OnStartDragListener {
     private fun observe() {
         Log.d("Start", "start observer")
         if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
-            if(isAppOpened) {
                 if (EXP_PREFS!!.getAnimationPref && mAdapter != null) {
-                    if(!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
-                        mAdapter!!.isTopRight = true
+                    if (isAppOpened || !screenIsOff) {
+                        Log.d("Start", "start enter animation")
+                        if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
+                            mAdapter!!.isTopRight = true
+                        }
+                        setEnterAnim()
+                    } else {
+                        Log.d("Start", "animation disabled")
                     }
-                    setEnterAnim()
                 }
-            }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
@@ -231,6 +236,7 @@ class NewStart: Fragment(), OnStartDragListener {
     override fun onResume() {
         super.onResume()
         observe()
+        screenIsOff = isScreenOn(context)
         if(isAppOpened) {
             isAppOpened = false
         }
@@ -328,7 +334,22 @@ class NewStart: Fragment(), OnStartDragListener {
             animatorSet.start()
         }
     }
+    private fun hideTiles() {
+        if (mRecyclerView == null || mAdapter == null) {
+            Log.d("resumeStart", "something is null")
+            return
+        }
+        for(i in 0..<mRecyclerView!!.childCount) {
+            Log.d("resumeStart", "Hide tiles")
+            val itemView = mRecyclerView!!.getChildAt(i) ?: continue
+            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+        }
+    }
     override fun onPause() {
+        screenIsOff = isScreenOn(context)
+        if(!screenIsOff) {
+            hideTiles()
+        }
         super.onPause()
         if(mAdapter?.isEditMode == true) {
             mAdapter?.disableEditMode()
@@ -336,10 +357,9 @@ class NewStart: Fragment(), OnStartDragListener {
         isStartMenuOpened = false
     }
     override fun onStop() {
-        Log.d("Start", "stop")
+        super.onStop()
         stopObserver()
         isStartMenuOpened = false
-        super.onStop()
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
         if (viewHolder != null && !PREFS!!.isStartBlocked) {
@@ -365,11 +385,6 @@ class NewStart: Fragment(), OnStartDragListener {
                     if (packageName.isNullOrEmpty()) return
                     val action = intent.getIntExtra("action", 42)
                     when (action) {
-                        PackageChangesReceiver.PACKAGE_REMOVED -> {
-                            Log.d("Start", "pkg uninstalled")
-                            packageName.apply { broadcastListUpdater(packageName, true) }
-                        }
-
                         PackageChangesReceiver.PACKAGE_INSTALLED -> {
                             Log.d("Start", "pkg installed")
                             if (PREFS!!.pinNewApps) {
@@ -378,10 +393,14 @@ class NewStart: Fragment(), OnStartDragListener {
                                 pinApp(packageName)
                             }
                         }
-
-                        PackageChangesReceiver.PACKAGE_UPDATED -> {
+                        PackageChangesReceiver.PACKAGE_REMOVED -> {
                             packageName.apply {
-                                broadcastListUpdater(packageName, false)
+                                broadcastListUpdater(this, true)
+                            }
+                        }
+                        else -> {
+                            packageName.apply {
+                                broadcastListUpdater(this, false)
                             }
                         }
                     }
@@ -400,6 +419,8 @@ class NewStart: Fragment(), OnStartDragListener {
                     requireActivity().registerReceiver(packageBroadcastReceiver, it)
                 }
             }
+        }  else {
+            Log.d("Start", "broadcaster already registered")
         }
     }
     private fun broadcastListUpdater(packageName: String, isDelete: Boolean) {
@@ -458,8 +479,8 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         unregisterBroadcast()
     }
     private fun getAppIcon(appPackage: String, size: String, pm: PackageManager, mRes: Resources): Bitmap {
@@ -536,9 +557,13 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
-            mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_enter))
-            mRecyclerView!!.scaleX = 0.9f
-            mRecyclerView!!.scaleY = 0.9f
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(
+            ObjectAnimator.ofFloat(mRecyclerView!!, "scaleX", 1f, 0.85f),
+            ObjectAnimator.ofFloat(mRecyclerView!!, "scaleY", 1f, 0.85f)
+            )
+            animatorSet.setDuration(300)
+            animatorSet.start()
             mRecyclerView!!.setBackgroundColor(if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light) else ContextCompat.getColor(context, android.R.color.background_dark))
             frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light).toDrawable() else ContextCompat.getColor(context, android.R.color.background_dark).toDrawable()
             isEditMode = true
@@ -546,9 +571,13 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
-            mRecyclerView!!.startAnimation(AnimationUtils.loadAnimation(context, R.anim.editmode_dismiss))
-            mRecyclerView!!.scaleX = 1f
-            mRecyclerView!!.scaleY = 1f
+            val animatorSet = AnimatorSet()
+            animatorSet.playTogether(
+                ObjectAnimator.ofFloat(mRecyclerView!!, "scaleX", 0.85f, 1f),
+                ObjectAnimator.ofFloat(mRecyclerView!!, "scaleY", 0.85f, 1f)
+            )
+            animatorSet.setDuration(300)
+            animatorSet.start()
             mRecyclerView!!.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
             frame.background = null
             isEditMode = false
@@ -595,12 +624,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 defaultTileType -> bindDefaultTile(holder as TileViewHolder, position, list[position])
             }
         }
-        private fun startDismissTilesAnim(startPos: Int, item: AppEntity) {
-            if (startPos < mRecyclerView!!.childCount) {
-                val itemView = mRecyclerView!!.getChildAt(startPos)
-                if(list[startPos].tileType == -1 || itemView == null) {
-                    startDismissTilesAnim(startPos + 1, item)
-                    return
+        private fun startDismissTilesAnim(item: AppEntity) {
+            for(position in 0..<mRecyclerView!!.childCount) {
+                val itemView = mRecyclerView!!.getChildAt(position)
+                if(list[position].tileType == -1 || itemView == null) {
+                    continue
                 }
                 val animatorSet = AnimatorSet()
                 if(isTopLeft) {
@@ -635,17 +663,15 @@ class NewStart: Fragment(), OnStartDragListener {
                         ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
                     )
                 }
-                animatorSet.setDuration(Random.nextLong(300, 400))
+                animatorSet.setDuration(Random.nextLong(300, 500))
                 animatorSet.start()
-                startDismissTilesAnim(startPos + 1, item)
-            } else {
-                startAppDelay(item)
             }
+            startAppDelay(item.appPackage)
         }
-        private fun startAppDelay(item: AppEntity) {
+        private fun startAppDelay(appPackage: String) {
             lifecycleScope.launch {
                 delay(350)
-                startApp(item.appPackage)
+                startApp(appPackage)
             }
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: AppEntity) {
@@ -884,12 +910,12 @@ class NewStart: Fragment(), OnStartDragListener {
             val changeLabel = bottomSheetInternal.findViewById<MaterialCardView>(R.id.editAppLabel)
             val changeColor = bottomSheetInternal.findViewById<MaterialCardView>(R.id.editTileColor)
             val editor = bottomSheetInternal.findViewById<EditText>(R.id.textEdit)
-            val labellayout = bottomSheetInternal.findViewById<LinearLayout>(R.id.changeLabelLayout)
+            val labelLayout = bottomSheetInternal.findViewById<LinearLayout>(R.id.changeLabelLayout)
             val labelChangeBtn = bottomSheetInternal.findViewById<MaterialCardView>(R.id.labelChange)
             val editLabelText = bottomSheetInternal.findViewById<TextView>(R.id.editAppLabelText)
             val appInfo = bottomSheetInternal.findViewById<MaterialCardView>(R.id.appInfo)
             editLabelText.setOnClickListener {
-                labellayout.visibility = View.VISIBLE
+                labelLayout.visibility = View.VISIBLE
             }
             val originalLabel = context.packageManager.getApplicationLabel(context.packageManager.getApplicationInfo(item.appPackage, 0)).toString()
             label.text = item.appLabel
@@ -903,7 +929,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 colorSub.text = getString(R.string.tileSettings_color_sub, getTileColorName(item.tileColor!!, context))
             }
             changeLabel.setOnClickListener {
-                labellayout.visibility = View.VISIBLE
+                labelLayout.visibility = View.VISIBLE
             }
             labelChangeBtn.setOnClickListener {
                 lifecycleScope.launch(defaultDispatcher) {
@@ -1016,7 +1042,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                 } else {
                     if(EXP_PREFS!!.getAnimationPref) {
-                        mAdapter?.startDismissTilesAnim(0, item)
+                        mAdapter?.startDismissTilesAnim(item)
                     } else {
                         startApp(item.appPackage)
                     }
