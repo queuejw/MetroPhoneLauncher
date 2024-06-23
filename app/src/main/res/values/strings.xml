@@ -214,4 +214,5 @@
     <string name="max_results">Max number of results</string>
     <string name="select_all">select all</string>
     <string name="remove_all">remove all</string>
+    <string name="disable_all_apps">Show screen All apps</string>
 </resources>

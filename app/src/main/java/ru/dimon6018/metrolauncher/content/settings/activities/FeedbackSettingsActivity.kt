@@ -49,7 +49,6 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         feedbackSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setFeedback(isChecked)
             feedbackSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            feedbackSwitch.setChecked(isChecked)
         }
         setCrashLogLimitBtn = findViewById(R.id.setCrashLogLimitBtn)
         val chooseBsodInfoLimitCard = findViewById<MaterialCardView>(R.id.chooseBsodInfoLimit)

@@ -23,29 +23,35 @@ class AllAppsSettingsActivity: AppCompatActivity() {
         val settBtnSwitch: MaterialSwitch = findViewById(R.id.settingsBtnSwitch)
         val alphabetSwitch: MaterialSwitch = findViewById(R.id.alphabetSwitch)
         val backgroundSwitch: MaterialSwitch = findViewById(R.id.allAppsBackgroundSwitch)
+        val disableAllApps: MaterialSwitch = findViewById(R.id.disableAllAppsSwitch)
         settBtnSwitch.isChecked = PREFS!!.isSettingsBtnEnabled
         settBtnSwitch.text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
         alphabetSwitch.isChecked = PREFS!!.isAlphabetEnabled
         alphabetSwitch.text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
         backgroundSwitch.isChecked = PREFS!!.isAllAppsBackgroundEnabled
         backgroundSwitch.text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
+        disableAllApps.isChecked = PREFS!!.isAllAppsEnabled
+        disableAllApps.text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+
         alphabetSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAlphabetActive(isChecked)
             PREFS!!.setPrefsChanged(true)
-            alphabetSwitch.setChecked(PREFS!!.isAlphabetEnabled)
             alphabetSwitch.text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
         }
         settBtnSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsSettingsBtn(isChecked)
             PREFS!!.setPrefsChanged(true)
-            settBtnSwitch.setChecked(PREFS!!.isSettingsBtnEnabled)
             settBtnSwitch.text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
         }
         backgroundSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsBackground(isChecked)
             PREFS!!.setPrefsChanged(true)
-            backgroundSwitch.setChecked(PREFS!!.isAllAppsBackgroundEnabled)
             backgroundSwitch.text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
+        }
+        disableAllApps.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setAllAppsAvailability(isChecked)
+            PREFS!!.setPrefsChanged(true)
+            disableAllApps.text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
         }
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }

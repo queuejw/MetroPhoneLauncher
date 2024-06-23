@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -257,6 +258,9 @@ class Main : AppCompatActivity() {
                 viewPager.currentItem = 0
             }
             bottomViewSearchBtn?.setOnClickListener {
+                if(!PREFS!!.isAllAppsEnabled) {
+                    return@setOnClickListener
+                }
                 viewPager.currentItem = 1
             }
         } else {
@@ -296,10 +300,12 @@ class Main : AppCompatActivity() {
     }
     private fun hideSearchResults() {
         lifecycleScope.launch {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             searchBarResultsLayout?.apply {
-                ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).setDuration(100).start()
+                (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.isPressed = false
+                imm?.hideSoftInputFromWindow(this.windowToken, 0)
+                ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
             }
-            delay(80)
             searchBarResultsLayout?.visibility = View.GONE
         }
     }
@@ -379,9 +385,19 @@ class Main : AppCompatActivity() {
         var isLandscape: Boolean = false
     }
     inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 2
+
+        override fun getItemCount(): Int = if(PREFS!!.isAllAppsEnabled) 2 else 1
+
         override fun createFragment(position: Int): Fragment {
-            return if (position == 1) NewAllApps() else NewStart()
+            return if(!PREFS!!.isAllAppsEnabled) {
+                NewStart()
+            } else {
+                if (position == 1)
+                    NewAllApps()
+                else
+                    NewStart()
+            }
+
         }
     }
     inner class SearchAdapter(private val context: Context, private var dataList: MutableList<App>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -115,7 +115,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         moreTilesSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setMoreTilesPref(isChecked)
             moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            moreTilesSwitch.setChecked(isChecked)
             PREFS!!.setPrefsChanged(true)
             setImg()
         }
@@ -136,7 +135,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 }
                 dynamicColorSwitch.text =
                     if (isChecked) getString(R.string.on) else getString(R.string.off)
-                dynamicColorSwitch.setChecked(isChecked)
                 recreate()
             } else {
                 Snackbar.make(dynamicColorSwitch, getString(R.string.dynamicColor_error), Snackbar.LENGTH_LONG).show()

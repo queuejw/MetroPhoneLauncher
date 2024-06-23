@@ -4,21 +4,21 @@
 
 MPL (MetroPhoneLauncher, MPLaucnher) is an Android launcher that looks like Windows Phone 8.
 
-*If you want to use it on your real device as your default launcher, then be prepared for possible bugs (including critical ones). Don't be lazy and send all possible ideas/errors to my email or to our Telegram group*
+*Don't be lazy and send all possible ideas/errors to my email or to our Telegram group*
 
-MPL isn't ready yet, but it already has some cool features you might like. See what's currently available:
+MPL is still in development, but it already has a lot of useful features that you might like. Here's what's already available:
 
 - A design as similar as possible to the original Windows Phone.
+- Animations that are as similar to Windows Phone animations as possible.
 - 20 different colors so you can make your device the most unique and unusual.
-- Unique desktop - customize it the way you want. Make tiles bigger, wider, smaller, move and do whatever you want.
 - Light and dark theme to save your battery and eyes at night =)
+- Unique desktop - customize it the way you want. Make tiles bigger, wider, smaller, move and do whatever you want.
 - Lots of customizations to make the launcher perfect
 - Ability to receive "Over-The-Air" updates
 - Support icon packs to make icons prettier 
 - Monet (Dynamic Colors) support
-- Animations that are as similar to Windows Phone animations as possible.
 
-And much more...
+And a lot of other, smaller things!
 
 **It will be very soon:**
 - [ ] Live tiles.

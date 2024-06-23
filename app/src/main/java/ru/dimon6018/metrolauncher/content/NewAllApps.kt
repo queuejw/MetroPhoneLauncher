@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationSet
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -27,6 +29,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.collection.ArrayMap
+import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
@@ -188,6 +191,7 @@ class NewAllApps: Fragment() {
                     visibility = View.VISIBLE
                 }
                 loadingText?.visibility = View.GONE
+                loadingText = null
                 progressBar?.hideProgressBar()
                 delay(10)
                 progressBar?.visibility = View.GONE
@@ -281,6 +285,13 @@ class NewAllApps: Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterBroadcast()
+    }
+
+    override fun onDestroyView() {
+        progressBar = null
+        loadingHolder = null
+        frame = null
+        super.onDestroyView()
     }
     private suspend fun setAlphabetRecyclerView() {
         if(contextFragment == null) {
@@ -543,7 +554,7 @@ class NewAllApps: Fragment() {
         var isWindowVisible = false
 
         init {
-            if (PREFS!!.isAllAppsBackgroundEnabled) {
+            if (PREFS!!.isAllAppsBackgroundEnabled && activity != null) {
                 accentColor = launcherAccentColor(requireActivity().theme)
             }
         }
@@ -593,6 +604,20 @@ class NewAllApps: Fragment() {
             popupWindow = PopupWindow(popupView, width, height, true)
             popupWindow?.isFocusable = true
             popupWindow?.animationStyle = R.style.enterStyle
+            popupView.pivotY = 1f
+            val anim = ObjectAnimator.ofFloat(popupView, "scaleY", 0f, 0.01f)
+            val anim2 = ObjectAnimator.ofFloat(popupView, "scaleX", 0f, 1f)
+            val anim3 =  ObjectAnimator.ofFloat(popupView, "scaleY", 0.01f, 1f)
+            anim.setDuration(1)
+            anim.doOnEnd {
+                anim2.setDuration(200)
+                anim2.doOnEnd {
+                    anim3.setDuration(400)
+                    anim3.start()
+                }
+                anim2.start()
+            }
+            anim.start()
             PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
             isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
@@ -627,6 +652,7 @@ class NewAllApps: Fragment() {
                 startActivity(Intent(Intent.ACTION_DELETE).setData(Uri.parse("package:$appPackage")))
             }
             info.setOnClickListener {
+                isAppOpened = true
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$appPackage")))
             }
             popupWindow?.setOnDismissListener {
@@ -742,8 +768,8 @@ class NewAllApps: Fragment() {
                         if(PREFS!!.isAAllAppsAnimEnabled) {
                             startDismissAnim(app)
                         } else {
-                        runApp(app.appPackage!!)
-                            }
+                            runApp(app.appPackage!!)
+                        }
                     } catch (e: Exception) {
                         Toast.makeText(contextFragment!!, getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
                         recyclerView!!.stopScroll()
@@ -769,12 +795,23 @@ class NewAllApps: Fragment() {
     }
     inner class AlphabetAdapter(private var alphabetList: MutableList<AlphabetLetter>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val activeLetter = 10
-        private val activeDrawable = launcherAccentColor(activity!!.theme).toDrawable()
+        private var activeDrawable: ColorDrawable? = null
         private val disabledLetter = 10
-        private val disabledDrawable = ContextCompat.getColor(contextFragment!!, R.color.darkGray).toDrawable()
+        private var disabledDrawable: ColorDrawable? = null
         private val size = contextFragment!!.resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
         private val params = ViewGroup.LayoutParams(size, size)
-
+        init {
+            activeDrawable = if(activity != null) {
+                launcherAccentColor(activity!!.theme).toDrawable()
+            } else {
+                contextFragment!!.getColor(android.R.color.white).toDrawable()
+            }
+            disabledDrawable = if(contextFragment != null) {
+                ContextCompat.getColor(contextFragment!!, R.color.darkGray).toDrawable()
+            } else {
+                null
+            }
+        }
         fun setNewData(new: MutableList<AlphabetLetter>) {
             alphabetList = new
             notifyDataSetChanged()

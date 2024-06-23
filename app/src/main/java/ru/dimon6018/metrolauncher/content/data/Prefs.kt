@@ -245,6 +245,12 @@ class Prefs(context: Context) {
     val maxResultsSearchBar: Int
         get() = prefs.getInt(BOTTOM_SEARCH_BAR_MAX_RESULTS, 4)
 
+    fun setAllAppsAvailability(value: Boolean) {
+        prefs.edit().putBoolean(ALL_APPS_ENABLED, value).apply()
+    }
+    val isAllAppsEnabled: Boolean
+        get() = prefs.getBoolean(ALL_APPS_ENABLED, true)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -276,5 +282,6 @@ class Prefs(context: Context) {
         const val ALL_APPS_ANIMATIONS = "allAppsAnim"
         const val LIVE_TILES_ANIMATIONS = "liveTileAnim"
         const val BOTTOM_SEARCH_BAR_MAX_RESULTS = "maxResultsSearchBar"
+        const val ALL_APPS_ENABLED = "allAppsEnabled"
     }
 }

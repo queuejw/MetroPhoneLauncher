@@ -273,7 +273,11 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                         setEnterAnim()
                         mRecyclerView?.visibility = View.VISIBLE
+                    } else {
+                        mRecyclerView?.visibility = View.VISIBLE
                     }
+                } else {
+                    mRecyclerView?.visibility = View.VISIBLE
                 }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
