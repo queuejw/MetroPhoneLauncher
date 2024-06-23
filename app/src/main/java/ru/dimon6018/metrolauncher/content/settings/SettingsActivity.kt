@@ -7,12 +7,13 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
@@ -38,6 +38,7 @@ import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -61,8 +62,6 @@ class SettingsActivity : AppCompatActivity() {
     private var leaks: MaterialCardView? = null
     private var animsBtn: MaterialCardView? = null
 
-    private var appBar: AppBarLayout? = null
-
     private var cord: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,21 +71,18 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         cord = findViewById(R.id.coordinator)
-        appBar = findViewById(R.id.appBarSettings)
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
-
         applyWindowInsets(cord!!)
-    }
-    override fun onStart() {
-        super.onStart()
         themeBtn = findViewById(R.id.themeSetting)
         themeBtn?.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Main) {
                 isEnter = true
-                startAnim()
-                delay(100)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(100)
+                }
                 startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
             }
         }
@@ -94,8 +90,10 @@ class SettingsActivity : AppCompatActivity() {
         allAppsBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(100)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(100)
+                }
                 startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
             }
         }
@@ -103,8 +101,10 @@ class SettingsActivity : AppCompatActivity() {
         tilesBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(100)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(100)
+                }
                 startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
             }
         }
@@ -112,8 +112,10 @@ class SettingsActivity : AppCompatActivity() {
         aboutBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
             }
         }
@@ -121,8 +123,10 @@ class SettingsActivity : AppCompatActivity() {
         feedbackBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
             }
         }
@@ -130,8 +134,10 @@ class SettingsActivity : AppCompatActivity() {
         updateBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
             }
         }
@@ -139,8 +145,10 @@ class SettingsActivity : AppCompatActivity() {
         navBarBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
             }
         }
@@ -148,8 +156,10 @@ class SettingsActivity : AppCompatActivity() {
         weatherBtm?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
             }
         }
@@ -157,8 +167,10 @@ class SettingsActivity : AppCompatActivity() {
         iconBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
             }
         }
@@ -166,8 +178,10 @@ class SettingsActivity : AppCompatActivity() {
         expBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
             }
         }
@@ -175,8 +189,10 @@ class SettingsActivity : AppCompatActivity() {
         leaks?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(LeakCanary.newLeakDisplayActivityIntent())
             }
         }
@@ -184,16 +200,17 @@ class SettingsActivity : AppCompatActivity() {
         animsBtn?.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
-                startAnim()
-                delay(200)
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    startAnim()
+                    delay(200)
+                }
                 startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
             }
         }
-        startAnim()
+        hideViews()
     }
     private fun startAnim() {
-        if(EXP_PREFS!!.getAnimationPref) {
-            setupAnim(appBar!!, 260)
+        if(PREFS!!.isTransitionAnimEnabled) {
             setupAnim(themeBtn!!, 300)
             setupAnim(allAppsBtn!!, 320)
             setupAnim(tilesBtn!!, 340)
@@ -210,8 +227,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun hideViews() {
-        if(EXP_PREFS!!.getAnimationPref) {
-            hideAnim(appBar!!)
+        if(PREFS!!.isTransitionAnimEnabled) {
             hideAnim(themeBtn!!)
             hideAnim(allAppsBtn!!)
             hideAnim(tilesBtn!!)
@@ -227,20 +243,20 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun setupAnim(view: View?, duration: Long) {
-        if(view == null) {
+        if(view == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()
         if(!isEnter) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(view, "rotationY", 30f, 0f),
-                ObjectAnimator.ofFloat(view, "translationX", -1000f, 0f),
+                ObjectAnimator.ofFloat(view, "translationX", -600f, 0f),
+                ObjectAnimator.ofFloat(view, "rotationY", -90f, 0f),
                 ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(view, "rotationY", 0f, 30f),
-                ObjectAnimator.ofFloat(view, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(view, "translationX", 0f, -600f),
+                ObjectAnimator.ofFloat(view, "rotationY", 0f, -90f),
                 ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
             )
         }
@@ -248,7 +264,7 @@ class SettingsActivity : AppCompatActivity() {
         animatorSet.start()
     }
     private fun hideAnim(view: View?) {
-        if(view == null) {
+        if(view == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         ObjectAnimator.ofFloat(view, "alpha", 1f, 0f).start()
@@ -304,7 +320,13 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
                 }.show()
         }
-        startAnim()
+        if(PREFS!!.isPrefsChanged()) {
+            PREFS!!.setPrefsChanged(false)
+            Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_LONG).show()
+            exitProcess(0)
+        } else {
+            startAnim()
+        }
     }
     override fun onStop() {
         hideViews()

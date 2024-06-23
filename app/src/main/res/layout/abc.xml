@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="54dp"
     android:layout_height="54dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/transparent"
     app:cardCornerRadius="0dp"
     app:strokeColor="?attr/colorPrimary"
-    app:cardBackgroundColor="@color/transparent"
-    app:strokeWidth="3dp"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/abc_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center"
-            android:layout_marginStart="8dp"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="36sp"
-            android:fontFamily="@font/roboto_regular"
-            android:text="a"/>
-    </com.google.android.material.card.MaterialCardView>
+    app:strokeWidth="3dp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/abc_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="a"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="36sp" />
+</com.google.android.material.card.MaterialCardView>

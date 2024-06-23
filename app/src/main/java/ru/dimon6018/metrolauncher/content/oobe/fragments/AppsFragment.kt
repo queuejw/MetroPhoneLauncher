@@ -25,9 +25,7 @@ import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.App
@@ -66,6 +64,8 @@ class AppsFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val back: MaterialButton = view.findViewById(R.id.back)
         val next: MaterialButton = view.findViewById(R.id.next)
+        val selectAll: MaterialButton = view.findViewById(R.id.oobeSelectAll)
+        val removeAll: MaterialButton = view.findViewById(R.id.oobeRemoveAll)
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
@@ -107,49 +107,47 @@ class AppsFragment: Fragment() {
                 recyclerView?.apply {
                     layoutManager = lm
                     adapter = mAdapter
-                    OverScrollDecoratorHelper.setUpOverScroll(
-                        this,
-                        OverScrollDecoratorHelper.ORIENTATION_VERTICAL
-                    )
                 }
-            }
-            runBlocking {
-                withContext(Dispatchers.Main) {
-                    loading!!.hideProgressBar()
-                    loading!!.visibility = View.GONE
-                }
-            }
-        }
-        back.setOnClickListener {
-            lifecycleScope.launch {
-                enterAnimation(true)
-                delay(200)
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, AdFragment(), "oobe")
-                }
-            }
-        }
-        next.setOnClickListener {
-            enterAnimation(true)
-            lifecycleScope.launch(Dispatchers.Default) {
-                var pos = 0
-                for (i in selectedItems!!) {
-                    val id = Random.nextLong(1000, 2000000)
-                    val entity = AppEntity(
-                        pos, id, -1, 0,
-                        isSelected = false,
-                        tileSize = generateRandomTileSize(false),
-                        appLabel = i.appLabel!!,
-                        appPackage = i.appPackage!!
-                    )
-                    call.insertItem(entity)
-                    pos += 1
-                }
-                withContext(Dispatchers.Main) {
-                    requireActivity().supportFragmentManager.commit {
-                        replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
+                back.setOnClickListener {
+                    lifecycleScope.launch {
+                        enterAnimation(true)
+                        delay(200)
+                        requireActivity().supportFragmentManager.commit {
+                            replace(R.id.fragment_container_view, AdFragment(), "oobe")
+                        }
                     }
                 }
+                next.setOnClickListener {
+                    enterAnimation(true)
+                    lifecycleScope.launch(Dispatchers.Default) {
+                        var pos = 0
+                        for (i in selectedItems!!) {
+                            val id = Random.nextLong(1000, 2000000)
+                            val entity = AppEntity(
+                                pos, id, -1, 0,
+                                isSelected = false,
+                                tileSize = generateRandomTileSize(false),
+                                appLabel = i.appLabel!!,
+                                appPackage = i.appPackage!!
+                            )
+                            call.insertItem(entity)
+                            pos += 1
+                        }
+                        withContext(Dispatchers.Main) {
+                            requireActivity().supportFragmentManager.commit {
+                                replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
+                            }
+                        }
+                    }
+                }
+                selectAll.setOnClickListener {
+                    mAdapter.selectAll()
+                }
+                removeAll.setOnClickListener {
+                    mAdapter.removeAll()
+                }
+                loading!!.hideProgressBar()
+                loading!!.visibility = View.GONE
             }
         }
     }
@@ -194,7 +192,24 @@ class AppsFragment: Fragment() {
         override fun getItemCount(): Int {
             return adapterApps.size
         }
-
+        fun selectAll() {
+            adapterApps.forEach {
+                it.selected = true
+                if (!selectedItems!!.contains(it)) {
+                    selectedItems!!.add(it)
+                }
+            }
+            notifyDataSetChanged()
+        }
+        fun removeAll() {
+            adapterApps.forEach {
+                it.selected = false
+                if (selectedItems!!.contains(it)) {
+                    selectedItems!!.remove(it)
+                }
+            }
+            notifyDataSetChanged()
+        }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val item = adapterApps[position]
             holder as OOBEAppHolder
@@ -225,10 +240,7 @@ class AppsFragment: Fragment() {
                     }
                 }
             }
-            if (latestItem != null) {
-                holder.checkbox.isChecked =
-                    latestItem == position || adapterApps[position].selected
-            }
+            holder.checkbox.isChecked = adapterApps[position].selected
         }
     }
     inner class OOBEAppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

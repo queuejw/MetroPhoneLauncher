@@ -5,15 +5,13 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.google.android.material.materialswitch.MaterialSwitch
-import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class ExperimentsSettingsActivity: AppCompatActivity() {
 
-    private var anims: MaterialSwitch? = null
     private var main: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,16 +20,9 @@ class ExperimentsSettingsActivity: AppCompatActivity() {
         setContentView(R.layout.launcher_settings_experiments)
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }
-
-        anims = findViewById(R.id.exp_allowAnims)
-        anims?.isChecked = EXP_PREFS!!.getAnimationPref
-        anims?.setOnCheckedChangeListener { _, isChecked ->
-            EXP_PREFS!!.setAnimationPref(isChecked)
-            anims?.isChecked = isChecked
-        }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

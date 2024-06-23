@@ -202,10 +202,17 @@
     <string name="animations">анимации</string>
     <string name="animations_settings_label">Анимации</string>
     <string name="tiles_animation_settings_label">Разрешить анимацию открытия и закрытия приложений в меню Пуск</string>
-    <string name="allapps_animation_settings_label">Разрешить анимацию открытия приложений в списке приложений</string>
+    <string name="allapps_animation_settings_label">Разрешить анимацию в списке приложений</string>
     <string name="transition_animation_settings_label">Разрешить анимацию перехода между экранами</string>
     <string name="experiments">эксперименты</string>
     <string name="experiments_tip">попробуйте новые функции</string>
     <string name="for_developers">Для разработчиков</string>
     <string name="animations_tip">плавные переходы</string>
+    <string name="live_tiles_animation_settings_label">Разрешить анимацию живых плиток</string>
+    <string name="experiments_unavailable">В текущий момент эксперименты недоступны. Попробуйте позже</string>
+    <string name="restart_required">Для применения настроек необходимо перезапустить MPL</string>
+    <string name="search_for_apps">поиск приложений</string>
+    <string name="max_results">Максимальное количество результатов</string>
+    <string name="select_all">выбрать все</string>
+    <string name="remove_all">убрать все</string>
 </resources>

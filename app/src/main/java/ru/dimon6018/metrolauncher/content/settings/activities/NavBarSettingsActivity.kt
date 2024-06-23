@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.radiobutton.MaterialRadioButton
+import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -25,6 +26,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
     private var currentIcon: ImageView? = null
     private var radio: RadioGroup? = null
     private var main: CoordinatorLayout? = null
+    private var resultsSlider: Slider? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
@@ -32,6 +34,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.launcher_settings_navbar)
         radio = findViewById(R.id.navbarRadioGroup)
+        resultsSlider = findViewById(R.id.maxResultsSlider)
         val dark: MaterialRadioButton = findViewById(R.id.alwaysDark)
         val light: MaterialRadioButton = findViewById(R.id.alwaysLight)
         val accent: MaterialRadioButton = findViewById(R.id.byTheme)
@@ -139,6 +142,10 @@ class NavBarSettingsActivity: AppCompatActivity() {
             searchSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             PREFS!!.setPrefsChanged(true)
         }
+        resultsSlider?.value = PREFS!!.maxResultsSearchBar.toFloat()
+        resultsSlider?.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+            PREFS!!.setMaxResultCountSearchBar(value.toInt())
+        })
     }
     private fun updateCurrentIcon() {
         currentIcon?.setImageDrawable(when(PREFS!!.navBarIconValue) {
@@ -157,7 +164,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         })
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

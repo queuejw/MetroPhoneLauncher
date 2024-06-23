@@ -46,7 +46,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
-import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -59,8 +58,6 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
-import ru.dimon6018.metrolauncher.helpers.anim.Flip3dAnimationVertical
-import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
@@ -190,8 +187,10 @@ class NewAllApps: Fragment() {
                     OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                     visibility = View.VISIBLE
                 }
-                progressBar?.hideProgressBar()
                 loadingText?.visibility = View.GONE
+                progressBar?.hideProgressBar()
+                delay(10)
+                progressBar?.visibility = View.GONE
                 isListLoaded = true
                 if (shouldShowTip) {
                     WPDialog(requireActivity()).setTopDialog(true)
@@ -304,16 +303,43 @@ class NewAllApps: Fragment() {
         }
     }
     private fun showAlphabet() {
-        recyclerView!!.alpha = 0.7f
+        adapterAlphabet!!.setNewData(getAlphabetList())
+        ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.7f).setDuration(300).start()
         isAlphabetVisible = true
-        alphabetLayout!!.visibility = View.VISIBLE
-        adapterAlphabet?.setNewData(getAlphabetList())
+        if(PREFS!!.isAAllAppsAnimEnabled) {
+            lifecycleScope.launch {
+                alphabetLayout!!.visibility = View.VISIBLE
+                delay(10)
+                for (i in 0..<recyclerViewAlphabet!!.childCount) {
+                    val view = recyclerViewAlphabet!!.getChildAt(i)
+                    if (view != null) {
+                        ObjectAnimator.ofFloat(view, "rotationX", 90f, 0f).setDuration(250).start()
+                    }
+                }
+            }
+        } else {
+            alphabetLayout!!.visibility = View.VISIBLE
+        }
     }
     private fun hideAlphabet() {
-        recyclerView!!.alpha = 1f
+        ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0.7f, 1f).setDuration(300).start()
         isAlphabetVisible = false
-        recyclerViewAlphabet!!.scrollToPosition(0)
-        alphabetLayout!!.visibility = View.GONE
+        if(PREFS!!.isAAllAppsAnimEnabled) {
+            lifecycleScope.launch {
+                for (i in 0..<recyclerViewAlphabet!!.childCount) {
+                    val view = recyclerViewAlphabet!!.getChildAt(i)
+                    if (view != null) {
+                        ObjectAnimator.ofFloat(view, "rotationX", 0f, 90f).setDuration(250).start()
+                    }
+                }
+                delay(250)
+                alphabetLayout!!.visibility = View.GONE
+                recyclerViewAlphabet!!.scrollToPosition(0)
+            }
+        } else {
+            alphabetLayout!!.visibility = View.GONE
+            recyclerViewAlphabet!!.scrollToPosition(0)
+        }
     }
     private fun getAlphabetList(): MutableList<AlphabetLetter> {
         val alphabetList: MutableList<AlphabetLetter> = ArrayList()
@@ -387,14 +413,16 @@ class NewAllApps: Fragment() {
             settingsBtn!!.visibility = View.VISIBLE
         }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        progressBar!!.showProgressBar()
+        progressBar?.showProgressBar()
         recyclerView?.alpha = 0.5f
         lifecycleScope.launch(defaultDispatcher) {
             appList = getHeaderListLatter(setUpApps(pm, contextFragment!!))
             withContext(Dispatchers.Main) {
                 appAdapter?.setData(appList!!, true)
-                progressBar!!.hideProgressBar()
                 recyclerView?.alpha = 1f
+                progressBar?.hideProgressBar()
+                delay(10)
+                progressBar?.visibility = View.GONE
             }
         }
     }
@@ -458,7 +486,7 @@ class NewAllApps: Fragment() {
         if(appList == null || !isListLoaded) {
             return
         }
-        progressBar!!.showProgressBar()
+        progressBar?.showProgressBar()
         lifecycleScope.launch(defaultDispatcher) {
             var temp = appList!!.size
             while (temp != 0) {
@@ -470,7 +498,9 @@ class NewAllApps: Fragment() {
             }
             withContext(mainDispatcher) {
                 appAdapter?.setData(appList!!, true)
-                progressBar!!.hideProgressBar()
+                progressBar?.hideProgressBar()
+                delay(10)
+                progressBar?.visibility = View.GONE
             }
         }
     }
@@ -604,8 +634,8 @@ class NewAllApps: Fragment() {
             }
         }
         private fun startDismissAnim(item: App) {
-            if (recyclerView == null || appAdapter == null) {
-                Log.d("resumeStart", "something is null")
+            if (recyclerView == null || appAdapter == null || !PREFS!!.isAAllAppsAnimEnabled) {
+                startAppDelay(item)
                 return
             }
             for(i in 0..<recyclerView!!.childCount) {
@@ -633,7 +663,7 @@ class NewAllApps: Fragment() {
                 delay(300)
                 runApp(item.appPackage!!)
                 for(i in 0..<recyclerView!!.childCount) {
-                    val itemView = recyclerView!!.getChildAt(i) ?: return@launch
+                    val itemView = recyclerView!!.getChildAt(i) ?: continue
                     val animatorSet = AnimatorSet()
                     animatorSet.playTogether(
                         ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
@@ -654,30 +684,30 @@ class NewAllApps: Fragment() {
                 animatorSet.start()
             }
         }
-        private fun runApp(packag: String) {
+        private fun runApp(app: String) {
             frame?.visibility = View.INVISIBLE
             isAppOpened = true
-            when (packag) {
+            when (app) {
                 "ru.dimon6018.metrolauncher" -> {
                     startActivity(Intent(requireActivity(), SettingsActivity::class.java))
                 }
                 else -> {
-                    startActivity(Intent(pm.getLaunchIntentForPackage(packag)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(pm.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         }
         private fun insertNewApp(text: String, packag: String) {
             lifecycleScope.launch(defaultDispatcher) {
-                val dBlist = dbCall.getJustApps()
-                dBlist.forEach {
+                val dataList = dbCall.getJustApps()
+                dataList.forEach {
                     if(it.appPackage == packag) {
                         //db already has this app. we must stop this
                         return@launch
                     }
                 }
                 var pos = 0
-                for (i in 0..<dBlist.size) {
-                    if (dBlist[i].tileType == -1) {
+                for (i in 0..<dataList.size) {
+                    if (dataList[i].tileType == -1) {
                         pos = i
                         break
                     }
@@ -709,7 +739,7 @@ class NewAllApps: Fragment() {
                 itemView.setOnClickListener {
                     val app = list[absoluteAdapterPosition]
                     try {
-                        if(EXP_PREFS!!.getAnimationPref) {
+                        if(PREFS!!.isAAllAppsAnimEnabled) {
                             startDismissAnim(app)
                         } else {
                         runApp(app.appPackage!!)
@@ -733,7 +763,6 @@ class NewAllApps: Fragment() {
             init {
                 itemView.setOnClickListener {
                     showAlphabet()
-                    Log.d("scroll", "items ${adapterAlphabet?.itemCount}")
                 }
             }
         }
@@ -745,12 +774,7 @@ class NewAllApps: Fragment() {
         private val disabledDrawable = ContextCompat.getColor(contextFragment!!, R.color.darkGray).toDrawable()
         private val size = contextFragment!!.resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
         private val params = ViewGroup.LayoutParams(size, size)
-        private val rotation = Flip3dAnimationVertical(90f, 0f, 0f, 0f)
 
-        init {
-            rotation.duration = 500
-            rotation.fillAfter = true
-        }
         fun setNewData(new: MutableList<AlphabetLetter>) {
             alphabetList = new
             notifyDataSetChanged()
@@ -784,10 +808,6 @@ class NewAllApps: Fragment() {
                     }
                 }
             }
-            if(!item.isAnimationEnded) {
-                holder.itemView.startAnimation(rotation)
-                item.isAnimationEnded = true
-            }
         }
         override fun getItemViewType(position: Int): Int {
             return if(alphabetList[position].isActive) activeLetter else disabledLetter
@@ -796,7 +816,6 @@ class NewAllApps: Fragment() {
     inner class AlphabetLetter {
         var letter: String = ""
         var isActive: Boolean = false
-        var isAnimationEnded: Boolean = false
         var posInList: Int = 0
     }
     inner class AlphabetLetterHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

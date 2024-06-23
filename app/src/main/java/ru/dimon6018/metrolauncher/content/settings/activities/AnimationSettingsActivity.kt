@@ -5,6 +5,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.google.android.material.checkbox.MaterialCheckBox
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -19,9 +21,35 @@ class AnimationSettingsActivity: AppCompatActivity() {
         setContentView(R.layout.launcher_settings_animations)
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }
+
+        val tileAnim: MaterialCheckBox = findViewById(R.id.tilesAnimCheckbox)
+        val liveTileAnim: MaterialCheckBox = findViewById(R.id.liveTilesAnimCheckbox)
+        val allAppsAnim: MaterialCheckBox = findViewById(R.id.allAppsAnimCheckbox)
+        val transitionAnim: MaterialCheckBox = findViewById(R.id.transitionAnimCheckbox)
+
+        tileAnim.isChecked = PREFS!!.isTilesAnimEnabled
+        liveTileAnim.isChecked = PREFS!!.isLiveTilesAnimEnabled
+        allAppsAnim.isChecked = PREFS!!.isAAllAppsAnimEnabled
+        transitionAnim.isChecked = PREFS!!.isTransitionAnimEnabled
+        tileAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setTilesAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
+        liveTileAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setLiveTilesAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
+        transitionAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setTransitionAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
+        allAppsAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setAllAppsAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

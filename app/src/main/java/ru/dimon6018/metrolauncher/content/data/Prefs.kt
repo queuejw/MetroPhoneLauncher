@@ -215,6 +215,36 @@ class Prefs(context: Context) {
     val isStartBlocked: Boolean
         get() = prefs.getBoolean(START_BLOCKED, false)
 
+    fun setTransitionAnim(value: Boolean) {
+        prefs.edit().putBoolean(TRANSITION_ANIMATION, value).apply()
+    }
+    val isTransitionAnimEnabled: Boolean
+        get() = prefs.getBoolean(TRANSITION_ANIMATION, true)
+
+    fun setTilesAnim(value: Boolean) {
+        prefs.edit().putBoolean(TILES_ANIMATIONS, value).apply()
+    }
+    val isTilesAnimEnabled: Boolean
+        get() = prefs.getBoolean(TILES_ANIMATIONS, true)
+
+    fun setLiveTilesAnim(value: Boolean) {
+       prefs.edit().putBoolean(LIVE_TILES_ANIMATIONS, value).apply()
+    }
+    val isLiveTilesAnimEnabled: Boolean
+        get() = prefs.getBoolean(LIVE_TILES_ANIMATIONS, true)
+
+    fun setAllAppsAnim(value: Boolean) {
+        prefs.edit().putBoolean(ALL_APPS_ANIMATIONS, value).apply()
+    }
+    val isAAllAppsAnimEnabled: Boolean
+        get() = prefs.getBoolean(ALL_APPS_ANIMATIONS, true)
+
+    fun setMaxResultCountSearchBar(size: Int) {
+        prefs.edit().putInt(BOTTOM_SEARCH_BAR_MAX_RESULTS, size).apply()
+    }
+    val maxResultsSearchBar: Int
+        get() = prefs.getInt(BOTTOM_SEARCH_BAR_MAX_RESULTS, 4)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -241,5 +271,10 @@ class Prefs(context: Context) {
         const val SEARCH_BAR = "searchBar"
         const val BOTTOM_BAR_MAIN_ICON = "bottomBarIcon"
         const val START_BLOCKED = "isStartScreenBlocked"
+        const val TRANSITION_ANIMATION = "transitionAnim"
+        const val TILES_ANIMATIONS = "tileAnim"
+        const val ALL_APPS_ANIMATIONS = "allAppsAnim"
+        const val LIVE_TILES_ANIMATIONS = "liveTileAnim"
+        const val BOTTOM_SEARCH_BAR_MAX_RESULTS = "maxResultsSearchBar"
     }
 }

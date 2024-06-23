@@ -15,6 +15,29 @@
         android:layout_height="wrap_content"
         android:text="" />
 
+    <!-- Bottom bar search results -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/searchBarResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="@dimen/navbarHeight"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="?attr/colorOnSurface"
+        app:cardCornerRadius="0dp"
+        app:strokeColor="?attr/colorPrimary"
+        app:strokeWidth="2dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchBarRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp" />
+    </com.google.android.material.card.MaterialCardView>
     <!-- Bottom bar -->
     <FrameLayout
         android:id="@+id/navigation"
@@ -52,6 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone">
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/searchBar"
                 android:layout_width="match_parent"
@@ -62,13 +86,12 @@
                 app:endIconMode="none">
 
                 <AutoCompleteTextView
-                    android:hint="Search for apps"
-                    android:inputType="text"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/roboto_regular"
+                    android:inputType="text"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="14sp" />
 

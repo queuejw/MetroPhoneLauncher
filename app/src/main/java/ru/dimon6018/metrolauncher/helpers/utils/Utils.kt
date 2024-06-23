@@ -277,7 +277,7 @@ class Utils {
                 val ok = if (isLowerR) {
                     bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, size, ostream)
                 } else {
-                    bitmap.compress(Bitmap.CompressFormat.WEBP, size, ostream)
+                    bitmap.compress(Bitmap.CompressFormat.PNG, size, ostream)
                 }
                 return if (ok) Icon.createWithData(
                     ostream.toByteArray(),
@@ -347,17 +347,9 @@ class Utils {
         }
         fun isScreenOn(context: Context?): Boolean {
             if (context != null) {
-                Log.d("ScreenStatus", "context is not null")
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                if(powerManager != null) {
-                    Log.d("ScreenStatus", "screen interactive = ${powerManager.isInteractive}")
-                    return powerManager.isInteractive
-                } else {
-                    Log.d("ScreenStatus", "powerManager is null, return false")
-                    return false
-                }
+                return powerManager?.isInteractive ?: false
             } else {
-                Log.d("ScreenStatus", "context is null, return false")
                 return false
             }
         }

@@ -34,7 +34,7 @@ class TileSettingsActivity: AppCompatActivity() {
         alphaSlider!!.value = PREFS!!.getTilesTransparency
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

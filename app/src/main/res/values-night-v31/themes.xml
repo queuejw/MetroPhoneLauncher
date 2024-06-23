@@ -17,5 +17,7 @@
         <item name="alertDialogTheme">@style/ThemeOverlay.App.AlertDialog</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="android:windowSplashScreenBackground">@android:color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
     </style>
 </resources>

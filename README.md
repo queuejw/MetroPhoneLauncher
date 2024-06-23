@@ -16,14 +16,12 @@ MPL isn't ready yet, but it already has some cool features you might like. See w
 - Ability to receive "Over-The-Air" updates
 - Support icon packs to make icons prettier 
 - Monet (Dynamic Colors) support
+- Animations that are as similar to Windows Phone animations as possible.
 
 And much more...
 
 **It will be very soon:**
-- [ ] Great optimization.
-- [ ] Animations that are as similar to Windows Phone animations as possible.
 - [ ] Live tiles.
-- [ ] Weather tile.
 
 # 📸 Screenshots:
 

@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -21,7 +22,7 @@ class WeatherSettingsActivity: AppCompatActivity() {
         main?.apply { applyWindowInsets(this) }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

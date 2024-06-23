@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -20,13 +21,45 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/oobeSelectAll"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:text="@string/select_all"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="18sp"
+                app:cornerRadius="0dp"
+                app:strokeColor="?attr/colorOnBackground"
+                app:strokeWidth="2dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/oobeRemoveAll"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:layout_marginStart="24dp"
+                android:text="@string/remove_all"
+                android:textColor="?attr/colorOnBackground"
+                android:textSize="18sp"
+                app:cornerRadius="0dp"
+                app:strokeColor="?attr/colorOnBackground"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/oobeRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
+
         <LinearLayout
-            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/colorBackground">
@@ -49,7 +82,6 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/next"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -59,6 +91,7 @@
                 android:text="@string/next"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="18sp"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 app:cornerRadius="0dp"
                 app:strokeColor="?attr/colorOnBackground"
                 app:strokeWidth="2dp" />

@@ -154,7 +154,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         main?.apply { applyWindowInsets(this) }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

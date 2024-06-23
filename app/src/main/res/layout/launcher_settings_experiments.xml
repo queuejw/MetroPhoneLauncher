@@ -26,7 +26,7 @@
             android:fontFamily="@font/roboto_light"
             android:singleLine="true"
             android:ellipsize="none"
-            android:text="experiments"
+            android:text="@string/experiments"
             android:textSize="52sp"
             android:layout_marginStart="4dp"
             android:textStyle="bold" />

@@ -17,6 +17,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stepSize="0.1"
-        android:valueFrom="0.0"
+        android:valueFrom="0.1"
         android:valueTo="1.0"/>
 </LinearLayout>

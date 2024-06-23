@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.NameNotFoundException
+import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Icon
@@ -22,7 +23,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -30,6 +30,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import android.widget.Toast
 import androidx.collection.ArrayMap
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -54,10 +55,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import ru.dimon6018.metrolauncher.Application.Companion.EXP_PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
+import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.AppDao
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
@@ -133,40 +135,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             //
-            mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
-                SpannedGridLayoutManager(
-                    orientation = RecyclerView.VERTICAL,
-                    _rowCount = 8,
-                    _columnCount = 4
-                )
-            } else {
-                SpannedGridLayoutManager(
-                    orientation = RecyclerView.VERTICAL,
-                    _rowCount = 12,
-                    _columnCount = 6
-                )
-            }
-            mSpannedLayoutManager!!.itemOrderIsStable = true
-            mSpannedLayoutManager!!.spanSizeLookup =
-                SpannedGridLayoutManager.SpanSizeLookup { position ->
-                    when (tiles!![position].tileSize) {
-                        "small" -> {
-                            SpanSize(1, 1)
-                        }
-
-                        "medium" -> {
-                            SpanSize(2, 2)
-                        }
-
-                        "big" -> {
-                            SpanSize(4, 2)
-                        }
-
-                        else -> {
-                            SpanSize(1, 1)
-                        }
-                    }
-                }
+            setupRecyclerViewLayoutManager(context)
             mAdapter = NewStartAdapter(requireContext(), tiles!!)
             val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
             mItemTouchHelper = ItemTouchHelper(callback)
@@ -184,12 +153,101 @@ class NewStart: Fragment(), OnStartDragListener {
                         mAdapter?.disableEditMode()
                     }
                 }
-                loadingProgressBar?.hideProgressBar()
                 observe()
+                loadingProgressBar?.hideProgressBar()
+                delay(10)
+                loadingProgressBar?.visibility = View.GONE
             }
 
         }
         return v
+    }
+    private fun setupRecyclerViewLayoutManager(context: Context?) {
+        if(mSpannedLayoutManager != null) {
+            mSpannedLayoutManager = null
+        }
+        if (!isLandscape) {
+            // phone
+            mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
+                SpannedGridLayoutManager(
+                    orientation = RecyclerView.VERTICAL,
+                    _rowCount = 8,
+                    _columnCount = 4
+                )
+            } else {
+                SpannedGridLayoutManager(
+                    orientation = RecyclerView.VERTICAL,
+                    _rowCount = 12,
+                    _columnCount = 6
+                )
+            }
+        } else {
+            // Landscape orientation
+            val tablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
+            if (tablet) {
+                // tablet
+                Toast.makeText(context, "Tablet detected", Toast.LENGTH_LONG).show()
+                mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
+                    SpannedGridLayoutManager(
+                        orientation = RecyclerView.VERTICAL,
+                        _rowCount = 2,
+                        _columnCount = 4
+                    )
+                } else {
+                    SpannedGridLayoutManager(
+                        orientation = RecyclerView.VERTICAL,
+                        _rowCount = 3,
+                        _columnCount = 6
+                    )
+                }
+            } else {
+                // phone but landscape
+                mSpannedLayoutManager = if (!PREFS!!.isMoreTilesEnabled) {
+                    SpannedGridLayoutManager(
+                        orientation = RecyclerView.VERTICAL,
+                        _rowCount = 3,
+                        _columnCount = 4
+                    )
+                } else {
+                    SpannedGridLayoutManager(
+                        orientation = RecyclerView.VERTICAL,
+                        _rowCount = 3,
+                        _columnCount = 6
+                    )
+                }
+            }
+        }
+        mSpannedLayoutManager!!.itemOrderIsStable = true
+        mSpannedLayoutManager!!.spanSizeLookup =
+            SpannedGridLayoutManager.SpanSizeLookup { position ->
+                when (tiles!![position].tileSize) {
+                    "small" -> {
+                        SpanSize(1, 1)
+                    }
+
+                    "medium" -> {
+                        SpanSize(2, 2)
+                    }
+
+                    "big" -> {
+                        SpanSize(4, 2)
+                    }
+
+                    else -> {
+                        SpanSize(1, 1)
+                    }
+                }
+            }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+        setupRecyclerViewLayoutManager(context)
+        mRecyclerView?.apply {
+            layoutManager = mSpannedLayoutManager
+
+        }
     }
     private fun generateIcon(it: AppEntity): Icon? {
         return if (context != null) {
@@ -208,15 +266,13 @@ class NewStart: Fragment(), OnStartDragListener {
     private fun observe() {
         Log.d("Start", "start observer")
         if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
-                if (EXP_PREFS!!.getAnimationPref && mAdapter != null) {
+                if (PREFS!!.isTilesAnimEnabled && mAdapter != null) {
                     if (isAppOpened || !screenIsOff) {
-                        Log.d("Start", "start enter animation")
                         if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                             mAdapter!!.isTopRight = true
                         }
                         setEnterAnim()
-                    } else {
-                        Log.d("Start", "animation disabled")
+                        mRecyclerView?.visibility = View.VISIBLE
                     }
                 }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
@@ -255,7 +311,6 @@ class NewStart: Fragment(), OnStartDragListener {
             return
         }
         for(i in 0..<mRecyclerView!!.childCount) {
-            Log.d("resumeStart", "start anim")
             val itemView = mRecyclerView!!.getChildAt(i) ?: continue
             val animatorSet = AnimatorSet()
             if (mAdapter!!.isTopLeft) {
@@ -335,12 +390,10 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun hideTiles() {
-        if (mRecyclerView == null || mAdapter == null) {
-            Log.d("resumeStart", "something is null")
+        if (mRecyclerView == null || mAdapter == null || !PREFS!!.isTilesAnimEnabled) {
             return
         }
         for(i in 0..<mRecyclerView!!.childCount) {
-            Log.d("resumeStart", "Hide tiles")
             val itemView = mRecyclerView!!.getChildAt(i) ?: continue
             ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
         }
@@ -349,6 +402,7 @@ class NewStart: Fragment(), OnStartDragListener {
         screenIsOff = isScreenOn(context)
         if(!screenIsOff) {
             hideTiles()
+            mRecyclerView?.visibility = View.INVISIBLE
         }
         super.onPause()
         if(mAdapter?.isEditMode == true) {
@@ -445,10 +499,10 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun pinApp(packageName: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            val dBlist = appsDbCall!!.getJustApps()
+            val dataList = appsDbCall!!.getJustApps()
             var pos = 0
-            for (i in 0..<dBlist.size) {
-                if (dBlist[i].tileType == -1) {
+            for (i in 0..<dataList.size) {
+                if (dataList[i].tileType == -1) {
                     pos = i
                     break
                 }
@@ -469,7 +523,6 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun unregisterBroadcast() {
-        Log.d("Start", "unreg broadcaster")
         isBroadcasterRegistered = false
         packageBroadcastReceiver?.apply {
             requireActivity().unregisterReceiver(packageBroadcastReceiver)
@@ -625,46 +678,85 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun startDismissTilesAnim(item: AppEntity) {
-            for(position in 0..<mRecyclerView!!.childCount) {
-                val itemView = mRecyclerView!!.getChildAt(position)
-                if(list[position].tileType == -1 || itemView == null) {
-                    continue
+            if(mRecyclerView != null) {
+                for (position in 0..<mRecyclerView!!.childCount) {
+                    val itemView = mRecyclerView!!.getChildAt(position) ?: continue
+                    val animatorSet = AnimatorSet()
+                    if (isTopLeft) {
+                        animatorSet.playTogether(
+                            ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "rotation",
+                                0f,
+                                Random.nextInt(25, 45).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "translationX",
+                                0f,
+                                Random.nextInt(-500, -250).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                        )
+                    }
+                    if (isTopRight) {
+                        animatorSet.playTogether(
+                            ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "rotation",
+                                0f,
+                                Random.nextInt(-45, -25).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "translationX",
+                                0f,
+                                Random.nextInt(-500, -250).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                        )
+                    }
+                    if (isBottomLeft) {
+                        animatorSet.playTogether(
+                            ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "rotation",
+                                0f,
+                                Random.nextInt(-45, -25).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "translationX",
+                                0f,
+                                Random.nextInt(-500, -250).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                        )
+                    }
+                    if (isBottomRight) {
+                        animatorSet.playTogether(
+                            ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "rotation",
+                                0f,
+                                Random.nextInt(25, 45).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(
+                                itemView,
+                                "translationX",
+                                0f,
+                                Random.nextInt(-500, -250).toFloat()
+                            ),
+                            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                        )
+                    }
+                    animatorSet.setDuration(Random.nextLong(300, 500))
+                    animatorSet.start()
                 }
-                val animatorSet = AnimatorSet()
-                if(isTopLeft) {
-                    animatorSet.playTogether(
-                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
-                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(25, 45).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
-                    )
-                }
-                if(isTopRight) {
-                    animatorSet.playTogether(
-                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
-                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(-45, -25).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
-                    )
-                }
-                if(isBottomLeft) {
-                    animatorSet.playTogether(
-                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
-                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(-45, -25).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
-                    )
-                }
-                if(isBottomRight) {
-                    animatorSet.playTogether(
-                        ObjectAnimator.ofFloat(itemView, "rotationY", 0f, 90f),
-                        ObjectAnimator.ofFloat(itemView, "rotation", 0f, Random.nextInt(25, 45).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "translationX", 0f, Random.nextInt(-500, -250).toFloat()),
-                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
-                    )
-                }
-                animatorSet.setDuration(Random.nextLong(300, 500))
-                animatorSet.start()
             }
             startAppDelay(item.appPackage)
         }
@@ -1018,7 +1110,14 @@ class NewStart: Fragment(), OnStartDragListener {
 
                     when(event.action) {
                         MotionEvent.ACTION_UP -> {
+                            visualFeedback(v)
                             handleClick()
+                        }
+                        MotionEvent.ACTION_DOWN -> {
+
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+
                         }
                     }
                     return@setOnTouchListener true
@@ -1041,7 +1140,7 @@ class NewStart: Fragment(), OnStartDragListener {
                         }
                     }
                 } else {
-                    if(EXP_PREFS!!.getAnimationPref) {
+                    if(PREFS!!.isTilesAnimEnabled) {
                         mAdapter?.startDismissTilesAnim(item)
                     } else {
                         startApp(item.appPackage)
@@ -1052,6 +1151,20 @@ class NewStart: Fragment(), OnStartDragListener {
             private fun handleLongClick() {
                 if(!isEditMode && !PREFS!!.isStartBlocked) {
                     enableEditMode()
+                }
+            }
+            private fun visualFeedback(view: View?) {
+                if(view != null) {
+                    val defaultAlpha = view.alpha
+                    lifecycleScope.launch {
+                        var newValue = defaultAlpha - 0.4f
+                        if(newValue <= 0.1f) {
+                            newValue = 0.2f
+                        }
+                        ObjectAnimator.ofFloat(view, "alpha", defaultAlpha, newValue).setDuration(100).start()
+                        delay(30)
+                        ObjectAnimator.ofFloat(view, "alpha", newValue, defaultAlpha).setDuration(100).start()
+                    }
                 }
             }
             override fun onItemSelected() {}

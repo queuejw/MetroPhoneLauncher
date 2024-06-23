@@ -11,6 +11,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
 import ru.dimon6018.metrolauncher.helpers.WPDialog
@@ -78,7 +79,7 @@ class AboutSettingsActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

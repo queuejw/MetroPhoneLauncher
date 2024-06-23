@@ -26,6 +26,7 @@
         <activity
             android:name="ru.dimon6018.metrolauncher.Main"
             android:exported="true"
+            android:configChanges="screenSize|orientation|screenLayout|navigation"
             android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
             android:resizeableActivity="true">

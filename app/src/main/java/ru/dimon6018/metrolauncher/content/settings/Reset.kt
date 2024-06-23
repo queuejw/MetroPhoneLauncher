@@ -9,12 +9,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
+import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.apps.AppData
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import kotlin.system.exitProcess
 
 class Reset : AppCompatActivity() {
 
@@ -36,14 +38,11 @@ class Reset : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             dbApps!!.clearAllTables()
             dbBsod!!.clearAllTables()
-            Prefs(this@Reset).reset()
+            PREFS!!.reset()
+            PREFS!!.setLauncherState(0)
             delay(3000)
         }.invokeOnCompletion {
-            Application.PREFS!!.setLauncherState(0)
-            intent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            finishAffinity()
-            startActivity(intent)
+            exitProcess(0)
         }
     }
 }

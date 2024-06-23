@@ -99,7 +99,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
+        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()

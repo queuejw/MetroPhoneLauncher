@@ -5,4 +5,5 @@
         <attr name="spanCount" />
         <attr name="aspectRatio" format="string" />
     </declare-styleable>
+    <bool name="isTablet">false</bool>
 </resources>

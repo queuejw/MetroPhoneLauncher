@@ -1,7 +1,5 @@
 package ru.dimon6018.metrolauncher.content.oobe
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.os.Bundle
 import android.widget.TextView

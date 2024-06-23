@@ -201,10 +201,17 @@
     <string name="animations">animations</string>
     <string name="animations_settings_label">Animations</string>
     <string name="tiles_animation_settings_label">Allow animation of opening and closing applications in the Start screen</string>
-    <string name="allapps_animation_settings_label">Allow animation of opening applications in the app list</string>
+    <string name="allapps_animation_settings_label">Allow animation in the app list</string>
     <string name="transition_animation_settings_label">Enable animation of transitions between MPL screens</string>
     <string name="experiments">experiments</string>
     <string name="experiments_tip">Preview of new functions</string>
     <string name="for_developers">For developers</string>
     <string name="animations_tip">smooth transitions</string>
+    <string name="live_tiles_animation_settings_label">Allow animation of live tiles</string>
+    <string name="experiments_unavailable">No experiments are available at this time. Try again later</string>
+    <string name="restart_required">MPL must be restarted to apply the settings</string>
+    <string name="search_for_apps">search for apps</string>
+    <string name="max_results">Max number of results</string>
+    <string name="select_all">select all</string>
+    <string name="remove_all">remove all</string>
 </resources>

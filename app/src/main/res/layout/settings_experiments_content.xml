@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/exp_allowAnims"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Allow animations"
+        android:text="@string/experiments_unavailable"
         android:fontFamily="@font/roboto_regular"
-        android:textSize="20sp"/>
+        android:textSize="18sp"/>
 </LinearLayout>
