@@ -271,6 +271,7 @@ class NewStart: Fragment(), OnStartDragListener {
                         if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                             mAdapter!!.isTopRight = true
                         }
+                        hideTiles()
                         setEnterAnim()
                         mRecyclerView?.visibility = View.VISIBLE
                     } else {

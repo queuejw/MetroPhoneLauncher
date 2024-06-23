@@ -618,6 +618,8 @@ class NewAllApps: Fragment() {
                 anim2.start()
             }
             anim.start()
+            ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.5f).setDuration(500).start()
+            ObjectAnimator.ofFloat(view, "alpha", 1f, 2f).setDuration(500).start()
             PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
             isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
@@ -656,7 +658,9 @@ class NewAllApps: Fragment() {
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$appPackage")))
             }
             popupWindow?.setOnDismissListener {
+                ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0.5f, 1f).setDuration(500).start()
                 isWindowVisible = false
+                popupWindow = null
             }
         }
         private fun startDismissAnim(item: App) {
