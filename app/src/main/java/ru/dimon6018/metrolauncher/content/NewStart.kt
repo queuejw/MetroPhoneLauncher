@@ -1084,24 +1084,17 @@ class NewStart: Fragment(), OnStartDragListener {
             val mContainer: FrameLayout = v.findViewById(R.id.container)
             val mTextView: TextView = v.findViewById(android.R.id.text1)
             val mAppIcon: ImageView = v.findViewById(android.R.id.icon1)
-
             private val gestureDetector: GestureDetector =
                 GestureDetector(context, object : SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
-                        // Обработка долгого нажатия здесь
-                        // Например, вызов метода или выполнение действия
                         handleLongClick()
                     }
-
                     override fun onSingleTapUp(e: MotionEvent): Boolean {
-                        // Обработка обычного нажатия здесь
-                        // Например, вызов метода или выполнение действия
                         visualFeedback(v)
                         handleClick()
                         return true
                     }
                 })
-
             init {
                 mContainer.alpha = PREFS!!.getTilesTransparency
                 mCardContainer.apply {
@@ -1259,165 +1252,148 @@ class NewStart: Fragment(), OnStartDragListener {
             back.setOnClickListener { dismiss() }
             lime.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 0
-                    dbCall.updateApp(item)
+                    updateTileColor(0)
                 }
                 dismiss()
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 1
-                    dbCall.updateApp(item)
+                    updateTileColor(1)
                 }
                 dismiss()
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 2
-                    dbCall.updateApp(item)
+                    updateTileColor(2)
                 }
                 dismiss()
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 3
-                    dbCall.updateApp(item)
+                    updateTileColor(3)
                 }
                 dismiss()
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 4
-                    dbCall.updateApp(item)
+                    updateTileColor(4)
                 }
                 dismiss()
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 5
-                    dbCall.updateApp(item)
+                    updateTileColor(5)
                 }
                 dismiss()
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 6
-                    dbCall.updateApp(item)
+                    updateTileColor(6)
                 }
                 dismiss()
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 7
-                    dbCall.updateApp(item)
+                    updateTileColor(7)
                 }
                 dismiss()
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 8
-                    dbCall.updateApp(item)
+                    updateTileColor(8)
                 }
                 dismiss()
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 9
-                    dbCall.updateApp(item)
+                    updateTileColor(9)
                 }
                 dismiss()
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 10
-                    dbCall.updateApp(item)
+                    updateTileColor(10)
                 }
                 dismiss()
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 11
-                    dbCall.updateApp(item)
+                    updateTileColor(11)
                 }
                 dismiss()
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 12
-                    dbCall.updateApp(item)
+                    updateTileColor(12)
                 }
                 dismiss()
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 13
-                    dbCall.updateApp(item)
+                    updateTileColor(13)
                 }
                 dismiss()
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 14
-                    dbCall.updateApp(item)
+                    updateTileColor(14)
                 }
                 dismiss()
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 15
-                    dbCall.updateApp(item)
+                    updateTileColor(15)
                 }
                 dismiss()
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 16
-                    dbCall.updateApp(item)
+                    updateTileColor(16)
                 }
                 dismiss()
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 17
-                    dbCall.updateApp(item)
+                    updateTileColor(17)
                 }
                 dismiss()
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 18
-                    dbCall.updateApp(item)
+                    updateTileColor(18)
                 }
                 dismiss()
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    item.tileColor = 19
-                    dbCall.updateApp(item)
+                    updateTileColor(19)
                 }
                 dismiss()
             }
         }
-
+        private suspend fun updateTileColor(color: Int) {
+            item.tileColor = color
+            dbCall.updateApp(item)
+        }
         override fun dismiss() {
             adapter.notifyItemChanged(item.appPos!!)
             adapter.showSettingsBottomSheet(item, item.appPos!!)

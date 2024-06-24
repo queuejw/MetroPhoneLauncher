@@ -73,6 +73,7 @@ import kotlin.random.Random
 class NewAllApps: Fragment() {
 
     private var recyclerView: RecyclerView? = null
+    private var recyclerViewLM: LinearLayoutManager? = null
 
     private var recyclerViewAlphabet: RecyclerView? = null
     private var alphabetLayout: LinearLayout? = null
@@ -172,7 +173,7 @@ class NewAllApps: Fragment() {
                 }
             }
             appAdapter = AppAdapter(appList!!, dbCall)
-            val lm = LinearLayoutManager(contextFragment)
+            recyclerViewLM = LinearLayoutManager(contextFragment)
             setAlphabetRecyclerView()
             shouldShowTip = PREFS!!.pref.getBoolean("tip2Enabled", true)
             withContext(mainDispatcher) {
@@ -182,7 +183,7 @@ class NewAllApps: Fragment() {
                     }
                 }
                 recyclerView?.apply {
-                    layoutManager = lm
+                    layoutManager = recyclerViewLM
                     adapter = appAdapter
                     OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                     visibility = View.VISIBLE
@@ -238,9 +239,7 @@ class NewAllApps: Fragment() {
                     val packageName = intent.getStringExtra("package")
                     // End early if it has anything to do with us.
                     if (packageName.isNullOrEmpty()) return
-                    val action = intent.getIntExtra("action", 42)
                     packageName.apply {
-                        Log.d("AllApps Broadcaster", "$action , app: $this")
                         broadcastListUpdater()
                     }
                 }
@@ -260,8 +259,6 @@ class NewAllApps: Fragment() {
                     requireActivity().registerReceiver(packageBroadcastReceiver, it)
                 }
             }
-        } else {
-            Log.d("AllApps", "register canceled because it already registered")
         }
     }
     private fun broadcastListUpdater() {
@@ -614,8 +611,7 @@ class NewAllApps: Fragment() {
                 anim2.start()
             }
             anim.start()
-            ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.5f).setDuration(500).start()
-            ObjectAnimator.ofFloat(view, "alpha", 1f, 1f).setDuration(500).start()
+            fadeList(appPackage, label, false)
             PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
             isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
@@ -654,9 +650,31 @@ class NewAllApps: Fragment() {
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:$appPackage")))
             }
             popupWindow?.setOnDismissListener {
-                ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0.5f, 1f).setDuration(500).start()
+                fadeList(appPackage, label, true)
                 isWindowVisible = false
                 popupWindow = null
+            }
+        }
+        private fun fadeList(app: String, label: String, restoreAll: Boolean) {
+            val first = recyclerViewLM!!.findFirstVisibleItemPosition()
+            val last = recyclerViewLM!!.findLastVisibleItemPosition()
+            if (restoreAll) {
+                for (i in first..last) {
+                    val itemView = recyclerView!!.findViewHolderForAdapterPosition(i)?.itemView
+                    if (itemView != null) {
+                        ObjectAnimator.ofFloat(itemView, "alpha", 0.5f, 1f).setDuration(500).start()
+                    }
+                }
+            } else {
+                for (i in first..last) {
+                    if (list[i].appPackage == app && list[i].appLabel == label) {
+                        continue
+                    }
+                    val itemView = recyclerView!!.findViewHolderForAdapterPosition(i)?.itemView
+                    if (itemView != null) {
+                        ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0.5f).setDuration(500).start()
+                    }
+                }
             }
         }
         private fun startDismissAnim(item: App) {
