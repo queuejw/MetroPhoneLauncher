@@ -309,9 +309,11 @@ class NewAllApps: Fragment() {
     }
     private fun showAlphabet() {
         adapterAlphabet!!.setNewData(getAlphabetList())
-        ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.7f).setDuration(300).start()
+        if(PREFS!!.isAlphabetAnimEnabled) {
+            ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.7f).setDuration(300).start()
+        }
         isAlphabetVisible = true
-        if(PREFS!!.isAAllAppsAnimEnabled) {
+        if(PREFS!!.isAlphabetAnimEnabled) {
             lifecycleScope.launch {
                 alphabetLayout!!.visibility = View.VISIBLE
                 delay(10)
@@ -327,9 +329,11 @@ class NewAllApps: Fragment() {
         }
     }
     private fun hideAlphabet() {
-        ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0.7f, 1f).setDuration(300).start()
+        if(PREFS!!.isAlphabetAnimEnabled) {
+            ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0.7f, 1f).setDuration(300).start()
+        }
         isAlphabetVisible = false
-        if(PREFS!!.isAAllAppsAnimEnabled) {
+        if(PREFS!!.isAlphabetAnimEnabled) {
             lifecycleScope.launch {
                 for (i in 0..<recyclerViewAlphabet!!.childCount) {
                     val view = recyclerViewAlphabet!!.getChildAt(i)

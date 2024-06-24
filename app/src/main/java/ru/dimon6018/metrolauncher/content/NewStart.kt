@@ -265,20 +265,9 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun observe() {
         Log.d("Start", "start observer")
+        animate()
+        mRecyclerView?.visibility = View.VISIBLE
         if(appsDbCall?.getApps()?.asLiveData()?.hasObservers() == false) {
-                if (PREFS!!.isTilesAnimEnabled && mAdapter != null) {
-                    if (isAppOpened || !screenIsOff) {
-                        if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
-                            mAdapter!!.isTopRight = true
-                        }
-                        setEnterAnim()
-                        mRecyclerView?.visibility = View.VISIBLE
-                    } else {
-                        mRecyclerView?.visibility = View.VISIBLE
-                    }
-                } else {
-                    mRecyclerView?.visibility = View.VISIBLE
-                }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter!!.isEditMode && mAdapter!!.list != it) {
@@ -287,6 +276,28 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                 }
             }
+        }
+    }
+    private fun animate() {
+        if (PREFS!!.isTilesAnimEnabled && mAdapter != null) {
+            if (isAppOpened) {
+                if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
+                    mAdapter!!.isTopRight = true
+                }
+                setEnterAnim()
+                return
+            }
+        }
+        if(!screenIsOff && PREFS!!.isTilesScreenAnimEnabled && mAdapter != null) {
+            if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
+                mAdapter!!.isTopRight = true
+            }
+            setEnterAnim()
+            return
+        }
+        if(!screenIsOff && !PREFS!!.isTilesScreenAnimEnabled) {
+            hideTiles(true)
+            return
         }
     }
     private fun stopObserver() {
@@ -393,19 +404,23 @@ class NewStart: Fragment(), OnStartDragListener {
             animatorSet.start()
         }
     }
-    private fun hideTiles() {
+    private fun hideTiles(showTiles: Boolean) {
         if (mRecyclerView == null || mAdapter == null || !PREFS!!.isTilesAnimEnabled) {
             return
         }
         for(i in 0..<mRecyclerView!!.childCount) {
             val itemView = mRecyclerView!!.getChildAt(i) ?: continue
-            ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+            if(showTiles) {
+                ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f).start()
+            } else {
+                ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+            }
         }
     }
     override fun onPause() {
         screenIsOff = isScreenOn(context)
         if(!screenIsOff) {
-            hideTiles()
+            hideTiles(false)
             mRecyclerView?.visibility = View.INVISIBLE
         }
         super.onPause()
@@ -862,20 +877,23 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if(!isEditMode) {
-                Log.d("onItemMove", "edit mode disabled. enabling...")
                 enableEditMode()
                 return
             }
             Log.d("ItemMove", "from pos: $fromPosition")
             Log.d("ItemMove", "to pos: $toPosition")
-            if (fromPosition <= toPosition) {
-                Collections.rotate(list.subList(fromPosition, toPosition + 1), -1)
-            } else {
-                Collections.rotate(list.subList(toPosition, fromPosition + 1), 1)
-            }
+            rotateList(fromPosition, toPosition)
             notifyItemMoved(fromPosition, toPosition)
         }
-
+        private fun rotateList(fromPosition: Int, toPosition: Int) {
+            lifecycleScope.launch(defaultDispatcher) {
+                if (fromPosition <= toPosition) {
+                    Collections.rotate(list.subList(fromPosition, toPosition + 1), -1)
+                } else {
+                    Collections.rotate(list.subList(toPosition, fromPosition + 1), 1)
+                }
+            }
+        }
         override fun onItemDismiss(position: Int) {
             if(!isEditMode) {
                 return

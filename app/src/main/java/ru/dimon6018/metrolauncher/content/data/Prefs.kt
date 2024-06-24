@@ -251,6 +251,18 @@ class Prefs(context: Context) {
     val isAllAppsEnabled: Boolean
         get() = prefs.getBoolean(ALL_APPS_ENABLED, true)
 
+    fun setAlphabetAnim(value: Boolean) {
+        prefs.edit().putBoolean(ALPHABET_ANIMATION, value).apply()
+    }
+    val isAlphabetAnimEnabled: Boolean
+        get() = prefs.getBoolean(ALPHABET_ANIMATION, true)
+
+    fun setTilesScreenAnim(value: Boolean) {
+        prefs.edit().putBoolean(TILES_SCREEN_ANIMATION, value).apply()
+    }
+    val isTilesScreenAnimEnabled: Boolean
+        get() = prefs.getBoolean(TILES_SCREEN_ANIMATION, true)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -283,5 +295,7 @@ class Prefs(context: Context) {
         const val LIVE_TILES_ANIMATIONS = "liveTileAnim"
         const val BOTTOM_SEARCH_BAR_MAX_RESULTS = "maxResultsSearchBar"
         const val ALL_APPS_ENABLED = "allAppsEnabled"
+        const val TILES_SCREEN_ANIMATION = "tilesScreenAnim"
+        const val ALPHABET_ANIMATION = "alphabetAnim"
     }
 }

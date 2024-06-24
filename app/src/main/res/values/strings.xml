@@ -215,6 +215,6 @@
     <string name="select_all">select all</string>
     <string name="remove_all">remove all</string>
     <string name="disable_all_apps">Show screen All apps</string>
-    <string name="alphabet_animation_settings_label">Разрешить анимации алфавита</string>
-    <string name="tiles_phone_start_animation_settings_label">Анимировать плитки при включении экрана</string>
+    <string name="alphabet_animation_settings_label">Allow alphabet animations</string>
+    <string name="tiles_phone_start_animation_settings_label">Animate tiles when you turn on the screen</string>
 </resources>

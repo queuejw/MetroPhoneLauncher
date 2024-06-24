@@ -26,11 +26,15 @@ class AnimationSettingsActivity: AppCompatActivity() {
         val liveTileAnim: MaterialCheckBox = findViewById(R.id.liveTilesAnimCheckbox)
         val allAppsAnim: MaterialCheckBox = findViewById(R.id.allAppsAnimCheckbox)
         val transitionAnim: MaterialCheckBox = findViewById(R.id.transitionAnimCheckbox)
-
+        val alphabetAnim: MaterialCheckBox = findViewById(R.id.alphabetAnimCheckbox)
+        val tilesScreenAnim: MaterialCheckBox = findViewById(R.id.tilesPhoneStartAnimCheckbox)
         tileAnim.isChecked = PREFS!!.isTilesAnimEnabled
         liveTileAnim.isChecked = PREFS!!.isLiveTilesAnimEnabled
         allAppsAnim.isChecked = PREFS!!.isAAllAppsAnimEnabled
         transitionAnim.isChecked = PREFS!!.isTransitionAnimEnabled
+        alphabetAnim.isChecked = PREFS!!.isAlphabetAnimEnabled
+        tilesScreenAnim.isChecked = PREFS!!.isTilesScreenAnimEnabled
+
         tileAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setTilesAnim(isChecked)
             PREFS!!.setPrefsChanged(true)
@@ -45,6 +49,14 @@ class AnimationSettingsActivity: AppCompatActivity() {
         }
         allAppsAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
+        alphabetAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setAlphabetAnim(isChecked)
+            PREFS!!.setPrefsChanged(true)
+        }
+        tilesScreenAnim.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setTilesScreenAnim(isChecked)
             PREFS!!.setPrefsChanged(true)
         }
     }
