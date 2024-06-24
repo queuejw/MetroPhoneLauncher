@@ -40,26 +40,6 @@ class NavBarSettingsActivity: AppCompatActivity() {
         val accent: MaterialRadioButton = findViewById(R.id.byTheme)
         val hidden: MaterialRadioButton = findViewById(R.id.hidden)
         val auto: MaterialRadioButton = findViewById(R.id.auto)
-        radio?.setOnCheckedChangeListener { _, checkedId ->
-           when(checkedId) {
-               dark.id -> {
-                   PREFS!!.setNavBarSetting(0)
-               }
-               light.id -> {
-                   PREFS!!.setNavBarSetting(1)
-               }
-               accent.id -> {
-                   PREFS!!.setNavBarSetting(2)
-              }
-               hidden.id -> {
-                   PREFS!!.setNavBarSetting(3)
-               }
-               auto.id -> {
-                   PREFS!!.setNavBarSetting(4)
-               }
-           }
-            PREFS!!.setPrefsChanged(true)
-        }
         when(PREFS!!.navBarColor) {
             0 -> {
                 dark.isChecked = true
@@ -96,6 +76,26 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 hidden.isChecked = false
                 auto.isChecked = true
             }
+        }
+        radio?.setOnCheckedChangeListener { _, checkedId ->
+           when(checkedId) {
+               dark.id -> {
+                   PREFS!!.setNavBarSetting(0)
+               }
+               light.id -> {
+                   PREFS!!.setNavBarSetting(1)
+               }
+               accent.id -> {
+                   PREFS!!.setNavBarSetting(2)
+              }
+               hidden.id -> {
+                   PREFS!!.setNavBarSetting(3)
+               }
+               auto.id -> {
+                   PREFS!!.setNavBarSetting(4)
+               }
+           }
+            PREFS!!.setPrefsChanged(true)
         }
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }

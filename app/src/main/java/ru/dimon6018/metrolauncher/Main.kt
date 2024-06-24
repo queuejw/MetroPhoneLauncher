@@ -300,10 +300,8 @@ class Main : AppCompatActivity() {
     }
     private fun hideSearchResults() {
         lifecycleScope.launch {
-            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             searchBarResultsLayout?.apply {
-                (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.isPressed = false
-                imm?.hideSoftInputFromWindow(this.windowToken, 0)
+                (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.text?.clear()
                 ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
             }
             searchBarResultsLayout?.visibility = View.GONE
@@ -370,11 +368,11 @@ class Main : AppCompatActivity() {
         }
     }
     override fun onResume() {
-        super.onResume()
         if (PREFS!!.isPrefsChanged()) {
             PREFS!!.setPrefsChanged(false)
             exitProcess(0)
         }
+        super.onResume()
         registerPackageReceiver(this, packageReceiver)
     }
     override fun onDestroy() {
@@ -407,7 +405,6 @@ class Main : AppCompatActivity() {
         override fun getItemCount(): Int {
             return if(dataList != null) dataList!!.size else 0
         }
-
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             if (dataList != null) {
                 holder as AppSearchHolder
@@ -435,7 +432,7 @@ class Main : AppCompatActivity() {
         init {
             label.setTextColor(launcherSurfaceColor(theme))
             itemView.setOnClickListener {
-                val app = appList!![absoluteAdapterPosition]
+                val app = dataList!![absoluteAdapterPosition]
                 runApp(app.appPackage!!)
                 }
             }

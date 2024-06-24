@@ -5,10 +5,14 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
+import coil3.load
+import coil3.request.crossfade
+import coil3.request.placeholder
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -32,6 +36,7 @@ import kotlin.system.exitProcess
 class AboutSettingsActivity : AppCompatActivity() {
 
     private var main: CoordinatorLayout? = null
+    private val caracalLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/916px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme() )
@@ -71,6 +76,19 @@ class AboutSettingsActivity : AppCompatActivity() {
         }
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }
+
+        val easterEggText = findViewById<MaterialTextView>(R.id.queuejw)
+        val easterEggImg = findViewById<ImageView>(R.id.queuejwImg)
+        easterEggText.setOnLongClickListener {
+            easterEggImg.visibility = View.VISIBLE
+            easterEggImg.load(caracalLink) {
+              placeholder(R.drawable.ic_clock)
+            }
+            return@setOnLongClickListener true
+        }
+        easterEggImg.setOnClickListener {
+            WPDialog(this).setTopDialog(true).setTitle("Meow meow").setMessage("Meow meow, meow?").setPositiveButton("meow", null).show()
+        }
     }
     private fun resetPart1() {
         val intent = (Intent(this@AboutSettingsActivity, Reset::class.java))

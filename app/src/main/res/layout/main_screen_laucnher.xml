@@ -71,7 +71,7 @@
                 android:scaleX="-1"
                 android:src="@drawable/ic_search" />
         </LinearLayout>
-        <!-- Search bar in progress-->
+        <!-- Search bar -->
         <LinearLayout
             android:id="@+id/navigation_searchBar"
             android:layout_width="match_parent"

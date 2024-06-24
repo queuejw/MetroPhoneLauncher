@@ -18,12 +18,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.GestureDetector
+import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -58,7 +59,6 @@ import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
-import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.apps.AppDao
@@ -271,7 +271,6 @@ class NewStart: Fragment(), OnStartDragListener {
                         if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                             mAdapter!!.isTopRight = true
                         }
-                        hideTiles()
                         setEnterAnim()
                         mRecyclerView?.visibility = View.VISIBLE
                     } else {
@@ -282,9 +281,9 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             appsDbCall?.getApps()?.asLiveData()?.observe(this.viewLifecycleOwner) {
                 if (mAdapter != null) {
-                    if (!mAdapter?.isEditMode!! && mAdapter?.list != it) {
+                    if (!mAdapter!!.isEditMode && mAdapter!!.list != it) {
                         Log.d("flow", "update list")
-                        mAdapter?.setData(it)
+                        mAdapter!!.setData(it)
                     }
                 }
             }
@@ -295,20 +294,20 @@ class NewStart: Fragment(), OnStartDragListener {
         appsDbCall?.getApps()?.asLiveData()?.removeObservers(this.viewLifecycleOwner)
     }
     override fun onResume() {
-        super.onResume()
         observe()
-        screenIsOff = isScreenOn(context)
         if(isAppOpened) {
             isAppOpened = false
         }
+        isStartMenuOpened = true
+        super.onResume()
+        screenIsOff = isScreenOn(context)
+        registerBroadcast()
         mAdapter?.apply {
             isBottomRight = false
             isBottomLeft = false
             isTopRight = false
             isTopLeft = false
         }
-        registerBroadcast()
-        isStartMenuOpened = true
     }
     private fun setEnterAnim() {
         if (mRecyclerView == null || mAdapter == null) {
@@ -390,7 +389,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
                 )
             }
-            animatorSet.setDuration(Random.nextLong(250, 700))
+            animatorSet.setDuration(Random.nextLong(250, 600))
             animatorSet.start()
         }
     }
@@ -416,17 +415,17 @@ class NewStart: Fragment(), OnStartDragListener {
         isStartMenuOpened = false
     }
     override fun onStop() {
+        if(mRecyclerView?.visibility == View.VISIBLE) {
+            mRecyclerView?.visibility = View.INVISIBLE
+        }
         super.onStop()
         stopObserver()
         isStartMenuOpened = false
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
-        if (viewHolder != null && !PREFS!!.isStartBlocked) {
-            if (viewHolder.itemViewType == mAdapter?.spaceType) {
-                return
-            }
-            if (mAdapter?.isEditMode == false) {
-                mAdapter?.enableEditMode()
+        if (viewHolder != null && !PREFS!!.isStartBlocked && mAdapter != null) {
+            if(!mAdapter!!.isEditMode) {
+                mAdapter!!.enableEditMode()
             }
             mItemTouchHelper!!.startDrag(viewHolder)
         } else {
@@ -586,7 +585,7 @@ class NewStart: Fragment(), OnStartDragListener {
     inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         private val defaultTileType: Int = 0
-        val spaceType: Int = 1
+        private val spaceType: Int = 1
 
         var isEditMode = false
         private val animList: MutableList<ObjectAnimator> = ArrayList()
@@ -596,7 +595,6 @@ class NewStart: Fragment(), OnStartDragListener {
         var isTopRight = false
         var isBottomLeft = false
         var isBottomRight = false
-
         init {
             setHasStableIds(true)
             transparentColor = ContextCompat.getColor(context, R.color.transparent)
@@ -669,8 +667,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun createBaseWobble(v: View): ObjectAnimator {
             val animator = ObjectAnimator()
-            animator.setDuration(425)
-            animator.interpolator = LinearInterpolator()
+            animator.setDuration(400)
             animator.repeatMode = ValueAnimator.REVERSE
             animator.repeatCount = ValueAnimator.INFINITE
             animator.setPropertyName("rotation")
@@ -1088,6 +1085,23 @@ class NewStart: Fragment(), OnStartDragListener {
             val mTextView: TextView = v.findViewById(android.R.id.text1)
             val mAppIcon: ImageView = v.findViewById(android.R.id.icon1)
 
+            private val gestureDetector: GestureDetector =
+                GestureDetector(context, object : SimpleOnGestureListener() {
+                    override fun onLongPress(e: MotionEvent) {
+                        // Обработка долгого нажатия здесь
+                        // Например, вызов метода или выполнение действия
+                        handleLongClick()
+                    }
+
+                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                        // Обработка обычного нажатия здесь
+                        // Например, вызов метода или выполнение действия
+                        visualFeedback(v)
+                        handleClick()
+                        return true
+                    }
+                })
+
             init {
                 mContainer.alpha = PREFS!!.getTilesTransparency
                 mCardContainer.apply {
@@ -1113,23 +1127,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     isBottomRight =
                         x >= (left + view.width / 2) && x <= right && y >= top + view.height / 2 && y <= bottom
 
-                    when(event.action) {
-                        MotionEvent.ACTION_UP -> {
-                            visualFeedback(v)
-                            handleClick()
-                        }
-                        MotionEvent.ACTION_DOWN -> {
-
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-
-                        }
-                    }
-                    return@setOnTouchListener true
-                }
-                mContainer.setOnLongClickListener {
-                    handleLongClick()
-                    true
+                    return@setOnTouchListener gestureDetector.onTouchEvent(event)
                 }
             }
             private fun handleClick() {

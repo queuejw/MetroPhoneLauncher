@@ -94,13 +94,23 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
                 android:textSize="17sp" android:autoLink="web"/>
+
         <com.google.android.material.textview.MaterialTextView
-                android:text="2023-2024 queuejw &amp; dimon6018"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fontFamily="@font/roboto_light"
-                android:textSize="18sp"/>
+            android:id="@+id/queuejw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/roboto_light"
+            android:text="2023-2024 queuejw &amp; dimon6018"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/queuejwImg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_clock" />
+
         <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:text="@string/reset_your_launcher"

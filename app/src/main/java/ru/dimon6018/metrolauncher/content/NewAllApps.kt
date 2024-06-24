@@ -20,7 +20,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationSet
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -73,8 +72,6 @@ import kotlin.random.Random
 
 class NewAllApps: Fragment() {
 
-    private var frame: FrameLayout? = null
-
     private var recyclerView: RecyclerView? = null
 
     private var recyclerViewAlphabet: RecyclerView? = null
@@ -105,7 +102,7 @@ class NewAllApps: Fragment() {
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
-    private val hashCache = ArrayMap<String, Icon?>()
+    private var hashCache = ArrayMap<String, Icon?>()
     private var isListLoaded = false
     private var isBroadcasterRegistered = false
     private var iconManager: IconPackManager? = null
@@ -130,11 +127,11 @@ class NewAllApps: Fragment() {
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
-        frame = view.findViewById(R.id.frame)
+        val frame: FrameLayout = view.findViewById(R.id.frame)
         if(PREFS!!.isAllAppsBackgroundEnabled) {
-            frame?.background = ContextCompat.getColor(contextFragment!!, R.color.transparent).toDrawable()
+            frame.background = ContextCompat.getColor(contextFragment!!, R.color.transparent).toDrawable()
         } else {
-            frame?.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(contextFragment!!, android.R.color.background_light).toDrawable() else ContextCompat.getColor(contextFragment!!, android.R.color.background_dark).toDrawable()
+            frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(contextFragment!!, android.R.color.background_light).toDrawable() else ContextCompat.getColor(contextFragment!!, android.R.color.background_dark).toDrawable()
         }
         progressBar = view.findViewById(R.id.progressBar)
         loadingText = view.findViewById(R.id.loadingText)
@@ -153,7 +150,7 @@ class NewAllApps: Fragment() {
         settingsBtn = view.findViewById(R.id.settingsBtn)
         settingsBtn!!.setOnClickListener {
             if(isListLoaded) {
-                activity?.startActivity(Intent(requireActivity(), SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
             }
         }
         if(!PREFS!!.isSettingsBtnEnabled) {
@@ -288,10 +285,10 @@ class NewAllApps: Fragment() {
     }
 
     override fun onDestroyView() {
+        super.onDestroyView()
         progressBar = null
         loadingHolder = null
-        frame = null
-        super.onDestroyView()
+        hashCache.clear()
     }
     private suspend fun setAlphabetRecyclerView() {
         if(contextFragment == null) {
@@ -405,7 +402,6 @@ class NewAllApps: Fragment() {
     override fun onResume() {
         if(isAppOpened && !isStartMenuOpened) {
             activity?.onBackPressedDispatcher?.onBackPressed()
-            frame?.visibility = View.VISIBLE
         }
         registerBroadcast()
         super.onResume()
@@ -619,7 +615,7 @@ class NewAllApps: Fragment() {
             }
             anim.start()
             ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0.5f).setDuration(500).start()
-            ObjectAnimator.ofFloat(view, "alpha", 1f, 2f).setDuration(500).start()
+            ObjectAnimator.ofFloat(view, "alpha", 1f, 1f).setDuration(500).start()
             PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
             isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
@@ -715,14 +711,13 @@ class NewAllApps: Fragment() {
             }
         }
         private fun runApp(app: String) {
-            frame?.visibility = View.INVISIBLE
             isAppOpened = true
             when (app) {
                 "ru.dimon6018.metrolauncher" -> {
-                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+                    activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
                 }
                 else -> {
-                    startActivity(Intent(pm.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                    startActivity(Intent(pm.getLaunchIntentForPackage(app)))
                 }
             }
         }
@@ -767,6 +762,7 @@ class NewAllApps: Fragment() {
             val label: MaterialTextView = itemView.findViewById(R.id.app_label)
             init {
                 itemView.setOnClickListener {
+                    visualFeedback(itemView)
                     val app = list[absoluteAdapterPosition]
                     try {
                         if(PREFS!!.isAAllAppsAnimEnabled) {
@@ -785,6 +781,20 @@ class NewAllApps: Fragment() {
                     val app = list[absoluteAdapterPosition]
                     showPopupWindow(itemView, app.appPackage!!, app.appLabel!!)
                     true
+                }
+            }
+            private fun visualFeedback(view: View?) {
+                if(view != null) {
+                    val defaultAlpha = view.alpha
+                    lifecycleScope.launch {
+                        var newValue = defaultAlpha - 0.4f
+                        if(newValue <= 0.1f) {
+                            newValue = 0.2f
+                        }
+                        ObjectAnimator.ofFloat(view, "alpha", defaultAlpha, newValue).setDuration(100).start()
+                        delay(30)
+                        ObjectAnimator.ofFloat(view, "alpha", newValue, defaultAlpha).setDuration(100).start()
+                    }
                 }
             }
         }
