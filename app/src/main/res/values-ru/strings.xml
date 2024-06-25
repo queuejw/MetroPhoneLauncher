@@ -218,4 +218,5 @@
     <string name="disable_all_apps">Показывать экран Все приложения</string>
     <string name="alphabet_animation_settings_label">Разрешить анимации алфавита</string>
     <string name="tiles_phone_start_animation_settings_label">Анимировать плитки при включении экрана</string>
+    <string name="search_error">Произошла ошибка. Попробуйте повторить поиск.</string>
 </resources>

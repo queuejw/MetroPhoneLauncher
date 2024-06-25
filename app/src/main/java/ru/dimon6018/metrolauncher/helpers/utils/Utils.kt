@@ -36,6 +36,7 @@ import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.io.ByteArrayOutputStream
 import java.util.Calendar
+import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
 
@@ -352,6 +353,19 @@ class Utils {
             } else {
                 return false
             }
+        }
+        fun sortApps(newApps: MutableList<App>): MutableList<App> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Collections.sort(
+                    newApps,
+                    Comparator.comparing { app: App -> app.appLabel!![0].lowercase(Locale.getDefault()) })
+            } else {
+                newApps.sortWith { app1: App, app2: App ->
+                    app1.appLabel!![0].lowercase(Locale.getDefault())
+                        .compareTo(app2.appLabel!![0].lowercase(Locale.getDefault()))
+                }
+            }
+            return newApps
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {

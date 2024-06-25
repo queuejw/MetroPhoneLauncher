@@ -36,6 +36,7 @@ import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import kotlin.random.Random
 
 class AppsFragment: Fragment() {
@@ -69,7 +70,7 @@ class AppsFragment: Fragment() {
         val call = AppData.getAppData(fragmentContext!!).getAppDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
-            val appList = setUpApps(fragmentContext!!.packageManager, fragmentContext!!)
+            val appList = sortApps(setUpApps(fragmentContext!!.packageManager, fragmentContext!!))
             val mAdapter = AppAdapter(appList, fragmentContext!!)
             val lm = LinearLayoutManager(fragmentContext)
             var iconManager: IconPackManager? = null

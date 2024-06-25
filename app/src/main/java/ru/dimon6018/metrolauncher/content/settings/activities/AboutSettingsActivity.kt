@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import coil3.load
-import coil3.request.crossfade
 import coil3.request.placeholder
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
