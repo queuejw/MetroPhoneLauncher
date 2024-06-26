@@ -14,10 +14,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView.OnEditorActionListener
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -87,6 +89,7 @@ class Main : AppCompatActivity() {
     private var appList: MutableList<App>? = null
     private val hashCache = ArrayMap<String, Icon?>()
     private var searchAdapter: SearchAdapter? = null
+    private var filteredList: ArrayList<App>? = null
 
     private val packageReceiver = PackageChangesReceiver()
 
@@ -302,13 +305,24 @@ class Main : AppCompatActivity() {
                 layoutManager = LinearLayoutManager(this@Main, LinearLayoutManager.VERTICAL, false)
                 adapter = searchAdapter
             }
-            (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.addTextChangedListener(object :
+            val text = (bottomViewSearchBar!!.editText as? AutoCompleteTextView)
+            text?.addTextChangedListener(object :
                 TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     filterSearchText(s.toString())
                 }
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable) {}
+            })
+            text?.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    if(filteredList != null) {
+                        runApp( filteredList!![0].appPackage!!)
+                        hideSearchResults()
+                    }
+                    return@OnEditorActionListener true
+                }
+                false
             })
         }
     }
@@ -352,7 +366,7 @@ class Main : AppCompatActivity() {
         if(appList == null) {
             return
         }
-        val filteredList: ArrayList<App> = ArrayList()
+        filteredList = ArrayList()
         val locale = Locale.getDefault()
         if(text.isEmpty()) {
             hideSearchResults()
@@ -363,14 +377,14 @@ class Main : AppCompatActivity() {
         for(i in 0..<appList!!.size) {
             val item = appList!![i]
             if (item.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
-                if(filteredList.size >= max) {
+                if(filteredList!!.size >= max) {
                     break
                 }
-                filteredList.add(item)
+                filteredList!!.add(item)
             }
         }
-        if (filteredList.isNotEmpty()) {
-            searchAdapter?.setData(filteredList)
+        if (filteredList!!.isNotEmpty()) {
+            searchAdapter?.setData(filteredList!!)
         }
     }
     private fun setAppTheme() {
@@ -394,6 +408,17 @@ class Main : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterPackageReceiver(this, packageReceiver)
+    }
+    private fun runApp(app: String) {
+        isAppOpened = true
+        when (app) {
+            "ru.dimon6018.metrolauncher" -> {
+                startActivity(Intent(this@Main, SettingsActivity::class.java))
+            }
+            else -> {
+                startActivity(Intent(this@Main.packageManager.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+        }
     }
     companion object {
         var isLandscape: Boolean = false
@@ -450,17 +475,6 @@ class Main : AppCompatActivity() {
             itemView.setOnClickListener {
                 val app = dataList!![absoluteAdapterPosition]
                 runApp(app.appPackage!!)
-                }
-            }
-        }
-        private fun runApp(app: String) {
-            isAppOpened = true
-            when (app) {
-                "ru.dimon6018.metrolauncher" -> {
-                    startActivity(Intent(this@Main, SettingsActivity::class.java))
-                }
-                else -> {
-                    startActivity(Intent(this@Main.packageManager.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         }

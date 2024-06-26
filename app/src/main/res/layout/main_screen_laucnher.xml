@@ -92,6 +92,7 @@
                     android:layout_height="match_parent"
                     android:fontFamily="@font/roboto_regular"
                     android:inputType="text"
+                    android:imeOptions="actionGo"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:textColor="?attr/colorOnBackground"
