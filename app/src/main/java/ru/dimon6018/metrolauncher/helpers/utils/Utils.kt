@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -366,6 +367,10 @@ class Utils {
                 }
             }
             return newApps
+        }
+        fun isDevMode(context: Context): Boolean {
+            return Settings.Secure.getInt(context.contentResolver,
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {

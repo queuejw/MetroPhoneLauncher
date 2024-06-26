@@ -54,6 +54,7 @@ import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
@@ -92,12 +93,20 @@ class Main : AppCompatActivity() {
     private var black: Int? = null
     private var white: Int? = null
     private var bottomViewReady = false
+    private var searching = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         setAppTheme()
-        black = ContextCompat.getColor(this@Main, android.R.color.black)
-        white = ContextCompat.getColor(this@Main, android.R.color.white)
+        if(isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
+            //disabling animations if developer mode is enabled (to avoid problems)
+            PREFS!!.setAllAppsAnim(false)
+            PREFS!!.setTilesAnim(false)
+            PREFS!!.setAlphabetAnim(false)
+            PREFS!!.setTransitionAnim(false)
+            PREFS!!.setLiveTilesAnim(false)
+            PREFS!!.setTilesScreenAnim(false)
+        }
         super.onCreate(savedInstanceState)
         when(PREFS!!.launcherState) {
             0 -> {
@@ -114,6 +123,8 @@ class Main : AppCompatActivity() {
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         lifecycleScope.launch(Dispatchers.Default) {
+            black = ContextCompat.getColor(this@Main, android.R.color.black)
+            white = ContextCompat.getColor(this@Main, android.R.color.white)
             pagerAdapter = WinAdapter(this@Main)
             if(PREFS!!.isWallpaperUsed) {
                 window?.setBackgroundDrawable(
@@ -165,6 +176,10 @@ class Main : AppCompatActivity() {
                     override fun handleOnBackPressed() {
                         if (viewPager.currentItem != 0) {
                             viewPager.currentItem -= 1
+                        } else {
+                            if(searching && PREFS!!.isSearchBarEnabled) {
+                                hideSearchResults()
+                            }
                         }
                     }
                 })
@@ -299,6 +314,7 @@ class Main : AppCompatActivity() {
     }
     private fun hideSearchResults() {
         lifecycleScope.launch {
+            searching = false
             searchBarResultsLayout?.apply {
                 (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.text?.clear()
                 ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
@@ -307,6 +323,7 @@ class Main : AppCompatActivity() {
         }
     }
     private fun showSearchResults() {
+        searching = true
         searchBarResultsLayout?.visibility = View.VISIBLE
         searchBarResultsLayout?.apply {
             ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()

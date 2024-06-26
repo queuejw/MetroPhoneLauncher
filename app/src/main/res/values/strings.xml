@@ -218,4 +218,6 @@
     <string name="alphabet_animation_settings_label">Allow alphabet animations</string>
     <string name="tiles_phone_start_animation_settings_label">Animate tiles when you turn on the screen</string>
     <string name="search_error">There\'s been an error. Try searching again.</string>
+    <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
+    <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
 </resources>

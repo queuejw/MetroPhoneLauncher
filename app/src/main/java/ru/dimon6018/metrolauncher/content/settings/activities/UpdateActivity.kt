@@ -68,6 +68,7 @@ class UpdateActivity: AppCompatActivity() {
     private var coroutineXmlScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var coroutineErrorScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var coroutineDownloadingScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private var mainDispatcher = Dispatchers.Main
 
     private var main: CoordinatorLayout? = null
 
@@ -133,9 +134,7 @@ class UpdateActivity: AppCompatActivity() {
                 else -> {
                     PREFS!!.setUpdateState(1)
                     refreshUi()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        checkForUpdates()
-                    }
+                    checkForUpdates()
                 }
             }
         }
@@ -366,19 +365,18 @@ class UpdateActivity: AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 downloadXmlActivity()
-                runOnUiThread {
+                withContext(mainDispatcher) {
                     refreshUi()
-                }
-                withContext(Dispatchers.Main) {
                     checkUpdateInfo()
                 }
             } catch (e: Exception) {
                 Log.e("CheckForUpdates", e.toString())
                 saveError(e.toString(), db!!)
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     refreshUi()
                 }
             }
+            cancel()
         }
     }
     private fun checkUpdateInfo() {
@@ -398,10 +396,11 @@ class UpdateActivity: AppCompatActivity() {
                     PREFS!!.setUpdateState(6)
                 }
             }
-            withContext(Dispatchers.Main) {
+            withContext(mainDispatcher) {
                 progressBar!!.isIndeterminate = false
                 refreshUi()
             }
+            cancel()
         }
     }
     private fun checkDownload() {
@@ -422,7 +421,7 @@ class UpdateActivity: AppCompatActivity() {
                 saveError(e.toString(), db!!)
                 PREFS!!.setUpdateState(5)
                 refreshUi()
-                runOnUiThread {
+                withContext(mainDispatcher) {
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                             .setTitle(getString(R.string.error))
                             .setMessage(getString(R.string.downloading_error))
@@ -441,7 +440,7 @@ class UpdateActivity: AppCompatActivity() {
                 downloadId = manager?.enqueue(request)
                 isUpdateDownloading = true
                 PREFS!!.setUpdateState(2)
-                runOnUiThread {
+                withContext(mainDispatcher) {
                     refreshUi()
                 }
                 val q = DownloadManager.Query()
@@ -456,7 +455,7 @@ class UpdateActivity: AppCompatActivity() {
                         val progress: Int = ((downloaded * 100L / total)).toInt()
                         val progressString = getString(R.string.preparing_to_install, progress) + "%"
                         PREFS!!.setUpdateProgressLevel(progress)
-                        runOnUiThread {
+                        withContext(mainDispatcher) {
                             progressText?.text = progressString
                             if (isGreaterThanN) {
                                 progressBar?.setProgress(progress, true)
@@ -467,14 +466,14 @@ class UpdateActivity: AppCompatActivity() {
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
                             isUpdateDownloading = false
                             PREFS!!.setUpdateState(4)
-                            runOnUiThread {
+                            withContext(mainDispatcher) {
                                 refreshUi()
                             }
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
                             isUpdateDownloading = false
                             PREFS!!.setUpdateState(5)
-                            runOnUiThread {
+                            withContext(mainDispatcher) {
                                 refreshUi()
                             }
                         }
@@ -483,7 +482,7 @@ class UpdateActivity: AppCompatActivity() {
                         cursor.close()
                         isUpdateDownloading = false
                         PREFS!!.setUpdateState(0)
-                        runOnUiThread {
+                        withContext(mainDispatcher) {
                             this@UpdateActivity.recreate()
                         }
                     }
@@ -495,7 +494,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
                 isUpdateDownloading = false
                 PREFS!!.setUpdateState(5)
-                withContext(Dispatchers.Main) {
+                withContext(mainDispatcher) {
                     refreshUi()
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                             .setTitle(getString(R.string.error))
@@ -503,22 +502,27 @@ class UpdateActivity: AppCompatActivity() {
                             .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
             }
+            cancel()
         }
     }
-    private fun downloadXmlActivity() {
+    private suspend fun downloadXmlActivity() {
         Log.i("CheckForUpdates", "download xml")
         val url = URL(URL)
-        val connection = url.openConnection() as HttpURLConnection
+        val connection = withContext(Dispatchers.IO) {
+            url.openConnection()
+        } as HttpURLConnection
         connection.connectTimeout = 15000
         try {
             val input = connection.inputStream
             val parser = UpdateDataParser()
             parser.parse(input)
-            input.close()
+            withContext(Dispatchers.IO) {
+                input.close()
+            }
         } catch (e: Exception) {
             Log.e("CheckForUpdates", "something went wrong: $e")
             PREFS!!.setUpdateState(5)
-            runOnUiThread {
+            withContext(mainDispatcher) {
                 refreshUi()
             }
         }

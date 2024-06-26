@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -223,6 +224,21 @@ class SettingsActivity : AppCompatActivity() {
             setupAnim(leaks!!, 490)
             setupAnim(expBtn!!, 500)
             isEnter = false
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                themeBtn!!.alpha = 1f
+                allAppsBtn!!.alpha = 1f
+                tilesBtn!!.alpha = 1f
+                iconBtn!!.alpha = 1f
+                animsBtn!!.alpha = 1f
+                feedbackBtn!!.alpha = 1f
+                weatherBtm!!.alpha = 1f
+                updateBtn!!.alpha = 1f
+                navBarBtn!!.alpha = 1f
+                aboutBtn!!.alpha = 1f
+                leaks!!.alpha = 1f
+                expBtn!!.alpha = 1f
+            }
         }
     }
     private fun hideViews() {

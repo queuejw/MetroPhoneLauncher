@@ -263,6 +263,13 @@ class Prefs(context: Context) {
     val isTilesScreenAnimEnabled: Boolean
         get() = prefs.getBoolean(TILES_SCREEN_ANIMATION, true)
 
+    //disabling animations if developer mode is enabled (to avoid problems)
+    fun setAutoShutdownAnim(value: Boolean) {
+        prefs.edit().putBoolean(AUTO_SHUTDOWN_ANIM, value).apply()
+    }
+    val isAutoShutdownAnimEnabled: Boolean
+        get() = prefs.getBoolean(AUTO_SHUTDOWN_ANIM, true)
+
     companion object {
         const val FILE_NAME = "Prefs"
         const val ACCENT_COLOR = "accentColor"
@@ -297,5 +304,6 @@ class Prefs(context: Context) {
         const val ALL_APPS_ENABLED = "allAppsEnabled"
         const val TILES_SCREEN_ANIMATION = "tilesScreenAnim"
         const val ALPHABET_ANIMATION = "alphabetAnim"
+        const val AUTO_SHUTDOWN_ANIM = "autoStdwnAnimations"
     }
 }

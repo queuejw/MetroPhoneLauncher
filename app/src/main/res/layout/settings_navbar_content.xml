@@ -51,7 +51,7 @@
             android:fontFamily="@font/roboto_regular"
             android:text="@string/hide_navbar"/>
     </RadioGroup>
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"

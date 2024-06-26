@@ -45,6 +45,7 @@ import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -346,6 +347,7 @@ class NewAllApps: Fragment() {
                 delay(250)
                 alphabetLayout!!.visibility = View.INVISIBLE
                 recyclerViewAlphabet!!.scrollToPosition(0)
+                cancel()
             }
         } else {
             alphabetLayout!!.visibility = View.INVISIBLE
@@ -708,6 +710,8 @@ class NewAllApps: Fragment() {
                 )
                 animatorSet.setDuration(100)
                 animatorSet.start()
+                delay(100)
+                cancel()
             }
         }
         private fun runApp(app: String) {

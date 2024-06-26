@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
@@ -23,6 +24,7 @@ import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
 
 class WelcomeFragment : Fragment() {
     private var main: View? = null
+    private var placeholderCoroutine = CoroutineScope(Dispatchers.IO)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -51,7 +53,7 @@ class WelcomeFragment : Fragment() {
         generatePlaceholders()
     }
     private fun generatePlaceholders() {
-        CoroutineScope(Dispatchers.IO).launch {
+        placeholderCoroutine.launch {
             Application.PREFS!!.editor.putBoolean("placeholdersGenerated", true).apply()
             val size = 100
             val dbCall = AppData.getAppData(requireContext()).getAppDao()
@@ -64,6 +66,7 @@ class WelcomeFragment : Fragment() {
                 )
                 dbCall.insertItem(placeholder)
             }
+            cancel()
         }
     }
     private fun enterAnimation(exit: Boolean) {
@@ -89,5 +92,10 @@ class WelcomeFragment : Fragment() {
     override fun onResume() {
         enterAnimation(false)
         super.onResume()
+    }
+
+    override fun onStop() {
+        placeholderCoroutine.cancel()
+        super.onStop()
     }
 }

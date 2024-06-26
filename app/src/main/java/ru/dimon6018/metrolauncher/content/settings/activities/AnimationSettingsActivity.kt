@@ -8,8 +8,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.checkbox.MaterialCheckBox
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 
 class AnimationSettingsActivity: AppCompatActivity() {
 
@@ -28,36 +30,38 @@ class AnimationSettingsActivity: AppCompatActivity() {
         val transitionAnim: MaterialCheckBox = findViewById(R.id.transitionAnimCheckbox)
         val alphabetAnim: MaterialCheckBox = findViewById(R.id.alphabetAnimCheckbox)
         val tilesScreenAnim: MaterialCheckBox = findViewById(R.id.tilesPhoneStartAnimCheckbox)
+        val autoShutdownAnims: MaterialCheckBox = findViewById(R.id.autoShutdownAnimsCheckbox)
         tileAnim.isChecked = PREFS!!.isTilesAnimEnabled
         liveTileAnim.isChecked = PREFS!!.isLiveTilesAnimEnabled
         allAppsAnim.isChecked = PREFS!!.isAAllAppsAnimEnabled
         transitionAnim.isChecked = PREFS!!.isTransitionAnimEnabled
         alphabetAnim.isChecked = PREFS!!.isAlphabetAnimEnabled
         tilesScreenAnim.isChecked = PREFS!!.isTilesScreenAnimEnabled
+        autoShutdownAnims.isChecked = PREFS!!.isAutoShutdownAnimEnabled
 
         tileAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setTilesAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
         }
         liveTileAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setLiveTilesAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
         }
         transitionAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setTransitionAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
         }
         allAppsAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
         }
         alphabetAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAlphabetAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
         }
         tilesScreenAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setTilesScreenAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
+        }
+        autoShutdownAnims.setOnCheckedChangeListener { _, isChecked ->
+            PREFS!!.setAutoShutdownAnim(isChecked)
+        }
+        if(isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
+            WPDialog(this).setTopDialog(true).setTitle(getString(R.string.tip)).setMessage(getString(R.string.animations_dev_mode)).setPositiveButton(getString(android.R.string.ok), null).show()
         }
     }
     private fun enterAnimation(exit: Boolean) {
@@ -85,7 +89,6 @@ class AnimationSettingsActivity: AppCompatActivity() {
         animatorSet.setDuration(400)
         animatorSet.start()
     }
-
     override fun onResume() {
         enterAnimation(false)
         super.onResume()
