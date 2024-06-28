@@ -102,9 +102,9 @@ class UpdateActivity: AppCompatActivity() {
         }
         updateDetails!!.setOnClickListener {
             WPDialog(this).setTopDialog(true)
-                    .setTitle(getString(R.string.details))
-                    .setMessage(getUpdateMessage())
-                    .setPositiveButton(getString(android.R.string.ok), null).show()
+                .setTitle(getString(R.string.details))
+                .setMessage(getUpdateMessage())
+                .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         check!!.setOnClickListener {
             if(!checkStoragePermissions()) {
@@ -423,9 +423,9 @@ class UpdateActivity: AppCompatActivity() {
                 refreshUi()
                 withContext(mainDispatcher) {
                     WPDialog(this@UpdateActivity).setTopDialog(true)
-                            .setTitle(getString(R.string.error))
-                            .setMessage(getString(R.string.downloading_error))
-                            .setPositiveButton(getString(android.R.string.ok), null).show()
+                        .setTitle(getString(R.string.error))
+                        .setMessage(getString(R.string.downloading_error))
+                        .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
                 cancel()
                 return@launch
@@ -497,9 +497,9 @@ class UpdateActivity: AppCompatActivity() {
                 withContext(mainDispatcher) {
                     refreshUi()
                     WPDialog(this@UpdateActivity).setTopDialog(true)
-                            .setTitle(getString(R.string.error))
-                            .setMessage(getString(R.string.downloading_error))
-                            .setPositiveButton(getString(android.R.string.ok), null).show()
+                        .setTitle(getString(R.string.error))
+                        .setMessage(getString(R.string.downloading_error))
+                        .setPositiveButton(getString(android.R.string.ok), null).show()
                 }
             }
             cancel()

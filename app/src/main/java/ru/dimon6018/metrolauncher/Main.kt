@@ -316,8 +316,11 @@ class Main : AppCompatActivity() {
             })
             text?.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_GO) {
-                    if(filteredList != null) {
-                        runApp( filteredList!![0].appPackage!!)
+                    if(filteredList != null && filteredList!!.isNotEmpty()) {
+                        filteredList!!.forEach {
+                            Log.d("list", it.appPackage!!)
+                        }
+                        runApp(filteredList!!.first().appPackage!!)
                         hideSearchResults()
                     }
                     return@OnEditorActionListener true
@@ -383,9 +386,7 @@ class Main : AppCompatActivity() {
                 filteredList!!.add(item)
             }
         }
-        if (filteredList!!.isNotEmpty()) {
-            searchAdapter?.setData(filteredList!!)
-        }
+        searchAdapter?.setData(filteredList!!)
     }
     private fun setAppTheme() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

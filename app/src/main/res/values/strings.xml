@@ -81,7 +81,7 @@
     <string name="custom">custom</string>
     <string name="customise_your_phone_settings">Customise your phone settings</string>
     <string name="recommended_tip">Choose recommended settings to enable mobile data and automatically download launcher update. Recommended settings will also send phone info and launcher usage information to improve MPL.</string>
-    <string name="oobe_done">You have finished setting up the launcher. Thank you for deciding to give MPL a try. Enjoy using it!</string>
+    <string name="oobe_done">You have finished setting up the launcher. Thank you for deciding to give MPL a try. Enjoy using it! \n MPL will be restarted.</string>
     <string name="recovry_browser_subtitle">Find information about the bug on the Internet</string>
     <string name="recovry_browser_title">Open browser</string>
     <string name="recovery_system_settings_title">Open system settings</string>
@@ -220,4 +220,5 @@
     <string name="search_error">There\'s been an error. Try searching again.</string>
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
+    <string name="ready_to_download_lawnicons">The update for Lawnicons is ready to download</string>
 </resources>

@@ -17,6 +17,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import leakcanary.LeakCanary
@@ -238,6 +239,7 @@ class SettingsActivity : AppCompatActivity() {
                 aboutBtn!!.alpha = 1f
                 leaks!!.alpha = 1f
                 expBtn!!.alpha = 1f
+                cancel()
             }
         }
     }

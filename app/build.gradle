@@ -4,19 +4,20 @@ plugins {
     id 'com.google.devtools.ksp'
 }
 
+
 android {
     namespace 'ru.dimon6018.metrolauncher'
-    compileSdk 34
-
+    compileSdk 35
     buildFeatures {
         buildConfig = true
     }
+    setBuildToolsVersion('35.0.0')
     defaultConfig {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
-        targetSdk 34
-        versionCode 44
-        versionName "1.0 Pre-Alpha 5.0.1"
+        targetSdk 35
+        versionCode 45
+        versionName "1.0 Pre-Alpha 5.0.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -39,7 +40,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_21
         targetCompatibility JavaVersion.VERSION_21
     }
-    setBuildToolsVersion('35.0.0-rc04')
 }
 dependencies {
 
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0-alpha03'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.fragment:fragment-ktx:1.8.0'
+    implementation 'androidx.fragment:fragment-ktx:1.8.1'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"

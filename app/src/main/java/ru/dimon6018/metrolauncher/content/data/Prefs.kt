@@ -78,15 +78,19 @@ class Prefs(context: Context) {
     }
     val isUpdateNotificationEnabled: Boolean
         get() = prefs.getBoolean(UPDATE_NOTIFICATION, false)
-
+    // is only used to save update data
     fun setVersionCode(int: Int) {
         prefs.edit().putInt(VERSION_CODE, int).apply()
     }
+    // is only used to save update data
     fun setUpdateMessage(value: String) {
         prefs.edit().putString(UPDATE_MESSAGE, value).apply()
     }
+    // is only used to save update data
     val updateMessage: String
         get() = prefs.getString(UPDATE_MESSAGE, "").toString()
+
+    // is only used to save update data
     val versionCode: Int
         get() = prefs.getInt(VERSION_CODE, 0)
 

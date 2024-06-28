@@ -2,11 +2,11 @@ package ru.dimon6018.metrolauncher.content.oobe
 
 import android.app.Activity
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
+import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.fragments.ConfigureFragment
@@ -16,13 +16,11 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 
 class WelcomeActivity: AppCompatActivity() {
 
-    private var textLabel: TextView? = null
     private var main: CoordinatorLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.oobe)
-        textLabel = findViewById(R.id.appbarTextView)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         main = findViewById(R.id.coordinator)
         main?.apply { applyWindowInsets(this) }
@@ -38,7 +36,7 @@ class WelcomeActivity: AppCompatActivity() {
     }
     companion object {
         fun setText(activity: Activity, text: String) {
-            activity.findViewById<TextView>(R.id.appbarTextView)!!.text = text
+            activity.findViewById<MaterialTextView>(R.id.appbarTextView)!!.text = text
         }
     }
 }

@@ -2,20 +2,16 @@ package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
-import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import kotlin.system.exitProcess
 
 class AlmostDoneFragment: Fragment() {
 
@@ -33,37 +29,26 @@ class AlmostDoneFragment: Fragment() {
         val next: MaterialButton = view.findViewById(R.id.next)
         WelcomeActivity.setText(requireActivity(), getString(R.string.welcomeAlmostDone))
         next.setOnClickListener {
-            lifecycleScope.launch {
-                enterAnimation(true)
-                delay(200)
-                Application.PREFS!!.setLauncherState(1)
-                requireActivity().startActivity(Intent(activity, Main::class.java))
-            }
+            Application.PREFS!!.setLauncherState(1)
+            exitProcess(0)
         }
         return view
     }
-    private fun enterAnimation(exit: Boolean) {
+    private fun enterAnimation() {
         if(main == null) {
             return
         }
         val animatorSet = AnimatorSet()
-        if(exit) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-            )
-        } else {
-            animatorSet.playTogether(
+        animatorSet.playTogether(
                 ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-            )
-        }
+                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f)
+        )
         animatorSet.setDuration(300)
         animatorSet.start()
     }
 
     override fun onResume() {
-        enterAnimation(false)
+        enterAnimation()
         super.onResume()
     }
 }

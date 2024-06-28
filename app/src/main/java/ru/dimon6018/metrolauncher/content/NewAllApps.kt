@@ -410,6 +410,16 @@ class NewAllApps: Fragment() {
         }
         registerBroadcast()
         super.onResume()
+        if(recyclerView?.alpha != 1f) {
+            recyclerView?.apply {
+                val anim = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
+                anim.duration = 100
+                anim.start()
+                anim.doOnEnd {
+                    recyclerView?.alpha = 1f
+                }
+            }
+        }
     }
     private fun disableSearch() {
         if(!isListLoaded) {
@@ -672,7 +682,7 @@ class NewAllApps: Fragment() {
                     ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
                     ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
                 )
-                animatorSet.setDuration((200 + (i * 2)).toLong())
+                animatorSet.duration = (200 + (i * 2)).toLong()
                 animatorSet.start()
             }
             val animatorSet = AnimatorSet()
@@ -681,8 +691,13 @@ class NewAllApps: Fragment() {
                 ObjectAnimator.ofFloat(recyclerView!!, "translationX", 0f, -600f),
                 ObjectAnimator.ofFloat(recyclerView!!, "alpha", 1f, 0f)
             )
-            animatorSet.setDuration(325)
+            animatorSet.duration = 325
             animatorSet.start()
+            animatorSet.doOnEnd {
+                recyclerView!!.alpha = 0f
+                ObjectAnimator.ofFloat(recyclerView!!, "rotationY", 0f, 0f).start()
+                ObjectAnimator.ofFloat(recyclerView!!, "translationX", 0f, 0f).start()
+            }
             startAppDelay(item)
         }
         private fun startAppDelay(item: App) {
@@ -690,27 +705,18 @@ class NewAllApps: Fragment() {
                 delay(300)
                 runApp(item.appPackage!!)
                 delay(100)
+                val animatorSetItems = AnimatorSet()
+                animatorSetItems.duration = 100
                 for(i in 0..<recyclerView!!.childCount) {
                     val itemView = recyclerView!!.getChildAt(i) ?: continue
-                    val animatorSet = AnimatorSet()
-                    animatorSet.playTogether(
+                    animatorSetItems.playTogether(
                         ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
                         ObjectAnimator.ofFloat(itemView, "rotation", 45f, 0f),
                         ObjectAnimator.ofFloat(itemView, "translationX", -500f, 0f),
                         ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
                     )
-                    animatorSet.setDuration(100)
-                    animatorSet.start()
+                    animatorSetItems.start()
                 }
-                val animatorSet = AnimatorSet()
-                animatorSet.playTogether(
-                    ObjectAnimator.ofFloat(recyclerView!!, "rotationY", -90f, 0f),
-                    ObjectAnimator.ofFloat(recyclerView!!, "translationX", -600f, -0f),
-                    ObjectAnimator.ofFloat(recyclerView!!, "alpha", 0f, 1f)
-                )
-                animatorSet.setDuration(100)
-                animatorSet.start()
-                delay(100)
                 cancel()
             }
         }

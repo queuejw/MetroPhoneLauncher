@@ -687,7 +687,7 @@ class NewStart: Fragment(), OnStartDragListener {
             animator.repeatMode = ValueAnimator.REVERSE
             animator.repeatCount = ValueAnimator.INFINITE
             animator.setPropertyName("rotation")
-            animator.setTarget(v)
+            animator.target = v
             return animator
         }
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
