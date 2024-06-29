@@ -64,6 +64,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -89,7 +90,7 @@ class Main : AppCompatActivity() {
     private var appList: MutableList<App>? = null
     private val hashCache = ArrayMap<String, Icon?>()
     private var searchAdapter: SearchAdapter? = null
-    private var filteredList: ArrayList<App>? = null
+    private var filteredList: MutableList<App>? = null
 
     private val packageReceiver = PackageChangesReceiver()
 
@@ -317,9 +318,6 @@ class Main : AppCompatActivity() {
             text?.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     if(filteredList != null && filteredList!!.isNotEmpty()) {
-                        filteredList!!.forEach {
-                            Log.d("list", it.appPackage!!)
-                        }
                         runApp(filteredList!!.first().appPackage!!)
                         hideSearchResults()
                     }
@@ -334,7 +332,9 @@ class Main : AppCompatActivity() {
             searching = false
             searchBarResultsLayout?.apply {
                 (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.text?.clear()
-                ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
+                }
             }
             searchBarResultsLayout?.visibility = View.GONE
         }
@@ -343,7 +343,9 @@ class Main : AppCompatActivity() {
         searching = true
         searchBarResultsLayout?.visibility = View.VISIBLE
         searchBarResultsLayout?.apply {
-            ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
+            if(PREFS!!.isTransitionAnimEnabled) {
+                ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
+            }
         }
     }
     private fun generateIcon(it: App, iconSize: Int, iconManager: IconPackManager?, isCustomIconsInstalled: Boolean): Icon? {
@@ -386,6 +388,7 @@ class Main : AppCompatActivity() {
                 filteredList!!.add(item)
             }
         }
+        filteredList = sortApps(filteredList!!)
         searchAdapter?.setData(filteredList!!)
     }
     private fun setAppTheme() {

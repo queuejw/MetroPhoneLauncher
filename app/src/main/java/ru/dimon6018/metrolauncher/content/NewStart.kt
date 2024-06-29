@@ -53,6 +53,7 @@ import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -85,7 +86,6 @@ import kotlin.random.Random
 
 class NewStart: Fragment(), OnStartDragListener {
 
-    private var mRecyclerView: RecyclerView? = null
     private var mSpannedLayoutManager: SpannedGridLayoutManager? = null
     private var mAdapter: NewStartAdapter? = null
     private var tiles: MutableList<AppEntity>? = null
@@ -102,7 +102,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private var iconManager: IconPackManager? = null
     private var isBroadcasterRegistered = false
 
-    private var screenIsOff = false
+    private var screenIsOn = false
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
@@ -280,25 +280,25 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun animate() {
-        if (PREFS!!.isTilesAnimEnabled && mAdapter != null) {
-            if (isAppOpened) {
-                if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
-                    mAdapter!!.isTopRight = true
-                }
-                setEnterAnim()
-                return
-            }
+        if(mRecyclerView == null || mAdapter == null) {
+            return
         }
-        if(!screenIsOff && PREFS!!.isTilesScreenAnimEnabled && mAdapter != null) {
+        if (PREFS!!.isTilesAnimEnabled && isAppOpened) {
             if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                 mAdapter!!.isTopRight = true
             }
             setEnterAnim()
-            return
-        }
-        if(!screenIsOff && !PREFS!!.isTilesScreenAnimEnabled) {
+        } else if(!PREFS!!.isTilesAnimEnabled && isAppOpened) {
             hideTiles(true)
-            return
+        } else if(!screenIsOn) {
+            if(PREFS!!.isTilesAnimEnabled) {
+                if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
+                    mAdapter!!.isTopRight = true
+                }
+                setEnterAnim()
+            } else {
+                hideTiles(true)
+            }
         }
     }
     private fun stopObserver() {
@@ -312,7 +312,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         isStartMenuOpened = true
         super.onResume()
-        screenIsOff = isScreenOn(context)
+        screenIsOn = isScreenOn(context)
         registerBroadcast()
         mAdapter?.apply {
             isBottomRight = false
@@ -406,34 +406,37 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun hideTiles(showTiles: Boolean) {
-        if (mRecyclerView == null || mAdapter == null || !PREFS!!.isTilesAnimEnabled) {
-            return
-        }
-        for(i in 0..<mRecyclerView!!.childCount) {
-            val itemView = mRecyclerView!!.getChildAt(i) ?: continue
-            if(showTiles) {
-                ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f).start()
-            } else {
-                ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+        CoroutineScope(mainDispatcher).launch {
+            if (mRecyclerView == null || mAdapter == null || !PREFS!!.isTilesAnimEnabled) {
+                cancel()
+                return@launch
             }
+            for (i in 0..<mRecyclerView!!.childCount) {
+                val itemView = mRecyclerView!!.getChildAt(i) ?: continue
+                if (showTiles) {
+                    ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f).start()
+                } else {
+                    ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+                }
+            }
+            cancel()
         }
     }
     override fun onPause() {
-        screenIsOff = isScreenOn(context)
-        if(!screenIsOff) {
-            hideTiles(false)
-            mRecyclerView?.visibility = View.INVISIBLE
-        }
         super.onPause()
+        screenIsOn = isScreenOn(context)
+        if(!screenIsOn) {
+            if(mRecyclerView?.visibility == View.VISIBLE) {
+                hideTiles(false)
+                mRecyclerView?.visibility = View.INVISIBLE
+            }
+        }
         if(mAdapter?.isEditMode == true) {
             mAdapter?.disableEditMode()
         }
         isStartMenuOpened = false
     }
     override fun onStop() {
-        if(mRecyclerView?.visibility == View.VISIBLE) {
-            mRecyclerView?.visibility = View.INVISIBLE
-        }
         super.onStop()
         stopObserver()
         isStartMenuOpened = false
@@ -597,6 +600,9 @@ class NewStart: Fragment(), OnStartDragListener {
         it.appLabel = ""
         it.id = it.id!! / 2
         appsDbCall!!.updateApp(it)
+    }
+    companion object {
+        var mRecyclerView: RecyclerView? = null
     }
     inner class NewStartAdapter(val context: Context, var list: MutableList<AppEntity>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 

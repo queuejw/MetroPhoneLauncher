@@ -345,8 +345,8 @@ class SettingsActivity : AppCompatActivity() {
             startAnim()
         }
     }
-    override fun onStop() {
+    override fun onPause() {
+        super.onPause()
         hideViews()
-        super.onStop()
     }
 }

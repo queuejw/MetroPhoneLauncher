@@ -411,13 +411,17 @@ class NewAllApps: Fragment() {
         registerBroadcast()
         super.onResume()
         if(recyclerView?.alpha != 1f) {
-            recyclerView?.apply {
-                val anim = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
-                anim.duration = 100
-                anim.start()
-                anim.doOnEnd {
-                    recyclerView?.alpha = 1f
+            if (PREFS!!.isAAllAppsAnimEnabled) {
+                recyclerView?.apply {
+                    val anim = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
+                    anim.duration = 100
+                    anim.start()
+                    anim.doOnEnd {
+                        recyclerView?.alpha = 1f
+                    }
                 }
+            } else {
+                recyclerView?.alpha = 1f
             }
         }
     }
@@ -671,19 +675,20 @@ class NewAllApps: Fragment() {
             }
         }
         private fun startDismissAnim(item: App) {
+            NewStart.mRecyclerView?.visibility = View.INVISIBLE
             if (recyclerView == null || appAdapter == null || !PREFS!!.isAAllAppsAnimEnabled) {
                 startAppDelay(item)
                 return
             }
+            val animatorSetDismiss = AnimatorSet()
             for(i in 0..<recyclerView!!.childCount) {
                 val itemView = recyclerView!!.getChildAt(i) ?: continue
-                val animatorSet = AnimatorSet()
-                animatorSet.playTogether(
+                animatorSetDismiss.playTogether(
                     ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
                     ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
                 )
-                animatorSet.duration = (200 + (i * 2)).toLong()
-                animatorSet.start()
+                animatorSetDismiss.duration = (200 + (i * 2)).toLong()
+                animatorSetDismiss.start()
             }
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
@@ -700,8 +705,17 @@ class NewAllApps: Fragment() {
             }
             startAppDelay(item)
         }
+        private fun hideTilesStartScreen() {
+            if (NewStart.mRecyclerView != null && PREFS!!.isTilesAnimEnabled) {
+                for (i in 0..<NewStart.mRecyclerView!!.childCount) {
+                    val itemView = NewStart.mRecyclerView!!.getChildAt(i) ?: continue
+                    ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f).start()
+                }
+            }
+        }
         private fun startAppDelay(item: App) {
             CoroutineScope(mainDispatcher).launch {
+                hideTilesStartScreen()
                 delay(300)
                 runApp(item.appPackage!!)
                 delay(100)
