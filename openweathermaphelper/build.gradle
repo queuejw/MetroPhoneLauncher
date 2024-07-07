@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace 'com.kwabenaberko.openweathermaplib'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 34
+        targetSdkVersion 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
