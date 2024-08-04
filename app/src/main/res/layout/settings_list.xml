@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
-            xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
             <com.google.android.material.card.MaterialCardView
-                    app:cardBackgroundColor="?android:attr/colorBackground"
-                    android:layout_width="match_parent"
-                    android:id="@+id/themeSetting"
-                    app:cardCornerRadius="0dp"
-                    app:strokeWidth="0dp"
-                    android:layout_height="64dp">
+                style="@style/Settings.Card"
+                android:layout_width="match_parent"
+                android:id="@+id/themeSetting"
+                android:layout_height="64dp">
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="vertical"
@@ -22,26 +20,23 @@
                     <com.google.android.material.textview.MaterialTextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_light"
                             android:text="@string/start_theme"
-                            android:textSize="24sp"
-                            android:textStyle="bold"/>
+                            android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/theme_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/start_theme_sub"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/allAppsSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
                 android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -50,26 +45,23 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/all_apps_list"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp"/>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/allApps_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/change_your_app_list"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/tilesSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
                 android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -78,26 +70,23 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/tiles"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tiles_Setting_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/customize_tiles"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/iconsSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
                 android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -106,26 +95,22 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/icon_packs"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/icons_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
-                        android:text=""
-                        android:textSize="16sp" />
+                        app:fontFamily="@font/manrope_light"
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/animSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
                 android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,53 +119,46 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/animations"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/animations_tip"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                    app:cardBackgroundColor="?android:attr/colorBackground"
-                    android:layout_width="match_parent"
-                    android:id="@+id/feedbackSetting"
-                    app:cardCornerRadius="0dp"
-                    app:strokeWidth="0dp"
-                    android:layout_height="64dp" android:layout_marginTop="12dp">
+                style="@style/Settings.Card"
+                android:layout_width="match_parent"
+                android:id="@+id/feedbackSetting"
+                android:layout_height="64dp">
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
                     <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_light"
-                            android:text="@string/feedback"
-                            android:textSize="24sp"
-                            android:textStyle="bold"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/feedback"
+                        android:textSize="24sp" />
                     <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_light"
-                            android:text="@string/feedback_sub"
-                            android:textSize="16sp"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:fontFamily="@font/manrope_light"
+                        android:text="@string/feedback_sub"
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/weatherSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="12dp">
+                android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -188,27 +166,24 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="weather"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/weather_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="weather tile"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/updatesSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
-                android:layout_height="64dp" android:layout_marginTop="12dp">
+                android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -216,25 +191,22 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/launcher_update"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/launcher_update_sub"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/navbarSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
-                android:layout_height="64dp" android:layout_marginTop="12dp">
+                android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -242,52 +214,46 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/navigation_bar"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/navbar_sub"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
-                        android:textSize="16sp" />
+                        app:fontFamily="@font/manrope_light"
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                    app:cardBackgroundColor="?android:attr/colorBackground"
-                    android:layout_width="match_parent"
-                    android:id="@+id/aboutSetting"
-                    app:cardCornerRadius="0dp"
-                    app:strokeWidth="0dp"
-                    android:layout_height="64dp" android:layout_marginTop="12dp">
+                style="@style/Settings.Card"
+                android:layout_width="match_parent"
+                android:id="@+id/aboutSetting"
+                android:layout_height="64dp">
                 <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="vertical"
                         android:layout_height="match_parent">
                     <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_light"
-                            android:text="@string/about"
-                            android:textSize="24sp"
-                            android:textStyle="bold"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/about"
+                        android:textSize="24sp" />
                     <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/roboto_light"
-                            android:text="@string/about_sub"
-                            android:textSize="16sp"/>
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:fontFamily="@font/manrope_light"
+                        android:text="@string/about_sub"
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/leaks"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
-                android:layout_height="64dp" android:layout_marginTop="12dp">
+                android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -295,25 +261,22 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="LeakCanary"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_medium"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/for_developers"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
             <com.google.android.material.card.MaterialCardView
-                app:cardBackgroundColor="?android:attr/colorBackground"
+                style="@style/Settings.Card"
                 android:layout_width="match_parent"
                 android:id="@+id/expSetting"
-                app:cardCornerRadius="0dp"
-                app:strokeWidth="0dp"
-                android:layout_height="64dp" android:layout_marginTop="12dp">
+                android:layout_height="64dp">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:orientation="vertical"
@@ -321,16 +284,15 @@
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_light"
                         android:text="@string/experiments"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
+                        android:textSize="24sp" />
                     <com.google.android.material.textview.MaterialTextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_medium"
+                        app:fontFamily="@font/manrope_light"
                         android:text="@string/experiments_tip"
-                        android:textSize="16sp"/>
+                        android:textSize="16sp"
+                        android:alpha="0.75"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

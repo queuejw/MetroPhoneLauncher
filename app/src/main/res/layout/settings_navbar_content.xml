@@ -4,11 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:fontFamily="@font/roboto_regular"
         android:alpha="0.7"
         android:text="@string/navigation_bar_2"/>
     <RadioGroup
@@ -20,20 +19,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="18sp"
-            android:fontFamily="@font/roboto_regular"
             android:text="@string/auto"/>
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/alwaysDark"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="18sp"
-            android:fontFamily="@font/roboto_regular"
             android:text="@string/always_dark"/>
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/alwaysLight"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fontFamily="@font/roboto_regular"
             android:textSize="18sp"
             android:text="@string/always_light"/>
        <com.google.android.material.radiobutton.MaterialRadioButton
@@ -41,14 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="18sp"
-            android:fontFamily="@font/roboto_regular"
             android:text="@string/matches_accent_color"/>
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/hidden"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="18sp"
-            android:fontFamily="@font/roboto_regular"
             android:text="@string/hide_navbar"/>
     </RadioGroup>
     <com.google.android.material.textview.MaterialTextView
@@ -56,13 +50,11 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto_regular"
         android:alpha="0.7"
         android:text="@string/navigation_bar_3"/>
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:textSize="20sp"
         android:layout_marginTop="16dp"
         android:layout_marginStart="8dp"
@@ -75,7 +67,6 @@
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_regular"
             android:textSize="18sp"
             android:text="@string/current_icon"/>
 
@@ -87,22 +78,15 @@
     </LinearLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/choose_start_icon_btn"
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:text="@string/choose_icon"
-        android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
-        app:cornerRadius="0dp"
-        app:strokeColor="?attr/colorOnBackground"
-        app:strokeWidth="2dp"
         android:layout_marginStart="8dp"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:textSize="20sp"
         android:layout_marginTop="32dp"
         android:layout_marginStart="8dp"
@@ -113,7 +97,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
         android:textSize="18sp"
-        android:fontFamily="@font/roboto_regular"
         android:layout_height="wrap_content"/>
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/searchBarSwitch"
@@ -121,8 +104,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/roboto_regular"
-        android:text="Off"
         android:textSize="24sp" />
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
@@ -130,7 +111,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
         android:textSize="20sp"
-        android:fontFamily="@font/roboto_regular"
         android:text="@string/max_results"/>
     <com.google.android.material.slider.Slider
         android:id="@+id/maxResultsSlider"

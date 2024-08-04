@@ -17,8 +17,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.apps.AppData
-import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.data.tile.TileData
+import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
 
@@ -41,9 +41,9 @@ class WelcomeFragment : Fragment() {
                 }
             }
         }
-        if(!Application.PREFS!!.pref.getBoolean("channelConfigured", false)) {
+        if(!Application.PREFS!!.prefs.getBoolean("channelConfigured", false)) {
             UpdateWorker.setupNotificationChannels(requireActivity())
-            Application.PREFS!!.editor.putBoolean("channelConfigured", true).apply()
+            Application.PREFS!!.prefs.edit().putBoolean("channelConfigured", true).apply()
         }
         return view
     }
@@ -54,17 +54,17 @@ class WelcomeFragment : Fragment() {
     }
     private fun generatePlaceholders() {
         placeholderCoroutine.launch {
-            Application.PREFS!!.editor.putBoolean("placeholdersGenerated", true).apply()
+            Application.PREFS!!.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
             val size = 100
-            val dbCall = AppData.getAppData(requireContext()).getAppDao()
+            val dbCall = TileData.getTileData(requireContext()).getTileDao()
             for (i in 0..size) {
-                val placeholder = AppEntity(i, (i + 1).toLong(), -1, -1,
+                val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
                     isSelected = false,
                     tileSize = "small",
                     appLabel = "",
                     appPackage = ""
                 )
-                dbCall.insertItem(placeholder)
+                dbCall.addTile(placeholder)
             }
             cancel()
         }

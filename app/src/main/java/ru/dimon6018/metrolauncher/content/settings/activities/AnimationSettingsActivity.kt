@@ -47,7 +47,7 @@ class AnimationSettingsActivity: AppCompatActivity() {
         }
         transitionAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setTransitionAnim(isChecked)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
         }
         allAppsAnim.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsAnim(isChecked)

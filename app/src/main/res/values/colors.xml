@@ -10,6 +10,8 @@
 
     <color name="darkGray">#1f1f1f</color>
 
+    <color name="textColor">@android:color/black</color>
+
     <!-- tiles -->
     <color name="tile_magenta">#d80073</color>
     <color name="tile_crimson">#a20024</color>

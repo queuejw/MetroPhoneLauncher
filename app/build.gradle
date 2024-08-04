@@ -4,20 +4,18 @@ plugins {
     id 'com.google.devtools.ksp'
 }
 
-
 android {
     namespace 'ru.dimon6018.metrolauncher'
     compileSdk 35
     buildFeatures {
         buildConfig = true
     }
-    setBuildToolsVersion('35.0.0')
     defaultConfig {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 23
         targetSdk 35
-        versionCode 46
-        versionName "1.0 Pre-Alpha 5.0.2.1"
+        versionCode 47
+        versionName "1.0 Pre-Alpha 5.0.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -46,16 +44,16 @@ dependencies {
     ksp "androidx.room:room-compiler:2.6.1"
 
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.annotation:annotation:1.8.0'
-    implementation 'com.google.android.material:material:1.13.0-alpha03'
+    implementation 'androidx.annotation:annotation:1.8.1'
+    implementation 'com.google.android.material:material:1.13.0-alpha04'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.fragment:fragment-ktx:1.8.1'
+    implementation 'androidx.fragment:fragment-ktx:1.8.2'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.3"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.4"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4"
     implementation "androidx.work:work-runtime-ktx:2.9.0"
     implementation "androidx.core:core-splashscreen:1.1.0-rc01"
 
@@ -63,10 +61,10 @@ dependencies {
     implementation project(path: ':liboverscroll')
 
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
-    implementation 'io.coil-kt.coil3:coil:3.0.0-alpha06'
-    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha06'
+    implementation 'io.coil-kt.coil3:coil:3.0.0-alpha09'
+    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha09'
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+   // debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
    // testImplementation 'junit:junit:4.13.2'
    // androidTestImplementation 'androidx.test.ext:junit:1.1.5'
    // androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

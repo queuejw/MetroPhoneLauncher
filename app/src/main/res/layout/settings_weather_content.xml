@@ -8,6 +8,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:fontFamily="@font/roboto_light"
         android:text="@string/feature_isnt_implemented"/>
 </LinearLayout>

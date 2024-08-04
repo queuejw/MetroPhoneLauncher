@@ -2,7 +2,6 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -36,14 +35,14 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentCo
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class ThemeSettingsActivity : AppCompatActivity() {
-    private var themeMenu: MaterialCardView? = null
-    private var chooseThemeBtn: MaterialButton? = null
-    private var chooseAccentBtn: MaterialCardView? = null
-    private var accentNameTextView: MaterialTextView? = null
-    private var light: MaterialTextView? = null
-    private var dark: MaterialTextView? = null
-    private var accentTip: MaterialTextView? = null
-    private var context: Context? = null
+    private lateinit var themeMenu: MaterialCardView
+    private lateinit var chooseThemeBtn: MaterialButton
+    private lateinit var chooseAccentBtn: MaterialCardView
+    private lateinit var accentNameTextView: MaterialTextView
+    private lateinit var light: MaterialTextView
+    private lateinit var dark: MaterialTextView
+    private lateinit var accentTip: MaterialTextView
+
     private var tileImg: ImageView? = null
 
     private var wallpaperSwitch: MaterialSwitch? = null
@@ -56,7 +55,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        context = this
         chooseThemeBtn = findViewById(R.id.chooseTheme)
         accentTip = findViewById(R.id.accentTip)
         chooseAccentBtn = findViewById(R.id.chooseAccent)
@@ -69,32 +67,32 @@ class ThemeSettingsActivity : AppCompatActivity() {
         val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
         val spannable: Spannable = SpannableString(textFinal)
         spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        accentTip?.setText(spannable, TextView.BufferType.SPANNABLE)
+        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
         val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
         wallpaperSwitch = findViewById(R.id.wallpaperShowSwtich)
         val pinAppsToStartSwitch: MaterialSwitch = findViewById(R.id.newAppsToStartSwitch)
-        accentNameTextView!!.text = accentName(this)
+        accentNameTextView.text = accentName(this)
         val themeButtonLabel: String = if (PREFS!!.isLightThemeUsed) {
             getString(R.string.light)
         } else {
             getString(R.string.dark)
         }
-        chooseThemeBtn!!.text = themeButtonLabel
-        chooseThemeBtn!!.setOnClickListener {
-            chooseThemeBtn!!.visibility = View.GONE
-            themeMenu!!.visibility = View.VISIBLE
+        chooseThemeBtn.text = themeButtonLabel
+        chooseThemeBtn.setOnClickListener {
+            chooseThemeBtn.visibility = View.GONE
+            themeMenu.visibility = View.VISIBLE
         }
-        light!!.setOnClickListener {
+        light.setOnClickListener {
             PREFS!!.useLightTheme(true)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        dark!!.setOnClickListener {
+        dark.setOnClickListener {
             PREFS!!.useLightTheme(false)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        chooseAccentBtn!!.setOnClickListener { AccentDialog.display(supportFragmentManager) }
+        chooseAccentBtn.setOnClickListener { AccentDialog.display(supportFragmentManager) }
         moreTilesSwitch.isChecked = PREFS!!.isMoreTilesEnabled
         moreTilesSwitch.text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
         pinAppsToStartSwitch.isChecked = PREFS!!.pinNewApps
@@ -103,19 +101,19 @@ class ThemeSettingsActivity : AppCompatActivity() {
         //wallpaper switches
         wallpaperSwitch?.setOnCheckedChangeListener { _, check ->
             PREFS!!.setWallpaper(check)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             refreshWallpaperSwitches()
         }
         wallpaperTransparentTilesSwitch?.setOnCheckedChangeListener { _, check ->
             PREFS!!.setTransparentTiles(check)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             refreshWallpaperSwitches()
         }
         //wallpaper switches end
         moreTilesSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setMoreTilesPref(isChecked)
             moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             setImg()
         }
         pinAppsToStartSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -131,7 +129,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 if (isChecked) {
                     PREFS!!.accentColor = 20
                 } else {
-                    PREFS!!.accentColor = PREFS!!.pref.getInt("previous_accent_color", 5)
+                    PREFS!!.accentColor = PREFS!!.prefs.getInt("previous_accent_color", 5)
                 }
                 dynamicColorSwitch.text =
                     if (isChecked) getString(R.string.on) else getString(R.string.off)
@@ -195,8 +193,8 @@ class ThemeSettingsActivity : AppCompatActivity() {
         tileImg?.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
     }
     private fun restoreThemeButtonsAndApplyChanges() {
-        chooseThemeBtn!!.visibility = View.VISIBLE
-        themeMenu!!.visibility = View.GONE
+        chooseThemeBtn.visibility = View.VISIBLE
+        themeMenu.visibility = View.GONE
         setAppTheme()
     }
     private fun setAppTheme() {
@@ -232,7 +230,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             super.onCreateView(inflater, container, savedInstanceState)
-            PREFS!!.setPrefsChanged(true)
             return inflater.inflate(R.layout.accent_dialog, container, false)
         }
 
@@ -245,120 +242,140 @@ class ThemeSettingsActivity : AppCompatActivity() {
             lime.setOnClickListener {
                 prefs.accentColor = 0
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val green = view.findViewById<ImageView>(R.id.choose_color_green)
             green.setOnClickListener {
                 prefs.accentColor = 1
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
             emerald.setOnClickListener {
                 prefs.accentColor = 2
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
             cyan.setOnClickListener {
                 prefs.accentColor = 3
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
             teal.setOnClickListener {
                 prefs.accentColor = 4
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
             cobalt.setOnClickListener {
                 prefs.accentColor = 5
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
             indigo.setOnClickListener {
                 prefs.accentColor = 6
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
             violet.setOnClickListener {
                 prefs.accentColor = 7
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
             pink.setOnClickListener {
                 prefs.accentColor = 8
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
             magenta.setOnClickListener {
                 prefs.accentColor = 9
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
             crimson.setOnClickListener {
                 prefs.accentColor = 10
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val red = view.findViewById<ImageView>(R.id.choose_color_red)
             red.setOnClickListener {
                 prefs.accentColor = 11
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
             orange.setOnClickListener {
                 prefs.accentColor = 12
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
             amber.setOnClickListener {
                 prefs.accentColor = 13
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
             yellow.setOnClickListener {
                 prefs.accentColor = 14
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
             brown.setOnClickListener {
                 prefs.accentColor = 15
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
             olive.setOnClickListener {
                 prefs.accentColor = 16
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
             steel.setOnClickListener {
                 prefs.accentColor = 17
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
             mauve.setOnClickListener {
                 prefs.accentColor = 18
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
             val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
             taupe.setOnClickListener {
                 prefs.accentColor = 19
                 dismiss()
+                PREFS!!.isPrefsChanged = true
                 requireActivity().recreate()
             }
         }

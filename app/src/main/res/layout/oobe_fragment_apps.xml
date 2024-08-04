@@ -9,12 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/textView6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:fontFamily="@font/roboto_regular"
             android:textSize="18sp"
             android:text="@string/oobe_apps_tip"
             android:background="?android:attr/colorBackground"
@@ -28,30 +27,16 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/oobeSelectAll"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
-                android:text="@string/select_all"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp" />
+                android:text="@string/select_all" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/oobeRemoveAll"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
                 android:layout_marginStart="24dp"
-                android:text="@string/remove_all"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp" />
+                android:text="@string/remove_all" />
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/oobeRecycler"
@@ -66,19 +51,12 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/back"
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/roboto_regular"
-                android:text="@string/back"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp" />
+                android:text="@string/back" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/next"
@@ -87,14 +65,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
-                android:fontFamily="@font/roboto_regular"
-                android:text="@string/next"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="18sp"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp" />
+                android:text="@string/next" />
         </LinearLayout>
 
     </LinearLayout>

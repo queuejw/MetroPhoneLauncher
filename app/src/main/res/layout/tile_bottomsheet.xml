@@ -12,13 +12,12 @@
         app:layout_optimizationLevel="standard"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/appLabelSheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="10dp"
-        android:fontFamily="@font/roboto_regular"
         android:textColor="?attr/colorSurface"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/editTileColor"
@@ -44,12 +43,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/editAppLabelText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/roboto_light"
+                app:fontFamily="@font/manrope_light"
                 android:text="@string/edit_app_label"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
@@ -84,8 +83,7 @@
                             android:id="@+id/textEdit"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:fontFamily="@font/roboto_light"
-                            android:text=""
+                            app:fontFamily="@font/manrope_light"
                             android:textColor="?attr/colorSurface" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -124,11 +122,11 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:fontFamily="@font/roboto_light"
+                app:fontFamily="@font/manrope_light"
                 android:text="@string/choose_tile_color"
                 android:textColor="?attr/colorSurface"
                 android:textSize="25sp" />
@@ -138,23 +136,23 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/chooseColorSub"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:fontFamily="@font/roboto_light"
+                    app:fontFamily="@font/manrope_light"
                     android:text="@string/selected_color"
                     android:textColor="?attr/colorSurface"
                     android:textSize="20sp" />
 
-                <TextView
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/chooseColorRemove"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="12dp"
-                    android:fontFamily="@font/roboto_light"
+                    app:fontFamily="@font/manrope_light"
                     android:text="@string/remove"
                     android:textColor="?attr/colorSurface"
                     android:textSize="20sp" />
@@ -174,11 +172,11 @@
         app:layout_constraintTop_toBottomOf="@+id/editTileColor"
         app:strokeWidth="0dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:fontFamily="@font/roboto_light"
+            app:fontFamily="@font/manrope_light"
             android:text="@string/app_info"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />
@@ -196,11 +194,11 @@
         app:layout_constraintTop_toBottomOf="@+id/appInfo"
         app:strokeWidth="0dp">
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:fontFamily="@font/roboto_light"
+            app:fontFamily="@font/manrope_light"
             android:text="@string/uninstall"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />

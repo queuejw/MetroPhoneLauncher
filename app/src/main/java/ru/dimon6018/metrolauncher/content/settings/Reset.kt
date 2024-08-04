@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.apps.AppData
+import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -18,14 +18,14 @@ import kotlin.system.exitProcess
 
 class Reset : AppCompatActivity() {
 
-    private var dbApps: AppData? = null
+    private var dbApps: TileData? = null
     private var dbBsod: BSOD? = null
     private var intent: Intent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.reset)
-        dbApps = AppData.getAppData(this)
+        dbApps = TileData.getTileData(this)
         dbBsod = BSOD.getData(this)
         val frame = findViewById<FrameLayout>(R.id.frameReset)
         applyWindowInsets(frame)

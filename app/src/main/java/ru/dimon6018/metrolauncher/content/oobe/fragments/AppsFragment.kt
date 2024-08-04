@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content.oobe.fragments
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
@@ -10,7 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.collection.ArrayMap
+import androidx.collection.SparseArrayCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -28,9 +29,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
-import ru.dimon6018.metrolauncher.content.data.apps.App
-import ru.dimon6018.metrolauncher.content.data.apps.AppData
-import ru.dimon6018.metrolauncher.content.data.apps.AppEntity
+import ru.dimon6018.metrolauncher.content.data.app.App
+import ru.dimon6018.metrolauncher.content.data.tile.TileData
+import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
@@ -44,7 +45,7 @@ class AppsFragment: Fragment() {
     private var recyclerView: RecyclerView? = null
     private var loading: WP7ProgressBar? = null
     private var fragmentContext: Context? = null
-    private val hashCache = ArrayMap<String, Icon?>()
+    private val hashCache = SparseArrayCompat<Icon?>()
     private var main: View? = null
 
     override fun onCreateView(
@@ -67,7 +68,7 @@ class AppsFragment: Fragment() {
         val next: MaterialButton = view.findViewById(R.id.next)
         val selectAll: MaterialButton = view.findViewById(R.id.oobeSelectAll)
         val removeAll: MaterialButton = view.findViewById(R.id.oobeRemoveAll)
-        val call = AppData.getAppData(fragmentContext!!).getAppDao()
+        val call = TileData.getTileData(fragmentContext!!).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
             val appList = sortApps(setUpApps(fragmentContext!!.packageManager, fragmentContext!!))
@@ -101,7 +102,7 @@ class AppsFragment: Fragment() {
                             75
                         )
                     }
-                    hashCache[it.appPackage] = bmp
+                    hashCache.append(it.id, bmp)
                 }
             }
             withContext(Dispatchers.Main) {
@@ -124,14 +125,14 @@ class AppsFragment: Fragment() {
                         var pos = 0
                         for (i in selectedItems!!) {
                             val id = Random.nextLong(1000, 2000000)
-                            val entity = AppEntity(
+                            val entity = Tile(
                                 pos, id, -1, 0,
                                 isSelected = false,
                                 tileSize = generateRandomTileSize(false),
                                 appLabel = i.appLabel!!,
                                 appPackage = i.appPackage!!
                             )
-                            call.insertItem(entity)
+                            call.addTile(entity)
                             pos += 1
                         }
                         withContext(Dispatchers.Main) {
@@ -193,6 +194,7 @@ class AppsFragment: Fragment() {
         override fun getItemCount(): Int {
             return adapterApps.size
         }
+        @SuppressLint("NotifyDataSetChanged")
         fun selectAll() {
             adapterApps.forEach {
                 it.selected = true
@@ -202,6 +204,7 @@ class AppsFragment: Fragment() {
             }
             notifyDataSetChanged()
         }
+        @SuppressLint("NotifyDataSetChanged")
         fun removeAll() {
             adapterApps.forEach {
                 it.selected = false
@@ -215,7 +218,7 @@ class AppsFragment: Fragment() {
             val item = adapterApps[position]
             holder as OOBEAppHolder
             try {
-                holder.icon.setImageIcon(hashCache[item.appPackage])
+                holder.icon.setImageIcon(hashCache.get(item.id))
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(
                     ContextCompat.getDrawable(

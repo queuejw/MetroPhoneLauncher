@@ -4,7 +4,6 @@ apply plugin: 'org.jetbrains.kotlin.android'
 android {
     namespace 'com.arasthel.spannedgridlayoutmanager'
     compileSdk 35
-    setBuildToolsVersion('35.0.0')
     defaultConfig {
         minSdk 23
         targetSdk 35

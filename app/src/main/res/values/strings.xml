@@ -221,4 +221,6 @@
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
     <string name="ready_to_download_lawnicons">The update for Lawnicons is ready to download</string>
+    <string name="show_details_on_bsod">Show details on the error screen</string>
+    <string name="support_devs_text">Support developers: https://donationalerts.com/r/queuejw</string>
 </resources>

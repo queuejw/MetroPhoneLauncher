@@ -14,8 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start|center"
         android:layout_marginStart="8dp"
-        android:fontFamily="@font/roboto_regular"
-        android:text="a"
         android:textColor="?attr/colorPrimary"
         android:textSize="36sp" />
 </com.google.android.material.card.MaterialCardView>

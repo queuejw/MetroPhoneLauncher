@@ -1,6 +1,7 @@
 package ru.dimon6018.metrolauncher
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -23,7 +24,7 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.collection.ArrayMap
+import androidx.collection.SparseArrayCompat
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -41,12 +42,11 @@ import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.content.NewAllApps
 import ru.dimon6018.metrolauncher.content.NewStart
-import ru.dimon6018.metrolauncher.content.data.apps.App
+import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
@@ -76,8 +76,6 @@ class Main : AppCompatActivity() {
     private lateinit var pagerAdapter: FragmentStateAdapter
 
     // bottom bar
-    private lateinit var bottomView: FrameLayout
-    private var bottomMainView: LinearLayout? = null
     private var bottomViewStartBtn: ImageView? = null
     private var bottomViewSearchBtn: ImageView? = null
 
@@ -85,24 +83,20 @@ class Main : AppCompatActivity() {
     private var bottomViewSearchBarView: LinearLayout? = null
     private var bottomViewSearchBar: TextInputLayout? = null
 
-    private var searchRecyclerView: RecyclerView? = null
     private var searchBarResultsLayout: MaterialCardView? = null
-    private var appList: MutableList<App>? = null
-    private val hashCache = ArrayMap<String, Icon?>()
+    private val hashCache = SparseArrayCompat<Icon?>()
     private var searchAdapter: SearchAdapter? = null
     private var filteredList: MutableList<App>? = null
 
     private val packageReceiver = PackageChangesReceiver()
 
-    private var black: Int? = null
-    private var white: Int? = null
     private var bottomViewReady = false
     private var searching = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         setAppTheme()
-        if(isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
+        if (isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
             //disabling animations if developer mode is enabled (to avoid problems)
             PREFS!!.setAllAppsAnim(false)
             PREFS!!.setTilesAnim(false)
@@ -112,10 +106,12 @@ class Main : AppCompatActivity() {
             PREFS!!.setTilesScreenAnim(false)
         }
         super.onCreate(savedInstanceState)
-        when(PREFS!!.launcherState) {
+        when (PREFS!!.launcherState) {
             0 -> {
                 val intent = Intent(this, WelcomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 finishAffinity()
                 startActivity(intent)
                 return
@@ -123,72 +119,74 @@ class Main : AppCompatActivity() {
         }
         setContentView(R.layout.main_screen_laucnher)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        isLandscape = this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        isLandscape =
+            this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        lifecycleScope.launch(Dispatchers.Default) {
-            black = ContextCompat.getColor(this@Main, android.R.color.black)
-            white = ContextCompat.getColor(this@Main, android.R.color.white)
-            pagerAdapter = WinAdapter(this@Main)
-            if(PREFS!!.isWallpaperUsed) {
-                window?.setBackgroundDrawable(
-                    ContextCompat.getDrawable(
-                        this@Main,
-                        R.drawable.start_transparent
-                    )
+        pagerAdapter = WinAdapter(this@Main)
+        if (PREFS!!.isWallpaperUsed) {
+            window?.setBackgroundDrawable(
+                ContextCompat.getDrawable(
+                    this@Main,
+                    R.drawable.start_transparent
                 )
-                window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
-            }
-            if (PREFS!!.pref.getBoolean(
-                    "updateInstalled",
-                    false
-                ) && PREFS!!.versionCode == VERSION_CODE
-            ) {
-                PREFS!!.setUpdateState(3)
-            }
-            withContext(Dispatchers.Main) {
-                applyWindowInsets(coordinatorLayout)
-                viewPager.apply {
-                    adapter = pagerAdapter
-                }
-                setupNavigationBar()
-                viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                    override fun onPageSelected(position: Int) {
-                        if(!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2) {
-                            if (position == 0) {
-                                if(PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
-                                    bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                                    bottomViewSearchBtn?.setColorFilter(black!!)
-                                } else {
-                                    bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                                    bottomViewSearchBtn?.setColorFilter(white!!)
-                                }
-                            } else {
-                                if(PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
-                                    bottomViewStartBtn?.setColorFilter(black!!)
-                                    bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                                } else {
-                                    bottomViewStartBtn?.setColorFilter(white!!)
-                                    bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                                }
-                            }
-                        }
-                        super.onPageSelected(position)
-                    }
-                })
-                onBackPressedDispatcher.addCallback(this@Main, object: OnBackPressedCallback(true) {
-                    override fun handleOnBackPressed() {
-                        if (viewPager.currentItem != 0) {
-                            viewPager.currentItem -= 1
-                        } else {
-                            if(searching && PREFS!!.isSearchBarEnabled) {
-                                hideSearchResults()
-                            }
-                        }
-                    }
-                })
-            }
+            )
+            window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
         }
+        if (PREFS!!.prefs.getBoolean(
+                "updateInstalled",
+                false
+            ) && PREFS!!.versionCode == VERSION_CODE
+        ) {
+            PREFS!!.setUpdateState(3)
+        }
+        applyWindowInsets(coordinatorLayout)
+        viewPager.apply {
+            adapter = pagerAdapter
+        }
+        setupNavigationBar()
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            val black = if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2)
+                ContextCompat.getColor(this@Main, android.R.color.black) else null
+            val white = if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2)
+                ContextCompat.getColor(this@Main, android.R.color.white) else null
+
+            override fun onPageSelected(position: Int) {
+                if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2) {
+                    if (position == 0) {
+                        if (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
+                            bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                            bottomViewSearchBtn?.setColorFilter(black!!)
+                        } else {
+                            bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                            bottomViewSearchBtn?.setColorFilter(white!!)
+                        }
+                    } else {
+                        if (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
+                            bottomViewStartBtn?.setColorFilter(black!!)
+                            bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                        } else {
+                            bottomViewStartBtn?.setColorFilter(white!!)
+                            bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                        }
+                    }
+                }
+                super.onPageSelected(position)
+            }
+        })
+        onBackPressedDispatcher.addCallback(
+            this@Main,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (viewPager.currentItem != 0) {
+                        viewPager.currentItem -= 1
+                    } else {
+                        if (searching && PREFS!!.isSearchBarEnabled) {
+                            hideSearchResults()
+                        }
+                    }
+                }
+            })
         otherTasks()
     }
 
@@ -197,19 +195,19 @@ class Main : AppCompatActivity() {
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
     private fun otherTasks() {
-        if (PREFS!!.pref.getBoolean("tip1Enabled", true)) {
+        if (PREFS!!.prefs.getBoolean("tip1Enabled", true)) {
             WPDialog(this@Main).setTopDialog(false)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.tip1))
                 .setPositiveButton(getString(android.R.string.ok), null)
                 .show()
-            PREFS!!.editor.putBoolean("tip1Enabled", false).apply()
+            PREFS!!.prefs.edit().putBoolean("tip1Enabled", false).apply()
         }
-        if (PREFS!!.pref.getBoolean("app_crashed", false)) {
+        if (PREFS!!.prefs.getBoolean("app_crashed", false)) {
             lifecycleScope.launch(Dispatchers.IO) {
                 delay(5000)
-                PREFS!!.editor.putBoolean("app_crashed", false).apply()
-                PREFS!!.editor.putInt("crashCounter", 0).apply()
+                PREFS!!.prefs.edit().putBoolean("app_crashed", false).apply()
+                PREFS!!.prefs.edit().putInt("crashCounter", 0).apply()
                 if (PREFS!!.isFeedbackEnabled) {
                     var pos = (BSOD.getData(this@Main).getDao().getBsodList().size) - 1
                     if(pos < 0) {
@@ -234,7 +232,7 @@ class Main : AppCompatActivity() {
             return
         }
         bottomViewReady = true
-        bottomView = findViewById(R.id.navigation)
+        val bottomView: FrameLayout = findViewById(R.id.navigation)
         when(PREFS!!.navBarColor) {
             0 -> {
                 bottomView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark))
@@ -254,8 +252,8 @@ class Main : AppCompatActivity() {
             }
         }
         if(!PREFS!!.isSearchBarEnabled) {
-            bottomMainView = findViewById(R.id.navigation_main)
-            bottomMainView?.visibility = View.VISIBLE
+            val bottomMainView: LinearLayout = findViewById(R.id.navigation_main)
+            bottomMainView.visibility = View.VISIBLE
             bottomViewStartBtn = findViewById(R.id.navigation_start_btn)
             bottomViewSearchBtn = findViewById(R.id.navigation_search_btn)
             bottomViewStartBtn?.setImageDrawable(when(PREFS!!.navBarIconValue) {
@@ -284,10 +282,10 @@ class Main : AppCompatActivity() {
         } else {
             bottomViewSearchBarView = findViewById(R.id.navigation_searchBar)
             bottomViewSearchBarView?.visibility = View.VISIBLE
-            searchRecyclerView = findViewById(R.id.searchBarRecyclerView)
+            val searchRecyclerView: RecyclerView = findViewById(R.id.searchBarRecyclerView)
             searchBarResultsLayout = findViewById(R.id.searchBarResults)
             bottomViewSearchBar = findViewById(R.id.searchBar)
-            appList = setUpApps(this.packageManager, this)
+            val appList = setUpApps(this.packageManager, this)
             val iconSize = this.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             var iconManager: IconPackManager? = null
             var isCustomIconsInstalled = false
@@ -296,13 +294,13 @@ class Main : AppCompatActivity() {
                 iconManager.setContext(this)
                 isCustomIconsInstalled = true
             }
-            appList?.forEach {
+            appList.forEach {
                 if (it.type != 1) {
-                    hashCache[it.appPackage] = generateIcon(it, iconSize, iconManager, isCustomIconsInstalled)
+                    hashCache.append(it.id, generateIcon(it, iconSize, iconManager, isCustomIconsInstalled))
                 }
             }
             searchAdapter = SearchAdapter(this, null)
-            searchRecyclerView?.apply {
+            searchRecyclerView.apply {
                 layoutManager = LinearLayoutManager(this@Main, LinearLayoutManager.VERTICAL, false)
                 adapter = searchAdapter
             }
@@ -310,7 +308,7 @@ class Main : AppCompatActivity() {
             text?.addTextChangedListener(object :
                 TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    filterSearchText(s.toString())
+                    filterSearchText(s.toString(), appList)
                 }
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable) {}
@@ -367,10 +365,7 @@ class Main : AppCompatActivity() {
         }
         return bmp
     }
-    private fun filterSearchText(text: String) {
-        if(appList == null) {
-            return
-        }
+    private fun filterSearchText(text: String, appList: MutableList<App>) {
         filteredList = ArrayList()
         val locale = Locale.getDefault()
         if(text.isEmpty()) {
@@ -379,8 +374,8 @@ class Main : AppCompatActivity() {
             showSearchResults()
         }
         val max = PREFS!!.maxResultsSearchBar
-        for(i in 0..<appList!!.size) {
-            val item = appList!![i]
+        for(i in 0..<appList.size) {
+            val item = appList[i]
             if (item.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
                 if(filteredList!!.size >= max) {
                     break
@@ -402,8 +397,8 @@ class Main : AppCompatActivity() {
         }
     }
     override fun onResume() {
-        if (PREFS!!.isPrefsChanged()) {
-            PREFS!!.setPrefsChanged(false)
+        if (PREFS!!.isPrefsChanged) {
+            PREFS!!.isPrefsChanged = false
             exitProcess(0)
         }
         super.onResume()
@@ -455,7 +450,7 @@ class Main : AppCompatActivity() {
                 holder as AppSearchHolder
                 val app = dataList!![position]
                 try {
-                    val bmp = hashCache[app.appPackage]
+                    val bmp = hashCache.get(app.id)
                     if (bmp != null) {
                         holder.icon.setImageIcon(bmp)
                     } else {
@@ -467,6 +462,7 @@ class Main : AppCompatActivity() {
                 holder.label.text = app.appLabel
             }
         }
+        @SuppressLint("NotifyDataSetChanged")
         fun setData(new: MutableList<App>) {
             dataList = new
             notifyDataSetChanged()

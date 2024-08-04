@@ -12,6 +12,5 @@
         android:layout_gravity="center"
         android:textSize="38sp"
         android:textColor="@android:color/white"
-        android:fontFamily="@font/roboto_regular"
         android:text="@string/goodbye" />
 </FrameLayout>

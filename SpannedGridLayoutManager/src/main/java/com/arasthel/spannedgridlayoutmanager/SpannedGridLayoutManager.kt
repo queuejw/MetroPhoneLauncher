@@ -8,8 +8,6 @@ import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
-import android.util.SparseArray
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -25,17 +23,17 @@ import kotlin.math.ceil
  * based on width and height spans.
  *
  * @param orientation Whether the views will be laid out and scrolled vertically or horizontally.
- * @param _rowCount How many rows there should be. If your layout only cares about columns, set this to 1,
+ * @param rowCount How many rows there should be. If your layout only cares about columns, set this to 1,
  * and set [customHeight].
- * @param _columnCount How many columns there should be. If your layout only cares about rows, set this to 1,
+ * @param columnCount How many columns there should be. If your layout only cares about rows, set this to 1,
  * and set [customWidth].
  *
  * //TODO: the scroll indicators are currently disabled because they're unreliable.
  */
 open class SpannedGridLayoutManager(
-        @RecyclerView.Orientation val orientation: Int,
-        _rowCount: Int,
-        _columnCount: Int
+    @RecyclerView.Orientation val orientation: Int,
+    rowCount: Int,
+    columnCount: Int
 ) : RecyclerView.LayoutManager() {
 
     //==============================================================================================
@@ -107,7 +105,7 @@ open class SpannedGridLayoutManager(
      * based on the parent RecyclerView's height. If your items overflow
      * the row count, and you have a vertical layout, you can just scroll.
      */
-    var rowCount: Int = _rowCount
+    var rowCount: Int = rowCount
         set(value) {
             if (field == value) {
                 return
@@ -118,7 +116,6 @@ open class SpannedGridLayoutManager(
                 ("Span count should be at least 1. Provided "
                         + rowCount)
             }
-            spanSizeLookup?.invalidateCache()
             requestLayout()
         }
 
@@ -128,7 +125,7 @@ open class SpannedGridLayoutManager(
      * based on the parent RecyclerView's width. If your items overflow
      * the column count, and you have a horizontal layout, you can just scroll.
      */
-    var columnCount: Int = _columnCount
+    var columnCount: Int = columnCount
         set(value) {
             if (field == value) {
                 return
@@ -139,7 +136,6 @@ open class SpannedGridLayoutManager(
                 ("Span count should be at least 1. Provided "
                         + columnCount)
             }
-            spanSizeLookup?.invalidateCache()
             requestLayout()
         }
 
@@ -394,14 +390,6 @@ open class SpannedGridLayoutManager(
             /** Used to provide an SpanSize for each item. */
             private var lookupFunction: ((Int) -> SpanSize)? = null
     ) {
-        
-        private var cache = SparseArray<SpanSize>()
-
-        /**
-         * Enable SpanSize caching. Can be used to improve performance if calculating the SpanSize
-         * for items is a complex process.
-         */
-        private var usesCache = false
 
         /**
          * Returns an SpanSize for the provided position.
@@ -409,38 +397,24 @@ open class SpannedGridLayoutManager(
          * @return An SpanSize, either provided by the user or the default one.
          */
         fun getSpanSize(position: Int): SpanSize {
-            if (usesCache) {
-                val cachedValue = cache[position]
-                if (cachedValue != null) return cachedValue
-                
-                val value = getSpanSizeFromFunction(position)
-                cache.put(position, value)
-                return value
-            } else {
-                return getSpanSizeFromFunction(position)
-            }
+            return getSpanSizeFromFunction(position)
         }
-        
+
         private fun getSpanSizeFromFunction(position: Int): SpanSize {
             return lookupFunction?.invoke(position) ?: getDefaultSpanSize()
         }
-        
+
         protected open fun getDefaultSpanSize(): SpanSize {
             return SpanSize(1, 1)
         }
-
-        fun invalidateCache() {
-            cache.clear()
-        }
     }
-
     init {
-        if (_rowCount < 1) {
-            throw InvalidMaxSpansException(_rowCount)
+        if (rowCount < 1) {
+            throw InvalidMaxSpansException(rowCount)
         }
 
-        if (_columnCount < 1) {
-            throw InvalidMaxSpansException(_columnCount)
+        if (columnCount < 1) {
+            throw InvalidMaxSpansException(columnCount)
         }
     }
 
@@ -483,17 +457,10 @@ open class SpannedGridLayoutManager(
         // If there were any views, detach them so they can be recycled
         detachAndScrapAttachedViews(recycler)
 
-        val start = System.currentTimeMillis()
-
         for (i in 0 until itemCount) {
             val spanSize = spanSizeLookup?.getSpanSize(i) ?: SpanSize(1, 1)
             val childRect = rectsHelper.findRect(i, spanSize)
             rectsHelper.pushRect(i, childRect)
-        }
-
-        if (DEBUG) {
-            val elapsed = System.currentTimeMillis() - start
-            debugLog("Elapsed time: $elapsed ms")
         }
 
         // Restore scroll position based on first visible view
@@ -1120,7 +1087,6 @@ open class SpannedGridLayoutManager(
 
     override fun onSaveInstanceState(): Parcelable? {
         return if (itemOrderIsStable && childCount > 0) {
-            debugLog("Saving first visible position: $firstVisiblePosition")
             SavedState(firstVisiblePosition)
         } else {
             null
@@ -1128,23 +1094,12 @@ open class SpannedGridLayoutManager(
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-        debugLog("Restoring state")
         val savedState = state as? SavedState
         if (savedState != null) {
             val firstVisibleItem = savedState.firstVisibleItem
             scrollToPosition(firstVisibleItem)
         }
     }
-
-    companion object {
-        private const val TAG = "SpannedGridLayoutMan"
-        const val DEBUG = false
-
-        fun debugLog(message: String) {
-            if (DEBUG) Log.d(TAG, message)
-        }
-    }
-
     class SavedState(val firstVisibleItem: Int): Parcelable {
 
         companion object {

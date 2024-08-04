@@ -85,7 +85,7 @@
     <string name="oobe_done">Вы закончили настройку лаунчера. Спасибо, что решили попробовать MPL. Приятного использования! \n MPL будет перезапущен.</string>
     <string name="recovry_browser_subtitle">Найдите информацию об ошибке в Интернете</string>
     <string name="recovry_browser_title">Открыть браузер</string>
-    <string name="recovery_system_settings_title">Открытить системные параметры</string>
+    <string name="recovery_system_settings_title">Открыть системные параметры</string>
     <string name="recovery_system_settings_subtitle">Открыть настройки телефона</string>
     <string name="recovery_settings_title">Открыть настройки</string>
     <string name="recovery_settings_subtitle">Открыть настройки лаунчера</string>
@@ -222,4 +222,6 @@
     <string name="auto_shutdown_anims">Автоматически выключать анимации, если включен режим разработчика</string>
     <string name="animations_dev_mode">Анимации могут не работать, если вы выключили их в опциях для разработчиков.</string>
     <string name="ready_to_download_lawnicons">Обновление для Lawnicons готово к скачиванию</string>
+    <string name="show_details_on_bsod">Показывать подробности на экране ошибки</string>
+    <string name="support_devs_text">Поддержать разработчиков: https://donationalerts.com/r/queuejw</string>
 </resources>

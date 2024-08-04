@@ -2,12 +2,16 @@
     <style name="AppTheme.Base" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorOnSurface">@android:color/black</item>
         <item name="android:colorBackground">@android:color/white</item>
+        <item name="colorOnBackground">@android:color/black</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
         <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="fontFamily">@font/manrope_regular</item>
+        <item name="android:textColor">@color/textColor</item>
+        <item name="materialButtonStyle">@style/Metro.Button</item>
         <item name="android:windowSplashScreenBackground">@android:color/white</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
     </style>

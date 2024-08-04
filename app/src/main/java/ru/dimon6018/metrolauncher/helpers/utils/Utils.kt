@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.helpers.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
@@ -30,7 +31,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
-import ru.dimon6018.metrolauncher.content.data.apps.App
+import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
@@ -44,8 +45,10 @@ import kotlin.random.Random
 
 class Utils {
     companion object {
+
         const val VERSION_CODE: Int = BuildConfig.VERSION_CODE
         const val VERSION_NAME: String = BuildConfig.VERSION_NAME
+
         val ANDROID_VERSION: Int = Build.VERSION.SDK_INT
         val MODEL: String = Build.MODEL
         val BUILD: String = Build.DISPLAY
@@ -161,16 +164,6 @@ class Utils {
             )
             return typedValue.data
         }
-        fun launcherOnSurfaceColor(theme: Resources.Theme): Int {
-            val typedValue = TypedValue()
-            theme.resolveAttribute(
-                com.google.android.material.R.attr.colorOnSurface,
-                typedValue,
-                true
-            )
-            return typedValue.data
-        }
-
         fun accentName(context: Context): String {
             val selectedColor = PREFS!!.accentColor
             return if (selectedColor >= 0 && selectedColor < accentNames.size) {
@@ -211,8 +204,10 @@ class Utils {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
+            var pos = 0
             for (app in allApps) {
                 val item = App()
+                item.id = pos
                 item.appPackage = app.activityInfo.packageName
                 item.appLabel = app.loadLabel(pManager).toString()
                 if (item.appPackage == context.packageName && item.appLabel == "Leaks") {
@@ -223,6 +218,7 @@ class Utils {
                 }
                 item.type = 0
                 list.add(item)
+                pos += 1
             }
             return list
         }
@@ -236,30 +232,23 @@ class Utils {
                     entity.log = e
                     val dao = db.getDao()
                     val pos: Int
-                    when (PREFS!!.getMaxCrashLogs()) {
+                    when (PREFS!!.maxCrashLogs) {
                         0 -> {
                             db.clearAllTables()
                             pos = 0
                         }
-
                         1 -> {
                             if (dao.getBsodList().size >= 5) {
                                 dao.removeLog(dao.getBsodList().first())
                             }
                             pos = db.getDao().getBsodList().size
                         }
-
                         2 -> {
                             if (dao.getBsodList().size >= 10) {
                                 dao.removeLog(dao.getBsodList().first())
                             }
                             pos = dao.getBsodList().size
                         }
-
-                        3 -> {
-                            pos = dao.getBsodList().size
-                        }
-
                         else -> {
                             pos = dao.getBsodList().size
                         }
@@ -309,6 +298,7 @@ class Utils {
                 activity.startActivity(intent)
             }
         }
+        @SuppressLint("InlinedApi", "UnspecifiedRegisterReceiverFlag")
         fun registerPackageReceiver(
             activity: AppCompatActivity,
             packageReceiver: PackageChangesReceiver?

@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/manrope_medium"
                 android:text="DATE"
                 android:textSize="18sp" />
 
@@ -32,7 +32,7 @@
                 android:id="@+id/log"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_light"
+                android:fontFamily="@font/manrope_light"
                 android:text="log" />
         </LinearLayout>
         <LinearLayout

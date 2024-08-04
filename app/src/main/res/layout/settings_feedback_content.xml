@@ -41,7 +41,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/roboto_regular"
         android:gravity="start"
         android:textColor="?attr/colorOnBackground"
         android:textSize="20sp"
@@ -75,7 +74,6 @@
                 android:layout_gravity="top"
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="6dp"
-                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_0"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -88,7 +86,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_1"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -101,7 +98,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_2"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -114,7 +110,6 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="4dp"
-                android:fontFamily="@font/roboto_regular"
                 android:text="@string/feedback_limit_3"
                 android:textColor="?attr/colorSurface"
                 android:textSize="22sp" />
@@ -128,14 +123,21 @@
         android:text="@string/bsods_tip"
         android:textSize="18sp" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:textSize="16sp"
+        android:alpha="0.8"
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/show_details_on_bsod" />
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/showErrorDetailsOnBsodSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="24sp" />
+
     <com.google.android.material.button.MaterialButton
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:text="@string/show_bsods"
-        android:fontFamily="@font/roboto_regular"
-        app:cornerRadius="0dp"
-        app:strokeColor="?attr/colorOnBackground"
-        android:textColor="?attr/colorOnBackground"
-        app:strokeWidth="2dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
@@ -143,16 +145,9 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:id="@+id/showBsodInfo"
-        android:textSize="20sp"
-        android:visibility="visible"/>
+        android:textSize="20sp" />
     <com.google.android.material.button.MaterialButton
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:text="@string/delete_bsods"
-        android:fontFamily="@font/roboto_regular"
-        app:cornerRadius="0dp"
-        app:strokeColor="?attr/colorOnBackground"
-        android:textColor="?attr/colorOnBackground"
-        app:strokeWidth="2dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="4dp"
         android:layout_marginStart="4dp"
@@ -160,6 +155,5 @@
         android:layout_height="wrap_content"
         android:gravity="start"
         android:id="@+id/deleteBsodInfo"
-        android:textSize="20sp"
-        android:visibility="visible"/>
+        android:textSize="20sp" />
 </LinearLayout>

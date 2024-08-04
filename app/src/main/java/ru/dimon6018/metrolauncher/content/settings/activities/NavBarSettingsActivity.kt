@@ -23,10 +23,10 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 
 class NavBarSettingsActivity: AppCompatActivity() {
 
-    private var currentIcon: ImageView? = null
-    private var radio: RadioGroup? = null
-    private var main: CoordinatorLayout? = null
-    private var resultsSlider: Slider? = null
+    private lateinit var currentIcon: ImageView
+    private lateinit var radio: RadioGroup
+    private lateinit var main: CoordinatorLayout
+    private lateinit var resultsSlider: Slider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
@@ -77,7 +77,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 auto.isChecked = true
             }
         }
-        radio?.setOnCheckedChangeListener { _, checkedId ->
+        radio.setOnCheckedChangeListener { _, checkedId ->
            when(checkedId) {
                dark.id -> {
                    PREFS!!.setNavBarSetting(0)
@@ -95,10 +95,10 @@ class NavBarSettingsActivity: AppCompatActivity() {
                    PREFS!!.setNavBarSetting(4)
                }
            }
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
         }
         main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+        applyWindowInsets(main)
 
         currentIcon = findViewById(R.id.currentStartIcon)
         updateCurrentIcon()
@@ -116,19 +116,19 @@ class NavBarSettingsActivity: AppCompatActivity() {
             icon0.setOnClickListener {
                 PREFS!!.setNavBarIcon(1)
                 updateCurrentIcon()
-                PREFS!!.setPrefsChanged(true)
+                PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
             icon1.setOnClickListener {
                 PREFS!!.setNavBarIcon(0)
                 updateCurrentIcon()
-                PREFS!!.setPrefsChanged(true)
+                PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
             icon2.setOnClickListener {
                 PREFS!!.setNavBarIcon(2)
                 updateCurrentIcon()
-                PREFS!!.setPrefsChanged(true)
+                PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
             bottomSheet.show()
@@ -140,15 +140,15 @@ class NavBarSettingsActivity: AppCompatActivity() {
         searchSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setSearchBar(isChecked)
             searchSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
         }
-        resultsSlider?.value = PREFS!!.maxResultsSearchBar.toFloat()
-        resultsSlider?.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+        resultsSlider.value = PREFS!!.maxResultsSearchBar.toFloat()
+        resultsSlider.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
             PREFS!!.setMaxResultCountSearchBar(value.toInt())
         })
     }
     private fun updateCurrentIcon() {
-        currentIcon?.setImageDrawable(when(PREFS!!.navBarIconValue) {
+        currentIcon.setImageDrawable(when(PREFS!!.navBarIconValue) {
             0 -> {
                 ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
             }
@@ -164,25 +164,25 @@ class NavBarSettingsActivity: AppCompatActivity() {
         })
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
             )
         }
         animatorSet.setDuration(400)

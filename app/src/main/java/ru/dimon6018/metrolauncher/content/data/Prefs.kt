@@ -5,49 +5,67 @@ import android.content.SharedPreferences
 
 class Prefs(context: Context) {
 
-    private val prefs: SharedPreferences = context.getSharedPreferences(FILE_NAME, 0)
-    private var isPrefsChanged = false
+    val prefs: SharedPreferences
+
+    private var prefsChanged = false
+
+    private val fileName = "prefs"
+    private val prefsArray = arrayOf(
+        "accentColor", "crashLogs", "updateState", //0 1 2
+        "updateLevel", "updateLevel", "autoUpdate", //3 4 5
+        "updMessage", "versionCode", "versionCode", //6 7 8
+        "updateNotification", "feedback", "launcherState", //9 10 11
+        "useLightTheme", "navBarColor", "isMoreTilesEnabled", //12 13 14
+        "wallpaperUsing", "iconPack", "pinNewAppsToStart", //15 16 17
+        "allAppsSettingsBtnEnabled", "alphabetEnabled", "isTilesTransparent", //18 19 20
+        "allAppsWallpaperBackground", "allAppsWallpaperBackground", "tilesTransparency", //21 22 23
+        "searchBarEnabled", "bottomBarIcon", "isStartScreenBlocked", //24 25 26
+        "transitionAnim", "tileAnim", "allAppsAnim", //27 28 29
+        "allAppsAnim", "liveTileAnim", "maxResultsSearchBar", //30 31 32
+        "allAppsEnabled", "tilesScreenAnim", "alphabetAnim", //33 34 35
+        "autoStdwnAnimations", "bsod_output_enabled" //36 37
+    )
+    init {
+        prefs = context.getSharedPreferences(fileName, 0)
+    }
 
     fun setWallpaper(bool: Boolean) {
-        prefs.edit().putBoolean(WALLPAPER_USING, bool).apply()
+        prefs.edit().putBoolean(prefsArray[15], bool).apply()
     }
 
     val isWallpaperUsed: Boolean
-        get() = prefs.getBoolean(WALLPAPER_USING, false)
+        get() = prefs.getBoolean(prefsArray[15], false)
 
     fun setTransparentTiles(bool: Boolean) {
-        prefs.edit().putBoolean(TRANSPARENT_TILES, bool).apply()
+        prefs.edit().putBoolean(prefsArray[20], bool).apply()
     }
     val isTilesTransparent: Boolean
-        get() = prefs.getBoolean(TRANSPARENT_TILES, false)
+        get() =  prefs.getBoolean(prefsArray[20], false)
 
     fun setMoreTilesPref(bool: Boolean) {
-        prefs.edit().putBoolean(MORE_TILES, bool).apply()
+        prefs.edit().putBoolean(prefsArray[14], bool).apply()
     }
-
     val isMoreTilesEnabled: Boolean
-        get() = prefs.getBoolean(MORE_TILES, false)
+        get() =  prefs.getBoolean(prefsArray[14], false)
 
     fun useLightTheme(bool: Boolean) {
-        prefs.edit().putBoolean(LAUNCHER_LIGHT_THEME, bool).apply()
+        prefs.edit().putBoolean(prefsArray[12], bool).apply()
     }
     fun setMaxCrashLogs(int: Int) {
-        prefs.edit().putInt(MAX_CRASH_LOGS, int).apply()
+        prefs.edit().putInt(prefsArray[1], int).apply()
     }
-    fun getMaxCrashLogs(): Int {
-        // 0 - 1
-        // 1 - 5
-        // 2 - 10
-        // 3 - no limit
-        return prefs.getInt(MAX_CRASH_LOGS, 1)
-    }
+    val maxCrashLogs: Int
+        get() = prefs.getInt(prefsArray[1], 1)
+
     val isLightThemeUsed: Boolean
-        get() = prefs.getBoolean(LAUNCHER_LIGHT_THEME, false)
+        get() = prefs.getBoolean(prefsArray[12], false)
+
     fun setFeedback(bool: Boolean) {
-        prefs.edit().putBoolean(FEEDBACK, bool).apply()
+        prefs.edit().putBoolean(prefsArray[10], bool).apply()
     }
     val isFeedbackEnabled: Boolean
-        get() = prefs.getBoolean(FEEDBACK, true)
+        get() = prefs.getBoolean(prefsArray[10], true)
+
     fun setUpdateState(int: Int) {
         // 0 - nothing
         // 1 - checking
@@ -57,45 +75,46 @@ class Prefs(context: Context) {
         // 5 - failed
         // 6 - ready to download
         // 7 - ready to download (beta ver)
-        prefs.edit().putInt(UPDATE_STATE, int).apply()
+        prefs.edit().putInt(prefsArray[2], int).apply()
     }
     val updateState: Int
-        get() = prefs.getInt(UPDATE_STATE, 0)
+        get() =  prefs.getInt(prefsArray[2], 0)
 
     fun setUpdateProgressLevel(int: Int) {
-        prefs.edit().putInt(UPDATE_LEVEL, int).apply()
+        prefs.edit().putInt(prefsArray[3], int).apply()
     }
     val updateProgressLevel: Int
-        get() = prefs.getInt(UPDATE_LEVEL, 0)
+        get() =  prefs.getInt(prefsArray[3], 0)
 
     fun setAutoUpdate(bool: Boolean) {
-        prefs.edit().putBoolean(AUTO_UPDATE, bool).apply()
+        prefs.edit().putBoolean(prefsArray[5], bool).apply()
     }
     val isAutoUpdateEnabled: Boolean
-        get() = prefs.getBoolean(AUTO_UPDATE, false)
+        get() = prefs.getBoolean(prefsArray[5], false)
+
     fun setUpdateNotification(bool: Boolean) {
-        prefs.edit().putBoolean(UPDATE_NOTIFICATION, bool).apply()
+        prefs.edit().putBoolean(prefsArray[9], bool).apply()
     }
     val isUpdateNotificationEnabled: Boolean
-        get() = prefs.getBoolean(UPDATE_NOTIFICATION, false)
+        get() =  prefs.getBoolean(prefsArray[9], false)
     // is only used to save update data
     fun setVersionCode(int: Int) {
-        prefs.edit().putInt(VERSION_CODE, int).apply()
+        prefs.edit().putInt(prefsArray[7], int).apply()
     }
     // is only used to save update data
     fun setUpdateMessage(value: String) {
-        prefs.edit().putString(UPDATE_MESSAGE, value).apply()
+        prefs.edit().putString(prefsArray[6], value).apply()
     }
     // is only used to save update data
     val updateMessage: String
-        get() = prefs.getString(UPDATE_MESSAGE, "").toString()
+        get() = prefs.getString(prefsArray[6], "")!!
 
     // is only used to save update data
     val versionCode: Int
-        get() = prefs.getInt(VERSION_CODE, 0)
+        get() = prefs.getInt(prefsArray[7], 0)
 
     var accentColor: Int
-        get() = prefs.getInt(ACCENT_COLOR, 5)
+        get() = prefs.getInt(prefsArray[0], 5)
         set(color) {
             // 0 - lime
             // 1 - green
@@ -118,12 +137,12 @@ class Prefs(context: Context) {
             // 18 - mauve
             // 19 - taupe
             // 20 - dynamic colors
-            isPrefsChanged = true
+            prefsChanged = true
             prefs.edit()
-                .putInt("previous_accent_color", prefs.getInt(ACCENT_COLOR, 5))
+                .putInt("previous_accent_color", prefs.getInt(prefsArray[0], 5))
                 .apply()
             prefs.edit()
-                    .putInt(ACCENT_COLOR, color)
+                    .putInt(prefsArray[0], color)
                     .apply()
         }
     fun setLauncherState(int: Int) {
@@ -131,10 +150,10 @@ class Prefs(context: Context) {
         // 1 - nothing
         // 2 - OOBE - selecting the type of settings (recommended or customize)
         // 3 - waiting for reset (after recovery)
-        prefs.edit().putInt(STATE, int).apply()
+        prefs.edit().putInt(prefsArray[11], int).apply()
     }
     val launcherState: Int
-        get() = prefs.getInt(STATE, 0)
+        get() =  prefs.getInt(prefsArray[11], 0)
 
     fun setNavBarSetting(int: Int) {
         // 0 - always dark
@@ -142,172 +161,137 @@ class Prefs(context: Context) {
         // 2 - use accent color
         // 3 - hidden
         // 4 - auto
-        prefs.edit().putInt(NAVBAR_COLOR, int).apply()
+        prefs.edit().putInt(prefsArray[13], int).apply()
     }
     val navBarColor: Int
-        get() = prefs.getInt(NAVBAR_COLOR, 4)
+        get() = prefs.getInt(prefsArray[13], 4)
 
     fun reset() {
         prefs.edit().clear().apply()
     }
-
     fun setIconPack(value: String) {
-        prefs.edit().putString(ICON_PACK, value).apply()
+        prefs.edit().putString(prefsArray[16], value).apply()
     }
     val iconPackPackage: String?
-        get() = prefs.getString(ICON_PACK, "null")
+        get() = prefs.getString(prefsArray[16], "null")
 
-    val editor: SharedPreferences.Editor
-        get() = prefs.edit()
-    val pref: SharedPreferences
-        get() = prefs
+    var isPrefsChanged: Boolean
+        get() = prefsChanged
+        set(value) {
+            prefsChanged = value
+        }
 
-    fun isPrefsChanged(): Boolean {
-        return isPrefsChanged
-    }
-    fun setPrefsChanged(bool: Boolean) {
-        isPrefsChanged = bool
-    }
     fun setPinNewApps(value: Boolean) {
-        prefs.edit().putBoolean(PIN_NEW_APP, value).apply()
+        prefs.edit().putBoolean(prefsArray[17], value).apply()
     }
     val pinNewApps: Boolean
-        get() = prefs.getBoolean(PIN_NEW_APP, false)
+        get() = prefs.getBoolean(prefsArray[17], false)
 
     fun setAllAppsSettingsBtn(value: Boolean) {
-        prefs.edit().putBoolean(ALL_APPS_SETTINGS_BTN, value).apply()
+        prefs.edit().putBoolean(prefsArray[18], value).apply()
     }
     val isSettingsBtnEnabled: Boolean
-        get() = prefs.getBoolean(ALL_APPS_SETTINGS_BTN, false)
+        get() = prefs.getBoolean(prefsArray[18], false)
+
 
     fun setAlphabetActive(value: Boolean) {
-        prefs.edit().putBoolean(ALPHABET_ENABLED, value).apply()
+        prefs.edit().putBoolean(prefsArray[19], value).apply()
     }
     val isAlphabetEnabled: Boolean
-        get() = prefs.getBoolean(ALPHABET_ENABLED, true)
+        get() = prefs.getBoolean(prefsArray[19], true)
 
     fun setAllAppsBackground(value: Boolean) {
-        prefs.edit().putBoolean(ALL_APPS_BACKGROUND, value).apply()
+        prefs.edit().putBoolean(prefsArray[21], value).apply()
     }
     val isAllAppsBackgroundEnabled: Boolean
-        get() = prefs.getBoolean(ALL_APPS_BACKGROUND, false)
+        get() = prefs.getBoolean(prefsArray[21], false)
 
     fun setTileTransparency(value: Float) {
-        prefs.edit().putFloat(TILES_TRANSPARENCY, value).apply()
+        prefs.edit().putFloat(prefsArray[23], value).apply()
     }
     val getTilesTransparency: Float
-        get() = prefs.getFloat(TILES_TRANSPARENCY, 1.0f)
+        get() = prefs.getFloat(prefsArray[23], 1.0f)
 
     fun setNavBarIcon(icon: Int) {
         // 0 - windows (default)
         // 1 - windows old
         // 2 - android
-        prefs.edit().putInt(BOTTOM_BAR_MAIN_ICON, icon).apply()
+        prefs.edit().putInt(prefsArray[25], icon).apply()
     }
     val navBarIconValue: Int
-        get() = prefs.getInt(BOTTOM_BAR_MAIN_ICON, 0)
+        get() = prefs.getInt(prefsArray[25], 0)
 
     fun setSearchBar(value: Boolean) {
-        prefs.edit().putBoolean(SEARCH_BAR, value).apply()
+        prefs.edit().putBoolean(prefsArray[24], value).apply()
     }
     val isSearchBarEnabled: Boolean
-        get() = prefs.getBoolean(SEARCH_BAR, false)
+        get() = prefs.getBoolean(prefsArray[24], false)
 
     fun blockStartScreen(value: Boolean) {
-        prefs.edit().putBoolean(START_BLOCKED, value).apply()
+        prefs.edit().putBoolean(prefsArray[26], value).apply()
     }
     val isStartBlocked: Boolean
-        get() = prefs.getBoolean(START_BLOCKED, false)
+        get() = prefs.getBoolean(prefsArray[26], false)
 
     fun setTransitionAnim(value: Boolean) {
-        prefs.edit().putBoolean(TRANSITION_ANIMATION, value).apply()
+        prefs.edit().putBoolean(prefsArray[27], value).apply()
     }
     val isTransitionAnimEnabled: Boolean
-        get() = prefs.getBoolean(TRANSITION_ANIMATION, true)
+        get() = prefs.getBoolean(prefsArray[27], true)
 
     fun setTilesAnim(value: Boolean) {
-        prefs.edit().putBoolean(TILES_ANIMATIONS, value).apply()
+        prefs.edit().putBoolean(prefsArray[28], value).apply()
     }
     val isTilesAnimEnabled: Boolean
-        get() = prefs.getBoolean(TILES_ANIMATIONS, true)
+        get() = prefs.getBoolean(prefsArray[28], true)
 
     fun setLiveTilesAnim(value: Boolean) {
-       prefs.edit().putBoolean(LIVE_TILES_ANIMATIONS, value).apply()
+       prefs.edit().putBoolean(prefsArray[31], value).apply()
     }
     val isLiveTilesAnimEnabled: Boolean
-        get() = prefs.getBoolean(LIVE_TILES_ANIMATIONS, true)
+        get() = prefs.getBoolean(prefsArray[31], true)
 
     fun setAllAppsAnim(value: Boolean) {
-        prefs.edit().putBoolean(ALL_APPS_ANIMATIONS, value).apply()
+        prefs.edit().putBoolean(prefsArray[30], value).apply()
     }
     val isAAllAppsAnimEnabled: Boolean
-        get() = prefs.getBoolean(ALL_APPS_ANIMATIONS, true)
+        get() = prefs.getBoolean(prefsArray[30], true)
 
     fun setMaxResultCountSearchBar(size: Int) {
-        prefs.edit().putInt(BOTTOM_SEARCH_BAR_MAX_RESULTS, size).apply()
+        prefs.edit().putInt(prefsArray[32], size).apply()
     }
     val maxResultsSearchBar: Int
-        get() = prefs.getInt(BOTTOM_SEARCH_BAR_MAX_RESULTS, 4)
+        get() = prefs.getInt(prefsArray[32], 4)
 
     fun setAllAppsAvailability(value: Boolean) {
-        prefs.edit().putBoolean(ALL_APPS_ENABLED, value).apply()
+        prefs.edit().putBoolean(prefsArray[33], value).apply()
     }
     val isAllAppsEnabled: Boolean
-        get() = prefs.getBoolean(ALL_APPS_ENABLED, true)
+        get() = prefs.getBoolean(prefsArray[33], true)
 
     fun setAlphabetAnim(value: Boolean) {
-        prefs.edit().putBoolean(ALPHABET_ANIMATION, value).apply()
+        prefs.edit().putBoolean(prefsArray[35], value).apply()
     }
     val isAlphabetAnimEnabled: Boolean
-        get() = prefs.getBoolean(ALPHABET_ANIMATION, true)
+        get() = prefs.getBoolean(prefsArray[35], true)
 
     fun setTilesScreenAnim(value: Boolean) {
-        prefs.edit().putBoolean(TILES_SCREEN_ANIMATION, value).apply()
+        prefs.edit().putBoolean(prefsArray[34], value).apply()
     }
     val isTilesScreenAnimEnabled: Boolean
-        get() = prefs.getBoolean(TILES_SCREEN_ANIMATION, true)
+        get() = prefs.getBoolean(prefsArray[34], true)
 
     //disabling animations if developer mode is enabled (to avoid problems)
     fun setAutoShutdownAnim(value: Boolean) {
-        prefs.edit().putBoolean(AUTO_SHUTDOWN_ANIM, value).apply()
+        prefs.edit().putBoolean(prefsArray[36], value).apply()
     }
     val isAutoShutdownAnimEnabled: Boolean
-        get() = prefs.getBoolean(AUTO_SHUTDOWN_ANIM, true)
+        get() = prefs.getBoolean(prefsArray[36], true)
 
-    companion object {
-        const val FILE_NAME = "Prefs"
-        const val ACCENT_COLOR = "accentColor"
-        const val MAX_CRASH_LOGS = "crashLogs"
-        const val UPDATE_STATE = "updateState"
-        const val UPDATE_LEVEL = "updateLevel"
-        const val AUTO_UPDATE = "autoUpdate"
-        const val UPDATE_MESSAGE = "updMessage"
-        const val VERSION_CODE = "versionCode"
-        const val UPDATE_NOTIFICATION = "updateNotification"
-        const val FEEDBACK = "feedback"
-        const val STATE = "launcherState"
-        const val LAUNCHER_LIGHT_THEME = "useLightTheme"
-        const val NAVBAR_COLOR = "navBarColor"
-        const val MORE_TILES = "isMoreTilesEnabled"
-        const val WALLPAPER_USING = "wallpaperUsing"
-        const val ICON_PACK = "iconPack"
-        const val PIN_NEW_APP = "pinNewAppsToStart"
-        const val ALL_APPS_SETTINGS_BTN = "allAppsSettingsBtnEnabled"
-        const val ALPHABET_ENABLED = "alphabetEnabled"
-        const val TRANSPARENT_TILES = "isTilesTransparent"
-        const val ALL_APPS_BACKGROUND = "allAppsWallpaperBackground"
-        const val TILES_TRANSPARENCY = "tilesTransparency"
-        const val SEARCH_BAR = "searchBar"
-        const val BOTTOM_BAR_MAIN_ICON = "bottomBarIcon"
-        const val START_BLOCKED = "isStartScreenBlocked"
-        const val TRANSITION_ANIMATION = "transitionAnim"
-        const val TILES_ANIMATIONS = "tileAnim"
-        const val ALL_APPS_ANIMATIONS = "allAppsAnim"
-        const val LIVE_TILES_ANIMATIONS = "liveTileAnim"
-        const val BOTTOM_SEARCH_BAR_MAX_RESULTS = "maxResultsSearchBar"
-        const val ALL_APPS_ENABLED = "allAppsEnabled"
-        const val TILES_SCREEN_ANIMATION = "tilesScreenAnim"
-        const val ALPHABET_ANIMATION = "alphabetAnim"
-        const val AUTO_SHUTDOWN_ANIM = "autoStdwnAnimations"
+    fun setBsodOutput(value: Boolean) {
+        prefs.edit().putBoolean(prefsArray[37], value).apply()
     }
+    val bsodOutputEnabled: Boolean
+        get() = prefs.getBoolean(prefsArray[37], false)
+
 }

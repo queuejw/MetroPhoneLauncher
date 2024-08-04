@@ -159,7 +159,6 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         }
     }
     companion object {
-        @JvmStatic
         fun setupNotificationChannels(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val noman = context.getSystemService(NotificationManager::class.java)

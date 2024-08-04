@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import leakcanary.LeakCanary
+//import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
@@ -82,7 +82,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(100)
                 }
                 startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
             }
@@ -93,7 +92,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(100)
                 }
                 startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
             }
@@ -104,7 +102,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(100)
                 }
                 startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
             }
@@ -115,7 +112,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
             }
@@ -126,7 +122,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
             }
@@ -137,7 +132,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
             }
@@ -148,7 +142,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
             }
@@ -159,7 +152,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
             }
@@ -170,7 +162,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
             }
@@ -181,7 +172,6 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
             }
@@ -192,9 +182,8 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
-                startActivity(LeakCanary.newLeakDisplayActivityIntent())
+              // startActivity(LeakCanary.newLeakDisplayActivityIntent())
             }
         }
         animsBtn = findViewById(R.id.animSetting)
@@ -203,27 +192,25 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
-                    delay(200)
                 }
                 startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
             }
         }
-        hideViews()
     }
     private fun startAnim() {
         if(PREFS!!.isTransitionAnimEnabled) {
-            setupAnim(themeBtn!!, 300)
-            setupAnim(allAppsBtn!!, 320)
-            setupAnim(tilesBtn!!, 340)
-            setupAnim(iconBtn!!, 360)
-            setupAnim(animsBtn!!, 380)
-            setupAnim(feedbackBtn!!, 400)
-            setupAnim(weatherBtm!!, 420)
-            setupAnim(updateBtn!!, 440)
-            setupAnim(navBarBtn!!, 460)
-            setupAnim(aboutBtn!!, 480)
-            setupAnim(leaks!!, 490)
-            setupAnim(expBtn!!, 500)
+            setupAnim(themeBtn!!, 200)
+            setupAnim(allAppsBtn!!, 220)
+            setupAnim(tilesBtn!!, 240)
+            setupAnim(iconBtn!!, 260)
+            setupAnim(animsBtn!!, 280)
+            setupAnim(feedbackBtn!!, 300)
+            setupAnim(weatherBtm!!, 320)
+            setupAnim(updateBtn!!, 340)
+            setupAnim(navBarBtn!!, 360)
+            setupAnim(aboutBtn!!, 380)
+            setupAnim(leaks!!, 390)
+            setupAnim(expBtn!!, 400)
             isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
@@ -337,9 +324,9 @@ class SettingsActivity : AppCompatActivity() {
                     startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
                 }.show()
         }
-        if(PREFS!!.isPrefsChanged()) {
-            PREFS!!.setPrefsChanged(false)
-            Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_LONG).show()
+        if(PREFS!!.isPrefsChanged) {
+            PREFS!!.isPrefsChanged = false
+            Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_SHORT).show()
             exitProcess(0)
         } else {
             startAnim()

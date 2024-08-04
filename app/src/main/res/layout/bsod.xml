@@ -7,19 +7,23 @@
     android:background="@color/bsod"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/smile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@color/bsod"
-        android:fontFamily="@font/roboto_medium"
-        android:gravity="start"
         android:text="@string/bsod"
         android:textColor="@android:color/white"
         android:textSize="72sp"
+        app:fontFamily="@font/manrope_medium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.44" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bsodDetailsText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@android:color/white"
+        android:alpha="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>

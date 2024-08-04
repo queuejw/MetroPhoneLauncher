@@ -37,7 +37,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/launcher_restore_title"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
@@ -47,7 +46,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/launcher_restore_subtitle"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
@@ -86,7 +84,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovry_browser_title"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
@@ -96,7 +93,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovry_browser_subtitle"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
@@ -135,7 +131,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovery_system_settings_title"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
@@ -145,7 +140,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovery_system_settings_subtitle"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />
@@ -184,7 +178,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovery_settings_title"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
@@ -194,7 +187,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto_regular"
                     android:text="@string/recovery_settings_subtitle"
                     android:textColor="@android:color/white"
                     android:textSize="16sp" />

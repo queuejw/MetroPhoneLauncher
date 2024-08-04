@@ -8,7 +8,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:text="@string/automatic_repair"
         android:layout_gravity="top"
         android:layout_marginStart="24dp"
@@ -18,7 +17,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:text="@string/not_start_correctly"
         android:layout_gravity="top"
         android:layout_marginStart="24dp"
@@ -28,7 +26,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_regular"
         android:layout_marginTop="1dp"
         android:text="@string/auto_repair_tip"
         android:layout_gravity="top"
@@ -38,37 +35,28 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/restartRecovery"
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="48dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/roboto_regular"
         android:gravity="start"
         android:text="@string/restart"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:cornerRadius="0dp"
         app:strokeColor="@android:color/white"
         app:strokeWidth="3dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/advancedRecovery"
-        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
-        android:fontFamily="@font/roboto_regular"
         android:gravity="start"
         android:text="@string/advanced_options"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
         android:textStyle="bold"
-        app:cornerRadius="0dp"
         app:strokeColor="@android:color/white"
         app:strokeWidth="3dp" />
 </LinearLayout>

@@ -35,22 +35,22 @@ class AllAppsSettingsActivity: AppCompatActivity() {
 
         alphabetSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAlphabetActive(isChecked)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             alphabetSwitch.text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
         }
         settBtnSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsSettingsBtn(isChecked)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             settBtnSwitch.text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
         }
         backgroundSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsBackground(isChecked)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             backgroundSwitch.text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
         }
         disableAllApps.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAllAppsAvailability(isChecked)
-            PREFS!!.setPrefsChanged(true)
+            PREFS!!.isPrefsChanged = true
             disableAllApps.text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
         }
         main = findViewById(R.id.coordinator)

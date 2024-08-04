@@ -1,11 +1,11 @@
-package ru.dimon6018.metrolauncher.content.data.apps
+package ru.dimon6018.metrolauncher.content.data.tile
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity( tableName = "apps" )
-data class AppEntity (
+@Entity( tableName = "tiles" )
+data class Tile (
     @PrimaryKey
     var appPos: Int? = null,
     var id: Long? = null,

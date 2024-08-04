@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto_regular"
         android:text="Автоматически скачивать и устанавливать обновления MPL"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="Разрешить сохранение отчётов об ошибках"
-        android:fontFamily="@font/roboto_regular"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBoxAutoUpdate" />
@@ -34,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
         android:text="nothing"
-        android:fontFamily="@font/roboto_regular"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/checkBox2" />
@@ -44,7 +41,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:fontFamily="@font/roboto_regular"
         android:textSize="18sp"
         android:text="nothing"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,34 +54,20 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/back"
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:fontFamily="@font/roboto_regular"
-            android:text="@string/back"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="18sp"
-            app:cornerRadius="0dp"
-            app:strokeColor="?attr/colorOnBackground"
-            app:strokeWidth="2dp" />
+            android:text="@string/back" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/next"
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:fontFamily="@font/roboto_regular"
-            android:text="@string/next"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="18sp"
-            app:cornerRadius="0dp"
-            app:strokeColor="?attr/colorOnBackground"
-            app:strokeWidth="2dp" />
+            android:text="@string/next" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

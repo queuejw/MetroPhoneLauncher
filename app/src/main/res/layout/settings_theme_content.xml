@@ -19,23 +19,15 @@
                                 android:id="@+id/accentTip"
                                 android:layout_marginStart="4dp"
                                 android:layout_height="wrap_content"
-                                android:textSize="20sp"
-                                android:fontFamily="@font/roboto_regular"/>
+                                android:textSize="20sp" />
                 </LinearLayout>
                 <com.google.android.material.textview.MaterialTextView
                         android:text="@string/background"
                         android:layout_marginTop="24dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
                         android:textSize="19sp" />
                 <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Material3.Button.OutlinedButton"
-                        android:fontFamily="@font/roboto_regular"
-                        app:cornerRadius="0dp"
-                        app:strokeColor="?attr/colorOnBackground"
-                        android:textColor="?attr/colorOnBackground"
-                        app:strokeWidth="2dp"
                         android:layout_marginEnd="4dp"
                         android:layout_marginStart="4dp"
                         android:layout_width="match_parent"
@@ -43,8 +35,7 @@
                         android:gravity="start"
                         android:id="@+id/chooseTheme"
                         android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:visibility="visible"/>
+                        android:textStyle="bold" />
                 <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:orientation="vertical"
@@ -66,7 +57,6 @@
                                 android:layout_marginTop="6dp"
                                 android:layout_gravity="top"
                                 android:textSize="22sp"
-                                android:fontFamily="@font/roboto_regular"
                                 android:id="@+id/chooseLight"/>
                         <com.google.android.material.textview.MaterialTextView
                                 android:text="@string/dark"
@@ -78,7 +68,6 @@
                                 android:layout_marginBottom="4dp"
                                 android:layout_marginStart="24dp"
                                 android:textSize="22sp"
-                                android:fontFamily="@font/roboto_regular"
                                 android:id="@+id/chooseDark"/>
                 </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.textview.MaterialTextView
@@ -86,7 +75,6 @@
                         android:layout_marginTop="42dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
                         android:textSize="20sp"/>
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/chooseAccent"
@@ -116,9 +104,7 @@
                                     android:layout_gravity="center"
                                     android:paddingStart="6dp"
                                     android:paddingEnd="6dp"
-                                    android:fontFamily="@font/roboto_regular"
                                     android:gravity="start"
-                                    android:text="accent color label"
                                     android:textColor="?attr/colorOnBackground"
                                     android:textSize="20sp"
                                     android:textStyle="bold" />
@@ -128,7 +114,6 @@
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/dynamicColor_setting"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -141,7 +126,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/dynamicColorSwtich"
@@ -149,14 +133,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/wallpaper_setting"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -169,7 +150,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -178,8 +158,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -188,7 +166,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -197,14 +174,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/newAppsToStart"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -217,7 +191,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -226,14 +199,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/block_start_tip"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="54dp"
@@ -246,7 +216,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -255,14 +224,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/more_tiles_desc"
                     android:layout_width="match_parent"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="32dp"
@@ -275,7 +241,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
                     android:textSize="18sp"
-                    android:fontFamily="@font/roboto_regular"
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
@@ -284,17 +249,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="4dp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:text="Off"
                     android:textSize="24sp" />
-                <FrameLayout
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/moreTilesImage"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                        <androidx.appcompat.widget.AppCompatImageView
-                            android:id="@+id/moreTilesImage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="@dimen/themeSettingsImgSize" />
-                </FrameLayout>
+                    android:layout_height="@dimen/themeSettingsImgSize" />
         </LinearLayout>
 </ScrollView>

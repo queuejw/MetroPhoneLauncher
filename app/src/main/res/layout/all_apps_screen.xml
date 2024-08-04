@@ -48,13 +48,12 @@
                 android:inputType="text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/roboto_regular"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView
+    <ru.dimon6018.metrolauncher.helpers.AllAppsRecyclerView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -121,11 +120,10 @@
             app:indicatorRadius="5"
             app:indicatorColor="?attr/colorPrimary" />
 
-        <TextView
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/loadingText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_light"
             android:gravity="center"
             android:text="@string/loading"
             android:textSize="18sp" />

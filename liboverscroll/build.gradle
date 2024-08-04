@@ -3,7 +3,6 @@ apply plugin: 'com.android.library'
 android {
     namespace 'me.everything.android.ui.overscroll'
     compileSdk 35
-    setBuildToolsVersion('35.0.0')
     defaultConfig {
         minSdk 23
         targetSdk 35

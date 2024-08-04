@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
@@ -104,6 +105,7 @@ class FeedbackBsodListActivity: AppCompatActivity() {
             val delete: MaterialCardView = view.findViewById(R.id.delete)
             val share: MaterialCardView = view.findViewById(R.id.share)
         }
+        @SuppressLint("NotifyDataSetChanged")
         private fun updateList() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val newList = db.getDao().getBsodList()

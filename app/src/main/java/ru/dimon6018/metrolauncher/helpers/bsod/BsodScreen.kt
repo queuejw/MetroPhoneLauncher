@@ -8,9 +8,11 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowCompat
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
@@ -22,17 +24,19 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MODEL
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
-import kotlin.system.exitProcess
 
 class BsodScreen : AppCompatActivity() {
 
     private var db: BSOD? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var counter = PREFS!!.pref.getInt("crashCounter", 0)
+        var counter = PREFS!!.prefs.getInt("crashCounter", 0)
         counter += 1
-        PREFS!!.editor.putBoolean("app_crashed", true).apply()
-        PREFS!!.editor.putInt("crashCounter", counter).apply()
+        PREFS!!.prefs.edit().putBoolean("app_crashed", true).apply()
+        PREFS!!.prefs.edit().putInt("crashCounter", counter).apply()
+        setTheme(R.style.bsod)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.bsod)
         CoroutineScope(Dispatchers.IO).launch {
             db = BSOD.getData(this@BsodScreen)
             val model = "Model: $MODEL\n"
@@ -42,21 +46,24 @@ class BsodScreen : AppCompatActivity() {
             val code = intent.extras?.getString("errorCode")
             val errCode = "\nIf vou call a support person. aive them this info:\n" +
                     "Stop code: $code"
-            val error = "Your launcher ran into a problem and needs to restart. We're just\n" +
-                    "collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
+            val error = "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
             Log.e("BSOD", error)
             saveError(error, db!!)
+            if(PREFS!!.bsodOutputEnabled) {
+                withContext(Dispatchers.Main) {
+                    val errorTextView = findViewById<MaterialTextView>(R.id.bsodDetailsText)
+                    errorTextView.text = error
+                }
+            }
         }
-        setTheme(R.style.bsod)
-        super.onCreate(savedInstanceState)
         if (counter >= 3) {
             val intent = Intent(this, Recovery::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra("stacktrace", intent.extras?.getString("stacktrace"))
-            this.startActivity(intent)
+            finishAffinity()
+            startActivity(intent)
         }
-        setContentView(R.layout.bsod)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val layout: ConstraintLayout = findViewById(R.id.bsodLayout)
         applyWindowInsets(layout)
@@ -65,11 +72,6 @@ class BsodScreen : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         Handler(Looper.getMainLooper()).postDelayed({ restartApplication() }, 3000)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        exitProcess(1)
     }
     private fun restartApplication() {
         val intent = Intent(this, Main::class.java)

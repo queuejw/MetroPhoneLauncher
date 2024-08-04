@@ -14,7 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:fontFamily="@font/roboto_regular"
             android:text="@string/phone_information"
             android:textSize="24sp" />
         <com.google.android.material.textview.MaterialTextView
@@ -22,16 +21,9 @@
                 android:layout_width="match_parent"
                 android:id="@+id/phoneinfo"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
                 android:textSize="17sp"/>
         <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:text="@string/more_info"
-                android:fontFamily="@font/roboto_regular"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                android:textColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp"
                 android:layout_gravity="start"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="24dp"
@@ -52,14 +44,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/phoneinfo_more"
-                    android:fontFamily="@font/roboto_regular"
                     android:textSize="17sp"/>
         </LinearLayout>
         <com.google.android.material.textview.MaterialTextView
                 android:text="@string/help_contacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
         <com.google.android.material.textview.MaterialTextView
@@ -67,41 +57,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/manrope_medium"
                 android:textSize="17sp"/>
         <com.google.android.material.textview.MaterialTextView
                 android:text="Email: dimon6018t@gmail.com"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/manrope_medium"
                 android:textSize="17sp" android:autoLink="email"/>
         <com.google.android.material.textview.MaterialTextView
                 android:text="@string/online_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_regular"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
         <com.google.android.material.textview.MaterialTextView
                 android:text="GitHub: github.com/queuejw/metrophonelauncher/"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_medium"
-                android:textSize="17sp" android:autoLink="web"/>
+                android:fontFamily="@font/manrope_medium"
+                android:textSize="17sp"
+            android:autoLink="web"/>
         <com.google.android.material.textview.MaterialTextView
                 android:text="Telegram: t.me/mplauncher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_medium"
-                android:textSize="17sp" android:autoLink="web"/>
+                android:fontFamily="@font/manrope_medium"
+                android:textSize="17sp"
+            android:autoLink="web"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/manrope_light"
+            android:text="@string/support_devs_text"
+            android:textSize="18sp"
+            android:autoLink="web"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/queuejw"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:fontFamily="@font/roboto_light"
-            android:text="2023-2024 queuejw &amp; dimon6018"
+            android:fontFamily="@font/manrope_light"
+            android:text="2023-2024 queuejw"
             android:textSize="18sp" />
 
         <ImageView
@@ -112,13 +110,7 @@
             app:srcCompat="@drawable/ic_clock" />
 
         <com.google.android.material.button.MaterialButton
-                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:text="@string/reset_your_launcher"
-                android:fontFamily="@font/roboto_regular"
-                app:cornerRadius="0dp"
-                app:strokeColor="?attr/colorOnBackground"
-                android:textColor="?attr/colorOnBackground"
-                app:strokeWidth="2dp"
                 android:layout_gravity="center"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="48dp"
@@ -129,13 +121,7 @@
                 android:id="@+id/resetLauncher"
                 android:textSize="20sp"/>
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:text="@string/restart"
-            android:fontFamily="@font/roboto_regular"
-            app:cornerRadius="0dp"
-            app:strokeColor="?attr/colorOnBackground"
-            android:textColor="?attr/colorOnBackground"
-            app:strokeWidth="2dp"
             android:alpha="0.5"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"
@@ -147,13 +133,7 @@
             android:id="@+id/restartLauncher"
             android:textSize="20sp"/>
         <com.google.android.material.button.MaterialButton
-            style="@style/Widget.Material3.Button.OutlinedButton"
             android:text="Crash"
-            android:fontFamily="@font/roboto_regular"
-            app:cornerRadius="0dp"
-            app:strokeColor="?attr/colorOnBackground"
-            android:textColor="?attr/colorOnBackground"
-            app:strokeWidth="2dp"
             android:alpha="0.5"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"

@@ -39,7 +39,6 @@
             android:layout_weight="1"
             android:layout_marginStart="7dp"
             android:textSize="21sp"
-            android:fontFamily="@font/roboto_regular"
             android:gravity="center|start"/>
     </LinearLayout>
 </LinearLayout>

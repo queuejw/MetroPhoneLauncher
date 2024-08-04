@@ -13,46 +13,46 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 
 class TileSettingsActivity: AppCompatActivity() {
 
-    private var alphaSlider: Slider? = null
-    private var main: CoordinatorLayout? = null
+    private lateinit var alphaSlider: Slider
+    private lateinit var main: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_tiles)
         alphaSlider = findViewById(R.id.alphaSlider)
-        alphaSlider!!.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+        alphaSlider.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
             PREFS!!.setTileTransparency(value)
         })
         main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+        applyWindowInsets(main)
     }
 
     override fun onResume() {
         super.onResume()
         enterAnimation(false)
-        alphaSlider!!.value = PREFS!!.getTilesTransparency
+        alphaSlider.value = PREFS!!.getTilesTransparency
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
             )
         }
         animatorSet.setDuration(400)
