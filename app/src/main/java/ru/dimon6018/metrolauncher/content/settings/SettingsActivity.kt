@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-//import leakcanary.LeakCanary
+import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
@@ -39,31 +39,31 @@ import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
 import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
 
-    private var themeSub: MaterialTextView? = null
-    private var navSub: MaterialTextView? = null
-    private var iconsSub: MaterialTextView? = null
+    private lateinit var themeSub: MaterialTextView
+    private lateinit var navSub: MaterialTextView
+    private lateinit var iconsSub: MaterialTextView
 
     private var isDialogEnabled = true
     private var isEnter = false
 
-    private var themeBtn: MaterialCardView? = null
-    private var allAppsBtn: MaterialCardView? = null
-    private var tilesBtn: MaterialCardView? = null
-    private var aboutBtn: MaterialCardView? = null
-    private var feedbackBtn: MaterialCardView? = null
-    private var updateBtn: MaterialCardView? = null
-    private var navBarBtn: MaterialCardView? = null
-    private var weatherBtm: MaterialCardView? = null
-    private var iconBtn: MaterialCardView? = null
-    private var expBtn: MaterialCardView? = null
-    private var leaks: MaterialCardView? = null
-    private var animsBtn: MaterialCardView? = null
-
-    private var cord: CoordinatorLayout? = null
+    private lateinit var themeBtn: MaterialCardView
+    private lateinit var allAppsBtn: MaterialCardView
+    private lateinit var tilesBtn: MaterialCardView
+    private lateinit var aboutBtn: MaterialCardView
+    private lateinit var feedbackBtn: MaterialCardView
+    private lateinit var updateBtn: MaterialCardView
+    private lateinit var navBarBtn: MaterialCardView
+    private lateinit var weatherBtm: MaterialCardView
+    private lateinit var iconBtn: MaterialCardView
+    private lateinit var expBtn: MaterialCardView
+    private lateinit var leaks: MaterialCardView
+    private lateinit var animsBtn: MaterialCardView
+    private lateinit var cord: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
@@ -75,9 +75,9 @@ class SettingsActivity : AppCompatActivity() {
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
-        applyWindowInsets(cord!!)
+        applyWindowInsets(cord)
         themeBtn = findViewById(R.id.themeSetting)
-        themeBtn?.setOnClickListener {
+        themeBtn.setOnClickListener {
             lifecycleScope.launch(Dispatchers.Main) {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -87,7 +87,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         allAppsBtn = findViewById(R.id.allAppsSetting)
-        allAppsBtn?.setOnClickListener {
+        allAppsBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -97,7 +97,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         tilesBtn = findViewById(R.id.tilesSetting)
-        tilesBtn?.setOnClickListener {
+        tilesBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -107,7 +107,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         aboutBtn = findViewById(R.id.aboutSetting)
-        aboutBtn?.setOnClickListener {
+        aboutBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -117,7 +117,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         feedbackBtn = findViewById(R.id.feedbackSetting)
-        feedbackBtn?.setOnClickListener {
+        feedbackBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -127,7 +127,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         updateBtn = findViewById(R.id.updatesSetting)
-        updateBtn?.setOnClickListener {
+        updateBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -137,7 +137,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         navBarBtn = findViewById(R.id.navbarSetting)
-        navBarBtn?.setOnClickListener {
+        navBarBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -147,7 +147,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         weatherBtm = findViewById(R.id.weatherSetting)
-        weatherBtm?.setOnClickListener {
+        weatherBtm.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -157,7 +157,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         iconBtn = findViewById(R.id.iconsSetting)
-        iconBtn?.setOnClickListener {
+        iconBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -167,7 +167,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         expBtn = findViewById(R.id.expSetting)
-        expBtn?.setOnClickListener {
+        expBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -177,17 +177,17 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         leaks = findViewById(R.id.leaks)
-        leaks?.setOnClickListener {
+        leaks.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
                     startAnim()
                 }
-              // startActivity(LeakCanary.newLeakDisplayActivityIntent())
+                startActivity(LeakCanary.newLeakDisplayActivityIntent())
             }
         }
         animsBtn = findViewById(R.id.animSetting)
-        animsBtn?.setOnClickListener {
+        animsBtn.setOnClickListener {
             lifecycleScope.launch {
                 isEnter = true
                 if(PREFS!!.isTransitionAnimEnabled) {
@@ -196,54 +196,73 @@ class SettingsActivity : AppCompatActivity() {
                 startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
             }
         }
+        confAnim()
     }
-    private fun startAnim() {
+    private fun confAnim() {
+        setViewInteractAnimation(themeBtn)
+        setViewInteractAnimation(allAppsBtn)
+        setViewInteractAnimation(tilesBtn)
+        setViewInteractAnimation(iconBtn)
+        setViewInteractAnimation(animsBtn)
+        setViewInteractAnimation(feedbackBtn)
+        setViewInteractAnimation(weatherBtm)
+        setViewInteractAnimation(updateBtn)
+        setViewInteractAnimation(navBarBtn)
+        setViewInteractAnimation(aboutBtn)
+        setViewInteractAnimation(leaks)
+        setViewInteractAnimation(expBtn)
+    }
+    private suspend fun startAnim() {
         if(PREFS!!.isTransitionAnimEnabled) {
-            setupAnim(themeBtn!!, 200)
-            setupAnim(allAppsBtn!!, 220)
-            setupAnim(tilesBtn!!, 240)
-            setupAnim(iconBtn!!, 260)
-            setupAnim(animsBtn!!, 280)
-            setupAnim(feedbackBtn!!, 300)
-            setupAnim(weatherBtm!!, 320)
-            setupAnim(updateBtn!!, 340)
-            setupAnim(navBarBtn!!, 360)
-            setupAnim(aboutBtn!!, 380)
-            setupAnim(leaks!!, 390)
-            setupAnim(expBtn!!, 400)
+            setupAnim(themeBtn, 200)
+            setupAnim(allAppsBtn, 210)
+            setupAnim(tilesBtn, 220)
+            setupAnim(iconBtn, 225)
+            setupAnim(animsBtn, 230)
+            setupAnim(feedbackBtn, 235)
+            setupAnim(weatherBtm, 240)
+            setupAnim(updateBtn, 245)
+            setupAnim(navBarBtn, 250)
+            setupAnim(aboutBtn, 255)
+            setupAnim(leaks, 260)
+            setupAnim(expBtn, 265)
+            setupAnim(cord, 280)
             isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                themeBtn!!.alpha = 1f
-                allAppsBtn!!.alpha = 1f
-                tilesBtn!!.alpha = 1f
-                iconBtn!!.alpha = 1f
-                animsBtn!!.alpha = 1f
-                feedbackBtn!!.alpha = 1f
-                weatherBtm!!.alpha = 1f
-                updateBtn!!.alpha = 1f
-                navBarBtn!!.alpha = 1f
-                aboutBtn!!.alpha = 1f
-                leaks!!.alpha = 1f
-                expBtn!!.alpha = 1f
+                themeBtn.alpha = 1f
+                allAppsBtn.alpha = 1f
+                tilesBtn.alpha = 1f
+                iconBtn.alpha = 1f
+                animsBtn.alpha = 1f
+                feedbackBtn.alpha = 1f
+                weatherBtm.alpha = 1f
+                updateBtn.alpha = 1f
+                navBarBtn.alpha = 1f
+                aboutBtn.alpha = 1f
+                leaks.alpha = 1f
+                expBtn.alpha = 1f
+                cord.alpha = 1f
                 cancel()
             }
         }
+        delay(150)
     }
     private fun hideViews() {
         if(PREFS!!.isTransitionAnimEnabled) {
-            hideAnim(themeBtn!!)
-            hideAnim(allAppsBtn!!)
-            hideAnim(tilesBtn!!)
-            hideAnim(iconBtn!!)
-            hideAnim(animsBtn!!)
-            hideAnim(feedbackBtn!!)
-            hideAnim(weatherBtm!!)
-            hideAnim(updateBtn!!)
-            hideAnim(navBarBtn!!)
-            hideAnim(aboutBtn!!)
-            hideAnim(leaks!!)
-            hideAnim(expBtn!!)
+            hideAnim(themeBtn)
+            hideAnim(allAppsBtn)
+            hideAnim(tilesBtn)
+            hideAnim(iconBtn)
+            hideAnim(animsBtn)
+            hideAnim(feedbackBtn)
+            hideAnim(weatherBtm)
+            hideAnim(updateBtn)
+            hideAnim(navBarBtn)
+            hideAnim(aboutBtn)
+            hideAnim(leaks)
+            hideAnim(expBtn)
+            hideAnim(cord)
         }
     }
     private fun setupAnim(view: View?, duration: Long) {
@@ -297,8 +316,8 @@ class SettingsActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        themeSub?.text = accentName(this)
-        navSub?.text = when (PREFS!!.navBarColor) {
+        themeSub.text = accentName(this)
+        navSub.text = when (PREFS!!.navBarColor) {
             0 -> getString(R.string.always_dark)
             1 -> getString(R.string.always_light)
             2 -> getString(R.string.matches_accent_color)
@@ -307,12 +326,12 @@ class SettingsActivity : AppCompatActivity() {
             else -> getString(R.string.navigation_bar_2)
         }
         try {
-            iconsSub?.text =
+            iconsSub.text =
                 if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub) else packageManager.getApplicationLabel(
                     packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0)
                 )
         } catch (e: Exception) {
-            iconsSub?.text = getString(R.string.iconPackNotSelectedSub)
+            iconsSub.text = getString(R.string.iconPackNotSelectedSub)
         }
         if(!isHomeApp() && isDialogEnabled) {
             isDialogEnabled = false
@@ -329,7 +348,9 @@ class SettingsActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_SHORT).show()
             exitProcess(0)
         } else {
-            startAnim()
+            lifecycleScope.launch {
+                startAnim()
+            }
         }
     }
     override fun onPause() {

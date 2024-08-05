@@ -1,5 +1,6 @@
 package ru.dimon6018.metrolauncher.helpers.utils
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DownloadManager
@@ -8,9 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.Rect
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -18,6 +17,7 @@ import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
+import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -36,12 +36,10 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
-import java.io.ByteArrayOutputStream
 import java.util.Calendar
 import java.util.Collections
 import java.util.Locale
 import kotlin.random.Random
-
 
 class Utils {
     companion object {
@@ -58,7 +56,6 @@ class Utils {
         val HARDWARE: String = Build.HARDWARE
         val MANUFACTURER: String = Build.MANUFACTURER
         val TIME: Long = Build.TIME
-        private val isLowerR = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
         fun applyWindowInsets(target: View) {
             ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
@@ -200,7 +197,7 @@ class Utils {
             q.setFilterById(downloadId)
         }
 
-        fun setUpApps(pManager: PackageManager, context: Context): MutableList<App> {
+        fun setUpApps(pManager: PackageManager, context: Context): ArrayList<App> {
             val list = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
@@ -258,28 +255,6 @@ class Utils {
                 }
             }
         }
-
-        // https://github.com/queuejw/Neko11/blob/neko11-stable/app/src/main/java/ru/dimon6018/neko11/workers/Cat.kt#L494
-        fun recompressIcon(bitmap: Bitmap?, size: Int): Icon? {
-            if (bitmap != null) {
-                val ostream = ByteArrayOutputStream(
-                    bitmap.width * bitmap.height
-                ) // guess 50% compression
-                val ok = if (isLowerR) {
-                    bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, size, ostream)
-                } else {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, size, ostream)
-                }
-                return if (ok) Icon.createWithData(
-                    ostream.toByteArray(),
-                    0,
-                    ostream.size()
-                ) else null
-            } else {
-                return bitmap
-            }
-        }
-
         fun generateRandomTileSize(genBigTiles: Boolean): String {
             val int = if(!genBigTiles) Random.nextInt(0, 2) else Random.nextInt(0, 3)
             return when (int) {
@@ -345,7 +320,7 @@ class Utils {
                 return false
             }
         }
-        fun sortApps(newApps: MutableList<App>): MutableList<App> {
+        fun sortApps(newApps: ArrayList<App>): ArrayList<App> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Collections.sort(
                     newApps,
@@ -361,6 +336,30 @@ class Utils {
         fun isDevMode(context: Context): Boolean {
             return Settings.Secure.getInt(context.contentResolver,
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
+        }
+        fun setViewInteractAnimation(view: View) {
+            view.setOnTouchListener { v, event ->
+                val centerX = v.width / 2f
+                val centerY = v.height / 2f
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        val touchX = event.x
+                        val touchY = event.y
+                        val rotationX = (touchY - centerY) / centerY * 5
+                        val rotationY = (centerX - touchX) / centerX * 5
+                        ObjectAnimator.ofFloat(v, "rotationX", -rotationX).setDuration(50).start()
+                        ObjectAnimator.ofFloat(v, "rotationY", -rotationY).setDuration(50).start()
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        view.performClick()
+                    }
+                    MotionEvent.ACTION_CANCEL -> {
+                        ObjectAnimator.ofFloat(v, "rotationX", 0f).setDuration(50).start()
+                        ObjectAnimator.ofFloat(v, "rotationY", 0f).setDuration(50).start()
+                    }
+                }
+                true
+            }
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {

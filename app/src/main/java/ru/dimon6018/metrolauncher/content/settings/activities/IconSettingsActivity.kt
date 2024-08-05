@@ -23,7 +23,6 @@ import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 
 
 class IconSettingsActivity: AppCompatActivity() {
@@ -48,14 +47,14 @@ class IconSettingsActivity: AppCompatActivity() {
     private var dialog: WPDialog? = null
 
     private lateinit var main: CoordinatorLayout
+    private var appList = ArrayList<IconPackItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_icon)
         packageMgr = packageManager
-        iconPackManager = IconPackManager()
-        iconPackManager?.setContext(this)
+        iconPackManager = IconPackManager(this)
         chooseBtn = findViewById(R.id.chooseIconPack)
         removePack = findViewById(R.id.removeIconPack)
         currentPackTextView = findViewById(R.id.currentIconPackText)
@@ -83,6 +82,7 @@ class IconSettingsActivity: AppCompatActivity() {
         }
         removePack.setOnClickListener {
             PREFS!!.setIconPack("null")
+            PREFS!!.isPrefsChanged = true
             setUi()
         }
         downloadBtn.setOnClickListener {
@@ -102,7 +102,6 @@ class IconSettingsActivity: AppCompatActivity() {
         iconPackArrayList = iconPackManager!!.getAvailableIconPacks(true)
         isIconPackListEmpty = iconPackArrayList.isEmpty()
         setUi()
-        val appList = ArrayList<IconPackItem>()
         if(iconPackArrayList.isNotEmpty()) {
             for (i in iconPackArrayList) {
                 val app = IconPackItem()
@@ -210,7 +209,7 @@ class IconSettingsActivity: AppCompatActivity() {
             holder as IconPackHolder
             val item = list[position]
             holder.label.text = item.name
-            holder.icon.setImageIcon(recompressIcon(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize), 75))
+            holder.icon.setImageBitmap(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize))
             holder.itemView.setOnClickListener {
                 PREFS!!.setIconPack(item.appPackage)
                 PREFS!!.isPrefsChanged = true

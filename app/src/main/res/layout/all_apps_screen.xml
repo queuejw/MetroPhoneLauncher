@@ -53,7 +53,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
-    <ru.dimon6018.metrolauncher.helpers.AllAppsRecyclerView
+    <ru.dimon6018.metrolauncher.helpers.MetroRecyclerView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

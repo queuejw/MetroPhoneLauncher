@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 
-class AllAppsRecyclerView @JvmOverloads constructor(
+class MetroRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -14,10 +14,11 @@ class AllAppsRecyclerView @JvmOverloads constructor(
     var isScrollEnabled = true
 
     override fun onTouchEvent(e: MotionEvent): Boolean {
-        performClick()
+        if(e.action == MotionEvent.ACTION_DOWN) {
+            performClick()
+        }
         return isScrollEnabled && super.onTouchEvent(e)
     }
-
     override fun onInterceptTouchEvent(e: MotionEvent): Boolean {
         return isScrollEnabled && super.onInterceptTouchEvent(e)
     }

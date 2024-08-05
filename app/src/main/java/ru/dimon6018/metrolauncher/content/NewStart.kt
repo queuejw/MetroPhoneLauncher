@@ -8,11 +8,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -29,12 +26,11 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import androidx.collection.SparseArrayCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -45,7 +41,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
-import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,16 +52,18 @@ import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
+import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
+import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
+import ru.dimon6018.metrolauncher.helpers.MetroRecyclerView
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -74,7 +71,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromP
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import java.util.Collections
 import kotlin.properties.Delegates
 import kotlin.random.Random
@@ -82,14 +78,10 @@ import kotlin.random.Random
 
 class NewStart: Fragment(), OnStartDragListener {
 
-    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var mRecyclerView: MetroRecyclerView
     private lateinit var frame: FrameLayout
     private lateinit var mItemTouchHelper: ItemTouchHelper
     private lateinit var dao: TileDao
-    private val hashCache = SparseArrayCompat<Icon?>()
-    private val iconManager: IconPackManager by lazy {
-        getIconPack()
-    }
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -100,29 +92,22 @@ class NewStart: Fragment(), OnStartDragListener {
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
     private var isBroadcasterRegistered = false
+    private var startScreenReady = false
     private var screenIsOn = false
 
-    private fun getIconPack(): IconPackManager {
-        val iconManager = IconPackManager()
-        iconManager.setContext(requireContext())
-        return iconManager
-    }
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val v = inflater.inflate(R.layout.start_screen, container, false)
+
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+
         mRecyclerView = v.findViewById(R.id.start_apps_tiles)
-        var loadingProgressBar = v.findViewById<WP7ProgressBar>(R.id.progressBarStart)
-        loadingProgressBar.showProgressBar()
         frame = v.findViewById(R.id.startFrame)
         if(context != null) {
-            lifecycleScope.launch(defaultDispatcher) {
+            viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
                 dao = TileData.getTileData(requireContext()).getTileDao()
                 tiles = dao.getTilesList()
-                //attempt to optimize icon loading
-                tiles?.forEach {
-                    if (it.tileType != -1) {
-                        hashCache.put(it.id!!.toInt(), generateIcon(it))
-                    }
-                }
                 setupRecyclerViewLayoutManager(requireContext())
                 mAdapter = NewStartAdapter(requireContext(), tiles!!)
                 val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
@@ -143,17 +128,12 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                     observe()
                     registerBroadcast()
-                    destroyProgressBar(loadingProgressBar)
-                    loadingProgressBar = null
+                    startScreenReady = true
                 }
-
+                cancel("done")
             }
         }
         return v
-    }
-    private fun destroyProgressBar(bar: WP7ProgressBar) {
-        bar.hideProgressBar()
-        bar.visibility = View.GONE
     }
     private fun setupRecyclerViewLayoutManager(context: Context?) {
         if(mSpannedLayoutManager != null) {
@@ -217,25 +197,14 @@ class NewStart: Fragment(), OnStartDragListener {
 
         }
     }
-    private fun generateIcon(it: Tile): Icon? {
-        return if (context != null) {
-            recompressIcon(
-                getAppIcon(
-                    it.appPackage,
-                    it.tileSize,
-                    requireContext().packageManager,
-                    requireContext().resources
-                ), 90
-            )
-        } else {
-            null
-        }
-    }
     private fun observe() {
         Log.d("Start", "start observer")
+        if(!startScreenReady) {
+            return
+        }
         animate()
         if(!dao.getTilesLiveData().hasObservers()) {
-            dao.getTilesLiveData().observe(this.viewLifecycleOwner) {
+            dao.getTilesLiveData().observe(viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter!!.isEditMode && mAdapter!!.list != it) {
                         Log.d("observer", "update list")
@@ -246,7 +215,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun animate() {
-        if(mAdapter == null) {
+        if(mAdapter == null || !startScreenReady) {
             return
         }
         if (PREFS!!.isTilesAnimEnabled && isAppOpened) {
@@ -286,6 +255,7 @@ class NewStart: Fragment(), OnStartDragListener {
             isTopRight = false
             isTopLeft = false
         }
+        observe()
     }
     private fun setEnterAnim() {
         if (mAdapter == null) {
@@ -525,42 +495,11 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onDestroy()
         unregisterBroadcast()
     }
-    private fun getAppIcon(appPackage: String, size: String, pm: PackageManager, mRes: Resources): Bitmap {
-        var drawable = if(PREFS!!.iconPackPackage == "null") pm.getApplicationIcon(appPackage) else iconManager.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
-        if(drawable == null) {
-            drawable = pm.getApplicationIcon(appPackage)
-        }
-        return when (size) {
-            "small" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on))
-                } else {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off))
-                }
-            }
-            "medium" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on))
-                } else {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
-                }
-            }
-            "big" -> {
-                if (PREFS!!.isMoreTilesEnabled) {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on), mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on))
-                } else {
-                    drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off))
-                }
-            }
-            else -> {
-                drawable.toBitmap(mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off), mRes.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off))
-            }
-        }
-    }
+
     private suspend fun destroyTile(it: Tile) {
         it.tileType = -1
         it.tileSize = "small"
-        hashCache.remove(it.id!!.toInt())
+        mainViewModel.removeIconFromCache(it.appPackage)
         it.appPackage = ""
         it.tileColor = -1
         it.appLabel = ""
@@ -600,6 +539,7 @@ class NewStart: Fragment(), OnStartDragListener {
         @SuppressLint("NotifyDataSetChanged")
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
+            (requireActivity() as Main).configureViewPagerScroll(false)
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(mRecyclerView, "scaleX", 1f, 0.85f),
@@ -615,6 +555,7 @@ class NewStart: Fragment(), OnStartDragListener {
         @SuppressLint("NotifyDataSetChanged")
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
+            (requireActivity() as Main).configureViewPagerScroll(true)
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(mRecyclerView, "scaleX", 0.85f, 1f),
@@ -756,25 +697,57 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: Tile) {
             setTileSize(item, holder.mTextView)
+            setTileIconSize(holder.mAppIcon, item.tileSize, context.resources)
             setTileColor(holder, item)
-            setTileIcon(holder, item)
+            setTileIcon(holder.mAppIcon, item)
             setTileEditModeAnim(holder, item, position)
         }
-        private fun setTileIcon(holder: TileViewHolder, item: Tile) {
+        private fun setTileIcon(imageView: ImageView, item: Tile) {
             try {
-                val bmp = hashCache[item.id!!.toInt()]
-                if(bmp != null) {
-                    holder.mAppIcon.setImageIcon(bmp)
-                } else {
-                    hashCache.put(item.id!!.toInt(),generateIcon(item))
-                    holder.mAppIcon.setImageIcon(hashCache[item.id!!.toInt()])
-                }
+                imageView.setImageDrawable(mainViewModel.getIconFromCache(item.appPackage))
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 lifecycleScope.launch(ioDispatcher) {
                     destroyTile(item)
                 }
             }
+        }
+        private fun setTileIconSize(imageView: ImageView, tileSize: String, res: Resources) {
+            val params = imageView.layoutParams
+            when (tileSize) {
+                "small" -> {
+                    if (PREFS!!.isMoreTilesEnabled) {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on)
+                    } else {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_off)
+                    }
+                }
+                "medium" -> {
+                    if (PREFS!!.isMoreTilesEnabled) {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on)
+                    } else {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                    }
+                }
+                "big" -> {
+                    if (PREFS!!.isMoreTilesEnabled) {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on)
+                    } else {
+                        params.width = res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off)
+                        params.height = res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_off)
+                    }
+                }
+                else -> {
+                    params.width = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                    params.height = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                }
+            }
+            imageView.layoutParams = params
         }
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
             if(!isEditMode) {
@@ -893,6 +866,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun showPopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
+            mRecyclerView.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = if(item.tileSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
             val width = holder.itemView.width
@@ -904,6 +878,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.setOnDismissListener {
+                mRecyclerView.isScrollEnabled = true
                 clearItems()
                 runBlocking {
                     notifyItemChanged(position)
@@ -950,10 +925,8 @@ class NewStart: Fragment(), OnStartDragListener {
                             dao.updateTile(item)
                         }
                     }
-                    hashCache.put(item.id!!.toInt(), recompressIcon(getAppIcon(item.appPackage, item.tileSize, context.packageManager, context.resources), 80))
                     withContext(mainDispatcher) {
                         popupWindow.dismiss()
-                        holder.mAppIcon.setImageIcon(hashCache[item.id!!.toInt()])
                         notifyItemChanged(position)
                     }
                 }

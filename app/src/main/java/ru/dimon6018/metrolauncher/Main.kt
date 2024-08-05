@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -24,13 +23,12 @@ import android.widget.TextView.OnEditorActionListener
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.collection.SparseArrayCompat
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +38,10 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.content.NewAllApps
@@ -60,7 +60,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
@@ -74,21 +73,16 @@ class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
-
+    private lateinit var mainViewModel: MainViewModel
+    private val packageReceiver: PackageChangesReceiver by lazy {
+        PackageChangesReceiver()
+    }
+    private val searchBarClass: BottomSearchBar by lazy {
+        BottomSearchBar(this)
+    }
     // bottom bar
     private var bottomViewStartBtn: ImageView? = null
     private var bottomViewSearchBtn: ImageView? = null
-
-    // search bar
-    private var bottomViewSearchBarView: LinearLayout? = null
-    private var bottomViewSearchBar: TextInputLayout? = null
-
-    private var searchBarResultsLayout: MaterialCardView? = null
-    private val hashCache = SparseArrayCompat<Icon?>()
-    private var searchAdapter: SearchAdapter? = null
-    private var filteredList: MutableList<App>? = null
-
-    private val packageReceiver = PackageChangesReceiver()
 
     private var bottomViewReady = false
     private var searching = false
@@ -98,12 +92,14 @@ class Main : AppCompatActivity() {
         setAppTheme()
         if (isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
             //disabling animations if developer mode is enabled (to avoid problems)
-            PREFS!!.setAllAppsAnim(false)
-            PREFS!!.setTilesAnim(false)
-            PREFS!!.setAlphabetAnim(false)
-            PREFS!!.setTransitionAnim(false)
-            PREFS!!.setLiveTilesAnim(false)
-            PREFS!!.setTilesScreenAnim(false)
+            PREFS!!.apply {
+                setAllAppsAnim(false)
+                setAllAppsAnim(false)
+                setAlphabetAnim(false)
+                setTransitionAnim(false)
+                setLiveTilesAnim(false)
+                setTilesScreenAnim(false)
+            }
         }
         super.onCreate(savedInstanceState)
         when (PREFS!!.launcherState) {
@@ -117,13 +113,31 @@ class Main : AppCompatActivity() {
                 return
             }
         }
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(R.layout.main_screen_laucnher)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         isLandscape =
             this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        pagerAdapter = WinAdapter(this@Main)
+        lifecycleScope.launch(Dispatchers.Default) {
+            generateIcons()
+            pagerAdapter = WinAdapter(this@Main)
+            if (PREFS!!.prefs.getBoolean(
+                    "updateInstalled",
+                    false
+                ) && PREFS!!.versionCode == VERSION_CODE
+            ) {
+                PREFS!!.setUpdateState(3)
+            }
+            withContext(Dispatchers.Main) {
+                setupNavigationBar()
+                setupViewPager()
+                setupBackPressedDispatcher()
+            }
+            cancel("done")
+        }
+        applyWindowInsets(coordinatorLayout)
         if (PREFS!!.isWallpaperUsed) {
             window?.setBackgroundDrawable(
                 ContextCompat.getDrawable(
@@ -133,18 +147,28 @@ class Main : AppCompatActivity() {
             )
             window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
         }
-        if (PREFS!!.prefs.getBoolean(
-                "updateInstalled",
-                false
-            ) && PREFS!!.versionCode == VERSION_CODE
-        ) {
-            PREFS!!.setUpdateState(3)
-        }
-        applyWindowInsets(coordinatorLayout)
+        registerPackageReceiver(this, packageReceiver)
+        otherTasks()
+    }
+    private fun setupBackPressedDispatcher() {
+        onBackPressedDispatcher.addCallback(
+            this@Main,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (viewPager.currentItem != 0) {
+                        viewPager.currentItem -= 1
+                    } else {
+                        if (searching && PREFS!!.isSearchBarEnabled) {
+                            searchBarClass.hideSearch()
+                        }
+                    }
+                }
+            })
+    }
+    private fun setupViewPager() {
         viewPager.apply {
             adapter = pagerAdapter
         }
-        setupNavigationBar()
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             val black = if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2)
                 ContextCompat.getColor(this@Main, android.R.color.black) else null
@@ -174,22 +198,65 @@ class Main : AppCompatActivity() {
                 super.onPageSelected(position)
             }
         })
-        onBackPressedDispatcher.addCallback(
-            this@Main,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (viewPager.currentItem != 0) {
-                        viewPager.currentItem -= 1
-                    } else {
-                        if (searching && PREFS!!.isSearchBarEnabled) {
-                            hideSearchResults()
-                        }
+    }
+    override fun onResume() {
+        if (PREFS!!.isPrefsChanged) {
+            PREFS!!.isPrefsChanged = false
+            exitProcess(0)
+        }
+        super.onResume()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterPackageReceiver(this, packageReceiver)
+    }
+    private fun runApp(app: String) {
+        isAppOpened = true
+        when (app) {
+            "ru.dimon6018.metrolauncher" -> {
+                startActivity(Intent(this@Main, SettingsActivity::class.java))
+            }
+            else -> {
+                startActivity(Intent(this@Main.packageManager.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            }
+        }
+    }
+    fun configureViewPagerScroll(boolean: Boolean) {
+        viewPager.isUserInputEnabled = boolean
+    }
+    private fun generateIcons() {
+        var iconManager: IconPackManager? = null
+        var isCustomIconsInstalled = false
+        if (PREFS!!.iconPackPackage != "null") {
+            iconManager = IconPackManager(this)
+            isCustomIconsInstalled = true
+        }
+        mainViewModel.setAppList(setUpApps(this.packageManager, this))
+        mainViewModel.getAppList().map {
+            if(it.type != 1) {
+                when(it.appPackage) {
+                    this.packageName -> {
+                        mainViewModel.addIconToCache(this.packageName, ContextCompat.getDrawable(this, R.drawable.ic_settings))
+                    }
+                    else -> {
+                        generateIcon(it.appPackage!!, iconManager, isCustomIconsInstalled)
                     }
                 }
-            })
-        otherTasks()
+            }
+        }
     }
-
+    private fun generateIcon(
+        appPackage: String,
+        iconManager: IconPackManager?,
+        isCustomIconsInstalled: Boolean
+    ) {
+        var icon = if (!isCustomIconsInstalled) this.packageManager.getApplicationIcon(appPackage)
+        else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
+        if(icon == null) {
+            icon = this.packageManager.getApplicationIcon(appPackage)
+        }
+        mainViewModel.addIconToCache(appPackage, icon)
+    }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -214,7 +281,7 @@ class Main : AppCompatActivity() {
                         pos = 0
                     }
                     val text = BSOD.getData(this@Main).getDao().getBSOD(pos).log
-                    runOnUiThread {
+                    withContext(Dispatchers.Main) {
                         WPDialog(this@Main).setTopDialog(true)
                             .setTitle(getString(R.string.bsodDialogTitle))
                             .setMessage(getString(R.string.bsodDialogMessage))
@@ -280,35 +347,34 @@ class Main : AppCompatActivity() {
                 viewPager.currentItem = 1
             }
         } else {
+            searchBarClass
+        }
+    }
+    inner class BottomSearchBar(context: Context) {
+        // search bar
+        private var bottomViewSearchBarView: LinearLayout? = null
+        private var bottomViewSearchBar: TextInputLayout? = null
+
+        private var searchBarResultsLayout: MaterialCardView? = null
+        private var searchAdapter: SearchAdapter? = null
+        private var filteredList: ArrayList<App>? = null
+
+        init {
             bottomViewSearchBarView = findViewById(R.id.navigation_searchBar)
             bottomViewSearchBarView?.visibility = View.VISIBLE
             val searchRecyclerView: RecyclerView = findViewById(R.id.searchBarRecyclerView)
             searchBarResultsLayout = findViewById(R.id.searchBarResults)
             bottomViewSearchBar = findViewById(R.id.searchBar)
-            val appList = setUpApps(this.packageManager, this)
-            val iconSize = this.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
-            var iconManager: IconPackManager? = null
-            var isCustomIconsInstalled = false
-            if (PREFS!!.iconPackPackage != "null") {
-                iconManager = IconPackManager()
-                iconManager.setContext(this)
-                isCustomIconsInstalled = true
-            }
-            appList.forEach {
-                if (it.type != 1) {
-                    hashCache.append(it.id, generateIcon(it, iconSize, iconManager, isCustomIconsInstalled))
-                }
-            }
-            searchAdapter = SearchAdapter(this, null)
+            searchAdapter = SearchAdapter(context, null)
             searchRecyclerView.apply {
-                layoutManager = LinearLayoutManager(this@Main, LinearLayoutManager.VERTICAL, false)
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = searchAdapter
             }
             val text = (bottomViewSearchBar!!.editText as? AutoCompleteTextView)
             text?.addTextChangedListener(object :
                 TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                    filterSearchText(s.toString(), appList)
+                    filterSearchText(s.toString(), mainViewModel.getAppList())
                 }
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable) {}
@@ -324,67 +390,50 @@ class Main : AppCompatActivity() {
                 false
             })
         }
-    }
-    private fun hideSearchResults() {
-        lifecycleScope.launch {
-            searching = false
-            searchBarResultsLayout?.apply {
-                (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.text?.clear()
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
-                }
-            }
-            searchBarResultsLayout?.visibility = View.GONE
-        }
-    }
-    private fun showSearchResults() {
-        searching = true
-        searchBarResultsLayout?.visibility = View.VISIBLE
-        searchBarResultsLayout?.apply {
-            if(PREFS!!.isTransitionAnimEnabled) {
-                ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
-            }
-        }
-    }
-    private fun generateIcon(it: App, iconSize: Int, iconManager: IconPackManager?, isCustomIconsInstalled: Boolean): Icon? {
-        var bmp = if (!isCustomIconsInstalled) recompressIcon(
-            this.packageManager.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-            75
-        )
-        else
-            recompressIcon(
-                iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
-                    ?.getDrawableIconForPackage(it.appPackage, null)
-                    ?.toBitmap(iconSize, iconSize), 75
-            )
-        if (bmp == null) {
-            bmp = recompressIcon(
-                this.packageManager.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-                75
-            )
-        }
-        return bmp
-    }
-    private fun filterSearchText(text: String, appList: MutableList<App>) {
-        filteredList = ArrayList()
-        val locale = Locale.getDefault()
-        if(text.isEmpty()) {
+        fun hideSearch() {
             hideSearchResults()
-        } else {
-            showSearchResults()
         }
-        val max = PREFS!!.maxResultsSearchBar
-        for(i in 0..<appList.size) {
-            val item = appList[i]
-            if (item.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
-                if(filteredList!!.size >= max) {
-                    break
+        private fun hideSearchResults() {
+            lifecycleScope.launch {
+                searching = false
+                searchBarResultsLayout?.apply {
+                    (bottomViewSearchBar!!.editText as? AutoCompleteTextView)?.text?.clear()
+                    if(PREFS!!.isTransitionAnimEnabled) {
+                        ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
+                    }
                 }
-                filteredList!!.add(item)
+                searchBarResultsLayout?.visibility = View.GONE
             }
         }
-        filteredList = sortApps(filteredList!!)
-        searchAdapter?.setData(filteredList!!)
+        private fun showSearchResults() {
+            searching = true
+            searchBarResultsLayout?.visibility = View.VISIBLE
+            searchBarResultsLayout?.apply {
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
+                }
+            }
+        }
+        private fun filterSearchText(text: String, appList: List<App>) {
+            filteredList = ArrayList()
+            val locale = Locale.getDefault()
+            if(text.isEmpty()) {
+                hideSearchResults()
+            } else {
+                showSearchResults()
+            }
+            val max = PREFS!!.maxResultsSearchBar
+            for(element in appList) {
+                if (element.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
+                    if(filteredList!!.size >= max) {
+                        break
+                    }
+                    filteredList!!.add(element)
+                }
+            }
+            filteredList = sortApps(filteredList!!)
+            searchAdapter?.setData(filteredList!!)
+        }
     }
     private fun setAppTheme() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -394,29 +443,6 @@ class Main : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
-    }
-    override fun onResume() {
-        if (PREFS!!.isPrefsChanged) {
-            PREFS!!.isPrefsChanged = false
-            exitProcess(0)
-        }
-        super.onResume()
-        registerPackageReceiver(this, packageReceiver)
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterPackageReceiver(this, packageReceiver)
-    }
-    private fun runApp(app: String) {
-        isAppOpened = true
-        when (app) {
-            "ru.dimon6018.metrolauncher" -> {
-                startActivity(Intent(this@Main, SettingsActivity::class.java))
-            }
-            else -> {
-                startActivity(Intent(this@Main.packageManager.getLaunchIntentForPackage(app)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-            }
         }
     }
     companion object {
@@ -438,7 +464,7 @@ class Main : AppCompatActivity() {
 
         }
     }
-    inner class SearchAdapter(private val context: Context, private var dataList: MutableList<App>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class SearchAdapter(private val context: Context, private var dataList: ArrayList<App>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return AppSearchHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
         }
@@ -450,9 +476,9 @@ class Main : AppCompatActivity() {
                 holder as AppSearchHolder
                 val app = dataList!![position]
                 try {
-                    val bmp = hashCache.get(app.id)
+                    val bmp = mainViewModel.getIconFromCache(app.appPackage!!)
                     if (bmp != null) {
-                        holder.icon.setImageIcon(bmp)
+                        holder.icon.setImageDrawable(bmp)
                     } else {
                         holder.icon.setImageDrawable(context.packageManager.getApplicationIcon(app.appPackage!!))
                     }
@@ -463,7 +489,7 @@ class Main : AppCompatActivity() {
             }
         }
         @SuppressLint("NotifyDataSetChanged")
-        fun setData(new: MutableList<App>) {
+        fun setData(new: ArrayList<App>) {
             dataList = new
             notifyDataSetChanged()
     }

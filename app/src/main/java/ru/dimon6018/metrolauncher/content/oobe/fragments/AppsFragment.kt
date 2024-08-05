@@ -5,7 +5,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable.Icon
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,12 +30,11 @@ import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.app.App
-import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
+import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import kotlin.random.Random
@@ -44,8 +43,7 @@ class AppsFragment: Fragment() {
 
     private var recyclerView: RecyclerView? = null
     private var loading: WP7ProgressBar? = null
-    private var fragmentContext: Context? = null
-    private val hashCache = SparseArrayCompat<Icon?>()
+    private val hashCache = SparseArrayCompat<Bitmap?>()
     private var main: View? = null
 
     override fun onCreateView(
@@ -54,7 +52,6 @@ class AppsFragment: Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.oobe_fragment_apps, container, false)
         main = view
-        fragmentContext = requireContext()
         WelcomeActivity.setText(requireActivity(), getString(R.string.configureApps))
         recyclerView = view.findViewById(R.id.oobeRecycler)
         loading = view.findViewById(R.id.oobeAppsLoadingBar)
@@ -68,40 +65,29 @@ class AppsFragment: Fragment() {
         val next: MaterialButton = view.findViewById(R.id.next)
         val selectAll: MaterialButton = view.findViewById(R.id.oobeSelectAll)
         val removeAll: MaterialButton = view.findViewById(R.id.oobeRemoveAll)
-        val call = TileData.getTileData(fragmentContext!!).getTileDao()
+        val call = TileData.getTileData(requireContext()).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
-            val appList = sortApps(setUpApps(fragmentContext!!.packageManager, fragmentContext!!))
-            val mAdapter = AppAdapter(appList, fragmentContext!!)
-            val lm = LinearLayoutManager(fragmentContext)
+            val appList = sortApps(setUpApps(requireContext().packageManager, requireContext()))
+            val mAdapter = AppAdapter(appList, requireContext())
+            val lm = LinearLayoutManager(requireContext())
             var iconManager: IconPackManager? = null
             var isCustomIconsInstalled = false
             if (PREFS!!.iconPackPackage != "null") {
-                iconManager = IconPackManager()
-                iconManager.setContext(fragmentContext!!)
+                iconManager = IconPackManager(requireContext())
                 isCustomIconsInstalled = true
             }
             val iconSize =
-                fragmentContext!!.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
-            val pm = fragmentContext!!.packageManager
+                requireContext().resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
+            val pm = requireContext().packageManager
             appList.forEach {
                 if (it.type != 1) {
-                    var bmp = if (!isCustomIconsInstalled) recompressIcon(
-                        pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-                        75
-                    )
+                    val bmp = if (!isCustomIconsInstalled)
+                        pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize)
                     else
-                        recompressIcon(
                             iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
                                 ?.getDrawableIconForPackage(it.appPackage!!, null)
-                                ?.toBitmap(iconSize, iconSize), 75
-                        )
-                    if (bmp == null) {
-                        bmp = recompressIcon(
-                            pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize),
-                            75
-                        )
-                    }
+                                ?.toBitmap(iconSize, iconSize)
                     hashCache.append(it.id, bmp)
                 }
             }
@@ -218,7 +204,7 @@ class AppsFragment: Fragment() {
             val item = adapterApps[position]
             holder as OOBEAppHolder
             try {
-                holder.icon.setImageIcon(hashCache.get(item.id))
+                holder.icon.setImageBitmap(hashCache.get(item.id))
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(
                     ContextCompat.getDrawable(

@@ -1,31 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/startFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <ru.dimon6018.metrolauncher.helpers.MetroRecyclerView
         android:id="@+id/start_apps_tiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:nestedScrollingEnabled="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/loadingHolderStart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <ir.alirezabdn.wp7progress.WP7ProgressBar
-            android:id="@+id/progressBarStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:indicatorRadius="5"
-            app:indicatorColor="?attr/colorPrimary" />
-    </LinearLayout>
+        android:nestedScrollingEnabled="true" />
 </FrameLayout>

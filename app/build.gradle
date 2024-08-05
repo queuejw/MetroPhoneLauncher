@@ -15,7 +15,7 @@ android {
         minSdk 23
         targetSdk 35
         versionCode 47
-        versionName "1.0 Pre-Alpha 5.0.3"
+        versionName "1.0 Pre-Alpha 5.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -64,7 +64,7 @@ dependencies {
     implementation 'io.coil-kt.coil3:coil:3.0.0-alpha09'
     implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha09'
 
-   // debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
    // testImplementation 'junit:junit:4.13.2'
    // androidTestImplementation 'androidx.test.ext:junit:1.1.5'
    // androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

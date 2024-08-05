@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/transparent" />
+    <foreground>
+        <inset
+            android:insetBottom="8dp"
+            android:insetLeft="8dp"
+            android:insetRight="8dp"
+            android:insetTop="8dp"
+            android:drawable="@drawable/ic_os_windows_8">
+        </inset>
+    </foreground>
+    <monochrome>
+        <inset
+            android:insetBottom="8dp"
+            android:insetLeft="8dp"
+            android:insetRight="8dp"
+            android:insetTop="8dp"
+            android:drawable="@drawable/ic_os_windows_8">
+        </inset>
+    </monochrome>
+</adaptive-icon>

@@ -22,12 +22,9 @@ import java.io.IOException
 import java.util.Locale
 import java.util.Random
 
-class IconPackManager {
+class IconPackManager(context: Context) {
 
-    private var mContext: Context? = null
-    fun setContext(c: Context?) {
-        mContext = c
-    }
+    private val mContext = context
 
     inner class IconPack {
         var packageName: String? = null
@@ -43,7 +40,7 @@ class IconPackManager {
         @SuppressLint("DiscouragedApi")
         private fun load() {
             // load appfilter.xml from the icon pack package
-            val pm = mContext!!.packageManager
+            val pm = mContext.packageManager
             try {
                 var xpp: XmlPullParser? = null
                 iconPackRes = pm.getResourcesForApplication(packageName!!)
@@ -143,7 +140,7 @@ class IconPackManager {
         @SuppressLint("DiscouragedApi")
         fun getDrawableIconForPackage(appPackageName: String?, defaultDrawable: Drawable?): Drawable? {
             if (!mLoaded) load()
-            val pm = mContext!!.packageManager
+            val pm = mContext.packageManager
             val launchIntent = pm.getLaunchIntentForPackage(appPackageName!!)
             var componentName: String? = null
             if (launchIntent != null) componentName = pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
@@ -168,7 +165,7 @@ class IconPackManager {
         @Suppress("unused")
         fun getIconForPackage(appPackageName: String?, defaultBitmap: Bitmap): Bitmap? {
             if (!mLoaded) load()
-            val pm = mContext!!.packageManager
+            val pm = mContext.packageManager
             val launchIntent = pm.getLaunchIntentForPackage(appPackageName!!)
             var componentName: String? = null
             if (launchIntent != null) componentName = pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
@@ -253,6 +250,19 @@ class IconPackManager {
                 other.packageName == packageName
             } else false
         }
+
+        override fun hashCode(): Int {
+            var result = packageName?.hashCode() ?: 0
+            result = 31 * result + (name?.hashCode() ?: 0)
+            result = 31 * result + mLoaded.hashCode()
+            result = 31 * result + mPackagesDrawables.hashCode()
+            result = 31 * result + mBackImages.hashCode()
+            result = 31 * result + (mMaskImage?.hashCode() ?: 0)
+            result = 31 * result + (mFrontImage?.hashCode() ?: 0)
+            result = 31 * result + mFactor.hashCode()
+            result = 31 * result + (iconPackRes?.hashCode() ?: 0)
+            return result
+        }
     }
     private var iconPacks: ArrayList<IconPack>? = null
 
@@ -261,7 +271,7 @@ class IconPackManager {
             iconPacks = ArrayList()
 
             // find apps with intent-filter "com.gau.go.launcherex.theme" and return build the HashMap
-            val pm = mContext!!.packageManager
+            val pm = mContext.packageManager
             val adwLauncherThemes = pm.queryIntentActivities(Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA)
             val goLauncherThemes = pm.queryIntentActivities(Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA)
 
@@ -274,7 +284,7 @@ class IconPackManager {
                 var ai: ApplicationInfo
                 try {
                     ai = pm.getApplicationInfo(ip.packageName!!, PackageManager.GET_META_DATA)
-                    ip.name = mContext!!.packageManager.getApplicationLabel(ai).toString()
+                    ip.name = mContext.packageManager.getApplicationLabel(ai).toString()
                     if (!iconPacks!!.contains(ip)) iconPacks!!.add(ip)
                 } catch (e: PackageManager.NameNotFoundException) {
                     // shouldn't happen
@@ -286,7 +296,7 @@ class IconPackManager {
     }
 
     fun getIconPackWithName(packageName: String?): IconPack? {
-        val pm = mContext!!.packageManager
+        val pm = mContext.packageManager
         val targetPack = IconPack()
         targetPack.packageName = packageName
         if(iconPacks == null) {
@@ -296,7 +306,7 @@ class IconPackManager {
             val ai: ApplicationInfo
             try {
                 ai = pm.getApplicationInfo(targetPack.packageName!!, PackageManager.GET_META_DATA)
-                targetPack.name = mContext!!.packageManager.getApplicationLabel(ai).toString()
+                targetPack.name = mContext.packageManager.getApplicationLabel(ai).toString()
                 return targetPack
             } catch (e: PackageManager.NameNotFoundException) {
                 e.printStackTrace()

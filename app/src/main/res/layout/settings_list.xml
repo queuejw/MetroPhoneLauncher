@@ -1,299 +1,366 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginTop="8dp"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/themeSetting"
+            style="@style/Settings.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/themeSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/start_theme"
-                            android:textSize="24sp" />
+            android:layout_height="64dp">
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/theme_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/start_theme_sub"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/allAppsSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/all_apps_list"
-                        android:textSize="24sp"/>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/allApps_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/change_your_app_list"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/tilesSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/tiles"
-                        android:textSize="24sp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/start_theme"
+                    android:textSize="24sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/tiles_Setting_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/customize_tiles"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/iconsSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/icon_packs"
-                        android:textSize="24sp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/theme_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/start_theme_sub"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/icons_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/animSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/animations"
-                        android:textSize="24sp" />
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/allAppsSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/animations_tip"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/feedbackSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/feedback"
-                        android:textSize="24sp" />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/feedback_sub"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/weatherSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="weather"
-                        android:textSize="24sp" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/weather_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="weather tile"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/updatesSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/launcher_update"
-                        android:textSize="24sp" />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/launcher_update_sub"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
-                android:layout_width="match_parent"
-                android:id="@+id/navbarSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/navigation_bar"
-                        android:textSize="24sp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/all_apps_list"
+                    android:textSize="24sp" />
 
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/navbar_sub"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/allApps_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/change_your_app_list"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/tilesSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/aboutSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="vertical"
-                        android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/about"
-                        android:textSize="24sp" />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/about_sub"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tiles"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tiles_Setting_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/customize_tiles"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/iconsSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/leaks"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="LeakCanary"
-                        android:textSize="24sp" />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/for_developers"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Settings.Card"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_packs"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/icons_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/animSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:id="@+id/expSetting"
-                android:layout_height="64dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="vertical"
-                    android:layout_height="match_parent">
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/experiments"
-                        android:textSize="24sp" />
-                    <com.google.android.material.textview.MaterialTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:fontFamily="@font/manrope_light"
-                        android:text="@string/experiments_tip"
-                        android:textSize="16sp"
-                        android:alpha="0.75"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/animations"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/animations_tip"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/feedbackSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/feedback"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/feedback_sub"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/weatherSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="weather"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/weather_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="weather tile"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/updatesSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/launcher_update"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/launcher_update_sub"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/navbarSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/navigation_bar"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/navbar_sub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/aboutSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/about"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/about_sub"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/leaks"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LeakCanary"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/for_developers"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/expSetting"
+            style="@style/Settings.Card"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/experiments"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.75"
+                    android:text="@string/experiments_tip"
+                    android:textSize="16sp"
+                    app:fontFamily="@font/manrope_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 </ScrollView>

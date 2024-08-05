@@ -9,7 +9,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -27,14 +26,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.collection.SparseArrayCompat
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.widget.PopupWindowCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,28 +52,27 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
+import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.app.App
+import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
-import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.helpers.AllAppsRecyclerView
-import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.helpers.MetroRecyclerView
 import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.recompressIcon
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import java.util.Locale
-import kotlin.properties.Delegates
 import kotlin.random.Random
 
 class NewAllApps: Fragment() {
 
-    private lateinit var recyclerView: AllAppsRecyclerView
+    private lateinit var recyclerView: MetroRecyclerView
     private lateinit var recyclerViewLM: LinearLayoutManager
     private lateinit var recyclerViewAlphabet: RecyclerView
     private lateinit var alphabetLayout: LinearLayout
@@ -97,27 +95,17 @@ class NewAllApps: Fragment() {
 
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
-    private val hashCache = SparseArrayCompat<Icon?>()
     private var isListLoaded = false
     private var isBroadcasterRegistered = false
-    private var iconManager: IconPackManager? = null
-    private var isCustomIconsInstalled = false
-    private var iconSize: Int? = null
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (PREFS!!.iconPackPackage != "null") {
-            iconManager = IconPackManager()
-            iconManager?.setContext(context)
-            isCustomIconsInstalled = true
-        }
-        iconSize = context.resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
-    }
+    private lateinit var mainViewModel: MainViewModel
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view: View = inflater.inflate(R.layout.all_apps_screen, container, false)
+        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         val frame: FrameLayout = view.findViewById(R.id.frame)
         if(PREFS!!.isAllAppsBackgroundEnabled) {
             frame.background = ContextCompat.getColor(requireContext(), R.color.transparent).toDrawable()
@@ -151,18 +139,11 @@ class NewAllApps: Fragment() {
         searchBtn.setOnClickListener { searchFunction() }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         lifecycleScope.launch(defaultDispatcher) {
-            val pm = requireContext().packageManager
             val dbCall = TileData.getTileData(requireContext()).getTileDao()
-            appList = getHeaderListLatter(setUpApps(pm, requireContext()))
-            appList?.forEach {
-                if (it.type != 1) {
-                    hashCache.append(it.id, generateIcon(it, pm))
-                }
-            }
+            appList = getHeaderListLatter(mainViewModel.getAppList())
             appAdapter = AppAdapter(appList!!, dbCall)
             recyclerViewLM = LinearLayoutManager(requireContext())
             setAlphabetRecyclerView()
-            val shouldShowTip = PREFS!!.prefs.getBoolean("tip2Enabled", true)
             withContext(mainDispatcher) {
                 searchBtnBack.setOnClickListener {
                     if(isListLoaded) {
@@ -179,40 +160,18 @@ class NewAllApps: Fragment() {
                 progressBar.hideProgressBar()
                 progressBar.visibility = View.GONE
                 isListLoaded = true
-                if (shouldShowTip) {
-                    WPDialog(requireActivity()).setTopDialog(true)
-                        .setTitle(getString(R.string.tip))
-                        .setMessage(getString(R.string.tip2))
-                        .setPositiveButton(getString(android.R.string.ok), null)
-                        .show()
-                    PREFS!!.prefs.edit().putBoolean("tip2Enabled", false).apply()
-                }
             }
+            cancel("done")
+        }
+        if (PREFS!!.prefs.getBoolean("tip2Enabled", true)) {
+            WPDialog(requireActivity()).setTopDialog(true)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.tip2))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
+            PREFS!!.prefs.edit().putBoolean("tip2Enabled", false).apply()
         }
         registerBroadcast()
-    }
-    private fun generateIcon(it: App, pm: PackageManager): Icon? {
-        if(iconSize != null) {
-            var bmp = if (!isCustomIconsInstalled) recompressIcon(
-                pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize!!, iconSize!!),
-                75
-            )
-            else
-                recompressIcon(
-                    iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
-                        ?.getDrawableIconForPackage(it.appPackage, null)
-                        ?.toBitmap(iconSize!!, iconSize!!), 75
-                )
-            if (bmp == null) {
-                bmp = recompressIcon(
-                    pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize!!, iconSize!!),
-                    75
-                )
-            }
-            return bmp
-        } else {
-            return null
-        }
     }
     @SuppressLint("UnspecifiedRegisterReceiverFlag", "InlinedApi")
     private fun registerBroadcast() {
@@ -266,16 +225,10 @@ class NewAllApps: Fragment() {
         super.onDestroy()
         unregisterBroadcast()
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        hashCache.clear()
-    }
     private suspend fun setAlphabetRecyclerView() {
         adapterAlphabet = AlphabetAdapter(getAlphabetList(), requireContext())
         val lm = GridLayoutManager(requireContext(), 4)
         withContext(mainDispatcher) {
-            animateAlphabet(true)
             alphabetLayout.setOnClickListener {
                 hideAlphabet()
             }
@@ -295,22 +248,22 @@ class NewAllApps: Fragment() {
             ObjectAnimator.ofFloat(recyclerView, "alpha", 1f, 0.7f).setDuration(300).start()
         }
         isAlphabetVisible = true
+        animateAlphabet(true, 0)
         alphabetLayout.visibility = View.VISIBLE
         if(PREFS!!.isAlphabetAnimEnabled) {
             CoroutineScope(mainDispatcher).launch {
-                delay(10)
-                animateAlphabet(false)
+                animateAlphabet(false, 250)
             }
         }
     }
-    private fun animateAlphabet(closing: Boolean) {
+    private fun animateAlphabet(closing: Boolean, duration: Long) {
         for (i in 0..<recyclerViewAlphabet.childCount) {
             val view = recyclerViewAlphabet.getChildAt(i)
             if (view != null) {
                 if (closing) {
-                    ObjectAnimator.ofFloat(view, "rotationX", 0f, 90f).setDuration(250).start()
+                    ObjectAnimator.ofFloat(view, "rotationX", 0f, 90f).setDuration(duration).start()
                 } else {
-                    ObjectAnimator.ofFloat(view, "rotationX", 90f, 0f).setDuration(250).start()
+                    ObjectAnimator.ofFloat(view, "rotationX", 90f, 0f).setDuration(duration).start()
                 }
             }
         }
@@ -322,7 +275,7 @@ class NewAllApps: Fragment() {
         isAlphabetVisible = false
         if(PREFS!!.isAlphabetAnimEnabled) {
             CoroutineScope(mainDispatcher).launch {
-                animateAlphabet(true)
+                animateAlphabet(true, 250)
                 delay(250)
                 alphabetLayout.visibility = View.INVISIBLE
                 recyclerViewAlphabet.scrollToPosition(0)
@@ -422,7 +375,7 @@ class NewAllApps: Fragment() {
         recyclerView.alpha = 0.5f
         lifecycleScope.launch(defaultDispatcher) {
             if(context != null) {
-                appList = getHeaderListLatter(setUpApps(requireContext().packageManager, requireContext()))
+                appList = getHeaderListLatter(mainViewModel.getAppList())
             }
             withContext(mainDispatcher) {
                 appAdapter?.setData(appList!!, true)
@@ -496,7 +449,7 @@ class NewAllApps: Fragment() {
             }
         }
     }
-    private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
+    private fun getHeaderListLatter(newApps: ArrayList<App>): MutableList<App> {
         sortApps(newApps)
         var lastHeader: String? = ""
         val list: MutableList<App> = ArrayList()
@@ -517,21 +470,19 @@ class NewAllApps: Fragment() {
 
         private val letter: Int = 0
         private val appHolder: Int = 1
-        private var accentColor by Delegates.notNull<Int>()
 
         var popupWindow: PopupWindow? = null
         var isWindowVisible = false
 
-        init {
-            if (PREFS!!.isAllAppsBackgroundEnabled && activity != null) {
-                accentColor = launcherAccentColor(requireActivity().theme)
-            }
-        }
         @SuppressLint("NotifyDataSetChanged")
         fun setData(new: MutableList<App>, refresh: Boolean) {
-            list = new
-            if(refresh) {
-                notifyDataSetChanged()
+            if (refresh) {
+                val diffCallback = AppDiffCallback(list, new)
+                val diffResult = DiffUtil.calculateDiff(diffCallback)
+                list = new
+                diffResult.dispatchUpdatesTo(this)
+            } else {
+                list = new
             }
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -545,29 +496,23 @@ class NewAllApps: Fragment() {
             val app = list[position]
             when(holder.itemViewType) {
                 letter -> {
-                    (holder as LetterHolder).textView.text = app.appLabel
+                    bindLetterHolder((holder as LetterHolder), app.appLabel!!)
                 }
                 appHolder -> {
                     bindAppHolder((holder as AppHolder), app)
                 }
             }
         }
+        private fun bindLetterHolder(holder: LetterHolder, label: String) {
+            holder.textView.text = label
+        }
         private fun bindAppHolder(holder: AppHolder, app: App) {
-            try {
-                val bmp = hashCache.get(app.id)
-                if(bmp != null) {
-                    holder.icon.setImageIcon(bmp)
-                } else {
-                    hashCache.append(app.id, generateIcon(app, requireContext().packageManager))
-                    holder.icon.setImageIcon(hashCache.get(app.id))
-                }
-            } catch (e: Exception) {
-                Log.e("AllAppsAdapter", e.toString())
-            }
+            holder.icon.setImageDrawable(mainViewModel.getIconFromCache(app.appPackage!!))
             holder.label.text = app.appLabel
         }
         private fun showPopupWindow(view: View, app: App) {
             recyclerView.isScrollEnabled = false
+            (requireActivity() as Main).configureViewPagerScroll(false)
             val inflater = view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(R.layout.all_apps_window, recyclerView, false)
             val width = LinearLayout.LayoutParams.MATCH_PARENT
@@ -628,6 +573,7 @@ class NewAllApps: Fragment() {
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:${app.appPackage}")))
             }
             popupWindow?.setOnDismissListener {
+                (requireActivity() as Main).configureViewPagerScroll(true)
                 recyclerView.isScrollEnabled = true
                 fadeList(app, true)
                 isWindowVisible = false
@@ -759,31 +705,47 @@ class NewAllApps: Fragment() {
                 else -> appHolder
             }
         }
+        inner class AppDiffCallback(
+            private val oldList: List<App>,
+            private val newList: List<App>
+        ) : DiffUtil.Callback() {
+
+            override fun getOldListSize() = oldList.size
+
+            override fun getNewListSize() = newList.size
+
+            override fun areItemsTheSame(old: Int, new: Int): Boolean {
+                return oldList[old].appPackage == newList[new].appPackage
+            }
+
+            override fun areContentsTheSame(old: Int, new: Int): Boolean {
+                return oldList[old] == newList[new]
+            }
+        }
         inner class AppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val icon: ImageView = itemView.findViewById(R.id.app_icon)
             val label: MaterialTextView = itemView.findViewById(R.id.app_label)
             init {
+                Utils.setViewInteractAnimation(itemView)
                 itemView.setOnClickListener {
                     visualFeedback(itemView)
-                    val app = list[absoluteAdapterPosition]
                     try {
                         if(PREFS!!.isAAllAppsAnimEnabled) {
-                            startDismissAnim(app)
+                            startDismissAnim(list[absoluteAdapterPosition])
                         } else {
                             if(context != null) {
-                                runApp(app.appPackage!!, requireContext().packageManager)
+                                runApp(list[absoluteAdapterPosition].appPackage!!, requireContext().packageManager)
                             }
                         }
                     } catch (e: Exception) {
                         Toast.makeText(requireContext(), getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
                         recyclerView.stopScroll()
-                        list.remove(app)
+                        list.remove(list[absoluteAdapterPosition])
                         notifyItemRemoved(absoluteAdapterPosition)
                     }
                 }
                 itemView.setOnLongClickListener {
-                    val app = list[absoluteAdapterPosition]
-                    showPopupWindow(itemView, app)
+                    showPopupWindow(itemView, list[absoluteAdapterPosition])
                     true
                 }
             }
@@ -813,19 +775,21 @@ class NewAllApps: Fragment() {
     }
     inner class AlphabetAdapter(private var alphabetList: MutableList<AlphabetLetter>, context: Context): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val activeLetter = 10
-        private var activeDrawable: ColorDrawable? = null
-        private val disabledLetter = 10
-        private var disabledDrawable: ColorDrawable? = null
-        private val size = context.resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
-        private val params = ViewGroup.LayoutParams(size, size)
-        init {
-            activeDrawable = if(activity != null) {
+        private val disabledLetter = 11
+
+        private val activeDrawable: ColorDrawable by lazy {
+            if(activity != null) {
                 launcherAccentColor(activity!!.theme).toDrawable()
             } else {
-                requireContext().getColor(android.R.color.white).toDrawable()
+                context.getColor(android.R.color.white).toDrawable()
             }
-            disabledDrawable = ContextCompat.getColor(context, R.color.darkGray).toDrawable()
         }
+        private val disabledDrawable: ColorDrawable by lazy {
+            ContextCompat.getColor(context, R.color.darkGray).toDrawable()
+        }
+
+        private val size = context.resources.getDimensionPixelSize(R.dimen.alphabetHolderSize)
+        private val params = ViewGroup.LayoutParams(size, size)
         @SuppressLint("NotifyDataSetChanged")
         fun setNewData(new: MutableList<AlphabetLetter>) {
             alphabetList = new
@@ -843,12 +807,18 @@ class NewAllApps: Fragment() {
             val item = alphabetList[position]
             holder as AlphabetLetterHolder
             holder.textView.text = item.letter
+            setHolderView(holder, item.isActive)
+            setOnClick(holder, item)
+        }
+        private fun setHolderView(holder: AlphabetLetterHolder, isActive: Boolean) {
             holder.itemView.layoutParams = params
-            if(item.isActive) {
+            if(isActive) {
                 holder.backgroundView.background = activeDrawable
             } else {
                 holder.backgroundView.background = disabledDrawable
             }
+        }
+        private fun setOnClick(holder: AlphabetLetterHolder, item: AlphabetLetter) {
             if(item.isActive) {
                 holder.itemView.setOnClickListener {
                     hideAlphabet()
