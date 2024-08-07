@@ -176,6 +176,11 @@ class NewAllApps: Fragment() {
                                 (requireActivity() as Main).generateIcon(packageName, bool)
                                 broadcastListUpdater(context)
                             }
+                            PackageChangesReceiver.PACKAGE_REMOVED -> {
+                                //I don't think that's gonna work.
+                                mainViewModel.removeIconFromCache(packageName)
+                                broadcastListUpdater(context)
+                            }
                             else -> {
                                 broadcastListUpdater(context)
                             }

@@ -49,6 +49,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -117,6 +118,7 @@ class NewStart: Fragment(), OnStartDragListener {
                         if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
                             addItemDecoration(Utils.MarginItemDecoration(6))
                         }
+                        OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                         mItemTouchHelper.attachToRecyclerView(this)
                     }
                     frame.setOnClickListener {
@@ -499,7 +501,6 @@ class NewStart: Fragment(), OnStartDragListener {
     private suspend fun destroyTile(it: Tile) {
         it.tileType = -1
         it.tileSize = "small"
-        mainViewModel.removeIconFromCache(it.appPackage)
         it.appPackage = ""
         it.tileColor = -1
         it.appLabel = ""

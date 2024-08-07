@@ -37,11 +37,11 @@ And many more smaller features!
 
 # 📸 Screenshots:
 <div>
-  <img src='/screenshots/allapps.jpg' width='250' alt="All Apps">
   <img src='/screenshots/tiles.jpg' width='250' alt="Tiles">
+  <img src='/screenshots/allapps.jpg' width='250' alt="All Apps">
+  <img src='/screenshots/tiles_lawnicons.jpg' width='250' alt="Tiles with Lawnicons">
   <img src='/screenshots/settings.jpg' width='250' alt="Settings">
   <img src='/screenshots/settings_theme.jpg' width='250' alt="Theme settings">
-  <img src='/screenshots/tiles_lawnicons.jpg' width='250' alt="Tiles with Lawnicons">
   <img src='/screenshots/oobe.jpg' width='250' alt="OOBE">
 </div>
 

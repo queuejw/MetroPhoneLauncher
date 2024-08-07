@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -109,44 +108,26 @@ class Main : AppCompatActivity() {
         setAppTheme()
         if (isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
             //disabling animations if developer mode is enabled (to avoid problems)
-            PREFS!!.apply {
-                setAllAppsAnim(false)
-                setAlphabetAnim(false)
-                setTransitionAnim(false)
-                setLiveTilesAnim(false)
-                setTilesScreenAnim(false)
-                setTilesAnim(false)
-            }
+            disableAnims()
         }
         super.onCreate(savedInstanceState)
-        when (PREFS!!.launcherState) {
-            0 -> {
-                val intent = Intent(this, WelcomeActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                finishAffinity()
-                startActivity(intent)
-                return
-            }
+        if(PREFS!!.launcherState == 0) {
+            val intent = Intent(this, WelcomeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            finishAffinity()
+            startActivity(intent)
+            return
         }
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(R.layout.main_screen_laucnher)
         WindowCompat.setDecorFitsSystemWindows(window, true)
-        isLandscape =
-            this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        viewPager = findViewById(R.id.pager)
-        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
+        isLandscape = this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         lifecycleScope.launch(Dispatchers.Default) {
-            setMainViewModel()
             pagerAdapter = WinAdapter(this@Main)
-            if (PREFS!!.prefs.getBoolean(
-                    "updateInstalled",
-                    false
-                ) && PREFS!!.versionCode == VERSION_CODE
-            ) {
-                PREFS!!.setUpdateState(3)
-            }
+            setMainViewModel()
+            checkUpdate()
             withContext(Dispatchers.Main) {
                 setupNavigationBar()
                 setupViewPager()
@@ -156,7 +137,24 @@ class Main : AppCompatActivity() {
             Log.d("Main", "App started. Took time: ${finishTime - startTime}")
             cancel("done")
         }
+        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         applyWindowInsets(coordinatorLayout)
+        configureWallpaper()
+        registerPackageReceiver(this, packageReceiver)
+        otherTasks()
+    }
+
+    private fun checkUpdate() {
+        if (PREFS!!.prefs.getBoolean(
+                "updateInstalled",
+                false
+            ) && PREFS!!.versionCode == VERSION_CODE
+        ) {
+            PREFS!!.setUpdateState(3)
+        }
+    }
+
+    private fun configureWallpaper() {
         if (PREFS!!.isWallpaperUsed) {
             window?.setBackgroundDrawable(
                 ContextCompat.getDrawable(
@@ -166,9 +164,19 @@ class Main : AppCompatActivity() {
             )
             window?.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
         }
-        registerPackageReceiver(this, packageReceiver)
-        otherTasks()
     }
+
+    private fun disableAnims() {
+        PREFS!!.apply {
+            setAllAppsAnim(false)
+            setAlphabetAnim(false)
+            setTransitionAnim(false)
+            setLiveTilesAnim(false)
+            setTilesScreenAnim(false)
+            setTilesAnim(false)
+        }
+    }
+
     private fun setupBackPressedDispatcher() {
         onBackPressedDispatcher.addCallback(
             this@Main,
@@ -185,6 +193,7 @@ class Main : AppCompatActivity() {
             })
     }
     private fun setupViewPager() {
+        viewPager = findViewById(R.id.pager)
         viewPager.apply {
             adapter = pagerAdapter
         }
@@ -263,12 +272,12 @@ class Main : AppCompatActivity() {
                         withContext(Dispatchers.IO) {
                             val icon = diskCache?.let { dc -> loadIconFromDiskCache(dc, it.appPackage!!) }
                             if (icon == null) {
+                                generateIcon(it.appPackage!!, isCustomIconsInstalled)
                                 Log.d("Icon", "Save Icon to Disk Cache")
                                 saveIconToDiskCache(
                                     diskCache,
                                     it.appPackage!!,
-                                    // generateIcon will automatically add the icon to the cache (in mainViewModel)
-                                    generateIcon(it.appPackage!!, isCustomIconsInstalled)
+                                    mainViewModel.getIconFromCache(it.appPackage!!)
                                 )
                             } else {
                                 Log.d("Icon", "Load Icon")
@@ -284,14 +293,14 @@ class Main : AppCompatActivity() {
     fun generateIcon(
         appPackage: String,
         isCustomIconsInstalled: Boolean
-    ): Bitmap {
-        var icon = if (!isCustomIconsInstalled) this.packageManager.getApplicationIcon(appPackage).toBitmap(defaultIconSize, defaultIconSize)
-        else iconPackManager.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)?.toBitmap(defaultIconSize, defaultIconSize)
+    ) {
+        var icon = if (!isCustomIconsInstalled) this.packageManager.getApplicationIcon(appPackage)
+        else iconPackManager.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
         if(icon == null) {
-            icon = this.packageManager.getApplicationIcon(appPackage).toBitmap(defaultIconSize, defaultIconSize)
+            icon = this.packageManager.getApplicationIcon(appPackage)
         }
-        mainViewModel.addIconToCache(appPackage, icon)
-        return icon
+        Log.d("Icon", "Generate icon")
+        mainViewModel.addIconToCache(appPackage, icon.toBitmap(defaultIconSize, defaultIconSize))
     }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)

@@ -27,7 +27,7 @@
         android:layout_gravity="center"
         android:gravity="center|start"
         app:autoSizeTextType="uniform"
-        app:autoSizeMinTextSize="18sp"
+        app:autoSizeMinTextSize="16sp"
         app:autoSizeMaxTextSize="24sp"
         app:autoSizeStepGranularity="1sp"/>
 </LinearLayout>

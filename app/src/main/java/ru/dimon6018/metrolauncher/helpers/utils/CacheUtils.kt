@@ -26,13 +26,13 @@ class CacheUtils {
                 return null
             }
         }
-        fun saveIconToDiskCache(diskLruCache: DiskLruCache?, key: String, bitmap: Bitmap) {
-            if(diskLruCache != null) {
-                val editor = diskLruCache.edit(key.toMd5())
+        fun saveIconToDiskCache(diskLruCache: DiskLruCache?, key: String, bitmap: Bitmap?) {
+            if(diskLruCache != null || bitmap != null) {
+                val editor = diskLruCache!!.edit(key.toMd5())
                 if (editor != null) {
                     try {
                         val outputStream: OutputStream = editor.newOutputStream(0)
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                        bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                         editor.commit()
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -40,7 +40,7 @@ class CacheUtils {
                     }
                 }
             } else {
-                Log.d("saveIconToDiskCache", "diskLruCache is null")
+                Log.d("saveIconToDiskCache", "diskLruCache or bitmap is null")
             }
         }
         private fun String.toMd5(): String {
