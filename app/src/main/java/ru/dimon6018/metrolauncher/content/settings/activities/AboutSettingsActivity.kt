@@ -17,7 +17,7 @@ import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
-import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BUILD
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.DEVICE

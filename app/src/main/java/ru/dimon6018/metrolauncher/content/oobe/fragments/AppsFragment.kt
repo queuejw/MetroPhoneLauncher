@@ -5,7 +5,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.collection.SparseArrayCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -43,7 +42,7 @@ class AppsFragment: Fragment() {
 
     private var recyclerView: RecyclerView? = null
     private var loading: WP7ProgressBar? = null
-    private val hashCache = SparseArrayCompat<Bitmap?>()
+    private val hashCache = SparseArrayCompat<Drawable?>()
     private var main: View? = null
 
     override fun onCreateView(
@@ -77,17 +76,15 @@ class AppsFragment: Fragment() {
                 iconManager = IconPackManager(requireContext())
                 isCustomIconsInstalled = true
             }
-            val iconSize =
-                requireContext().resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
+            requireContext().resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
             val pm = requireContext().packageManager
             appList.forEach {
                 if (it.type != 1) {
                     val bmp = if (!isCustomIconsInstalled)
-                        pm.getApplicationIcon(it.appPackage!!).toBitmap(iconSize, iconSize)
+                        pm.getApplicationIcon(it.appPackage!!)
                     else
                             iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
                                 ?.getDrawableIconForPackage(it.appPackage!!, null)
-                                ?.toBitmap(iconSize, iconSize)
                     hashCache.append(it.id, bmp)
                 }
             }
@@ -204,7 +201,7 @@ class AppsFragment: Fragment() {
             val item = adapterApps[position]
             holder as OOBEAppHolder
             try {
-                holder.icon.setImageBitmap(hashCache.get(item.id))
+                holder.icon.setImageDrawable(hashCache.get(item.id))
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(
                     ContextCompat.getDrawable(

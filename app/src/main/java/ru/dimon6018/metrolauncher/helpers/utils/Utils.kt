@@ -10,16 +10,23 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
+import android.icu.text.AlphabeticIndex
+import android.icu.text.UnicodeSet
+import android.icu.util.ULocale
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +46,9 @@ import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.util.Calendar
 import java.util.Collections
 import java.util.Locale
+import java.util.regex.Pattern
 import kotlin.random.Random
+
 
 class Utils {
     companion object {
@@ -113,10 +122,10 @@ class Utils {
                 return launcherAccentColor(context.theme)
             }
             return if (selectedColor >= 0 && selectedColor < accentColors.size) {
-                context.getColor(accentColors[selectedColor])
+                ContextCompat.getColor(context, accentColors[selectedColor])
             } else {
                 // Default to cobalt if the selected color is out of bounds
-                context.getColor(R.color.tile_cobalt)
+                ContextCompat.getColor(context, R.color.tile_cobalt)
             }
         }
 
@@ -127,10 +136,10 @@ class Utils {
             // 13 - orange // 14 - amber // 15 - yellow // 16 - brown
             // 17 - olive // 18 - steel // 19 - mauve // 20 - taupe
             return if (tileColor >= 0 && tileColor < accentColors.size) {
-                context.getColor(accentColors[tileColor])
+                ContextCompat.getColor(context, accentColors[tileColor])
             } else {
                 // Default to cobalt if the selected color is out of bounds
-                context.getColor(R.color.tile_cobalt)
+                ContextCompat.getColor(context, R.color.tile_cobalt)
             }
         }
 
@@ -302,16 +311,6 @@ class Utils {
                 Log.w("Utils", "unregisterPackageReceiver error: $w")
             }
         }
-        fun getSupportedRuLang(): Boolean {
-            return when(Locale.getDefault().language) {
-                "ru" -> true
-                "ru_BY" -> true
-                "ru_KZ" -> true
-                "be" -> true
-                "be_BY" -> true
-                else -> false
-            }
-        }
         fun isScreenOn(context: Context?): Boolean {
             if (context != null) {
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
@@ -320,7 +319,7 @@ class Utils {
                 return false
             }
         }
-        fun sortApps(newApps: ArrayList<App>): ArrayList<App> {
+        fun sortApps(newApps: MutableList<App>): MutableList<App> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Collections.sort(
                     newApps,
@@ -338,28 +337,71 @@ class Utils {
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
         }
         fun setViewInteractAnimation(view: View) {
-            view.setOnTouchListener { v, event ->
-                val centerX = v.width / 2f
-                val centerY = v.height / 2f
+            view.setOnTouchListener { _, event ->
+                val centerX = view.width / 2f
+                val centerY = view.height / 2f
                 when (event.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        val touchX = event.x
-                        val touchY = event.y
-                        val rotationX = (touchY - centerY) / centerY * 5
-                        val rotationY = (centerX - touchX) / centerX * 5
-                        ObjectAnimator.ofFloat(v, "rotationX", -rotationX).setDuration(50).start()
-                        ObjectAnimator.ofFloat(v, "rotationY", -rotationY).setDuration(50).start()
+                        val rotationX = (event.y - centerY) / centerY * 5
+                        val rotationY = (centerX - event.x) / centerX * 5
+                        ObjectAnimator.ofFloat(view, "rotationX", -rotationX).setDuration(200).start()
+                        ObjectAnimator.ofFloat(view, "rotationY", -rotationY).setDuration(200).start()
                     }
                     MotionEvent.ACTION_UP -> {
-                        view.performClick()
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            if (event.x >= 0 && event.x <= view.width && event.y >= 0 && event.y <= view.height) {
+                                view.performClick()
+                            }
+                        }, 200)
+                        ObjectAnimator.ofFloat(view, "rotationX", 0f).setDuration(200).start()
+                        ObjectAnimator.ofFloat(view, "rotationY", 0f).setDuration(200).start()
                     }
                     MotionEvent.ACTION_CANCEL -> {
-                        ObjectAnimator.ofFloat(v, "rotationX", 0f).setDuration(50).start()
-                        ObjectAnimator.ofFloat(v, "rotationY", 0f).setDuration(50).start()
+                        ObjectAnimator.ofFloat(view, "rotationX", 0f).setDuration(200).start()
+                        ObjectAnimator.ofFloat(view, "rotationY", 0f).setDuration(200).start()
                     }
                 }
-                true
+                false
             }
+        }
+        fun getUserLanguageRegexCompat(locale: Locale): Regex {
+            return when (locale.language) {
+                "ru" -> Regex("[а-яА-ЯёЁ]")
+                "en" -> Regex("[a-zA-Z]")
+                else -> Regex("[a-zA-Z]")
+            }
+        }
+        @RequiresApi(Build.VERSION_CODES.N)
+        fun getUserLanguageRegex(locale: Locale): Pattern {
+            val uLocale = ULocale.forLocale(locale)
+            val lowercaseLetters = UnicodeSet().addAll(getAlphabet(uLocale.language))
+            val uppercaseLetters = UnicodeSet(lowercaseLetters).apply {
+                for (char in this) {
+                    this.add(char.uppercase(Locale.ROOT))
+                }
+            }
+            lowercaseLetters.addAll(uppercaseLetters)
+            val regexPattern = "[${lowercaseLetters.toPattern(false)}]"
+            return Pattern.compile(regexPattern)
+        }
+        fun getAlphabetCompat(languageCode: String): List<String>? {
+            val alphabets = mapOf(
+                "en" to ('A'..'Z').map { it.toString() },
+                "ru" to ('А'..'Я').map { it.toString() },
+            )
+            val alphabet = alphabets[languageCode] ?: alphabets["en"]
+            return alphabet
+        }
+        @RequiresApi(Build.VERSION_CODES.N)
+        fun getAlphabet(languageCode: String): List<String> {
+            val index = AlphabeticIndex<String>(ULocale(languageCode))
+            val alphabet: MutableList<String> = ArrayList()
+            for (bucket in index) {
+                if (bucket.label.isNotEmpty()) {
+                    alphabet.add(bucket.label.lowercase(Locale.ROOT))
+                }
+            }
+            return alphabet
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {

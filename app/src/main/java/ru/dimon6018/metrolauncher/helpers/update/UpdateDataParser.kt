@@ -5,7 +5,6 @@ import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import java.io.IOException
 import java.io.InputStream
 
@@ -42,7 +41,6 @@ class UpdateDataParser {
     }
 
     private fun readName(parser: XmlPullParser) {
-        val isRu = Utils.getSupportedRuLang()
         try {
             parser.require(XmlPullParser.START_TAG, ns, "string")
             val valueKey = parser.getAttributeValue(null, "name")
@@ -52,16 +50,12 @@ class UpdateDataParser {
                 verName = name
             }
             if(valueKey == "message") {
-                if(!isRu) {
-                    updateMsg = name
-                    PREFS!!.setUpdateMessage(name)
-                }
+                updateMsg = name
+                PREFS!!.setUpdateMessage(name)
             }
             if(valueKey == "message_ru") {
-                if(isRu) {
-                    updateMsg = name
-                    PREFS!!.setUpdateMessage(name)
-                }
+                updateMsg = name
+                PREFS!!.setUpdateMessage(name)
             }
             if(valueKey == "tag") {
                 tag = name

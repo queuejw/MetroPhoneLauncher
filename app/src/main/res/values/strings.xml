@@ -30,7 +30,7 @@
     <string name="start_theme">start+theme</string>
     <string name="start_theme_sub">customize your phone</string>
     <string name="feedback">feedback</string>
-    <string name="feedback_sub">help me improve MetroPhoneLaucnher</string>
+    <string name="feedback_sub">help me improve MetroPhoneLauncher</string>
     <string name="launcher_update">launcher update</string>
     <string name="launcher_update_sub">get software updates</string>
     <string name="navigation_bar">navigation bar</string>
@@ -182,7 +182,7 @@
     <string name="tiles">tiles</string>
     <string name="customize_tiles">customize tiles</string>
     <string name="tile_transparency">Tile transparency</string>
-    <string name="wallpaperTransparentTiles">Enable transparent tiles with opaque background</string>
+    <string name="wallpaperTransparentTiles">Enable the parallax effect on your start screen</string>
     <string name="permissionsError">Some MPL functions require permissions to operate</string>
     <string name="setAsDefaultLauncher">Want to install MPL as your default launcher?</string>
     <string name="tip2">To pin the app, hold it down</string>

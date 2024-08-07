@@ -74,4 +74,9 @@
         <item name="strokeWidth">0dp</item>
         <item name="cardBackgroundColor">?android:attr/colorBackground</item>
     </style>
+    <style name="Metro.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="track">@drawable/switch_track</item>
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="android:showText">true</item>
+    </style>
 </resources>

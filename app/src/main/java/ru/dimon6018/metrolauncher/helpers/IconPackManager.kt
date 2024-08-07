@@ -14,6 +14,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.collection.SparseArrayCompat
 import androidx.core.content.res.ResourcesCompat
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -31,7 +32,7 @@ class IconPackManager(context: Context) {
         var name: String? = null
         private var mLoaded = false
         private val mPackagesDrawables = HashMap<String?, String?>()
-        private val mBackImages: MutableList<Bitmap> = ArrayList()
+        private val mBackImages: SparseArrayCompat<Bitmap> = SparseArrayCompat()
         private var mMaskImage: Bitmap? = null
         private var mFrontImage: Bitmap? = null
         private var mFactor = 1.0f
@@ -69,7 +70,7 @@ class IconPackManager(context: Context) {
                                         if (xpp.getAttributeName(i).startsWith("img")) {
                                             val drawableName = xpp.getAttributeValue(i)
                                             val iconback = loadBitmap(drawableName)
-                                            if (iconback != null) mBackImages.add(iconback)
+                                            if (iconback != null) mBackImages.append(iconback.hashCode(),iconback)
                                         }
                                     }
                                 }
@@ -189,11 +190,11 @@ class IconPackManager(context: Context) {
 
         private fun generateBitmap(defaultBitmap: Bitmap): Bitmap {
             // if no support images in the icon pack return the bitmap itself
-            if (mBackImages.size == 0) return defaultBitmap
+            if (mBackImages.size() == 0) return defaultBitmap
             val r = Random()
-            val backImageInd = r.nextInt(mBackImages.size)
-            val backImage = mBackImages[backImageInd]
-            val w = backImage.getWidth()
+            val backImageInd = r.nextInt(mBackImages.size())
+            val backImage = mBackImages.get(backImageInd)
+            val w = backImage!!.getWidth()
             val h = backImage.getHeight()
 
             // create a bitmap for the result

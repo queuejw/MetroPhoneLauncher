@@ -12,6 +12,7 @@
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="materialButtonStyle">@style/Metro.Button</item>
+        <item name="materialSwitchStyle">@style/Metro.Switch</item>
         <item name="android:windowSplashScreenBackground">@android:color/white</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
     </style>
@@ -41,7 +42,6 @@
         <item name="colorPrimaryContainer">#5af8fb</item>
         <item name="colorOnPrimary">#ffffff</item>
         <item name="colorSecondary">#4a6363</item>
-        <item name="android:windowLightStatusBar">true</item>
         <item name="colorSurface">#fafdfc</item>
     </style>
     <style name="AppTheme.Teal" parent="AppTheme.Base">

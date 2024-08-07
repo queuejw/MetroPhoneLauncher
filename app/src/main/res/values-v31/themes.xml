@@ -23,5 +23,6 @@
         <item name="materialButtonStyle">@style/Metro.Button</item>
         <item name="android:windowSplashScreenBackground">@android:color/white</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_screen</item>
+        <item name="materialSwitchStyle">@style/Metro.Switch</item>
     </style>
 </resources>

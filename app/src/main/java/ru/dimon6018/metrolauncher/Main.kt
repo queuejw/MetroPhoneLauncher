@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -51,8 +53,12 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
-import ru.dimon6018.metrolauncher.helpers.WPDialog
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
+import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.closeDiskCache
+import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.initDiskCache
+import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.loadIconFromDiskCache
+import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.saveIconToDiskCache
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -66,19 +72,25 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 import java.util.Locale
+import kotlin.properties.Delegates
 import kotlin.system.exitProcess
-
 
 class Main : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var mainViewModel: MainViewModel
+    private val iconPackManager: IconPackManager by lazy {
+        IconPackManager(this)
+    }
     private val packageReceiver: PackageChangesReceiver by lazy {
         PackageChangesReceiver()
     }
     private val searchBarClass: BottomSearchBar by lazy {
         BottomSearchBar(this)
+    }
+    private val defaultIconSize: Int by lazy {
+        resources.getDimensionPixelSize(R.dimen.tile_default_size)
     }
     // bottom bar
     private var bottomViewStartBtn: ImageView? = null
@@ -87,18 +99,23 @@ class Main : AppCompatActivity() {
     private var bottomViewReady = false
     private var searching = false
 
+    private var startTime by Delegates.notNull<Long>()
+    private var finishTime by Delegates.notNull<Long>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d("Main","Starting")
+        startTime = System.currentTimeMillis()
         setTheme(launcherAccentTheme())
         setAppTheme()
         if (isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
             //disabling animations if developer mode is enabled (to avoid problems)
             PREFS!!.apply {
                 setAllAppsAnim(false)
-                setAllAppsAnim(false)
                 setAlphabetAnim(false)
                 setTransitionAnim(false)
                 setLiveTilesAnim(false)
                 setTilesScreenAnim(false)
+                setTilesAnim(false)
             }
         }
         super.onCreate(savedInstanceState)
@@ -121,7 +138,7 @@ class Main : AppCompatActivity() {
         viewPager = findViewById(R.id.pager)
         val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
         lifecycleScope.launch(Dispatchers.Default) {
-            generateIcons()
+            setMainViewModel()
             pagerAdapter = WinAdapter(this@Main)
             if (PREFS!!.prefs.getBoolean(
                     "updateInstalled",
@@ -135,6 +152,8 @@ class Main : AppCompatActivity() {
                 setupViewPager()
                 setupBackPressedDispatcher()
             }
+            finishTime = System.currentTimeMillis()
+            Log.d("Main", "App started. Took time: ${finishTime - startTime}")
             cancel("done")
         }
         applyWindowInsets(coordinatorLayout)
@@ -224,38 +243,58 @@ class Main : AppCompatActivity() {
     fun configureViewPagerScroll(boolean: Boolean) {
         viewPager.isUserInputEnabled = boolean
     }
-    private fun generateIcons() {
-        var iconManager: IconPackManager? = null
+    private suspend fun setMainViewModel() {
         var isCustomIconsInstalled = false
         if (PREFS!!.iconPackPackage != "null") {
-            iconManager = IconPackManager(this)
             isCustomIconsInstalled = true
         }
-        mainViewModel.setAppList(setUpApps(this.packageManager, this))
+        mainViewModel.setAppList(sortApps(setUpApps(this.packageManager, this)))
+        var diskCache = initDiskCache(this)
+        if(PREFS!!.iconPackChanged) {
+            PREFS!!.iconPackChanged = false
+            diskCache?.delete()
+            diskCache?.close()
+            diskCache = initDiskCache(this)
+        }
         mainViewModel.getAppList().map {
             if(it.type != 1) {
                 when(it.appPackage) {
                     this.packageName -> {
-                        mainViewModel.addIconToCache(this.packageName, ContextCompat.getDrawable(this, R.drawable.ic_settings))
+                        mainViewModel.addIconToCache(this.packageName, ContextCompat.getDrawable(this, R.drawable.ic_settings)?.toBitmap(defaultIconSize, defaultIconSize))
                     }
                     else -> {
-                        generateIcon(it.appPackage!!, iconManager, isCustomIconsInstalled)
+                        withContext(Dispatchers.IO) {
+                            val icon = diskCache?.let { dc -> loadIconFromDiskCache(dc, it.appPackage!!) }
+                            if (icon == null) {
+                                Log.d("Icon", "Save Icon to Disk Cache")
+                                saveIconToDiskCache(
+                                    diskCache,
+                                    it.appPackage!!,
+                                    // generateIcon will automatically add the icon to the cache (in mainViewModel)
+                                    generateIcon(it.appPackage!!, isCustomIconsInstalled)
+                                )
+                            } else {
+                                Log.d("Icon", "Load Icon")
+                                mainViewModel.addIconToCache(it.appPackage!!, icon)
+                            }
+                        }
                     }
                 }
             }
         }
+        diskCache?.let { closeDiskCache(it) }
     }
-    private fun generateIcon(
+    fun generateIcon(
         appPackage: String,
-        iconManager: IconPackManager?,
         isCustomIconsInstalled: Boolean
-    ) {
-        var icon = if (!isCustomIconsInstalled) this.packageManager.getApplicationIcon(appPackage)
-        else iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)
+    ): Bitmap {
+        var icon = if (!isCustomIconsInstalled) this.packageManager.getApplicationIcon(appPackage).toBitmap(defaultIconSize, defaultIconSize)
+        else iconPackManager.getIconPackWithName(PREFS!!.iconPackPackage)?.getDrawableIconForPackage(appPackage, null)?.toBitmap(defaultIconSize, defaultIconSize)
         if(icon == null) {
-            icon = this.packageManager.getApplicationIcon(appPackage)
+            icon = this.packageManager.getApplicationIcon(appPackage).toBitmap(defaultIconSize, defaultIconSize)
         }
         mainViewModel.addIconToCache(appPackage, icon)
+        return icon
     }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -357,7 +396,7 @@ class Main : AppCompatActivity() {
 
         private var searchBarResultsLayout: MaterialCardView? = null
         private var searchAdapter: SearchAdapter? = null
-        private var filteredList: ArrayList<App>? = null
+        private var filteredList: MutableList<App>? = null
 
         init {
             bottomViewSearchBarView = findViewById(R.id.navigation_searchBar)
@@ -365,7 +404,7 @@ class Main : AppCompatActivity() {
             val searchRecyclerView: RecyclerView = findViewById(R.id.searchBarRecyclerView)
             searchBarResultsLayout = findViewById(R.id.searchBarResults)
             bottomViewSearchBar = findViewById(R.id.searchBar)
-            searchAdapter = SearchAdapter(context, null)
+            searchAdapter = SearchAdapter(null)
             searchRecyclerView.apply {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = searchAdapter
@@ -464,7 +503,7 @@ class Main : AppCompatActivity() {
 
         }
     }
-    inner class SearchAdapter(private val context: Context, private var dataList: ArrayList<App>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class SearchAdapter(private var dataList: MutableList<App>?): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             return AppSearchHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
         }
@@ -475,21 +514,12 @@ class Main : AppCompatActivity() {
             if (dataList != null) {
                 holder as AppSearchHolder
                 val app = dataList!![position]
-                try {
-                    val bmp = mainViewModel.getIconFromCache(app.appPackage!!)
-                    if (bmp != null) {
-                        holder.icon.setImageDrawable(bmp)
-                    } else {
-                        holder.icon.setImageDrawable(context.packageManager.getApplicationIcon(app.appPackage!!))
-                    }
-                } catch (e: Exception) {
-                    Log.e("Main", e.toString())
-                }
+                holder.icon.setImageBitmap(mainViewModel.getIconFromCache(app.appPackage!!))
                 holder.label.text = app.appLabel
             }
         }
         @SuppressLint("NotifyDataSetChanged")
-        fun setData(new: ArrayList<App>) {
+        fun setData(new: MutableList<App>) {
             dataList = new
             notifyDataSetChanged()
     }

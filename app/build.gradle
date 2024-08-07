@@ -12,7 +12,7 @@ android {
     }
     defaultConfig {
         applicationId "ru.dimon6018.metrolauncher"
-        minSdk 23
+        minSdk 21
         targetSdk 35
         versionCode 47
         versionName "1.0 Pre-Alpha 5.1"

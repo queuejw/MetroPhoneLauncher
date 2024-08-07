@@ -20,7 +20,7 @@ import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
-import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
@@ -83,6 +83,7 @@ class IconSettingsActivity: AppCompatActivity() {
         removePack.setOnClickListener {
             PREFS!!.setIconPack("null")
             PREFS!!.isPrefsChanged = true
+            PREFS!!.iconPackChanged = true
             setUi()
         }
         downloadBtn.setOnClickListener {
@@ -102,6 +103,7 @@ class IconSettingsActivity: AppCompatActivity() {
         iconPackArrayList = iconPackManager!!.getAvailableIconPacks(true)
         isIconPackListEmpty = iconPackArrayList.isEmpty()
         setUi()
+        appList.clear()
         if(iconPackArrayList.isNotEmpty()) {
             for (i in iconPackArrayList) {
                 val app = IconPackItem()
@@ -212,6 +214,7 @@ class IconSettingsActivity: AppCompatActivity() {
             holder.icon.setImageBitmap(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize))
             holder.itemView.setOnClickListener {
                 PREFS!!.setIconPack(item.appPackage)
+                PREFS!!.iconPackChanged = true
                 PREFS!!.isPrefsChanged = true
                 mRecyclerView.visibility = View.GONE
                 isListVisible = false

@@ -21,8 +21,10 @@ class TileSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_tiles)
         alphaSlider = findViewById(R.id.alphaSlider)
+        alphaSlider.value = PREFS!!.getTilesTransparency
         alphaSlider.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
             PREFS!!.setTileTransparency(value)
+            PREFS!!.isPrefsChanged = true
         })
         main = findViewById(R.id.coordinator)
         applyWindowInsets(main)
@@ -31,7 +33,6 @@ class TileSettingsActivity: AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         enterAnimation(false)
-        alphaSlider.value = PREFS!!.getTilesTransparency
     }
     private fun enterAnimation(exit: Boolean) {
         if(!PREFS!!.isTransitionAnimEnabled) {

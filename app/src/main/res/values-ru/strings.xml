@@ -15,8 +15,8 @@
     <string name="bsodDialogTitle">С вашим лаунчером возникла проблема</string>
     <string name="bsodDialogDismiss">Не отправлять</string>
     <string name="bsodDialogSend">Отправить</string>
-    <string name="on">Вкл</string>
-    <string name="off">Выкл</string>
+    <string name="on">Вкл.</string>
+    <string name="off">Выкл.</string>
     <string name="light">светлый</string>
     <string name="dark">тёмный</string>
     <string name="automatic_repair">Автоматическое восстановление</string>
@@ -183,7 +183,7 @@
     <string name="tiles">плитки</string>
     <string name="customize_tiles">настройте плитки</string>
     <string name="tile_transparency">Прозрачность плиток</string>
-    <string name="wallpaperTransparentTiles">Включить прозрачные плитки с непрозрачным фоном</string>
+    <string name="wallpaperTransparentTiles">Включить эффект параллакса на рабочем столе</string>
     <string name="permissionsError">Для работы некоторых функций приложения требуется выдать разрешения</string>
     <string name="setAsDefaultLauncher">Желаете установить MPL в качестве основного лаунчера?</string>
     <string name="tip2">Чтобы закрепить приложение, удерживайте его.</string>

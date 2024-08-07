@@ -56,16 +56,16 @@ import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
 import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
-import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
-import ru.dimon6018.metrolauncher.helpers.MetroRecyclerView
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
+import ru.dimon6018.metrolauncher.helpers.ui.MetroRecyclerView
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
@@ -81,7 +81,6 @@ class NewStart: Fragment(), OnStartDragListener {
     private lateinit var mRecyclerView: MetroRecyclerView
     private lateinit var frame: FrameLayout
     private lateinit var mItemTouchHelper: ItemTouchHelper
-    private lateinit var dao: TileDao
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -106,8 +105,7 @@ class NewStart: Fragment(), OnStartDragListener {
         frame = v.findViewById(R.id.startFrame)
         if(context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-                dao = TileData.getTileData(requireContext()).getTileDao()
-                tiles = dao.getTilesList()
+                tiles = mainViewModel.getTileDao().getTilesList()
                 setupRecyclerViewLayoutManager(requireContext())
                 mAdapter = NewStartAdapter(requireContext(), tiles!!)
                 val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
@@ -202,9 +200,8 @@ class NewStart: Fragment(), OnStartDragListener {
         if(!startScreenReady) {
             return
         }
-        animate()
-        if(!dao.getTilesLiveData().hasObservers()) {
-            dao.getTilesLiveData().observe(viewLifecycleOwner) {
+        if(!mainViewModel.getTileDao().getTilesLiveData().hasObservers()) {
+            mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
                 if (mAdapter != null) {
                     if (!mAdapter!!.isEditMode && mAdapter!!.list != it) {
                         Log.d("observer", "update list")
@@ -218,35 +215,33 @@ class NewStart: Fragment(), OnStartDragListener {
         if(mAdapter == null || !startScreenReady) {
             return
         }
-        if (PREFS!!.isTilesAnimEnabled && isAppOpened) {
+        if (isAppOpened) {
+            runAnim()
+        } else if(!screenIsOn) {
+            runAnim()
+        }
+    }
+    private fun runAnim() {
+        if(PREFS!!.isTilesAnimEnabled) {
             if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                 mAdapter!!.isTopRight = true
             }
             setEnterAnim()
-        } else if(!PREFS!!.isTilesAnimEnabled && isAppOpened) {
+        } else {
             hideTiles(true)
-        } else if(!screenIsOn) {
-            if(PREFS!!.isTilesAnimEnabled) {
-                if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
-                    mAdapter!!.isTopRight = true
-                }
-                setEnterAnim()
-            } else {
-                hideTiles(true)
-            }
         }
     }
     override fun onResume() {
+        animate()
+        if(!screenIsOn) {
+            if(mRecyclerView.visibility == View.INVISIBLE) {
+                mRecyclerView.visibility = View.VISIBLE
+            }
+        }
         if(isAppOpened) {
             isAppOpened = false
         }
         isStartMenuOpened = true
-        if(!screenIsOn) {
-            if(mRecyclerView.visibility == View.INVISIBLE) {
-                hideTiles(true)
-                mRecyclerView.visibility = View.VISIBLE
-            }
-        }
         super.onResume()
         screenIsOn = isScreenOn(context)
         mAdapter?.apply {
@@ -257,13 +252,26 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         observe()
     }
+    override fun onPause() {
+        super.onPause()
+        screenIsOn = isScreenOn(context)
+        if(!screenIsOn) {
+            if(mRecyclerView.visibility == View.VISIBLE) {
+                hideTiles(false)
+                mRecyclerView.visibility = View.INVISIBLE
+            }
+        }
+        if(mAdapter?.isEditMode == true) {
+            mAdapter?.disableEditMode()
+        }
+        isStartMenuOpened = false
+    }
     private fun setEnterAnim() {
         if (mAdapter == null) {
-            Log.d("resumeStart", "something is null")
             return
         }
         for(i in 0..<mRecyclerView.childCount) {
-            val itemView = mRecyclerView.getChildAt(i) ?: continue
+            val itemView = mRecyclerView.findViewHolderForAdapterPosition(i)?.itemView ?: continue
             val animatorSet = AnimatorSet()
             if (mAdapter!!.isTopLeft) {
                 animatorSet.playTogether(
@@ -348,7 +356,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 return@launch
             }
             for (i in 0..<mRecyclerView.childCount) {
-                val itemView = mRecyclerView.getChildAt(i) ?: continue
+                val itemView = mRecyclerView.findViewHolderForAdapterPosition(i)?.itemView ?: continue
                 if (showTiles) {
                     ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f).start()
                 } else {
@@ -357,20 +365,6 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             cancel()
         }
-    }
-    override fun onPause() {
-        super.onPause()
-        screenIsOn = isScreenOn(context)
-        if(!screenIsOn) {
-            if(mRecyclerView.visibility == View.VISIBLE) {
-                hideTiles(false)
-                mRecyclerView.visibility = View.INVISIBLE
-            }
-        }
-        if(mAdapter?.isEditMode == true) {
-            mAdapter?.disableEditMode()
-        }
-        isStartMenuOpened = false
     }
     override fun onStop() {
         super.onStop()
@@ -400,9 +394,15 @@ class NewStart: Fragment(), OnStartDragListener {
                     when (action) {
                         PackageChangesReceiver.PACKAGE_INSTALLED -> {
                             Log.d("Start", "pkg installed")
+                            val bool = PREFS!!.iconPackPackage != "null"
+                            (requireActivity() as Main).generateIcon(packageName, bool)
+                            mainViewModel.addAppToList(
+                                App(
+                                appLabel = context.packageManager.getApplicationInfo(packageName, 0).name,
+                                appPackage = packageName,
+                                id = Random.nextInt()
+                            ))
                             if (PREFS!!.pinNewApps) {
-                                Log.d("Start", "auto pin enabled. i should pin it.")
-                                Log.d("Start", "pin app")
                                 pinApp(packageName)
                             }
                         }
@@ -440,7 +440,7 @@ class NewStart: Fragment(), OnStartDragListener {
         packageName.apply {
             Log.d("Start", "update list by broadcaster")
             CoroutineScope(ioDispatcher).launch {
-                var newList = dao.getTilesList()
+                var newList = mainViewModel.getTileDao().getTilesList()
                 if(isDelete) {
                     newList.forEach {
                         if(it.appPackage == packageName) {
@@ -448,7 +448,7 @@ class NewStart: Fragment(), OnStartDragListener {
                             destroyTile(it)
                         }
                     }
-                    newList = dao.getTilesList()
+                    newList = mainViewModel.getTileDao().getTilesList()
                 }
                 withContext(mainDispatcher) {
                     mAdapter?.setData(newList)
@@ -458,7 +458,7 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun pinApp(packageName: String) {
         lifecycleScope.launch(ioDispatcher) {
-            var dataList = dao.getTilesList()
+            var dataList = mainViewModel.getTileDao().getTilesList()
             var pos = 0
             for (i in 0..<dataList.size) {
                 if (dataList[i].tileType == -1) {
@@ -474,8 +474,8 @@ class NewStart: Fragment(), OnStartDragListener {
                 appLabel = activity?.packageManager?.getApplicationInfo(packageName, 0)?.loadLabel(requireActivity().packageManager!!).toString(),
                 appPackage = packageName
             )
-            dao.addTile(item)
-            dataList = dao.getTilesList()
+            mainViewModel.getTileDao().addTile(item)
+            dataList = mainViewModel.getTileDao().getTilesList()
             withContext(mainDispatcher) {
                 mAdapter?.setData(dataList)
             }
@@ -504,7 +504,7 @@ class NewStart: Fragment(), OnStartDragListener {
         it.tileColor = -1
         it.appLabel = ""
         it.id = it.id!! / 2
-        dao.updateTile(it)
+        mainViewModel.getTileDao().updateTile(it)
     }
     inner class NewStartAdapter(val context: Context, var list: MutableList<Tile>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
@@ -704,7 +704,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun setTileIcon(imageView: ImageView, item: Tile) {
             try {
-                imageView.setImageDrawable(mainViewModel.getIconFromCache(item.appPackage))
+                imageView.setImageBitmap(mainViewModel.getIconFromCache(item.appPackage))
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 lifecycleScope.launch(ioDispatcher) {
@@ -855,9 +855,9 @@ class NewStart: Fragment(), OnStartDragListener {
                 for (i in 0 until list.size) {
                     val item = list[i]
                     item.appPos = i
-                    dao.updateTile(item)
+                    mainViewModel.getTileDao().updateTile(item)
                 }
-                val updatedList = dao.getTilesList()
+                val updatedList = mainViewModel.getTileDao().getTilesList()
                 withContext(mainDispatcher) {
                     if (isEditMode) {
                         refreshData(updatedList)
@@ -908,23 +908,21 @@ class NewStart: Fragment(), OnStartDragListener {
                     when (item.tileSize) {
                         "small" -> {
                             item.tileSize = "medium"
-                            dao.updateTile(item)
                             holder.mTextView.post {
                                 holder.mTextView.text = item.appLabel
                             }
                         }
                         "medium" -> {
                             item.tileSize = "big"
-                            dao.updateTile(item)
                             holder.mTextView.post {
                                 holder.mTextView.text = item.appLabel
                             }
                         }
                         "big" -> {
                             item.tileSize = "small"
-                            dao.updateTile(item)
                         }
                     }
+                    mainViewModel.getTileDao().updateTile(item)
                     withContext(mainDispatcher) {
                         popupWindow.dismiss()
                         notifyItemChanged(position)
@@ -948,9 +946,9 @@ class NewStart: Fragment(), OnStartDragListener {
 
         private fun clearItems() {
             lifecycleScope.launch(ioDispatcher) {
-                for (itemList in list) {
-                    itemList.isSelected = false
-                    dao.updateTile(itemList)
+                list.forEach {
+                    it.isSelected = false
+                    mainViewModel.getTileDao().updateTile(it)
                 }
             }
         }
@@ -961,6 +959,10 @@ class NewStart: Fragment(), OnStartDragListener {
             bottomsheet.dismissWithAnimation = true
             val bottomSheetInternal = bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = context.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
+            configureBottomSheet(bottomSheetInternal, bottomsheet, item, position)
+            bottomsheet.show()
+        }
+        private fun configureBottomSheet(bottomSheetInternal: View, bottomsheet: BottomSheetDialog, item: Tile, position: Int) {
             val label = bottomSheetInternal.findViewById<MaterialTextView>(R.id.appLabelSheet)
             val colorSub = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorSub)
             val removeColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorRemove)
@@ -996,7 +998,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     } else {
                         item.appLabel = editor.text.toString()
                     }
-                    dao.updateTile(item)
+                    mainViewModel.getTileDao().updateTile(item)
                     withContext(mainDispatcher) {
                         bottomsheet.dismiss()
                         notifyItemRemoved(position)
@@ -1006,7 +1008,7 @@ class NewStart: Fragment(), OnStartDragListener {
             removeColor.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = -1
-                    dao.updateTile(item)
+                    mainViewModel.getTileDao().updateTile(item)
                     withContext(mainDispatcher) {
                         notifyItemRemoved(position)
                     }
@@ -1015,7 +1017,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             changeColor.setOnClickListener {
                 val dialog = AccentDialog()
-                dialog.configure(item, this, dao)
+                dialog.configure(item, this, mainViewModel.getTileDao())
                 dialog.show(childFragmentManager, "accentDialog")
                 bottomsheet.dismiss()
             }
@@ -1027,7 +1029,6 @@ class NewStart: Fragment(), OnStartDragListener {
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + item.appPackage)))
                 bottomsheet.dismiss()
             }
-            bottomsheet.show()
         }
         private fun startApp(packageName: String) {
             isAppOpened = true
@@ -1095,7 +1096,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     itemView.rotation = 0f
                     lifecycleScope.launch(ioDispatcher) {
                         item.isSelected = true
-                        dao.updateTile(item)
+                        mainViewModel.getTileDao().updateTile(item)
                         withContext(mainDispatcher) {
                             showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
                             notifyItemChanged(absoluteAdapterPosition)

@@ -120,21 +120,23 @@
                     android:textSize="20sp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"/>
+
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/dynamicColor_switch"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
+                    android:text="@string/dynamicColor_switch"
+                    android:textSize="18sp" />
+
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/dynamicColorSwtich"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:checked="false"
                     android:textSize="24sp" />
-
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/wallpaper_setting"
                     android:layout_width="match_parent"
@@ -157,7 +159,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -173,7 +175,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -198,7 +200,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -223,7 +225,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -248,7 +250,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="4dp"
+                    android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/moreTilesImage"

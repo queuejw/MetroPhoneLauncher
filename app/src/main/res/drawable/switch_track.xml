@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true">
+        <inset
+            android:insetBottom="6dp"
+            android:insetTop="6dp"
+            android:insetLeft="8dp"
+            android:insetRight="8dp">
+            <layer-list>
+                <item>
+                    <shape android:shape="rectangle">
+                        <solid android:color="?attr/colorPrimary" />
+                        <corners android:radius="0dp"/>
+                        <stroke
+                            android:width="3dp"
+                            android:color="?attr/colorOnBackground" />
+                        <size
+                            android:height="32dp"
+                            android:width="88dp" />
+                    </shape>
+                </item>
+                <item
+                    android:left="3dp"
+                    android:right="3dp"
+                    android:top="3dp"
+                    android:bottom="3dp">
+                    <shape android:shape="rectangle">
+                        <solid android:color="?attr/colorPrimary" />
+                        <corners android:radius="0dp"/>
+                        <stroke
+                            android:width="3dp"
+                            android:color="?android:attr/colorBackground"/>
+                    </shape>
+                </item>
+            </layer-list>
+        </inset>
+    </item>
+    <item android:state_checked="false">
+        <inset
+            android:insetBottom="6dp"
+            android:insetTop="6dp"
+            android:insetLeft="8dp"
+            android:insetRight="8dp">
+        <shape android:shape="rectangle">
+            <solid android:color="?android:attr/colorBackground" />
+            <corners android:radius="0dp"/>
+            <stroke android:width="3dp"
+                android:color="?attr/colorOnBackground"/>
+            <size android:height="32dp"
+                android:width="88dp"/>
+        </shape>
+        </inset>
+    </item>
+</selector>

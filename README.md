@@ -1,50 +1,63 @@
-<img src='/screenshots/start.jpg' width='1000'>
+<img src='/screenshots/mpl.jpg' width='1000' alt="MetroPhoneLauncher with Lawnicons">
 
-# MetroPhoneLauncher (MPL)
+# MetroPhoneLauncher 📱
 
-MPL (MetroPhoneLauncher, MPLaucnher) is an Android launcher that looks like Windows Phone 8.
+MetroPhoneLauncher (MPL, MPLauncher) is an Android launcher designed to resemble Windows Phone 8. 🌟
 
-*Don't be lazy and send all possible ideas/errors to my email or to our Telegram group*
 
-MPL is still in development, but it already has a lot of useful features that you might like. Here's what's already available:
+MPL is still in development, but it already includes a range of features you might enjoy. Here’s what’s available so far:
 
-- A design as similar as possible to the original Windows Phone.
-- Animations that are as similar to Windows Phone animations as possible.
-- 20 different colors so you can make your device the most unique and unusual.
-- Light and dark theme to save your battery and eyes at night =)
-- Unique desktop - customize it the way you want. Make tiles bigger, wider, smaller, move and do whatever you want.
-- Lots of customizations to make the launcher perfect
-- Ability to receive "Over-The-Air" updates
-- Support icon packs to make icons prettier 
-- Monet (Dynamic Colors) support
+    🎨 A design closely mimicking the original Windows Phone.
+    
+    🌀 Animations that are as similar as possible to Windows Phone animations.
+    
+    🌈 20 different colors to make your device unique and stylish.
+    
+    🌙 Light and dark themes to save battery life and protect your eyes at night.
 
-And a lot of other, smaller things!
+    🔋 High performance will save your device's battery and resources
+    
+    🏠 A unique home screen — customize it to your liking. Resize tiles, move them, and more.
+    
+    ⚙️ Extensive customization options to perfect your launcher experience.
+    
+    🔄 Over-The-Air updates.
+    
+    🎨 Icon pack support to enhance your icons' appearance.
+    
+    🎨 Monet (Dynamic Colors) support.
 
-**It will be very soon:**
-- [ ] Live tiles.
+And many more smaller features!
+
+## Coming Soon:
+
+    🌠 Live tiles.
+    
+    Maybe something else =)
 
 # 📸 Screenshots:
+<div>
+  <img src='/screenshots/allapps.jpg' width='250' alt="All Apps">
+  <img src='/screenshots/tiles.jpg' width='250' alt="Tiles">
+  <img src='/screenshots/settings.jpg' width='250' alt="Settings">
+  <img src='/screenshots/settings_theme.jpg' width='250' alt="Theme settings">
+  <img src='/screenshots/tiles_lawnicons.jpg' width='250' alt="Tiles with Lawnicons">
+  <img src='/screenshots/oobe.jpg' width='250' alt="OOBE">
+</div>
 
- <img src='/screenshots/allapps.png' width='700'>  <img src='/screenshots/allapps_alphabet.png' width='250'>
- <img src='/screenshots/theme.png' width='250'> <img src='/screenshots/editmode.png' width='250'>
+# 📥 Download:
 
-***More screenshots in the /screenshots folder*** 📷
+Please note, MPL is still in development and some features may not be fully functional or may be missing.
 
-# Download:
+    Download the MPL.apk file from this link.
+    Install the app on your device.
+    Launch the MPLauncher application and follow the on-screen instructions.
 
-As a reminder, MPL is still in development and some features may not work or may be missing.
+Where can I find the Launcher settings?
 
-1. [Open this link and download the MPL.apk file](https://github.com/queuejw/MetroPhoneLauncher/releases/latest)
-
-2. Install the app on your device
-
-3. Launch the MPLauncher application. Then follow the on-screen instructions.
-  
-*Where can I find the Launcher settings?*
- 
-*- Open the "MPL Settings" application*
-
-#  Community:
+- Open the "MPL Settings" application
+- 
+# 🌐 Community:
 
 :airplane: [Telegram channel](https://t.me/mplauncher)
 

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers
+package ru.dimon6018.metrolauncher.helpers.ui
 
 import android.content.Context
 import android.util.AttributeSet

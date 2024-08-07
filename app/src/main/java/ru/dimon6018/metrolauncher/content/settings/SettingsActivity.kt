@@ -35,7 +35,7 @@ import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActiv
 import ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
-import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
@@ -78,122 +78,147 @@ class SettingsActivity : AppCompatActivity() {
         applyWindowInsets(cord)
         themeBtn = findViewById(R.id.themeSetting)
         themeBtn.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.Main) {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
             }
         }
         allAppsBtn = findViewById(R.id.allAppsSetting)
         allAppsBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
             }
         }
         tilesBtn = findViewById(R.id.tilesSetting)
         tilesBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
             }
         }
         aboutBtn = findViewById(R.id.aboutSetting)
         aboutBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
             }
         }
         feedbackBtn = findViewById(R.id.feedbackSetting)
         feedbackBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
             }
         }
         updateBtn = findViewById(R.id.updatesSetting)
         updateBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
             }
         }
         navBarBtn = findViewById(R.id.navbarSetting)
         navBarBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
             }
         }
         weatherBtm = findViewById(R.id.weatherSetting)
         weatherBtm.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
             }
         }
         iconBtn = findViewById(R.id.iconsSetting)
         iconBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
             }
         }
         expBtn = findViewById(R.id.expSetting)
         expBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(
+                        Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
             }
         }
         leaks = findViewById(R.id.leaks)
         leaks.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(LeakCanary.newLeakDisplayActivityIntent())
                 }
-                startActivity(LeakCanary.newLeakDisplayActivityIntent())
             }
         }
         animsBtn = findViewById(R.id.animSetting)
         animsBtn.setOnClickListener {
-            lifecycleScope.launch {
-                isEnter = true
-                if(PREFS!!.isTransitionAnimEnabled) {
-                    startAnim()
+            if(!isEnter) {
+                lifecycleScope.launch {
+                    isEnter = true
+                    if (PREFS!!.isTransitionAnimEnabled) {
+                        startAnim()
+                    }
+                    startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
                 }
-                startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
             }
         }
         confAnim()
@@ -245,8 +270,10 @@ class SettingsActivity : AppCompatActivity() {
                 cord.alpha = 1f
                 cancel()
             }
+            delay(150)
+        } else {
+            isEnter = false
         }
-        delay(150)
     }
     private fun hideViews() {
         if(PREFS!!.isTransitionAnimEnabled) {

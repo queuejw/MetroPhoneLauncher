@@ -37,7 +37,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
-import ru.dimon6018.metrolauncher.helpers.WPDialog
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.update.UpdateDataParser
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
