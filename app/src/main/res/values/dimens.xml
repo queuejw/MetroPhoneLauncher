@@ -17,4 +17,5 @@
     <dimen name="tileStrokeWidth">4dp</dimen>
     <dimen name="tileStrokeWidthDisabled">0dp</dimen>
     <dimen name="tile_default_size">64dp</dimen>
+    <dimen name="recyclerViewBottomPadding">156dp</dimen>
 </resources>

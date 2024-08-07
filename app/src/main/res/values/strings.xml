@@ -220,7 +220,14 @@
     <string name="search_error">There\'s been an error. Try searching again.</string>
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
-    <string name="ready_to_download_lawnicons">The update for Lawnicons is ready to download</string>
     <string name="show_details_on_bsod">Show details on the error screen</string>
     <string name="support_devs_text">Support developers: https://donationalerts.com/r/queuejw</string>
+    <string name="tipSettings">These are the settings. Here you can change and make the launcher more convenient and pleasant to use. Click on \'start+theme\'.</string>
+    <string name="tipSettingsTheme">Here you can change the theme of the app and the interaction with the tiles on your start screen. Try this</string>
+    <string name="developer">Developer</string>
+    <string name="dev_p1">Hi, are you not busy right now?</string>
+    <string name="not_show_again">Not show again</string>
+    <string name="dev_p2">"I just wanted to say thank you for using my launcher. I'm glad that my app is useful to other people. I appreciate it. If you have the desire and opportunity, then, you can support me by donating. I will be very, very pleased &#60;3, but it is not necessary. I hope you really like my app. Bye!</string>
+    <string name="support">Support</string>
+    <string name="tipSettingsUpdates">From this screen, you can check for updates for MPL to get fixes and new features.</string>
 </resources>

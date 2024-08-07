@@ -50,13 +50,15 @@ And many more smaller features!
 Please note, MPL is still in development and some features may not be fully functional or may be missing.
 
     Download the MPL.apk file from this link.
+
     Install the app on your device.
+
     Launch the MPLauncher application and follow the on-screen instructions.
 
 Where can I find the Launcher settings?
 
 - Open the "MPL Settings" application
-- 
+
 # 🌐 Community:
 
 :airplane: [Telegram channel](https://t.me/mplauncher)

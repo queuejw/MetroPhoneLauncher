@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -404,7 +405,7 @@ class Utils {
             return alphabet
         }
     }
-    class MarginItemDecoration(private val spaceSize: Int) : RecyclerView.ItemDecoration() {
+    class MarginItemDecoration(private val spaceSize: Int) : ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect, view: View,
             parent: RecyclerView,
@@ -415,6 +416,18 @@ class Utils {
                 left = spaceSize
                 right = spaceSize
                 bottom = spaceSize
+            }
+        }
+    }
+    class BottomOffsetDecoration(private val bottomOffset: Int) : ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            if (parent.getChildAdapterPosition(view) == parent.adapter!!.itemCount - 1) {
+                outRect.bottom = bottomOffset
             }
         }
     }

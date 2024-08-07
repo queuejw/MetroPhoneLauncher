@@ -3,6 +3,7 @@ package ru.dimon6018.metrolauncher.content.settings
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -40,6 +41,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
+import kotlin.random.Random
 import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
@@ -71,12 +73,77 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_main)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        init()
+        confAnim()
+        setOnClickers()
+        applyWindowInsets(cord)
+        prepareMessage()
+        prepareTip()
+    }
+
+    private fun prepareMessage() {
+        if(!PREFS!!.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.1 && PREFS!!.prefs.getBoolean("messageEnabled", true)) {
+            WPDialog(this).apply {
+                setTopDialog(true)
+                setTitle(getString(R.string.developer))
+                setMessage(getString(R.string.dev_p1))
+                setPositiveButton(getString(R.string.no), null)
+                setNegativeButton(getString(R.string.yes)) {
+                    donateDialog()
+                }
+                setNeutralButton(getString(R.string.not_show_again)) {
+                    PREFS!!.prefs.edit().putBoolean("messageEnabled", false).apply()
+                    dismiss()
+                }
+                show()
+            }
+        }
+    }
+    private fun donateDialog() {
+        WPDialog(this).apply {
+            setTopDialog(true)
+            setTitle(getString(R.string.developer))
+            setMessage(getString(R.string.dev_p2))
+            setPositiveButton(getString(R.string.hide)) {
+                PREFS!!.prefs.edit().putBoolean("messageEnabled", false).apply()
+                dismiss()
+            }
+            setNegativeButton(getString(R.string.support)) {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://donationalerts.com/r/queuejw")))
+                dismiss()
+            }
+            show()
+        }
+    }
+    private fun prepareTip() {
+        if(PREFS!!.prefs.getBoolean("tipSettingsEnabled", true)) {
+            WPDialog(this).setTopDialog(true)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.tipSettings))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
+            PREFS!!.prefs.edit().putBoolean("tipSettingsEnabled", false).apply()
+        }
+    }
+    private fun init() {
         cord = findViewById(R.id.coordinator)
         themeSub = findViewById(R.id.theme_sub)
         iconsSub = findViewById(R.id.icons_sub)
         navSub = findViewById(R.id.navbar_sub)
-        applyWindowInsets(cord)
         themeBtn = findViewById(R.id.themeSetting)
+        allAppsBtn = findViewById(R.id.allAppsSetting)
+        tilesBtn = findViewById(R.id.tilesSetting)
+        aboutBtn = findViewById(R.id.aboutSetting)
+        feedbackBtn = findViewById(R.id.feedbackSetting)
+        updateBtn = findViewById(R.id.updatesSetting)
+        navBarBtn = findViewById(R.id.navbarSetting)
+        weatherBtm = findViewById(R.id.weatherSetting)
+        iconBtn = findViewById(R.id.iconsSetting)
+        expBtn = findViewById(R.id.expSetting)
+        leaks = findViewById(R.id.leaks)
+        animsBtn = findViewById(R.id.animSetting)
+    }
+    private fun setOnClickers() {
         themeBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch(Dispatchers.Main) {
@@ -88,7 +155,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        allAppsBtn = findViewById(R.id.allAppsSetting)
         allAppsBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -100,7 +166,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        tilesBtn = findViewById(R.id.tilesSetting)
         tilesBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -112,7 +177,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        aboutBtn = findViewById(R.id.aboutSetting)
         aboutBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -124,7 +188,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        feedbackBtn = findViewById(R.id.feedbackSetting)
         feedbackBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -136,7 +199,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        updateBtn = findViewById(R.id.updatesSetting)
         updateBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -148,7 +210,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        navBarBtn = findViewById(R.id.navbarSetting)
         navBarBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -160,7 +221,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        weatherBtm = findViewById(R.id.weatherSetting)
         weatherBtm.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -172,7 +232,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        iconBtn = findViewById(R.id.iconsSetting)
         iconBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -184,7 +243,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        expBtn = findViewById(R.id.expSetting)
         expBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -197,7 +255,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        leaks = findViewById(R.id.leaks)
         leaks.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -209,7 +266,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        animsBtn = findViewById(R.id.animSetting)
         animsBtn.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
@@ -221,7 +277,6 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        confAnim()
     }
     private fun confAnim() {
         setViewInteractAnimation(themeBtn)
@@ -360,7 +415,7 @@ class SettingsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             iconsSub.text = getString(R.string.iconPackNotSelectedSub)
         }
-        if(!isHomeApp() && isDialogEnabled) {
+        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.25) {
             isDialogEnabled = false
             WPDialog(this).setTopDialog(false)
                 .setTitle(getString(R.string.tip))

@@ -39,7 +39,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
-import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,6 +72,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import java.util.Locale
 import kotlin.random.Random
 
+
 class NewAllApps: Fragment() {
 
     private lateinit var recyclerView: MetroRecyclerView
@@ -83,8 +83,6 @@ class NewAllApps: Fragment() {
     private lateinit var searchBtn: MaterialCardView
     private lateinit var searchBtnBack: MaterialCardView
     private lateinit var settingsBtn: MaterialCardView
-
-    private lateinit var progressBar: WP7ProgressBar
 
     private var appAdapter: AppAdapter? = null
     private var adapterAlphabet: AlphabetAdapter? = null
@@ -110,8 +108,6 @@ class NewAllApps: Fragment() {
         } else {
             frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(requireContext(), android.R.color.background_light).toDrawable() else ContextCompat.getColor(requireContext(), android.R.color.background_dark).toDrawable()
         }
-        progressBar = view.findViewById(R.id.progressBar)
-        progressBar.showProgressBar()
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -123,7 +119,6 @@ class NewAllApps: Fragment() {
         searchBtnBack = view.findViewById(R.id.searchBackBtn)
         search = view.findViewById(R.id.search)
         settingsBtn = view.findViewById(R.id.settingsBtn)
-        val loadingText: MaterialTextView = view.findViewById(R.id.loadingText)
         settingsBtn.setOnClickListener {
             activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
         }
@@ -145,12 +140,10 @@ class NewAllApps: Fragment() {
                 recyclerView.apply {
                     layoutManager = recyclerViewLM
                     adapter = appAdapter
+                    addItemDecoration(Utils.BottomOffsetDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.recyclerViewPadding)))
                     OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
                     visibility = View.VISIBLE
                 }
-                loadingText.visibility = View.GONE
-                progressBar.hideProgressBar()
-                progressBar.visibility = View.GONE
             }
             cancel("done")
         }
@@ -343,6 +336,9 @@ class NewAllApps: Fragment() {
         }
         registerBroadcast()
         super.onResume()
+        if(recyclerView.visibility != View.VISIBLE) {
+            recyclerView.visibility = View.VISIBLE
+        }
         if(recyclerView.alpha != 1f) {
             if (PREFS!!.isAAllAppsAnimEnabled) {
                 recyclerView.apply {
@@ -350,7 +346,7 @@ class NewAllApps: Fragment() {
                     anim.duration = 100
                     anim.start()
                     anim.doOnEnd {
-                        recyclerView.alpha = 1f
+                        this.alpha = 1f
                     }
                 }
             } else {
@@ -369,15 +365,12 @@ class NewAllApps: Fragment() {
             settingsBtn.visibility = View.VISIBLE
         }
         setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        progressBar.showProgressBar()
         recyclerView.alpha = 0.5f
         lifecycleScope.launch(defaultDispatcher) {
             val list = getHeaderListLatter(mainViewModel.getAppList())
             withContext(mainDispatcher) {
                 appAdapter?.setData(list)
                 recyclerView.alpha = 1f
-                progressBar.hideProgressBar()
-                progressBar.visibility = View.GONE
             }
         }
     }
@@ -561,7 +554,7 @@ class NewAllApps: Fragment() {
             }
             anim.start()
             fadeList(app, false)
-            PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.NO_GRAVITY)
+            PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.CENTER)
             isWindowVisible = true
             val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
             val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
@@ -614,6 +607,8 @@ class NewAllApps: Fragment() {
                     val itemView = recyclerView.findViewHolderForAdapterPosition(i)?.itemView
                     if (itemView != null) {
                         ObjectAnimator.ofFloat(itemView, "alpha", 0.5f, 1f).setDuration(500).start()
+                        ObjectAnimator.ofFloat(itemView, "scaleX", 0.9f, 1f).setDuration(500).start()
+                        ObjectAnimator.ofFloat(itemView, "scaleY", 0.9f, 1f).setDuration(500).start()
                     }
                 }
             } else {
@@ -624,6 +619,8 @@ class NewAllApps: Fragment() {
                     val itemView = recyclerView.findViewHolderForAdapterPosition(i)?.itemView
                     if (itemView != null) {
                         ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0.5f).setDuration(500).start()
+                        ObjectAnimator.ofFloat(itemView, "scaleX", 1f, 0.9f).setDuration(500).start()
+                        ObjectAnimator.ofFloat(itemView, "scaleY", 1f, 0.9f).setDuration(500).start()
                     }
                 }
             }
@@ -767,7 +764,6 @@ class NewAllApps: Fragment() {
                         }
                     } catch (e: Exception) {
                         Toast.makeText(requireContext(), getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
-                        recyclerView.stopScroll()
                         list.remove(list[absoluteAdapterPosition])
                         mainViewModel.removeAppFromList(list[absoluteAdapterPosition])
                         notifyItemRemoved(absoluteAdapterPosition)

@@ -29,6 +29,7 @@ import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
@@ -45,8 +46,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
 
     private var tileImg: ImageView? = null
 
-    private var wallpaperSwitch: MaterialSwitch? = null
-    private var wallpaperTransparentTilesSwitch: MaterialSwitch? = null
+    private lateinit var wallpaperSwitch: MaterialSwitch
+    private lateinit var wallpaperTransparentTilesSwitch: MaterialSwitch
+    private lateinit var moreTilesSwitch: MaterialSwitch
+    private lateinit var dynamicColorSwitch: MaterialSwitch
+    private lateinit var lockDesktopSwitch: MaterialSwitch
+    private lateinit var pinAppsToStartSwitch: MaterialSwitch
 
     private var main: CoordinatorLayout? = null
 
@@ -54,30 +59,19 @@ class ThemeSettingsActivity : AppCompatActivity() {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_theme)
+        init()
+        setThemeText()
+        configure()
+        setImg()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        chooseThemeBtn = findViewById(R.id.chooseTheme)
-        accentTip = findViewById(R.id.accentTip)
-        chooseAccentBtn = findViewById(R.id.chooseAccent)
-        accentNameTextView = findViewById(R.id.choosedAccentName)
-        themeMenu = findViewById(R.id.chooseThemeMenu)
-        light = findViewById(R.id.chooseLight)
-        dark = findViewById(R.id.chooseDark)
-        tileImg = findViewById(R.id.moreTilesImage)
-        accentTip = findViewById(R.id.accentTip)
-        val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
-        val spannable: Spannable = SpannableString(textFinal)
-        spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
-        val moreTilesSwitch: MaterialSwitch = findViewById(R.id.moreTilesSwitch)
-        wallpaperSwitch = findViewById(R.id.wallpaperShowSwtich)
-        val pinAppsToStartSwitch: MaterialSwitch = findViewById(R.id.newAppsToStartSwitch)
+        main = findViewById(R.id.coordinator)
+        main?.apply { applyWindowInsets(this) }
+        prepareTip()
+    }
+
+    private fun configure() {
         accentNameTextView.text = accentName(this)
-        val themeButtonLabel: String = if (PREFS!!.isLightThemeUsed) {
-            getString(R.string.light)
-        } else {
-            getString(R.string.dark)
-        }
-        chooseThemeBtn.text = themeButtonLabel
+        chooseThemeBtn.text = if (PREFS!!.isLightThemeUsed) getString(R.string.light) else getString(R.string.dark)
         chooseThemeBtn.setOnClickListener {
             chooseThemeBtn.visibility = View.GONE
             themeMenu.visibility = View.VISIBLE
@@ -99,12 +93,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
         pinAppsToStartSwitch.text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
         wallpaperTransparentTilesSwitch = findViewById(R.id.wallpaperTransparentTilesSwtich)
         //wallpaper switches
-        wallpaperSwitch?.setOnCheckedChangeListener { _, check ->
+        wallpaperSwitch.setOnCheckedChangeListener { _, check ->
             PREFS!!.setWallpaper(check)
             PREFS!!.isPrefsChanged = true
             refreshWallpaperSwitches()
         }
-        wallpaperTransparentTilesSwitch?.setOnCheckedChangeListener { _, check ->
+        wallpaperTransparentTilesSwitch.setOnCheckedChangeListener { _, check ->
             PREFS!!.setTransparentTiles(check)
             PREFS!!.isPrefsChanged = true
             refreshWallpaperSwitches()
@@ -121,7 +115,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
             pinAppsToStartSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             pinAppsToStartSwitch.setChecked(isChecked)
         }
-        val dynamicColorSwitch: MaterialSwitch = findViewById(R.id.dynamicColorSwtich)
         dynamicColorSwitch.setChecked(PREFS!!.accentColor == 20)
         dynamicColorSwitch.text = if(PREFS!!.accentColor == 20) getString(R.string.on) else getString(R.string.off)
         dynamicColorSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -138,16 +131,46 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 Snackbar.make(dynamicColorSwitch, getString(R.string.dynamicColor_error), Snackbar.LENGTH_LONG).show()
             }
         }
-        val lockDesktopSwitch: MaterialSwitch = findViewById(R.id.blockStartSwitch)
         lockDesktopSwitch.isChecked = PREFS!!.isStartBlocked
         lockDesktopSwitch.text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
         lockDesktopSwitch.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.blockStartScreen(isChecked)
             lockDesktopSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
         }
-        setImg()
-        main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+    }
+
+    private fun setThemeText() {
+        val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
+        val spannable: Spannable = SpannableString(textFinal)
+        spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
+    }
+
+    private fun init() {
+        chooseThemeBtn = findViewById(R.id.chooseTheme)
+        accentTip = findViewById(R.id.accentTip)
+        chooseAccentBtn = findViewById(R.id.chooseAccent)
+        accentNameTextView = findViewById(R.id.choosedAccentName)
+        themeMenu = findViewById(R.id.chooseThemeMenu)
+        light = findViewById(R.id.chooseLight)
+        dark = findViewById(R.id.chooseDark)
+        tileImg = findViewById(R.id.moreTilesImage)
+        accentTip = findViewById(R.id.accentTip)
+        moreTilesSwitch = findViewById(R.id.moreTilesSwitch)
+        wallpaperSwitch = findViewById(R.id.wallpaperShowSwtich)
+        dynamicColorSwitch = findViewById(R.id.dynamicColorSwtich)
+        pinAppsToStartSwitch = findViewById(R.id.newAppsToStartSwitch)
+        lockDesktopSwitch = findViewById(R.id.blockStartSwitch)
+    }
+    private fun prepareTip() {
+        if(PREFS!!.prefs.getBoolean("tipSettingsThemeEnabled", true)) {
+            WPDialog(this).setTopDialog(true)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.tipSettingsTheme))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
+            PREFS!!.prefs.edit().putBoolean("tipSettingsThemeEnabled", false).apply()
+        }
     }
     private fun enterAnimation(exit: Boolean) {
         if(main == null || !PREFS!!.isTransitionAnimEnabled) {
@@ -184,10 +207,10 @@ class ThemeSettingsActivity : AppCompatActivity() {
         refreshWallpaperSwitches()
     }
     private fun refreshWallpaperSwitches() {
-        wallpaperSwitch?.isChecked = PREFS!!.isWallpaperUsed
-        wallpaperSwitch?.text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
-        wallpaperTransparentTilesSwitch?.isChecked = PREFS!!.isTilesTransparent
-        wallpaperTransparentTilesSwitch?.text = if(PREFS!!.isTilesTransparent) getString(R.string.on) else getString(R.string.off)
+        wallpaperSwitch.isChecked = PREFS!!.isWallpaperUsed
+        wallpaperSwitch.text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
+        wallpaperTransparentTilesSwitch.isChecked = PREFS!!.isTilesTransparent
+        wallpaperTransparentTilesSwitch.text = if(PREFS!!.isTilesTransparent) getString(R.string.on) else getString(R.string.off)
     }
     private fun setImg() {
         tileImg?.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)

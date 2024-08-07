@@ -244,10 +244,7 @@ class Main : AppCompatActivity() {
         viewPager.isUserInputEnabled = boolean
     }
     private suspend fun setMainViewModel() {
-        var isCustomIconsInstalled = false
-        if (PREFS!!.iconPackPackage != "null") {
-            isCustomIconsInstalled = true
-        }
+        val isCustomIconsInstalled = PREFS!!.iconPackPackage != "null"
         mainViewModel.setAppList(sortApps(setUpApps(this.packageManager, this)))
         var diskCache = initDiskCache(this)
         if(PREFS!!.iconPackChanged) {

@@ -76,7 +76,15 @@ class UpdateActivity: AppCompatActivity() {
         setTheme(Utils.launcherAccentTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_settings_updates)
+        init()
+        refreshUi()
+        setOnClickers()
+        applyWindowInsets(main)
+        prepareTip()
+    }
+    private fun init() {
         db = BSOD.getData(this)
+        main = findViewById(R.id.coordinator)
         progressLayout = findViewById(R.id.updateIndicator)
         progressText = findViewById(R.id.progessText)
         progressBar = findViewById(R.id.progress)
@@ -86,7 +94,8 @@ class UpdateActivity: AppCompatActivity() {
         updateNotificationCheckBox = findViewById(R.id.UpdateNotifyCheckBox)
         updateDetails = findViewById(R.id.updateInfo)
         cancelDownload = findViewById(R.id.cancel_button)
-        refreshUi()
+    }
+    private fun setOnClickers() {
         autoUpdateCheckBox.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAutoUpdate(isChecked)
             refreshUi()
@@ -160,8 +169,16 @@ class UpdateActivity: AppCompatActivity() {
         if(PREFS!!.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions()) {
             showPermsDialog()
         }
-        main = findViewById(R.id.coordinator)
-        applyWindowInsets(main)
+    }
+    private fun prepareTip() {
+        if(PREFS!!.prefs.getBoolean("tipSettingsUpdatesEnabled", true)) {
+            WPDialog(this).setTopDialog(true)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.tipSettingsUpdates))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show()
+            PREFS!!.prefs.edit().putBoolean("tipSettingsUpdatesEnabled", false).apply()
+        }
     }
     private fun enterAnimation(exit: Boolean) {
         if(!PREFS!!.isTransitionAnimEnabled) {

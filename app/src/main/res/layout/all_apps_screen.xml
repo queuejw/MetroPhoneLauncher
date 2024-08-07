@@ -106,30 +106,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/loadingHolder"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <ir.alirezabdn.wp7progress.WP7ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:indicatorRadius="5"
-            app:indicatorColor="?attr/colorPrimary" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/loadingText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/loading"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/alphabetLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

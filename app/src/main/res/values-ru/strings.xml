@@ -221,7 +221,14 @@
     <string name="search_error">Произошла ошибка. Попробуйте повторить поиск.</string>
     <string name="auto_shutdown_anims">Автоматически выключать анимации, если включен режим разработчика</string>
     <string name="animations_dev_mode">Анимации могут не работать, если вы выключили их в опциях для разработчиков.</string>
-    <string name="ready_to_download_lawnicons">Обновление для Lawnicons готово к скачиванию</string>
     <string name="show_details_on_bsod">Показывать подробности на экране ошибки</string>
     <string name="support_devs_text">Поддержать разработчиков: https://donationalerts.com/r/queuejw</string>
+    <string name="tipSettings">Это настройки. Здесь вы сможете изменить и сделать лаунчер удобнее и приятнее для использования. Нажмите на \'рабочий стол+тема\'.</string>
+    <string name="tipSettingsTheme">Здесь вы можете изменить тему приложения и взаимодействие с плитками на рабочем столе. Попробуйте.</string>
+    <string name="developer">Разработчик</string>
+    <string name="dev_p1">Привет, найдется минутка?</string>
+    <string name="not_show_again">Скрыть</string>
+    <string name="dev_p2">"Я просто хотел сказать спасибо за то, что используешь мой лаунчер. Я рад, что моё приложение полезно другим людям. Я ценю это. Если у тебя есть желание и возможность, то, можешь поддержать меня донатом. Мне будет очень-очень приятно &#60;3, но это не обязательно. Надеюсь, что тебе правда нравится моё приложение. Пока!</string>
+    <string name="support">Поддержать</string>
+    <string name="tipSettingsUpdates">На этом экране вы можете проверить наличие обновлений для лаунчера, чтобы получить исправления и новые функции.</string>
 </resources>
