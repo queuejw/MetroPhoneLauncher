@@ -607,8 +607,6 @@ class NewAllApps: Fragment() {
                     val itemView = recyclerView.findViewHolderForAdapterPosition(i)?.itemView
                     if (itemView != null) {
                         ObjectAnimator.ofFloat(itemView, "alpha", 0.5f, 1f).setDuration(500).start()
-                        ObjectAnimator.ofFloat(itemView, "scaleX", 0.9f, 1f).setDuration(500).start()
-                        ObjectAnimator.ofFloat(itemView, "scaleY", 0.9f, 1f).setDuration(500).start()
                     }
                 }
             } else {
@@ -619,8 +617,6 @@ class NewAllApps: Fragment() {
                     val itemView = recyclerView.findViewHolderForAdapterPosition(i)?.itemView
                     if (itemView != null) {
                         ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0.5f).setDuration(500).start()
-                        ObjectAnimator.ofFloat(itemView, "scaleX", 1f, 0.9f).setDuration(500).start()
-                        ObjectAnimator.ofFloat(itemView, "scaleY", 1f, 0.9f).setDuration(500).start()
                     }
                 }
             }
