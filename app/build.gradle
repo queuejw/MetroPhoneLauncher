@@ -5,6 +5,9 @@ plugins {
 }
 
 android {
+    viewBinding {
+        enabled = true
+    }
     namespace 'ru.dimon6018.metrolauncher'
     compileSdk 35
     buildFeatures {
@@ -44,9 +47,9 @@ dependencies {
     ksp "androidx.room:room-compiler:2.6.1"
 
     implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'androidx.annotation:annotation:1.8.1'
+    implementation 'androidx.annotation:annotation:1.8.2'
     implementation 'com.google.android.material:material:1.13.0-alpha04'
-    implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha02'
     implementation 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.fragment:fragment-ktx:1.8.2'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
@@ -54,7 +57,7 @@ dependencies {
     implementation "androidx.room:room-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.4"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4"
-    implementation "androidx.work:work-runtime-ktx:2.9.0"
+    implementation "androidx.work:work-runtime-ktx:2.9.1"
     implementation "androidx.core:core-splashscreen:1.1.0-rc01"
 
     implementation project(path: ':SpannedGridLayoutManager')

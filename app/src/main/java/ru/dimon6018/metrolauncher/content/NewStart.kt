@@ -35,6 +35,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.arasthel.spannedgridlayoutmanager.SpanSize
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -49,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import me.everything.android.ui.overscroll.IOverScrollDecor
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
@@ -61,12 +63,14 @@ import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.databinding.SpaceBinding
+import ru.dimon6018.metrolauncher.databinding.StartScreenBinding
+import ru.dimon6018.metrolauncher.databinding.TileBinding
 import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
-import ru.dimon6018.metrolauncher.helpers.ui.MetroRecyclerView
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
@@ -79,9 +83,9 @@ import kotlin.random.Random
 
 class NewStart: Fragment(), OnStartDragListener {
 
-    private lateinit var mRecyclerView: MetroRecyclerView
-    private lateinit var frame: FrameLayout
     private lateinit var mItemTouchHelper: ItemTouchHelper
+    private lateinit var decor: IOverScrollDecor
+
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -96,36 +100,32 @@ class NewStart: Fragment(), OnStartDragListener {
     private var screenIsOn = false
 
     private lateinit var mainViewModel: MainViewModel
+    private var _binding: StartScreenBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val v = inflater.inflate(R.layout.start_screen, container, false)
-
+        _binding = StartScreenBinding.inflate(inflater, container, false)
+        val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        binding.startFrame.setOnClickListener {
+            if(mAdapter != null) {
+                if (mAdapter!!.isEditMode) {
+                    mAdapter!!.disableEditMode()
+                }
+            }
+        }
+        return view
+    }
 
-        mRecyclerView = v.findViewById(R.id.start_apps_tiles)
-        frame = v.findViewById(R.id.startFrame)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if(context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
                 tiles = mainViewModel.getTileDao().getTilesList()
                 setupRecyclerViewLayoutManager(requireContext())
-                mAdapter = NewStartAdapter(requireContext(), tiles!!)
-                val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
-                mItemTouchHelper = ItemTouchHelper(callback)
+                setupAdapter()
                 withContext(mainDispatcher) {
-                    mRecyclerView.apply {
-                        layoutManager = mSpannedLayoutManager
-                        adapter = mAdapter
-                        if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
-                            addItemDecoration(Utils.MarginItemDecoration(6))
-                        }
-                        OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
-                        mItemTouchHelper.attachToRecyclerView(this)
-                    }
-                    frame.setOnClickListener {
-                        if (mAdapter?.isEditMode == true) {
-                            mAdapter?.disableEditMode()
-                        }
-                    }
+                    configureRecyclerView()
                     observe()
                     registerBroadcast()
                     startScreenReady = true
@@ -133,8 +133,27 @@ class NewStart: Fragment(), OnStartDragListener {
                 cancel("done")
             }
         }
-        return v
     }
+    private fun setupAdapter() {
+        mAdapter = NewStartAdapter(requireContext(), tiles!!)
+        val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
+        mItemTouchHelper = ItemTouchHelper(callback)
+    }
+
+    private fun configureRecyclerView() {
+        binding.startAppsTiles.apply {
+            layoutManager = mSpannedLayoutManager
+            adapter = mAdapter
+            if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
+                addItemDecoration(Utils.MarginItemDecoration(6))
+            }
+            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+            mItemTouchHelper.attachToRecyclerView(this)
+            decor = OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+            decor.attach()
+        }
+    }
+
     private fun setupRecyclerViewLayoutManager(context: Context?) {
         if(mSpannedLayoutManager != null) {
             mSpannedLayoutManager = null
@@ -192,9 +211,8 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onConfigurationChanged(newConfig)
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
         setupRecyclerViewLayoutManager(context)
-        mRecyclerView.apply {
+        binding.startAppsTiles.apply {
             layoutManager = mSpannedLayoutManager
-
         }
     }
     private fun observe() {
@@ -236,8 +254,8 @@ class NewStart: Fragment(), OnStartDragListener {
     override fun onResume() {
         animate()
         if(!screenIsOn) {
-            if(mRecyclerView.visibility == View.INVISIBLE) {
-                mRecyclerView.visibility = View.VISIBLE
+            if(binding.startAppsTiles.visibility == View.INVISIBLE) {
+                binding.startAppsTiles.visibility = View.VISIBLE
             }
         }
         if(isAppOpened) {
@@ -258,9 +276,9 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onPause()
         screenIsOn = isScreenOn(context)
         if(!screenIsOn) {
-            if(mRecyclerView.visibility == View.VISIBLE) {
+            if(binding.startAppsTiles.visibility == View.VISIBLE) {
                 hideTiles(false)
-                mRecyclerView.visibility = View.INVISIBLE
+                binding.startAppsTiles.visibility = View.INVISIBLE
             }
         }
         if(mAdapter?.isEditMode == true) {
@@ -272,8 +290,8 @@ class NewStart: Fragment(), OnStartDragListener {
         if (mAdapter == null) {
             return
         }
-        for(i in 0..<mRecyclerView.childCount) {
-            val itemView = mRecyclerView.findViewHolderForAdapterPosition(i)?.itemView ?: continue
+        for(i in 0..<binding.startAppsTiles.childCount) {
+            val itemView = binding.startAppsTiles.findViewHolderForAdapterPosition(i)?.itemView ?: continue
             val animatorSet = AnimatorSet()
             if (mAdapter!!.isTopLeft) {
                 animatorSet.playTogether(
@@ -357,8 +375,8 @@ class NewStart: Fragment(), OnStartDragListener {
                 cancel()
                 return@launch
             }
-            for (i in 0..<mRecyclerView.childCount) {
-                val itemView = mRecyclerView.findViewHolderForAdapterPosition(i)?.itemView ?: continue
+            for (i in 0..<binding.startAppsTiles.childCount) {
+                val itemView = binding.startAppsTiles.findViewHolderForAdapterPosition(i)?.itemView ?: continue
                 if (showTiles) {
                     ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f).start()
                 } else {
@@ -541,15 +559,16 @@ class NewStart: Fragment(), OnStartDragListener {
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
+            decor.detach()
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(mRecyclerView, "scaleX", 1f, 0.85f),
-                ObjectAnimator.ofFloat(mRecyclerView, "scaleY", 1f, 0.85f)
+                ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleX", 1f, 0.85f),
+                ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleY", 1f, 0.85f)
             )
             animatorSet.setDuration(300)
             animatorSet.start()
-            mRecyclerView.setBackgroundColor(if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light) else ContextCompat.getColor(context, android.R.color.background_dark))
-            frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light).toDrawable() else ContextCompat.getColor(context, android.R.color.background_dark).toDrawable()
+            binding.startAppsTiles.setBackgroundColor(if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light) else ContextCompat.getColor(context, android.R.color.background_dark))
+            binding.startFrame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light).toDrawable() else ContextCompat.getColor(context, android.R.color.background_dark).toDrawable()
             isEditMode = true
             notifyDataSetChanged()
         }
@@ -557,15 +576,16 @@ class NewStart: Fragment(), OnStartDragListener {
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
             (requireActivity() as Main).configureViewPagerScroll(true)
+            decor.attach()
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(mRecyclerView, "scaleX", 0.85f, 1f),
-                ObjectAnimator.ofFloat(mRecyclerView, "scaleY", 0.85f, 1f)
+                ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleX", 0.85f, 1f),
+                ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleY", 0.85f, 1f)
             )
             animatorSet.setDuration(300)
             animatorSet.start()
-            mRecyclerView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-            frame.background = null
+            binding.startAppsTiles.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
+            binding.startFrame.background = null
             isEditMode = false
             clearItems()
             for(anim in animList) {
@@ -578,12 +598,12 @@ class NewStart: Fragment(), OnStartDragListener {
             val inflater = LayoutInflater.from(parent.context)
             return when(viewType) {
                 defaultTileType -> {
-                    val v = inflater.inflate(R.layout.tile, parent, false)
-                    TileViewHolder(v)
+                    val binding = TileBinding.inflate(inflater, parent, false)
+                    TileViewHolder(binding)
                 }
                 else -> {
-                    val v = inflater.inflate(R.layout.space, parent, false)
-                    SpaceViewHolder(v)
+                    val binding = SpaceBinding.inflate(inflater, parent, false)
+                    SpaceViewHolder(binding)
                 }
             }
         }
@@ -610,8 +630,8 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun startDismissTilesAnim(item: Tile) {
-            for (position in 0..<mRecyclerView.childCount) {
-                val itemView = mRecyclerView.getChildAt(position) ?: continue
+            for (position in 0..<binding.startAppsTiles.childCount) {
+                val itemView = binding.startAppsTiles.getChildAt(position) ?: continue
                 val animatorSet = AnimatorSet()
                 if (isTopLeft) {
                     animatorSet.playTogether(
@@ -697,15 +717,15 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun bindDefaultTile(holder: TileViewHolder, position: Int, item: Tile) {
-            setTileSize(item, holder.mTextView)
-            setTileIconSize(holder.mAppIcon, item.tileSize, context.resources)
+            setTileSize(item, holder.binding.tileLabel)
+            setTileIconSize(holder.binding.tileIcon, item.tileSize, context.resources)
             setTileColor(holder, item)
-            setTileIcon(holder.mAppIcon, item)
+            setTileIcon(holder.binding.tileIcon, item)
             setTileEditModeAnim(holder, item, position)
         }
         private fun setTileIcon(imageView: ImageView, item: Tile) {
             try {
-                imageView.setImageBitmap(mainViewModel.getIconFromCache(item.appPackage))
+                imageView.load(mainViewModel.getIconFromCache(item.appPackage))
             } catch (e: Exception) {
                 Log.e("Adapter", e.toString())
                 lifecycleScope.launch(ioDispatcher) {
@@ -753,16 +773,16 @@ class NewStart: Fragment(), OnStartDragListener {
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
             if(!isEditMode) {
                 if (item.tileColor != -1) {
-                    holder.mContainer.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
+                    holder.binding.container.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
                     if (PREFS!!.isWallpaperUsed) {
                         if(PREFS!!.isTilesTransparent) {
-                            holder.mContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
+                            holder.binding.container.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                         } else {
-                            holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
+                            holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
                         }
                     } else {
-                        holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
+                        holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
                     }
                 }
             }
@@ -771,9 +791,9 @@ class NewStart: Fragment(), OnStartDragListener {
             if(isEditMode) {
                 val anim = createBaseWobble(holder.itemView)
                 if (item.tileColor != -1) {
-                    holder.mContainer.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
+                    holder.binding.container.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
-                    holder.mContainer.setBackgroundColor(accentColorFromPrefs(context))
+                    holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
                 }
                 if(item.isSelected == false) {
                     if (position % 2 == 0) {
@@ -867,7 +887,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun showPopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
-            mRecyclerView.isScrollEnabled = false
+            binding.startAppsTiles.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = if(item.tileSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
             val width = holder.itemView.width
@@ -879,7 +899,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.setOnDismissListener {
-                mRecyclerView.isScrollEnabled = true
+                binding.startAppsTiles.isScrollEnabled = true
                 clearItems()
                 runBlocking {
                     notifyItemChanged(position)
@@ -909,14 +929,14 @@ class NewStart: Fragment(), OnStartDragListener {
                     when (item.tileSize) {
                         "small" -> {
                             item.tileSize = "medium"
-                            holder.mTextView.post {
-                                holder.mTextView.text = item.appLabel
+                            holder.binding.tileLabel.post {
+                                holder.binding.tileLabel.text = item.appLabel
                             }
                         }
                         "medium" -> {
                             item.tileSize = "big"
-                            holder.mTextView.post {
-                                holder.mTextView.text = item.appLabel
+                            holder.binding.tileLabel.post {
+                                holder.binding.tileLabel.text = item.appLabel
                             }
                         }
                         "big" -> {
@@ -1045,27 +1065,24 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         @SuppressLint("ClickableViewAccessibility")
-        inner class TileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
-            private val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
-            val mContainer: FrameLayout = v.findViewById(R.id.container)
-            val mTextView: MaterialTextView = v.findViewById(android.R.id.text1)
-            val mAppIcon: ImageView = v.findViewById(android.R.id.icon1)
+        inner class TileViewHolder(val binding: TileBinding) : RecyclerView.ViewHolder(binding.root), ItemTouchHelperViewHolder {
+
             private val gestureDetector: GestureDetector =
                 GestureDetector(context, object : SimpleOnGestureListener() {
                     override fun onLongPress(e: MotionEvent) {
                         handleLongClick()
                     }
                     override fun onSingleTapUp(e: MotionEvent): Boolean {
-                        visualFeedback(v)
+                        visualFeedback(itemView)
                         handleClick()
                         return true
                     }
                 })
             init {
-                mCardContainer.apply {
+                binding.cardContainer.apply {
                     strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
-                mContainer.apply {
+                binding.container.apply {
                     alpha = PREFS!!.getTilesTransparency
                     setOnTouchListener { view, event ->
                         val x = event.x
@@ -1145,7 +1162,7 @@ class NewStart: Fragment(), OnStartDragListener {
             override fun onItemSelected() {}
             override fun onItemClear() {}
         }**/
-        inner class SpaceViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        inner class SpaceViewHolder(binding: SpaceBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
                 if(PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
                     itemView.setBackgroundColor(transparentColor)

@@ -35,14 +35,14 @@
         android:focusable="true">
 
         <ImageView
-            android:id="@android:id/icon1"
+            android:id="@+id/tileIcon"
             android:layout_width="92dp"
             android:layout_height="92dp"
             android:layout_gravity="center"
             android:scaleType="fitCenter" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@android:id/text1"
+            android:id="@+id/tileLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"

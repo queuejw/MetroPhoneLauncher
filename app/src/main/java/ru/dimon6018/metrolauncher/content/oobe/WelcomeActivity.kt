@@ -16,14 +16,13 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 
 class WelcomeActivity: AppCompatActivity() {
 
-    private var main: CoordinatorLayout? = null
+    private lateinit var main: CoordinatorLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.oobe)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+        applyWindowInsets(main)
         if (PREFS!!.launcherState != 2) {
             supportFragmentManager.commit {
                 replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
@@ -33,6 +32,7 @@ class WelcomeActivity: AppCompatActivity() {
                 replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
             }
         }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
     companion object {
         fun setText(activity: Activity, text: String) {

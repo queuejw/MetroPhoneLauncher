@@ -21,6 +21,7 @@ import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generatePlaceholder
 
 class WelcomeFragment : Fragment() {
     private var main: View? = null
@@ -55,17 +56,7 @@ class WelcomeFragment : Fragment() {
     private fun generatePlaceholders() {
         placeholderCoroutine.launch {
             Application.PREFS!!.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
-            val size = 100
-            val dbCall = TileData.getTileData(requireContext()).getTileDao()
-            for (i in 0..size) {
-                val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
-                    isSelected = false,
-                    tileSize = "small",
-                    appLabel = "",
-                    appPackage = ""
-                )
-                dbCall.addTile(placeholder)
-            }
+            generatePlaceholder(TileData.getTileData(requireContext()).getTileDao(), 32)
             cancel()
         }
     }

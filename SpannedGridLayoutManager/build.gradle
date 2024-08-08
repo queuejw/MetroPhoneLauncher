@@ -27,6 +27,6 @@ tasks.withType(Javadoc).configureEach {
 }
 
 dependencies {
-    implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha01'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0-alpha02'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0'
 }

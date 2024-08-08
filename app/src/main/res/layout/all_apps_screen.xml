@@ -70,7 +70,7 @@
         android:layout_marginStart="12dp"
         android:orientation="vertical">
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/allAppsButton"
+            android:id="@+id/searchBtn"
             android:layout_width="42dp"
             android:layout_height="42dp"
             app:cardBackgroundColor="?android:attr/colorBackground"

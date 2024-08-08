@@ -462,7 +462,7 @@ public abstract class OverScrollBounceEffectDecoratorBase implements IOverScroll
         mCurrentState.handleEntryTransition(oldState);
     }
 
-    protected void attach() {
+    public void attach() {
         getView().setOnTouchListener(this);
         getView().setOverScrollMode(View.OVER_SCROLL_NEVER);
     }

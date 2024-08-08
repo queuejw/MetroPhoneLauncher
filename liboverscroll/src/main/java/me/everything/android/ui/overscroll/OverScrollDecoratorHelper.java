@@ -35,14 +35,13 @@ public class OverScrollDecoratorHelper {
      * @return The over-scroll effect 'decorator', enabling further effect configuration.
      */
     public static IOverScrollDecor setUpOverScroll(RecyclerView recyclerView, int orientation) {
-        switch (orientation) {
-            case ORIENTATION_HORIZONTAL:
-                return new HorizontalOverScrollBounceEffectDecorator(new RecyclerViewOverScrollDecorAdapter(recyclerView));
-            case ORIENTATION_VERTICAL:
-                return new VerticalOverScrollBounceEffectDecorator(new RecyclerViewOverScrollDecorAdapter(recyclerView));
-            default:
-                throw new IllegalArgumentException("orientation");
-        }
+        return switch (orientation) {
+            case ORIENTATION_HORIZONTAL ->
+                    new HorizontalOverScrollBounceEffectDecorator(new RecyclerViewOverScrollDecorAdapter(recyclerView));
+            case ORIENTATION_VERTICAL ->
+                    new VerticalOverScrollBounceEffectDecorator(new RecyclerViewOverScrollDecorAdapter(recyclerView));
+            default -> throw new IllegalArgumentException("orientation");
+        };
     }
 
     public static IOverScrollDecor setUpOverScroll(ListView listView) {

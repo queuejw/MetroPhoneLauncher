@@ -27,4 +27,5 @@ public interface IOverScrollDecor {
      * overridden by calling <code>View.setOverScrollMode(mode)</code> immediately thereafter.</p>
      */
     void detach();
+    void attach();
 }

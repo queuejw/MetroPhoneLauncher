@@ -42,6 +42,9 @@ import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
+import ru.dimon6018.metrolauncher.content.data.tile.Tile
+import ru.dimon6018.metrolauncher.content.data.tile.TileDao
+import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.util.Calendar
@@ -403,6 +406,19 @@ class Utils {
                 }
             }
             return alphabet
+        }
+        suspend fun generatePlaceholder(call: TileDao, value: Int) {
+            val size = if(PREFS!!.isMoreTilesEnabled) value * 2 else value
+            val startFrom = call.getUserTiles().size
+            for (i in startFrom..size) {
+                val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
+                    isSelected = false,
+                    tileSize = "small",
+                    appLabel = "",
+                    appPackage = ""
+                )
+                call.addTile(placeholder)
+            }
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : ItemDecoration() {

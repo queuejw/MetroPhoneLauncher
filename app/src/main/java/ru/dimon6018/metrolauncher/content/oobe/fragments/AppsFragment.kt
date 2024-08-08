@@ -33,6 +33,7 @@ import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generatePlaceholder
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
@@ -105,6 +106,7 @@ class AppsFragment: Fragment() {
                 next.setOnClickListener {
                     enterAnimation(true)
                     lifecycleScope.launch(Dispatchers.Default) {
+                        generatePlaceholder(call, selectedItems!!.size * 2)
                         var pos = 0
                         for (i in selectedItems!!) {
                             val id = Random.nextLong(1000, 2000000)
@@ -201,7 +203,7 @@ class AppsFragment: Fragment() {
             val item = adapterApps[position]
             holder as OOBEAppHolder
             try {
-                holder.icon.setImageDrawable(hashCache.get(item.id))
+                holder.icon.setImageDrawable(hashCache[item.id])
             } catch (e: PackageManager.NameNotFoundException) {
                 holder.icon.setImageDrawable(
                     ContextCompat.getDrawable(
