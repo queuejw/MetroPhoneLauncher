@@ -9,25 +9,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import ru.dimon6018.metrolauncher.databinding.OobeFragmentConfBinding
 
 class ConfigureFragment: Fragment() {
 
-    private var main: View? = null
+    private var _binding: OobeFragmentConfBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.oobe_fragment_conf, container, false)
-        main = view
-        val back: MaterialButton = view.findViewById(R.id.back)
-        val custom: MaterialButton = view.findViewById(R.id.custom)
-        val recommended: MaterialButton = view.findViewById(R.id.recommended)
-        WelcomeActivity.setText(requireActivity(), getString(R.string.configurePhone))
-        back.setOnClickListener {
+                              savedInstanceState: Bundle?): View {
+        _binding = OobeFragmentConfBinding.inflate(inflater, container, false)
+        (requireActivity() as WelcomeActivity).setText(getString(R.string.configurePhone))
+        binding.back.setOnClickListener {
             lifecycleScope.launch {
                 enterAnimation(true)
                 delay(200)
@@ -36,7 +33,7 @@ class ConfigureFragment: Fragment() {
                 }
             }
         }
-        custom.setOnClickListener {
+        binding.custom.setOnClickListener {
             lifecycleScope.launch {
                 enterAnimation(true)
                 delay(200)
@@ -45,7 +42,7 @@ class ConfigureFragment: Fragment() {
                 }
             }
         }
-        recommended.setOnClickListener {
+        binding.recommended.setOnClickListener {
             lifecycleScope.launch {
                 enterAnimation(true)
                 delay(200)
@@ -54,22 +51,24 @@ class ConfigureFragment: Fragment() {
                 }
             }
         }
-        return view
+        return binding.root
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
-            return
-        }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
             )
         }
         animatorSet.setDuration(300)

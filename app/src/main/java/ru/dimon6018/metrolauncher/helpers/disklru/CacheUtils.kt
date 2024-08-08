@@ -1,10 +1,9 @@
-package ru.dimon6018.metrolauncher.helpers.utils
+package ru.dimon6018.metrolauncher.helpers.disklru
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import ru.dimon6018.metrolauncher.helpers.disklru.DiskLruCache
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
@@ -19,7 +18,7 @@ class CacheUtils {
         fun initDiskCache(context: Context): DiskLruCache? {
             try {
                 val cacheDir = getDiskCacheDir(context)
-                val cacheSize = 25 * 1024 * 1024 // 10 MiB
+                val cacheSize = 32 * 1024 * 1024
                 return DiskLruCache.open(cacheDir, 1, 1, cacheSize.toLong())
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -27,12 +26,12 @@ class CacheUtils {
             }
         }
         fun saveIconToDiskCache(diskLruCache: DiskLruCache?, key: String, bitmap: Bitmap?) {
-            if(diskLruCache != null || bitmap != null) {
-                val editor = diskLruCache!!.edit(key.toMd5())
+            if(diskLruCache != null && bitmap != null) {
+                val editor = diskLruCache.edit(key.toMd5())
                 if (editor != null) {
                     try {
                         val outputStream: OutputStream = editor.newOutputStream(0)
-                        bitmap!!.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                         editor.commit()
                     } catch (e: IOException) {
                         e.printStackTrace()

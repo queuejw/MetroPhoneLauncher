@@ -9,25 +9,22 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import ru.dimon6018.metrolauncher.databinding.OobeFragmentCustomPrefsBinding
 
 class CustomSettingsFragment: Fragment() {
 
-    private var main: View? = null
+    private var _binding: OobeFragmentCustomPrefsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        WelcomeActivity.setText(requireActivity(), getString(R.string.configureCustomPhone))
-        val view = inflater.inflate(R.layout.oobe_fragment_custom_prefs, container, false)
-        main = view
-        val back: MaterialButton = view.findViewById(R.id.back)
-        val next: MaterialButton = view.findViewById(R.id.next)
-        WelcomeActivity.setText(requireActivity(), getString(R.string.configurePhone))
-        back.setOnClickListener {
+                              savedInstanceState: Bundle?): View {
+        _binding = OobeFragmentCustomPrefsBinding.inflate(inflater, container, false)
+        (requireActivity() as WelcomeActivity).setText(getString(R.string.configureCustomPhone))
+        binding.back.setOnClickListener {
             lifecycleScope.launch {
                 enterAnimation(true)
                 delay(200)
@@ -36,7 +33,7 @@ class CustomSettingsFragment: Fragment() {
                 }
             }
         }
-        next.setOnClickListener {
+        binding.next.setOnClickListener {
             lifecycleScope.launch {
                 enterAnimation(true)
                 delay(200)
@@ -45,22 +42,24 @@ class CustomSettingsFragment: Fragment() {
                 }
             }
         }
-        return view
+        return binding.root
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
-            return
-        }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
             )
         }
         animatorSet.setDuration(300)

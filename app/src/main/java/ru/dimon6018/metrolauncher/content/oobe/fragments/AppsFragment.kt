@@ -3,25 +3,17 @@ package ru.dimon6018.metrolauncher.content.oobe.fragments
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.collection.SparseArrayCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.textview.MaterialTextView
-import ir.alirezabdn.wp7progress.WP7ProgressBar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,9 +22,13 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
+import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
+import ru.dimon6018.metrolauncher.databinding.OobeAppItemBinding
+import ru.dimon6018.metrolauncher.databinding.OobeFragmentAppsBinding
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generatePlaceholder
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
@@ -41,35 +37,31 @@ import kotlin.random.Random
 
 class AppsFragment: Fragment() {
 
-    private var recyclerView: RecyclerView? = null
-    private var loading: WP7ProgressBar? = null
     private val hashCache = SparseArrayCompat<Drawable?>()
-    private var main: View? = null
+
+    private var _binding: OobeFragmentAppsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.oobe_fragment_apps, container, false)
-        main = view
-        WelcomeActivity.setText(requireActivity(), getString(R.string.configureApps))
-        recyclerView = view.findViewById(R.id.oobeRecycler)
-        loading = view.findViewById(R.id.oobeAppsLoadingBar)
-        loading!!.showProgressBar()
-        return view
+    ): View {
+        _binding = OobeFragmentAppsBinding.inflate(inflater, container, false)
+        (requireActivity() as WelcomeActivity).setText(getString(R.string.configureApps))
+        binding.oobeAppsLoadingBar.showProgressBar()
+        return binding.root
     }
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val back: MaterialButton = view.findViewById(R.id.back)
-        val next: MaterialButton = view.findViewById(R.id.next)
-        val selectAll: MaterialButton = view.findViewById(R.id.oobeSelectAll)
-        val removeAll: MaterialButton = view.findViewById(R.id.oobeRemoveAll)
         val call = TileData.getTileData(requireContext()).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
             val appList = sortApps(setUpApps(requireContext().packageManager, requireContext()))
-            val mAdapter = AppAdapter(appList, requireContext())
+            val mAdapter = AppAdapter(appList)
             val lm = LinearLayoutManager(requireContext())
             var iconManager: IconPackManager? = null
             var isCustomIconsInstalled = false
@@ -90,11 +82,11 @@ class AppsFragment: Fragment() {
                 }
             }
             withContext(Dispatchers.Main) {
-                recyclerView?.apply {
+                binding.oobeRecycler.apply {
                     layoutManager = lm
                     adapter = mAdapter
                 }
-                back.setOnClickListener {
+                binding.back.setOnClickListener {
                     lifecycleScope.launch {
                         enterAnimation(true)
                         delay(200)
@@ -103,55 +95,75 @@ class AppsFragment: Fragment() {
                         }
                     }
                 }
-                next.setOnClickListener {
-                    enterAnimation(true)
-                    lifecycleScope.launch(Dispatchers.Default) {
-                        generatePlaceholder(call, selectedItems!!.size * 2)
-                        var pos = 0
-                        for (i in selectedItems!!) {
-                            val id = Random.nextLong(1000, 2000000)
-                            val entity = Tile(
-                                pos, id, -1, 0,
-                                isSelected = false,
-                                tileSize = generateRandomTileSize(false),
-                                appLabel = i.appLabel!!,
-                                appPackage = i.appPackage!!
-                            )
-                            call.addTile(entity)
-                            pos += 1
-                        }
-                        withContext(Dispatchers.Main) {
-                            requireActivity().supportFragmentManager.commit {
-                                replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
+                binding.next.setOnClickListener {
+                    if(selectedItems!!.size < 1) {
+                        WPDialog(requireContext()).apply {
+                            setTopDialog(true)
+                            setTitle(getString(R.string.reset_warning_title))
+                            setMessage(getString(R.string.oobe_apps_warn))
+                            setPositiveButton(getString(R.string.no)) {
+                                dismiss()
                             }
+                            setNegativeButton(getString(R.string.yes)) {
+                                addApps(call)
+                                enterAnimation(true)
+                                dismiss()
+                            }
+                            show()
                         }
+                    } else {
+                        addApps(call)
+                        enterAnimation(true)
                     }
                 }
-                selectAll.setOnClickListener {
+                binding.oobeSelectAll.setOnClickListener {
                     mAdapter.selectAll()
                 }
-                removeAll.setOnClickListener {
+                binding.oobeRemoveAll.setOnClickListener {
                     mAdapter.removeAll()
                 }
-                loading!!.hideProgressBar()
-                loading!!.visibility = View.GONE
+                binding.oobeAppsLoadingBar.apply {
+                    hideProgressBar()
+                    visibility = View.GONE
+                }
+            }
+        }
+    }
+    private fun addApps(call: TileDao) {
+        lifecycleScope.launch(Dispatchers.Default) {
+            generatePlaceholder(call, selectedItems!!.size * 2)
+            var pos = 0
+            for (i in selectedItems!!) {
+                val id = Random.nextLong(1000, 2000000)
+                val entity = Tile(
+                    pos, id, -1, 0,
+                    isSelected = false,
+                    tileSize = generateRandomTileSize(false),
+                    appLabel = i.appLabel!!,
+                    appPackage = i.appPackage!!
+                )
+                call.addTile(entity)
+                pos += 1
+            }
+            withContext(Dispatchers.Main) {
+                requireActivity().supportFragmentManager.commit {
+                    replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
+                }
             }
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null) {
-            return
-        }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "translationX", 1000f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
             )
         }
         animatorSet.setDuration(300)
@@ -167,13 +179,11 @@ class AppsFragment: Fragment() {
         var latestItem: Int? = null
     }
 
-    inner class AppAdapter(private var adapterApps: MutableList<App>, private val context: Context) :
+    inner class AppAdapter(private var adapterApps: MutableList<App>) :
         RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return OOBEAppHolder(
-                LayoutInflater.from(parent.context).inflate(R.layout.oobe_app_item, parent, false)
-            )
+            return OOBEAppHolder(OobeAppItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
         }
 
         override fun getItemCount(): Int {
@@ -202,20 +212,10 @@ class AppsFragment: Fragment() {
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val item = adapterApps[position]
             holder as OOBEAppHolder
-            try {
-                holder.icon.setImageDrawable(hashCache[item.id])
-            } catch (e: PackageManager.NameNotFoundException) {
-                holder.icon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        context,
-                        R.drawable.ic_os_android
-                    )
-                )
-                adapterApps.remove(item)
-                notifyItemRemoved(position)
-            }
-            holder.label.text = item.appLabel
-            holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+            holder.binding.appIcon.setImageDrawable(hashCache[item.id])
+            holder.binding.appLabel.text = item.appLabel
+            holder.binding.appCheckbox.isChecked = adapterApps[position].selected
+            holder.binding.appCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 latestItem = position
                 if (isChecked) {
                     item.selected = true
@@ -229,12 +229,7 @@ class AppsFragment: Fragment() {
                     }
                 }
             }
-            holder.checkbox.isChecked = adapterApps[position].selected
         }
     }
-    inner class OOBEAppHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val icon: ImageView = itemView.findViewById(R.id.app_icon)
-        val label: MaterialTextView = itemView.findViewById(R.id.app_label)
-        val checkbox: MaterialCheckBox = itemView.findViewById(R.id.app_checkbox)
-    }
+    inner class OOBEAppHolder(val binding: OobeAppItemBinding) : RecyclerView.ViewHolder(binding.root)
 }

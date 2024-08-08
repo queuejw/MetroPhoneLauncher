@@ -44,7 +44,6 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
-import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.util.Calendar

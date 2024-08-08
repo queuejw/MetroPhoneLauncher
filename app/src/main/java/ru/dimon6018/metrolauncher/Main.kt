@@ -16,12 +16,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView.OnEditorActionListener
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -33,8 +31,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -49,13 +45,14 @@ import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.databinding.MainScreenLaucnherBinding
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.closeDiskCache
+import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.initDiskCache
+import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.loadIconFromDiskCache
+import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.saveIconToDiskCache
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
-import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.closeDiskCache
-import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.initDiskCache
-import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.loadIconFromDiskCache
-import ru.dimon6018.metrolauncher.helpers.utils.CacheUtils.Companion.saveIconToDiskCache
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -73,7 +70,6 @@ import kotlin.system.exitProcess
 
 class Main : AppCompatActivity() {
 
-    private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var mainViewModel: MainViewModel
     private val iconPackManager: IconPackManager by lazy {
@@ -86,16 +82,13 @@ class Main : AppCompatActivity() {
         resources.getDimensionPixelSize(R.dimen.tile_default_size)
     }
 
-    // bottom bar
-    private var bottomViewStartBtn: ImageView? = null
-    private var bottomViewSearchBtn: ImageView? = null
-
-    private var searchBarResultsLayout: MaterialCardView? = null
     private var searchAdapter: SearchAdapter? = null
     private var filteredList: MutableList<App>? = null
 
     private var bottomViewReady = false
     private var searching = false
+
+    private lateinit var binding: MainScreenLaucnherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
@@ -109,8 +102,9 @@ class Main : AppCompatActivity() {
             runOOBE()
             return
         }
+        binding = MainScreenLaucnherBinding.inflate(layoutInflater)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        setContentView(R.layout.main_screen_laucnher)
+        setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         isLandscape = this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         lifecycleScope.launch(Dispatchers.Default) {
@@ -124,8 +118,7 @@ class Main : AppCompatActivity() {
             }
             cancel("done")
         }
-        val coordinatorLayout: CoordinatorLayout = findViewById(R.id.coordinator)
-        applyWindowInsets(coordinatorLayout)
+        applyWindowInsets(binding.coordinator)
         configureWallpaper()
         registerPackageReceiver(this, packageReceiver)
         otherTasks()
@@ -176,8 +169,8 @@ class Main : AppCompatActivity() {
             this@Main,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (viewPager.currentItem != 0) {
-                        viewPager.currentItem -= 1
+                    if (binding.pager.currentItem != 0) {
+                        binding.pager.currentItem -= 1
                     } else {
                         if (searching && PREFS!!.isSearchBarEnabled) {
                             hideSearch()
@@ -188,11 +181,10 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        viewPager = findViewById(R.id.pager)
-        viewPager.apply {
+        binding.pager.apply {
             adapter = pagerAdapter
         }
-        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+        binding.pager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             val black = if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2)
                 ContextCompat.getColor(this@Main, android.R.color.black) else null
             val white = if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2)
@@ -202,19 +194,19 @@ class Main : AppCompatActivity() {
                 if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2) {
                     if (position == 0) {
                         if (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
-                            bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                            bottomViewSearchBtn?.setColorFilter(black!!)
+                            binding.navigationStartBtn.setColorFilter(launcherAccentColor(this@Main.theme))
+                            binding.navigationSearchBtn.setColorFilter(black!!)
                         } else {
-                            bottomViewStartBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
-                            bottomViewSearchBtn?.setColorFilter(white!!)
+                            binding.navigationStartBtn.setColorFilter(launcherAccentColor(this@Main.theme))
+                            binding.navigationSearchBtn.setColorFilter(white!!)
                         }
                     } else {
                         if (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) {
-                            bottomViewStartBtn?.setColorFilter(black!!)
-                            bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                            binding.navigationStartBtn.setColorFilter(black!!)
+                            binding.navigationSearchBtn.setColorFilter(launcherAccentColor(this@Main.theme))
                         } else {
-                            bottomViewStartBtn?.setColorFilter(white!!)
-                            bottomViewSearchBtn?.setColorFilter(launcherAccentColor(this@Main.theme))
+                            binding.navigationStartBtn.setColorFilter(white!!)
+                            binding.navigationSearchBtn.setColorFilter(launcherAccentColor(this@Main.theme))
                         }
                     }
                 }
@@ -254,7 +246,7 @@ class Main : AppCompatActivity() {
     }
 
     fun configureViewPagerScroll(boolean: Boolean) {
-        viewPager.isUserInputEnabled = boolean
+        binding.pager.isUserInputEnabled = boolean
     }
 
     private suspend fun setMainViewModel() {
@@ -392,11 +384,9 @@ class Main : AppCompatActivity() {
     }
     private fun configureBottomBar() {
         if (!PREFS!!.isSearchBarEnabled) {
-            val bottomMainView: LinearLayout = findViewById(R.id.navigation_main)
-            bottomMainView.visibility = View.VISIBLE
-            bottomViewStartBtn = findViewById(R.id.navigation_start_btn)
-            bottomViewSearchBtn = findViewById(R.id.navigation_search_btn)
-            bottomViewStartBtn?.setImageDrawable(
+            binding.navigationMain.visibility = View.VISIBLE
+            binding.navigationStartBtn
+            binding.navigationStartBtn.setImageDrawable(
                 when (PREFS!!.navBarIconValue) {
                     0 -> {
                         ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
@@ -412,26 +402,22 @@ class Main : AppCompatActivity() {
                     }
                 }
             )
-            bottomViewStartBtn?.setOnClickListener {
-                viewPager.currentItem = 0
+            binding.navigationStartBtn.setOnClickListener {
+                binding.pager.currentItem = 0
             }
-            bottomViewSearchBtn?.setOnClickListener {
+            binding.navigationSearchBtn.setOnClickListener {
                 if (PREFS!!.isAllAppsEnabled) {
-                    viewPager.currentItem = 1
+                    binding.pager.currentItem = 1
                 }
             }
         } else {
-            val bottomViewSearchBarView: LinearLayout = findViewById(R.id.navigation_searchBar)
-            bottomViewSearchBarView.visibility = View.VISIBLE
-            searchBarResultsLayout = findViewById(R.id.searchBarResults)
-            val bottomViewSearchBar: TextInputLayout = findViewById(R.id.searchBar)
-            val searchRecyclerView: RecyclerView = findViewById(R.id.searchBarRecyclerView)
+            binding.navigationSearchBar.visibility = View.VISIBLE
             searchAdapter = SearchAdapter(null)
-            searchRecyclerView.apply {
+            binding.searchBarRecyclerView.apply {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = searchAdapter
             }
-            val editText = (bottomViewSearchBar.editText as? AutoCompleteTextView)
+            val editText = (binding.searchBar.editText as? AutoCompleteTextView)
             editText?.addTextChangedListener(object :
                 TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -459,7 +445,7 @@ class Main : AppCompatActivity() {
     private fun hideSearchResults() {
         lifecycleScope.launch {
             searching = false
-            searchBarResultsLayout?.apply {
+            binding.searchBarResults.apply {
                 if (PREFS!!.isTransitionAnimEnabled) {
                     ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
                 }
@@ -469,7 +455,7 @@ class Main : AppCompatActivity() {
     }
     private fun showSearchResults() {
         searching = true
-        searchBarResultsLayout?.apply {
+        binding.searchBarResults.apply {
             if (PREFS!!.isTransitionAnimEnabled) {
                 ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
             }

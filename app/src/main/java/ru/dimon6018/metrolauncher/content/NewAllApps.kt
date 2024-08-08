@@ -145,7 +145,6 @@ class NewAllApps: Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
     private fun configureRecyclerView() {
         binding.appList.apply {
             layoutManager = recyclerViewLM

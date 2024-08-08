@@ -215,9 +215,8 @@
     <string name="select_all">select all</string>
     <string name="remove_all">remove all</string>
     <string name="disable_all_apps">Show screen All apps</string>
-    <string name="alphabet_animation_settings_label">Allow alphabet animations</string>
+    <string name="alphabet_animation_settings_label">Allow alphabet animations (not working yet)</string>
     <string name="tiles_phone_start_animation_settings_label">Animate tiles when you turn on the screen</string>
-    <string name="search_error">There\'s been an error. Try searching again.</string>
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
     <string name="show_details_on_bsod">Show details on the error screen</string>
@@ -230,4 +229,5 @@
     <string name="dev_p2">"I just wanted to say thank you for using my launcher. I'm glad that my app is useful to other people. I appreciate it. If you have the desire and opportunity, then, you can support me by donating. I will be very, very pleased &#60;3, but it is not necessary. I hope you really like my app. Bye!</string>
     <string name="support">Support</string>
     <string name="tipSettingsUpdates">From this screen, you can check for updates for MPL to get fixes and new features.</string>
+    <string name="oobe_apps_warn">You have not selected any applications. Do you want to continue?</string>
 </resources>

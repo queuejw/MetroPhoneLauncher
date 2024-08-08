@@ -100,6 +100,7 @@ class NewStart: Fragment(), OnStartDragListener {
     private var screenIsOn = false
 
     private lateinit var mainViewModel: MainViewModel
+
     private var _binding: StartScreenBinding? = null
     private val binding get() = _binding!!
 
@@ -133,6 +134,10 @@ class NewStart: Fragment(), OnStartDragListener {
                 cancel("done")
             }
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
     private fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)

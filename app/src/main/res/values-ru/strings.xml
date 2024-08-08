@@ -216,9 +216,8 @@
     <string name="select_all">выбрать все</string>
     <string name="remove_all">убрать все</string>
     <string name="disable_all_apps">Показывать экран Все приложения</string>
-    <string name="alphabet_animation_settings_label">Разрешить анимации алфавита</string>
+    <string name="alphabet_animation_settings_label">Разрешить анимации алфавита (пока что не работает)</string>
     <string name="tiles_phone_start_animation_settings_label">Анимировать плитки при включении экрана</string>
-    <string name="search_error">Произошла ошибка. Попробуйте повторить поиск.</string>
     <string name="auto_shutdown_anims">Автоматически выключать анимации, если включен режим разработчика</string>
     <string name="animations_dev_mode">Анимации могут не работать, если вы выключили их в опциях для разработчиков.</string>
     <string name="show_details_on_bsod">Показывать подробности на экране ошибки</string>
@@ -231,4 +230,5 @@
     <string name="dev_p2">"Я просто хотел сказать спасибо за то, что используешь мой лаунчер. Я рад, что моё приложение полезно другим людям. Я ценю это. Если у тебя есть желание и возможность, то, можешь поддержать меня донатом. Мне будет очень-очень приятно &#60;3, но это не обязательно. Надеюсь, что тебе правда нравится моё приложение. Пока!</string>
     <string name="support">Поддержать</string>
     <string name="tipSettingsUpdates">На этом экране вы можете проверить наличие обновлений для лаунчера, чтобы получить исправления и новые функции.</string>
+    <string name="oobe_apps_warn">Вы не выбрали никаких приложений. Хотите продолжить?</string>
 </resources>

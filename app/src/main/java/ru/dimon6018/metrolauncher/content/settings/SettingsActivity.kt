@@ -11,11 +11,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -36,6 +33,7 @@ import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActiv
 import ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsMainBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -46,37 +44,20 @@ import kotlin.system.exitProcess
 
 class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var themeSub: MaterialTextView
-    private lateinit var navSub: MaterialTextView
-    private lateinit var iconsSub: MaterialTextView
-
     private var isDialogEnabled = true
     private var isEnter = false
-
-    private lateinit var themeBtn: MaterialCardView
-    private lateinit var allAppsBtn: MaterialCardView
-    private lateinit var tilesBtn: MaterialCardView
-    private lateinit var aboutBtn: MaterialCardView
-    private lateinit var feedbackBtn: MaterialCardView
-    private lateinit var updateBtn: MaterialCardView
-    private lateinit var navBarBtn: MaterialCardView
-    private lateinit var weatherBtm: MaterialCardView
-    private lateinit var iconBtn: MaterialCardView
-    private lateinit var expBtn: MaterialCardView
-    private lateinit var leaks: MaterialCardView
-    private lateinit var animsBtn: MaterialCardView
-    private lateinit var cord: CoordinatorLayout
+    private lateinit var binding: LauncherSettingsMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         setAppTheme()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_main)
+        binding = LauncherSettingsMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        init()
         confAnim()
         setOnClickers()
-        applyWindowInsets(cord)
+        applyWindowInsets(binding.root)
         prepareMessage()
         prepareTip()
     }
@@ -125,26 +106,8 @@ class SettingsActivity : AppCompatActivity() {
             PREFS!!.prefs.edit().putBoolean("tipSettingsEnabled", false).apply()
         }
     }
-    private fun init() {
-        cord = findViewById(R.id.coordinator)
-        themeSub = findViewById(R.id.theme_sub)
-        iconsSub = findViewById(R.id.icons_sub)
-        navSub = findViewById(R.id.navbar_sub)
-        themeBtn = findViewById(R.id.themeSetting)
-        allAppsBtn = findViewById(R.id.allAppsSetting)
-        tilesBtn = findViewById(R.id.tilesSetting)
-        aboutBtn = findViewById(R.id.aboutSetting)
-        feedbackBtn = findViewById(R.id.feedbackSetting)
-        updateBtn = findViewById(R.id.updatesSetting)
-        navBarBtn = findViewById(R.id.navbarSetting)
-        weatherBtm = findViewById(R.id.weatherSetting)
-        iconBtn = findViewById(R.id.iconsSetting)
-        expBtn = findViewById(R.id.expSetting)
-        leaks = findViewById(R.id.leaks)
-        animsBtn = findViewById(R.id.animSetting)
-    }
     private fun setOnClickers() {
-        themeBtn.setOnClickListener {
+        binding.settingsInclude.themeSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch(Dispatchers.Main) {
                     isEnter = true
@@ -155,7 +118,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        allAppsBtn.setOnClickListener {
+        binding.settingsInclude.allAppsSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -166,7 +129,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        tilesBtn.setOnClickListener {
+        binding.settingsInclude.tilesSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -177,7 +140,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        aboutBtn.setOnClickListener {
+        binding.settingsInclude.aboutSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -188,7 +151,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        feedbackBtn.setOnClickListener {
+        binding.settingsInclude.feedbackSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -199,7 +162,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        updateBtn.setOnClickListener {
+        binding.settingsInclude.updatesSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -210,7 +173,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        navBarBtn.setOnClickListener {
+        binding.settingsInclude.navbarSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -221,7 +184,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        weatherBtm.setOnClickListener {
+        binding.settingsInclude.weatherSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -232,7 +195,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        iconBtn.setOnClickListener {
+        binding.settingsInclude.iconsSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -243,7 +206,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        expBtn.setOnClickListener {
+        binding.settingsInclude.expSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -255,7 +218,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        leaks.setOnClickListener {
+        binding.settingsInclude.leaks.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -266,7 +229,7 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        animsBtn.setOnClickListener {
+        binding.settingsInclude.animSetting.setOnClickListener {
             if(!isEnter) {
                 lifecycleScope.launch {
                     isEnter = true
@@ -279,50 +242,50 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun confAnim() {
-        setViewInteractAnimation(themeBtn)
-        setViewInteractAnimation(allAppsBtn)
-        setViewInteractAnimation(tilesBtn)
-        setViewInteractAnimation(iconBtn)
-        setViewInteractAnimation(animsBtn)
-        setViewInteractAnimation(feedbackBtn)
-        setViewInteractAnimation(weatherBtm)
-        setViewInteractAnimation(updateBtn)
-        setViewInteractAnimation(navBarBtn)
-        setViewInteractAnimation(aboutBtn)
-        setViewInteractAnimation(leaks)
-        setViewInteractAnimation(expBtn)
+        setViewInteractAnimation(binding.settingsInclude.themeSetting)
+        setViewInteractAnimation(binding.settingsInclude.allAppsSetting)
+        setViewInteractAnimation(binding.settingsInclude.tilesSetting)
+        setViewInteractAnimation(binding.settingsInclude.iconsSetting)
+        setViewInteractAnimation(binding.settingsInclude.animSetting)
+        setViewInteractAnimation(binding.settingsInclude.feedbackSetting)
+        setViewInteractAnimation(binding.settingsInclude.weatherSetting)
+        setViewInteractAnimation(binding.settingsInclude.updatesSetting)
+        setViewInteractAnimation(binding.settingsInclude.navbarSetting)
+        setViewInteractAnimation(binding.settingsInclude.aboutSetting)
+        setViewInteractAnimation(binding.settingsInclude.leaks)
+        setViewInteractAnimation(binding.settingsInclude.expSetting)
     }
     private suspend fun startAnim() {
         if(PREFS!!.isTransitionAnimEnabled) {
-            setupAnim(themeBtn, 200)
-            setupAnim(allAppsBtn, 210)
-            setupAnim(tilesBtn, 220)
-            setupAnim(iconBtn, 225)
-            setupAnim(animsBtn, 230)
-            setupAnim(feedbackBtn, 235)
-            setupAnim(weatherBtm, 240)
-            setupAnim(updateBtn, 245)
-            setupAnim(navBarBtn, 250)
-            setupAnim(aboutBtn, 255)
-            setupAnim(leaks, 260)
-            setupAnim(expBtn, 265)
-            setupAnim(cord, 280)
+            setupAnim(binding.settingsInclude.themeSetting, 200)
+            setupAnim(binding.settingsInclude.allAppsSetting, 210)
+            setupAnim(binding.settingsInclude.tilesSetting, 220)
+            setupAnim(binding.settingsInclude.iconsSetting, 225)
+            setupAnim(binding.settingsInclude.animSetting, 230)
+            setupAnim(binding.settingsInclude.feedbackSetting, 235)
+            setupAnim(binding.settingsInclude.weatherSetting, 240)
+            setupAnim(binding.settingsInclude.updatesSetting, 245)
+            setupAnim(binding.settingsInclude.navbarSetting, 250)
+            setupAnim(binding.settingsInclude.aboutSetting, 255)
+            setupAnim(binding.settingsInclude.leaks, 260)
+            setupAnim(binding.settingsInclude.expSetting, 265)
+            setupAnim(binding.root, 280)
             isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                themeBtn.alpha = 1f
-                allAppsBtn.alpha = 1f
-                tilesBtn.alpha = 1f
-                iconBtn.alpha = 1f
-                animsBtn.alpha = 1f
-                feedbackBtn.alpha = 1f
-                weatherBtm.alpha = 1f
-                updateBtn.alpha = 1f
-                navBarBtn.alpha = 1f
-                aboutBtn.alpha = 1f
-                leaks.alpha = 1f
-                expBtn.alpha = 1f
-                cord.alpha = 1f
+                binding.settingsInclude.themeSetting.alpha = 1f
+                binding.settingsInclude.allAppsSetting.alpha = 1f
+                binding.settingsInclude.tilesSetting.alpha = 1f
+                binding.settingsInclude.iconsSetting.alpha = 1f
+                binding.settingsInclude.animSetting.alpha = 1f
+                binding.settingsInclude.feedbackSetting.alpha = 1f
+                binding.settingsInclude.weatherSetting.alpha = 1f
+                binding.settingsInclude.updatesSetting.alpha = 1f
+                binding.settingsInclude.navbarSetting.alpha = 1f
+                binding.settingsInclude.aboutSetting.alpha = 1f
+                binding.settingsInclude.leaks.alpha = 1f
+                binding.settingsInclude.expSetting.alpha = 1f
+                binding.root.alpha = 1f
                 cancel()
             }
             delay(150)
@@ -332,19 +295,19 @@ class SettingsActivity : AppCompatActivity() {
     }
     private fun hideViews() {
         if(PREFS!!.isTransitionAnimEnabled) {
-            hideAnim(themeBtn)
-            hideAnim(allAppsBtn)
-            hideAnim(tilesBtn)
-            hideAnim(iconBtn)
-            hideAnim(animsBtn)
-            hideAnim(feedbackBtn)
-            hideAnim(weatherBtm)
-            hideAnim(updateBtn)
-            hideAnim(navBarBtn)
-            hideAnim(aboutBtn)
-            hideAnim(leaks)
-            hideAnim(expBtn)
-            hideAnim(cord)
+            hideAnim(binding.settingsInclude.themeSetting)
+            hideAnim(binding.settingsInclude.allAppsSetting)
+            hideAnim(binding.settingsInclude.tilesSetting)
+            hideAnim(binding.settingsInclude.iconsSetting)
+            hideAnim(binding.settingsInclude.animSetting)
+            hideAnim(binding.settingsInclude.feedbackSetting)
+            hideAnim(binding.settingsInclude.weatherSetting)
+            hideAnim(binding.settingsInclude.updatesSetting)
+            hideAnim(binding.settingsInclude.navbarSetting)
+            hideAnim(binding.settingsInclude.aboutSetting)
+            hideAnim(binding.settingsInclude.leaks)
+            hideAnim(binding.settingsInclude.expSetting)
+            hideAnim(binding.root)
         }
     }
     private fun setupAnim(view: View?, duration: Long) {
@@ -398,8 +361,8 @@ class SettingsActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        themeSub.text = accentName(this)
-        navSub.text = when (PREFS!!.navBarColor) {
+        binding.settingsInclude.themeSub.text = accentName(this)
+        binding.settingsInclude.navbarSub.text = when (PREFS!!.navBarColor) {
             0 -> getString(R.string.always_dark)
             1 -> getString(R.string.always_light)
             2 -> getString(R.string.matches_accent_color)
@@ -408,12 +371,12 @@ class SettingsActivity : AppCompatActivity() {
             else -> getString(R.string.navigation_bar_2)
         }
         try {
-            iconsSub.text =
+            binding.settingsInclude.iconsSub.text =
                 if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub) else packageManager.getApplicationLabel(
                     packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0)
                 )
         } catch (e: Exception) {
-            iconsSub.text = getString(R.string.iconPackNotSelectedSub)
+            binding.settingsInclude.iconsSub.text = getString(R.string.iconPackNotSelectedSub)
         }
         if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.25) {
             isDialogEnabled = false
