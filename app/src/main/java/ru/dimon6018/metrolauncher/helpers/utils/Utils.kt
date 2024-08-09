@@ -419,6 +419,12 @@ class Utils {
                 call.addTile(placeholder)
             }
         }
+        fun getDefaultLocale(): Locale {
+            return Locale.getDefault()
+        }
+        fun getEnglishLanguage(): String {
+            return Locale.ENGLISH.language
+        }
     }
     class MarginItemDecoration(private val spaceSize: Int) : ItemDecoration() {
         override fun getItemOffsets(

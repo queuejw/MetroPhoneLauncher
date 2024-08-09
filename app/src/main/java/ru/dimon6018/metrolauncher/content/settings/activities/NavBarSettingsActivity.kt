@@ -3,129 +3,107 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
-import android.widget.RadioGroup
+import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsNavbarBinding
+import ru.dimon6018.metrolauncher.databinding.NavbarIconChooseBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class NavBarSettingsActivity: AppCompatActivity() {
 
-    private lateinit var currentIcon: ImageView
-    private lateinit var radio: RadioGroup
-    private lateinit var main: CoordinatorLayout
-    private lateinit var resultsSlider: Slider
+    private lateinit var binding: LauncherSettingsNavbarBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
+        binding = LauncherSettingsNavbarBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContentView(R.layout.launcher_settings_navbar)
-        radio = findViewById(R.id.navbarRadioGroup)
-        resultsSlider = findViewById(R.id.maxResultsSlider)
-        val dark: MaterialRadioButton = findViewById(R.id.alwaysDark)
-        val light: MaterialRadioButton = findViewById(R.id.alwaysLight)
-        val accent: MaterialRadioButton = findViewById(R.id.byTheme)
-        val hidden: MaterialRadioButton = findViewById(R.id.hidden)
-        val auto: MaterialRadioButton = findViewById(R.id.auto)
+        setContentView(binding.root)
         when(PREFS!!.navBarColor) {
             0 -> {
-                dark.isChecked = true
-                light.isChecked = false
-                accent.isChecked = false
-                hidden.isChecked = false
-                auto.isChecked = false
+                binding.settingsInclude.alwaysDark.isChecked = true
+                binding.settingsInclude.alwaysLight.isChecked = false
+                binding.settingsInclude.byTheme.isChecked = false
+                binding.settingsInclude.hidden.isChecked = false
+                binding.settingsInclude.auto.isChecked = false
             }
             1 -> {
-                dark.isChecked = false
-                light.isChecked = true
-                accent.isChecked = false
-                hidden.isChecked = false
-                auto.isChecked = false
+                binding.settingsInclude.alwaysDark.isChecked = false
+                binding.settingsInclude.alwaysLight.isChecked = true
+                binding.settingsInclude.byTheme.isChecked = false
+                binding.settingsInclude.hidden.isChecked = false
+                binding.settingsInclude.auto.isChecked = false
             }
             2 -> {
-                dark.isChecked = false
-                light.isChecked = false
-                accent.isChecked = true
-                hidden.isChecked = false
-                auto.isChecked = false
+                binding.settingsInclude.alwaysDark.isChecked = false
+                binding.settingsInclude.alwaysLight.isChecked = false
+                binding.settingsInclude.byTheme.isChecked = true
+                binding.settingsInclude.hidden.isChecked = false
+                binding.settingsInclude.auto.isChecked = false
             }
             3 -> {
-                dark.isChecked = false
-                light.isChecked = false
-                accent.isChecked = false
-                hidden.isChecked = true
-                auto.isChecked = false
+                binding.settingsInclude.alwaysDark.isChecked = false
+                binding.settingsInclude.alwaysLight.isChecked = false
+                binding.settingsInclude.byTheme.isChecked = false
+                binding.settingsInclude.hidden.isChecked = true
+                binding.settingsInclude.auto.isChecked = false
             }
             4 -> {
-                dark.isChecked = false
-                light.isChecked = false
-                accent.isChecked = false
-                hidden.isChecked = false
-                auto.isChecked = true
+                binding.settingsInclude.alwaysDark.isChecked = false
+                binding.settingsInclude.alwaysLight.isChecked = false
+                binding.settingsInclude.byTheme.isChecked = false
+                binding.settingsInclude.hidden.isChecked = false
+                binding.settingsInclude.auto.isChecked = true
             }
         }
-        radio.setOnCheckedChangeListener { _, checkedId ->
+        binding.settingsInclude.navbarRadioGroup.setOnCheckedChangeListener { _, checkedId ->
            when(checkedId) {
-               dark.id -> {
+               binding.settingsInclude.alwaysDark.id -> {
                    PREFS!!.setNavBarSetting(0)
                }
-               light.id -> {
+               binding.settingsInclude.alwaysLight.id -> {
                    PREFS!!.setNavBarSetting(1)
                }
-               accent.id -> {
+               binding.settingsInclude.byTheme.id -> {
                    PREFS!!.setNavBarSetting(2)
               }
-               hidden.id -> {
+               binding.settingsInclude.hidden.id -> {
                    PREFS!!.setNavBarSetting(3)
                }
-               auto.id -> {
+               binding.settingsInclude.auto.id -> {
                    PREFS!!.setNavBarSetting(4)
                }
            }
             PREFS!!.isPrefsChanged = true
         }
-        main = findViewById(R.id.coordinator)
-        applyWindowInsets(main)
-
-        currentIcon = findViewById(R.id.currentStartIcon)
+        applyWindowInsets(binding.root)
         updateCurrentIcon()
 
-        val iconBtn: MaterialButton = findViewById(R.id.choose_start_icon_btn)
-        iconBtn.setOnClickListener {
+        binding.settingsInclude.chooseStartIconBtn.setOnClickListener {
             val bottomSheet = BottomSheetDialog(this)
-            bottomSheet.setContentView(R.layout.navbar_icon_choose)
-            bottomSheet.dismissWithAnimation = false
-            val bottomSheetInternal: View? = bottomSheet.findViewById(com.google.android.material.R.id.design_bottom_sheet)
-            BottomSheetBehavior.from(bottomSheetInternal!!).peekHeight = resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
-            val icon0 = bottomSheetInternal.findViewById<ImageView>(R.id.icon0)
-            val icon1 = bottomSheetInternal.findViewById<ImageView>(R.id.icon1)
-            val icon2 = bottomSheetInternal.findViewById<ImageView>(R.id.icon2)
-            icon0.setOnClickListener {
+            val bBidding = NavbarIconChooseBinding.inflate(LayoutInflater.from(this))
+            bottomSheet.setContentView(bBidding.root)
+            bottomSheet.dismissWithAnimation = true
+            bBidding.icon0.setOnClickListener {
                 PREFS!!.setNavBarIcon(1)
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
-            icon1.setOnClickListener {
+            bBidding.icon1.setOnClickListener {
                 PREFS!!.setNavBarIcon(0)
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
-            icon2.setOnClickListener {
+            bBidding.icon2.setOnClickListener {
                 PREFS!!.setNavBarIcon(2)
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
@@ -133,22 +111,24 @@ class NavBarSettingsActivity: AppCompatActivity() {
             }
             bottomSheet.show()
         }
-
-        val searchSwitch: MaterialSwitch = findViewById(R.id.searchBarSwitch)
-        searchSwitch.isChecked = PREFS!!.isSearchBarEnabled
-        searchSwitch.text = if(PREFS!!.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
-        searchSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setSearchBar(isChecked)
-            searchSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            PREFS!!.isPrefsChanged = true
+        binding.settingsInclude.searchBarSwitch.apply {
+            isChecked = PREFS!!.isSearchBarEnabled
+            text = if(PREFS!!.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setSearchBar(isChecked)
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+                PREFS!!.isPrefsChanged = true
+            }
         }
-        resultsSlider.value = PREFS!!.maxResultsSearchBar.toFloat()
-        resultsSlider.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-            PREFS!!.setMaxResultCountSearchBar(value.toInt())
-        })
+        binding.settingsInclude.maxResultsSlider.apply {
+            value = PREFS!!.maxResultsSearchBar.toFloat()
+            addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+                PREFS!!.setMaxResultCountSearchBar(value.toInt())
+            })
+        }
     }
     private fun updateCurrentIcon() {
-        currentIcon.setImageDrawable(when(PREFS!!.navBarIconValue) {
+        binding.settingsInclude.currentStartIcon.setImageDrawable(when(PREFS!!.navBarIconValue) {
             0 -> {
                 ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
             }
@@ -167,6 +147,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(

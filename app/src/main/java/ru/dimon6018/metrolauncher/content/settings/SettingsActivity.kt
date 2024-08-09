@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -46,7 +47,25 @@ class SettingsActivity : AppCompatActivity() {
 
     private var isDialogEnabled = true
     private var isEnter = false
+
     private lateinit var binding: LauncherSettingsMainBinding
+    private var job: Job? = null
+    private val viewList: List<Pair<View, Long>> by lazy {
+        listOf(
+            binding.settingsInclude.themeSetting to 200,
+            binding.settingsInclude.allAppsSetting to 210,
+            binding.settingsInclude.tilesSetting to 220,
+            binding.settingsInclude.iconsSetting to 225,
+            binding.settingsInclude.animSetting to 230,
+            binding.settingsInclude.feedbackSetting to 235,
+            binding.settingsInclude.weatherSetting to 240,
+            binding.settingsInclude.updatesSetting to 245,
+            binding.settingsInclude.navbarSetting to 250,
+            binding.settingsInclude.aboutSetting to 255,
+            binding.settingsInclude.leaks to 260,
+            binding.settingsInclude.expSetting to 265
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
@@ -60,10 +79,22 @@ class SettingsActivity : AppCompatActivity() {
         applyWindowInsets(binding.root)
         prepareMessage()
         prepareTip()
+        checkHome()
     }
-
+    private fun checkHome() {
+        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2) {
+            isDialogEnabled = false
+            WPDialog(this).setTopDialog(false)
+                .setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.setAsDefaultLauncher))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes)) {
+                    startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
+                }.show()
+        }
+    }
     private fun prepareMessage() {
-        if(!PREFS!!.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.1 && PREFS!!.prefs.getBoolean("messageEnabled", true)) {
+        if(!PREFS!!.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.08 && PREFS!!.prefs.getBoolean("messageEnabled", true)) {
             WPDialog(this).apply {
                 setTopDialog(true)
                 setTitle(getString(R.string.developer))
@@ -71,6 +102,7 @@ class SettingsActivity : AppCompatActivity() {
                 setPositiveButton(getString(R.string.no), null)
                 setNegativeButton(getString(R.string.yes)) {
                     donateDialog()
+                    dismiss()
                 }
                 setNeutralButton(getString(R.string.not_show_again)) {
                     PREFS!!.prefs.edit().putBoolean("messageEnabled", false).apply()
@@ -107,139 +139,55 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun setOnClickers() {
-        binding.settingsInclude.themeSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    isEnter = true
+        setClickListener(binding.settingsInclude.themeSetting, Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.allAppsSetting, Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.tilesSetting, Intent(this@SettingsActivity, TileSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.aboutSetting, Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.feedbackSetting, Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.updatesSetting, Intent(this@SettingsActivity, UpdateActivity::class.java))
+        setClickListener(binding.settingsInclude.navbarSetting, Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.weatherSetting, Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.iconsSetting, Intent(this@SettingsActivity, IconSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.expSetting, Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.leaks, LeakCanary.newLeakDisplayActivityIntent())
+        setClickListener(binding.settingsInclude.animSetting, Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
+    }
+    private fun setClickListener(view: View, intent: Intent) {
+        view.setOnClickListener {
+            if (!isEnter) {
+                isEnter = true
+                job?.cancel()
+                job = lifecycleScope.launch {
                     if (PREFS!!.isTransitionAnimEnabled) {
                         startAnim()
                     }
-                    startActivity(Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
+                    startActivity(intent)
+                }
+                job?.invokeOnCompletion {
+                    isEnter = false
                 }
             }
         }
-        binding.settingsInclude.allAppsSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
-                }
-            }
+    }
+    private fun setupAnimations() {
+        viewList.forEach { (view, duration) ->
+            setupAnimForViews(view, duration)
         }
-        binding.settingsInclude.tilesSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, TileSettingsActivity::class.java))
-                }
-            }
+        setupAnimForViews(binding.root, 180)
+    }
+    private fun setupAnimForViews(view: View, dur: Long) {
+        if (!PREFS!!.isTransitionAnimEnabled) {
+            return
         }
-        binding.settingsInclude.aboutSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
-                }
-            }
+        val animatorSet = AnimatorSet().apply {
+            playTogether(
+                ObjectAnimator.ofFloat(view, "alpha", if (isEnter) 1f else 0f, if (isEnter) 0f else 1f),
+                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -500f, if (isEnter) -500f else 0f),
+                ObjectAnimator.ofFloat(view, "rotationY", if (isEnter) 0f else -90f, if (isEnter) -90f else 0f)
+            )
+            duration = dur
         }
-        binding.settingsInclude.feedbackSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.updatesSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, UpdateActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.navbarSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.weatherSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.iconsSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, IconSettingsActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.expSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(
-                        Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
-                }
-            }
-        }
-        binding.settingsInclude.leaks.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(LeakCanary.newLeakDisplayActivityIntent())
-                }
-            }
-        }
-        binding.settingsInclude.animSetting.setOnClickListener {
-            if(!isEnter) {
-                lifecycleScope.launch {
-                    isEnter = true
-                    if (PREFS!!.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
-                    startActivity(Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
-                }
-            }
-        }
+        animatorSet.start()
     }
     private fun confAnim() {
         setViewInteractAnimation(binding.settingsInclude.themeSetting)
@@ -256,35 +204,14 @@ class SettingsActivity : AppCompatActivity() {
         setViewInteractAnimation(binding.settingsInclude.expSetting)
     }
     private suspend fun startAnim() {
-        if(PREFS!!.isTransitionAnimEnabled) {
-            setupAnim(binding.settingsInclude.themeSetting, 200)
-            setupAnim(binding.settingsInclude.allAppsSetting, 210)
-            setupAnim(binding.settingsInclude.tilesSetting, 220)
-            setupAnim(binding.settingsInclude.iconsSetting, 225)
-            setupAnim(binding.settingsInclude.animSetting, 230)
-            setupAnim(binding.settingsInclude.feedbackSetting, 235)
-            setupAnim(binding.settingsInclude.weatherSetting, 240)
-            setupAnim(binding.settingsInclude.updatesSetting, 245)
-            setupAnim(binding.settingsInclude.navbarSetting, 250)
-            setupAnim(binding.settingsInclude.aboutSetting, 255)
-            setupAnim(binding.settingsInclude.leaks, 260)
-            setupAnim(binding.settingsInclude.expSetting, 265)
-            setupAnim(binding.root, 280)
+        if (PREFS!!.isTransitionAnimEnabled) {
+            setupAnimations()
             isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
                 delay(500)
-                binding.settingsInclude.themeSetting.alpha = 1f
-                binding.settingsInclude.allAppsSetting.alpha = 1f
-                binding.settingsInclude.tilesSetting.alpha = 1f
-                binding.settingsInclude.iconsSetting.alpha = 1f
-                binding.settingsInclude.animSetting.alpha = 1f
-                binding.settingsInclude.feedbackSetting.alpha = 1f
-                binding.settingsInclude.weatherSetting.alpha = 1f
-                binding.settingsInclude.updatesSetting.alpha = 1f
-                binding.settingsInclude.navbarSetting.alpha = 1f
-                binding.settingsInclude.aboutSetting.alpha = 1f
-                binding.settingsInclude.leaks.alpha = 1f
-                binding.settingsInclude.expSetting.alpha = 1f
+                viewList.forEach { (view, _) ->
+                    view.alpha = 1f
+                }
                 binding.root.alpha = 1f
                 cancel()
             }
@@ -294,42 +221,12 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun hideViews() {
-        if(PREFS!!.isTransitionAnimEnabled) {
-            hideAnim(binding.settingsInclude.themeSetting)
-            hideAnim(binding.settingsInclude.allAppsSetting)
-            hideAnim(binding.settingsInclude.tilesSetting)
-            hideAnim(binding.settingsInclude.iconsSetting)
-            hideAnim(binding.settingsInclude.animSetting)
-            hideAnim(binding.settingsInclude.feedbackSetting)
-            hideAnim(binding.settingsInclude.weatherSetting)
-            hideAnim(binding.settingsInclude.updatesSetting)
-            hideAnim(binding.settingsInclude.navbarSetting)
-            hideAnim(binding.settingsInclude.aboutSetting)
-            hideAnim(binding.settingsInclude.leaks)
-            hideAnim(binding.settingsInclude.expSetting)
+        if (PREFS!!.isTransitionAnimEnabled) {
+            viewList.forEach { (view, _) ->
+                hideAnim(view)
+            }
             hideAnim(binding.root)
         }
-    }
-    private fun setupAnim(view: View?, duration: Long) {
-        if(view == null || !PREFS!!.isTransitionAnimEnabled) {
-            return
-        }
-        val animatorSet = AnimatorSet()
-        if(!isEnter) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(view, "translationX", -600f, 0f),
-                ObjectAnimator.ofFloat(view, "rotationY", -90f, 0f),
-                ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
-            )
-        } else {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(view, "translationX", 0f, -600f),
-                ObjectAnimator.ofFloat(view, "rotationY", 0f, -90f),
-                ObjectAnimator.ofFloat(view, "alpha", 1f, 0f)
-            )
-        }
-        animatorSet.setDuration(duration)
-        animatorSet.start()
     }
     private fun hideAnim(view: View?) {
         if(view == null || !PREFS!!.isTransitionAnimEnabled) {
@@ -370,24 +267,11 @@ class SettingsActivity : AppCompatActivity() {
             4 -> getString(R.string.auto)
             else -> getString(R.string.navigation_bar_2)
         }
-        try {
-            binding.settingsInclude.iconsSub.text =
-                if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub) else packageManager.getApplicationLabel(
-                    packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0)
-                )
-        } catch (e: Exception) {
-            binding.settingsInclude.iconsSub.text = getString(R.string.iconPackNotSelectedSub)
-        }
-        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.25) {
-            isDialogEnabled = false
-            WPDialog(this).setTopDialog(false)
-                .setTitle(getString(R.string.tip))
-                .setMessage(getString(R.string.setAsDefaultLauncher))
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) {
-                    startActivity(Intent(Settings.ACTION_HOME_SETTINGS))
-                }.show()
-        }
+        binding.settingsInclude.iconsSub.text = runCatching {
+            if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub)
+            else packageManager.getApplicationLabel(packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0))
+        }.getOrElse { getString(R.string.iconPackNotSelectedSub) }
+
         if(PREFS!!.isPrefsChanged) {
             PREFS!!.isPrefsChanged = false
             Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_SHORT).show()

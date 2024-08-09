@@ -214,7 +214,6 @@ class AppsFragment: Fragment() {
             holder as OOBEAppHolder
             holder.binding.appIcon.setImageDrawable(hashCache[item.id])
             holder.binding.appLabel.text = item.appLabel
-            holder.binding.appCheckbox.isChecked = adapterApps[position].selected
             holder.binding.appCheckbox.setOnCheckedChangeListener { _, isChecked ->
                 latestItem = position
                 if (isChecked) {
@@ -229,6 +228,7 @@ class AppsFragment: Fragment() {
                     }
                 }
             }
+            holder.binding.appCheckbox.isChecked = adapterApps[position].selected
         }
     }
     inner class OOBEAppHolder(val binding: OobeAppItemBinding) : RecyclerView.ViewHolder(binding.root)

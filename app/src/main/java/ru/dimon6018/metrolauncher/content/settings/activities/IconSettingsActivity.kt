@@ -11,14 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsIconBinding
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -27,80 +26,70 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTh
 
 class IconSettingsActivity: AppCompatActivity() {
 
-    private lateinit var chooseBtn: MaterialButton
-    private lateinit var currentPackTextView: MaterialTextView
-    private lateinit var currentPackErrorTextView: MaterialTextView
-    private lateinit var removePack: MaterialTextView
-    private lateinit var downloadBtn: MaterialButton
-
-    private var iconPackManager: IconPackManager? = null
+    private val iconPackManager: IconPackManager by lazy {
+        IconPackManager(this)
+    }
     private var iconPackArrayList: ArrayList<IconPackManager.IconPack> = ArrayList()
 
-    private lateinit var mRecyclerView: RecyclerView
     private var mAdapter: IconPackAdapterList? = null
 
     private var isIconPackListEmpty = false
     private var isListVisible = false
     private var isError = false
-    private var packageMgr: PackageManager? = null
 
     private var dialog: WPDialog? = null
 
-    private lateinit var main: CoordinatorLayout
     private var appList = ArrayList<IconPackItem>()
+
+    private lateinit var binding: LauncherSettingsIconBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
+        binding = LauncherSettingsIconBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_icon)
-        packageMgr = packageManager
-        iconPackManager = IconPackManager(this)
-        chooseBtn = findViewById(R.id.chooseIconPack)
-        removePack = findViewById(R.id.removeIconPack)
-        currentPackTextView = findViewById(R.id.currentIconPackText)
-        currentPackErrorTextView = findViewById(R.id.currentIconPackError)
-        downloadBtn = findViewById(R.id.downloadIconPacks)
-        mRecyclerView = findViewById(R.id.iconPackList)
+        setContentView(binding.root)
+        createDialog()
+        initView()
+        setIconPacks()
+        applyWindowInsets(binding.root)
+    }
+
+    private fun createDialog() {
         dialog = WPDialog(this).setTopDialog(true)
             .setTitle(getString(R.string.tip))
             .setMessage(getString(R.string.tipIconPackError))
             .setPositiveButton(getString(android.R.string.ok), null)
-        chooseBtn.setOnClickListener {
+    }
+
+    private fun initView() {
+        binding.settingsInclude.chooseIconPack.setOnClickListener {
             setIconPacks()
             if(!isIconPackListEmpty) {
                 if(!isListVisible) {
                     isListVisible = true
-                    mRecyclerView.visibility = View.VISIBLE
+                    binding.settingsInclude.iconPackList.visibility = View.VISIBLE
                 } else {
                     isListVisible = false
-                    mRecyclerView.visibility = View.GONE
+                    binding.settingsInclude.iconPackList.visibility = View.GONE
                 }
             } else {
                 dialog?.show()
             }
             setUi()
         }
-        removePack.setOnClickListener {
+        binding.settingsInclude.removeIconPack.setOnClickListener {
             PREFS!!.setIconPack("null")
             PREFS!!.isPrefsChanged = true
             PREFS!!.iconPackChanged = true
             setUi()
         }
-        downloadBtn.setOnClickListener {
+        binding.settingsInclude.downloadIconPacks.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/lawnicons-m/releases/latest")))
         }
-        setIconPacks()
-        main = findViewById(R.id.coordinator)
-        applyWindowInsets(main)
     }
-
     private fun setIconPacks() {
-        if (iconPackManager == null) {
-            isError = true
-            return
-        }
         isError = false
-        iconPackArrayList = iconPackManager!!.getAvailableIconPacks(true)
+        iconPackArrayList = iconPackManager.getAvailableIconPacks(true)
         isIconPackListEmpty = iconPackArrayList.isEmpty()
         setUi()
         appList.clear()
@@ -116,7 +105,7 @@ class IconSettingsActivity: AppCompatActivity() {
             mAdapter = null
         }
         mAdapter = IconPackAdapterList(appList)
-        mRecyclerView.apply {
+        binding.settingsInclude.iconPackList.apply {
             layoutManager = LinearLayoutManager(this@IconSettingsActivity)
             adapter = mAdapter
         }
@@ -124,46 +113,45 @@ class IconSettingsActivity: AppCompatActivity() {
 
     private fun setUi() {
         if (isIconPackListEmpty) {
-            currentPackTextView.visibility = View.GONE
-            currentPackErrorTextView.visibility = View.VISIBLE
-            if(isError) {
-                currentPackErrorTextView.text = getString(R.string.error)
-            } else {
-                currentPackErrorTextView.text = getString(R.string.iconpack_error)
+            binding.settingsInclude.currentIconPackText.visibility = View.GONE
+            binding.settingsInclude.currentIconPackError.apply {
+                visibility = View.VISIBLE
+                text = if(isError) getString(R.string.error) else getString(R.string.iconpack_error)
             }
-            removePack.visibility = View.GONE
+            binding.settingsInclude.removeIconPack.visibility = View.GONE
         } else {
             val label = if(PREFS!!.iconPackPackage == "null") {
-                currentPackTextView.visibility = View.GONE
-                currentPackErrorTextView.visibility = View.VISIBLE
-                currentPackErrorTextView.text = getString(R.string.iconpack_error)
-                removePack.visibility = View.GONE
+                binding.settingsInclude.currentIconPackText.visibility = View.GONE
+                binding.settingsInclude.removeIconPack.visibility = View.GONE
+                binding.settingsInclude.currentIconPackError.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.iconpack_error)
+                }
                 "null"
             } else {
                 try {
-                    currentPackTextView.visibility = View.VISIBLE
-                    currentPackErrorTextView.visibility = View.GONE
-                    removePack.visibility = View.VISIBLE
-                    packageMgr!!.getApplicationLabel(packageMgr!!.getApplicationInfo(PREFS!!.iconPackPackage!!, 0))
+                    binding.settingsInclude.currentIconPackText.visibility = View.VISIBLE
+                    binding.settingsInclude.currentIconPackError.visibility = View.GONE
+                    binding.settingsInclude.removeIconPack.visibility = View.VISIBLE
+                    packageManager!!.getApplicationLabel(packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0))
                 } catch (e: PackageManager.NameNotFoundException) {
-                    currentPackTextView.visibility = View.GONE
-                    currentPackErrorTextView.visibility = View.VISIBLE
-                    currentPackErrorTextView.text = getString(R.string.iconpack_error)
+                    binding.settingsInclude.currentIconPackText.visibility = View.GONE
+                    binding.settingsInclude.currentIconPackError.apply {
+                        visibility = View.VISIBLE
+                        text = getString(R.string.iconpack_error)
+                    }
                     "null"
                 }
             }
-            currentPackTextView.text = getString(R.string.current_iconpack, label)
+            binding.settingsInclude.currentIconPackText.text = getString(R.string.current_iconpack, label)
         }
-        if(isListVisible) {
-            chooseBtn.text = getString(android.R.string.cancel)
-        } else {
-            chooseBtn.text = getString(R.string.choose_icon_pack)
-        }
+        binding.settingsInclude.chooseIconPack.text =  if(isListVisible) getString(android.R.string.cancel) else getString(R.string.choose_icon_pack)
     }
     private fun enterAnimation(exit: Boolean) {
         if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
@@ -216,7 +204,7 @@ class IconSettingsActivity: AppCompatActivity() {
                 PREFS!!.setIconPack(item.appPackage)
                 PREFS!!.iconPackChanged = true
                 PREFS!!.isPrefsChanged = true
-                mRecyclerView.visibility = View.GONE
+                binding.settingsInclude.iconPackList.visibility = View.GONE
                 isListVisible = false
                 setUi()
             }

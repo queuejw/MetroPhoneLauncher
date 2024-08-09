@@ -5,18 +5,14 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import coil3.load
 import coil3.request.placeholder
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAboutBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BUILD
@@ -34,61 +30,51 @@ import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
 
-    private var main: CoordinatorLayout? = null
     private val caracalLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/916px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
 
+    private lateinit var binding: LauncherSettingsAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme() )
+        setTheme(launcherAccentTheme())
+        binding = LauncherSettingsAboutBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_about)
+        setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val moreinfo = findViewById<MaterialTextView>(R.id.phoneinfo_more)
-        val moreinfobtn = findViewById<MaterialButton>(R.id.moreInfobtn)
-        val moreinfolayout = findViewById<LinearLayout>(R.id.moreinfoLayout)
-        val shortPhoneInfo = findViewById<MaterialTextView>(R.id.phoneinfo)
-        shortPhoneInfo.text = getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
-        moreinfobtn.setOnClickListener {
-            moreinfo.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
-            moreinfobtn.visibility = View.GONE
-            moreinfolayout.visibility = View.VISIBLE
+        applyWindowInsets(binding.root)
+        setupLayout()
+    }
+
+    private fun setupLayout() {
+        binding.settingsInclude.phoneinfo.text = getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
+        binding.settingsInclude.moreInfobtn.setOnClickListener {
+            binding.settingsInclude.phoneinfoMore.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
+            binding.settingsInclude.moreInfobtn.visibility = View.GONE
+            binding.settingsInclude.moreinfoLayout.visibility = View.VISIBLE
         }
-        val reset = findViewById<MaterialButton>(R.id.resetLauncher)
-        reset.setOnClickListener {
+        binding.settingsInclude.resetLauncher.setOnClickListener {
             WPDialog(this).setTopDialog(true)
-                    .setTitle(getString(R.string.reset_warning_title))
-                    .setMessage(getString(R.string.reset_warning))
-                    .setNegativeButton(getString(R.string.yes)) {
-                        resetPart1()
-                        WPDialog(this).dismiss()
-                    }
-                    .setPositiveButton(getString(R.string.no), null).show()
+                .setTitle(getString(R.string.reset_warning_title))
+                .setMessage(getString(R.string.reset_warning))
+                .setNegativeButton(getString(R.string.yes)) {
+                    resetPart1()
+                    WPDialog(this).dismiss()
+                }
+                .setPositiveButton(getString(R.string.no), null).show()
         }
-        val restart = findViewById<MaterialButton>(R.id.restartLauncher)
-        restart.setOnClickListener {
+        binding.settingsInclude.restartLauncher.setOnClickListener {
             exitProcess(0)
         }
-        val crash = findViewById<MaterialButton>(R.id.crashLauncher)
-        crash.setOnClickListener {
-            // NullPointerException crash
-            val crashElement: MaterialButton = findViewById(R.id.refresh)
-            crashElement.visibility = View.GONE
-        }
-        main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
-
-        val easterEggText = findViewById<MaterialTextView>(R.id.queuejw)
-        val easterEggImg = findViewById<ImageView>(R.id.queuejwImg)
-        easterEggText.setOnLongClickListener {
-            easterEggImg.visibility = View.VISIBLE
-            easterEggImg.load(caracalLink) {
-              placeholder(R.drawable.ic_clock)
+        binding.settingsInclude.queuejw.setOnLongClickListener {
+            binding.settingsInclude.queuejwImg.visibility = View.VISIBLE
+            binding.settingsInclude.queuejwImg.load(caracalLink) {
+                placeholder(R.drawable.ic_clock)
             }
             return@setOnLongClickListener true
         }
-        easterEggImg.setOnClickListener {
+        binding.settingsInclude.queuejwImg.setOnClickListener {
             WPDialog(this).setTopDialog(true).setTitle("Meow meow").setMessage("Meow meow, meow?").setPositiveButton("meow", null).show()
         }
     }
+
     private fun resetPart1() {
         val intent = (Intent(this@AboutSettingsActivity, Reset::class.java))
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -96,25 +82,26 @@ class AboutSettingsActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
             )
         }
         animatorSet.setDuration(400)

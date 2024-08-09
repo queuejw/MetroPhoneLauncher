@@ -8,7 +8,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
         <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
-        <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/MaterialAlertDialog.App</item>
         <item name="fontFamily">@font/manrope_regular</item>
         <item name="android:textColor">@color/textColor</item>
         <item name="materialButtonStyle">@style/Metro.Button</item>

@@ -15,20 +15,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsThemeBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -36,106 +32,105 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentCo
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class ThemeSettingsActivity : AppCompatActivity() {
-    private lateinit var themeMenu: MaterialCardView
-    private lateinit var chooseThemeBtn: MaterialButton
-    private lateinit var chooseAccentBtn: MaterialCardView
-    private lateinit var accentNameTextView: MaterialTextView
-    private lateinit var light: MaterialTextView
-    private lateinit var dark: MaterialTextView
-    private lateinit var accentTip: MaterialTextView
 
-    private var tileImg: ImageView? = null
-
-    private lateinit var wallpaperSwitch: MaterialSwitch
-    private lateinit var wallpaperTransparentTilesSwitch: MaterialSwitch
-    private lateinit var moreTilesSwitch: MaterialSwitch
-    private lateinit var dynamicColorSwitch: MaterialSwitch
-    private lateinit var lockDesktopSwitch: MaterialSwitch
-    private lateinit var pinAppsToStartSwitch: MaterialSwitch
-
-    private var main: CoordinatorLayout? = null
+    private lateinit var binbing: LauncherSettingsThemeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_theme)
-        init()
+        binbing = LauncherSettingsThemeBinding.inflate(layoutInflater)
+        setContentView(binbing.root)
         setThemeText()
         configure()
         setImg()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+        applyWindowInsets(binbing.root)
         prepareTip()
     }
 
     private fun configure() {
-        accentNameTextView.text = accentName(this)
-        chooseThemeBtn.text = if (PREFS!!.isLightThemeUsed) getString(R.string.light) else getString(R.string.dark)
-        chooseThemeBtn.setOnClickListener {
-            chooseThemeBtn.visibility = View.GONE
-            themeMenu.visibility = View.VISIBLE
+        binbing.settingsInclude.choosedAccentName.text = accentName(this)
+        binbing.settingsInclude.chooseTheme.apply {
+            text = if (PREFS!!.isLightThemeUsed) getString(R.string.light) else getString(R.string.dark)
+            setOnClickListener {
+                visibility = View.GONE
+                binbing.settingsInclude.chooseThemeMenu.visibility = View.VISIBLE
+            }
         }
-        light.setOnClickListener {
+        binbing.settingsInclude.chooseLight.setOnClickListener {
             PREFS!!.useLightTheme(true)
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        dark.setOnClickListener {
+        binbing.settingsInclude.chooseDark.setOnClickListener {
             PREFS!!.useLightTheme(false)
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        chooseAccentBtn.setOnClickListener { AccentDialog.display(supportFragmentManager) }
-        moreTilesSwitch.isChecked = PREFS!!.isMoreTilesEnabled
-        moreTilesSwitch.text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
-        pinAppsToStartSwitch.isChecked = PREFS!!.pinNewApps
-        pinAppsToStartSwitch.text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
-        wallpaperTransparentTilesSwitch = findViewById(R.id.wallpaperTransparentTilesSwtich)
-        //wallpaper switches
-        wallpaperSwitch.setOnCheckedChangeListener { _, check ->
-            PREFS!!.setWallpaper(check)
-            PREFS!!.isPrefsChanged = true
-            refreshWallpaperSwitches()
-        }
-        wallpaperTransparentTilesSwitch.setOnCheckedChangeListener { _, check ->
-            PREFS!!.setTransparentTiles(check)
-            PREFS!!.isPrefsChanged = true
-            refreshWallpaperSwitches()
-        }
-        //wallpaper switches end
-        moreTilesSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setMoreTilesPref(isChecked)
-            moreTilesSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            PREFS!!.isPrefsChanged = true
-            setImg()
-        }
-        pinAppsToStartSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setPinNewApps(isChecked)
-            pinAppsToStartSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-            pinAppsToStartSwitch.setChecked(isChecked)
-        }
-        dynamicColorSwitch.setChecked(PREFS!!.accentColor == 20)
-        dynamicColorSwitch.text = if(PREFS!!.accentColor == 20) getString(R.string.on) else getString(R.string.off)
-        dynamicColorSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if(DynamicColors.isDynamicColorAvailable()) {
-                if (isChecked) {
-                    PREFS!!.accentColor = 20
-                } else {
-                    PREFS!!.accentColor = PREFS!!.prefs.getInt("previous_accent_color", 5)
-                }
-                dynamicColorSwitch.text =
-                    if (isChecked) getString(R.string.on) else getString(R.string.off)
-                recreate()
-            } else {
-                Snackbar.make(dynamicColorSwitch, getString(R.string.dynamicColor_error), Snackbar.LENGTH_LONG).show()
+        binbing.settingsInclude.chooseAccent.setOnClickListener { AccentDialog.display(supportFragmentManager) }
+        binbing.settingsInclude.moreTilesSwitch.apply {
+            isChecked = PREFS!!.isMoreTilesEnabled
+            text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setMoreTilesPref(isChecked)
+                text = if (isChecked) getString(R.string.on) else getString(R.string.off)
+                PREFS!!.isPrefsChanged = true
+                setImg()
             }
         }
-        lockDesktopSwitch.isChecked = PREFS!!.isStartBlocked
-        lockDesktopSwitch.text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
-        lockDesktopSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.blockStartScreen(isChecked)
-            lockDesktopSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+        binbing.settingsInclude.newAppsToStartSwitch.apply {
+            isChecked = PREFS!!.pinNewApps
+            text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setPinNewApps(isChecked)
+                text = if (isChecked) getString(R.string.on) else getString(R.string.off)
+            }
+        }
+        binbing.settingsInclude.wallpaperTransparentTilesSwtich.apply {
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setTransparentTiles(isChecked)
+                PREFS!!.isPrefsChanged = true
+            }
+        }
+        binbing.settingsInclude.wallpaperShowSwtich.apply {
+            isChecked = PREFS!!.isWallpaperUsed
+            text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, check ->
+                PREFS!!.setWallpaper(check)
+                PREFS!!.isPrefsChanged = true
+                text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
+            }
+        }
+        binbing.settingsInclude.dynamicColorSwtich.apply {
+            if(!DynamicColors.isDynamicColorAvailable()) {
+                isEnabled = false
+            }
+            setChecked(PREFS!!.accentColor == 20)
+            text = if(PREFS!!.accentColor == 20) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                if (DynamicColors.isDynamicColorAvailable()) {
+                    if (isChecked) {
+                        PREFS!!.accentColor = 20
+                    } else {
+                        PREFS!!.accentColor = PREFS!!.prefs.getInt("previous_accent_color", 5)
+                    }
+                    recreate()
+                } else {
+                    Snackbar.make(
+                        this,
+                        getString(R.string.dynamicColor_error),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+        binbing.settingsInclude.blockStartSwitch.apply {
+            isChecked = PREFS!!.isStartBlocked
+            text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.blockStartScreen(isChecked)
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+            }
         }
     }
 
@@ -143,24 +138,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
         val spannable: Spannable = SpannableString(textFinal)
         spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
-    }
-
-    private fun init() {
-        chooseThemeBtn = findViewById(R.id.chooseTheme)
-        accentTip = findViewById(R.id.accentTip)
-        chooseAccentBtn = findViewById(R.id.chooseAccent)
-        accentNameTextView = findViewById(R.id.choosedAccentName)
-        themeMenu = findViewById(R.id.chooseThemeMenu)
-        light = findViewById(R.id.chooseLight)
-        dark = findViewById(R.id.chooseDark)
-        tileImg = findViewById(R.id.moreTilesImage)
-        accentTip = findViewById(R.id.accentTip)
-        moreTilesSwitch = findViewById(R.id.moreTilesSwitch)
-        wallpaperSwitch = findViewById(R.id.wallpaperShowSwtich)
-        dynamicColorSwitch = findViewById(R.id.dynamicColorSwtich)
-        pinAppsToStartSwitch = findViewById(R.id.newAppsToStartSwitch)
-        lockDesktopSwitch = findViewById(R.id.blockStartSwitch)
+        binbing.settingsInclude.accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
     }
     private fun prepareTip() {
         if(PREFS!!.prefs.getBoolean("tipSettingsThemeEnabled", true)) {
@@ -173,25 +151,26 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binbing.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
             )
         }
         animatorSet.setDuration(400)
@@ -204,20 +183,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         enterAnimation(false)
-        refreshWallpaperSwitches()
-    }
-    private fun refreshWallpaperSwitches() {
-        wallpaperSwitch.isChecked = PREFS!!.isWallpaperUsed
-        wallpaperSwitch.text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
-        wallpaperTransparentTilesSwitch.isChecked = PREFS!!.isTilesTransparent
-        wallpaperTransparentTilesSwitch.text = if(PREFS!!.isTilesTransparent) getString(R.string.on) else getString(R.string.off)
     }
     private fun setImg() {
-        tileImg?.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
+        binbing.settingsInclude.moreTilesImage.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
     }
     private fun restoreThemeButtonsAndApplyChanges() {
-        chooseThemeBtn.visibility = View.VISIBLE
-        themeMenu.visibility = View.GONE
+        binbing.settingsInclude.chooseTheme.visibility = View.VISIBLE
+        binbing.settingsInclude.chooseThemeMenu.visibility = View.GONE
         setAppTheme()
     }
     private fun setAppTheme() {
@@ -232,7 +204,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 (application as Application).setNightMode()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
             }
         }
     }

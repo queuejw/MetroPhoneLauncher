@@ -4,32 +4,33 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsTilesBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class TileSettingsActivity: AppCompatActivity() {
 
-    private lateinit var alphaSlider: Slider
-    private lateinit var main: CoordinatorLayout
+    private lateinit var binding: LauncherSettingsTilesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
+        binding = LauncherSettingsTilesBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_tiles)
-        alphaSlider = findViewById(R.id.alphaSlider)
-        alphaSlider.value = PREFS!!.getTilesTransparency
-        alphaSlider.addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-            PREFS!!.setTileTransparency(value)
-            PREFS!!.isPrefsChanged = true
-        })
-        main = findViewById(R.id.coordinator)
-        applyWindowInsets(main)
+        setContentView(binding.root)
+        initView()
+        applyWindowInsets(binding.root)
     }
-
+    private fun initView() {
+        binding.settingsInclude.alphaSlider.apply {
+            value = PREFS!!.getTilesTransparency
+            addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+                PREFS!!.setTileTransparency(value)
+                PREFS!!.isPrefsChanged = true
+            })
+        }
+    }
     override fun onResume() {
         super.onResume()
         enterAnimation(false)
@@ -38,6 +39,7 @@ class TileSettingsActivity: AppCompatActivity() {
         if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(

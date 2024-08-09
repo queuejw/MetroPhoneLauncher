@@ -122,7 +122,6 @@
                 android:textSize="20sp"/>
         <com.google.android.material.button.MaterialButton
             android:text="@string/restart"
-            android:alpha="0.5"
             android:layout_gravity="center"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="24dp"
@@ -131,18 +130,6 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:id="@+id/restartLauncher"
-            android:textSize="20sp"/>
-        <com.google.android.material.button.MaterialButton
-            android:text="Crash"
-            android:alpha="0.5"
-            android:layout_gravity="center"
-            android:layout_marginEnd="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="start"
-            android:id="@+id/crashLauncher"
             android:textSize="20sp"/>
     </LinearLayout>
 </ScrollView>

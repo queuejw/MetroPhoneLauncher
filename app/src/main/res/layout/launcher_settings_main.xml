@@ -40,9 +40,7 @@
 
                 <include
                     android:id="@+id/settings_include"
-                    layout="@layout/settings_list" >
-
-                </include>
+                    layout="@layout/settings_list"/>
         </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

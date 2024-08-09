@@ -36,7 +36,10 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/settings_navbar_content"/>
+        <include
+            android:id="@+id/settings_include"
+            layout="@layout/settings_navbar_content"/>
+
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

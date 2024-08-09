@@ -63,13 +63,14 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabet
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabetCompat
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getDefaultLocale
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getEnglishLanguage
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getUserLanguageRegex
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getUserLanguageRegexCompat
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
-import java.util.Locale
 import kotlin.random.Random
 
 class NewAllApps: Fragment() {
@@ -273,13 +274,13 @@ class NewAllApps: Fragment() {
         val alphabetList: MutableList<String> = ArrayList()
         val list = removeApps(getHeaderListLatter(mainViewModel.getAppList()))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            alphabetList.addAll(getAlphabet(Locale.getDefault().language))
+            alphabetList.addAll(getAlphabet(getDefaultLocale().language))
             alphabetList.add("#")
-            alphabetList.addAll(getAlphabet(Locale.ENGLISH.language))
+            alphabetList.addAll(getAlphabet(getEnglishLanguage()))
         } else {
-            alphabetList.addAll(getAlphabetCompat(Locale.getDefault().language)!!)
+            alphabetList.addAll(getAlphabetCompat(getDefaultLocale().language)!!)
             alphabetList.add("#")
-            alphabetList.addAll(getAlphabetCompat(Locale.ENGLISH.language)!!)
+            alphabetList.addAll(getAlphabetCompat(getEnglishLanguage())!!)
         }
         var pos = 0
         alphabetList.forEach {
@@ -391,7 +392,7 @@ class NewAllApps: Fragment() {
     }
     private fun filterText(text: String) {
         val filteredList: ArrayList<App> = ArrayList()
-        val locale = Locale.getDefault()
+        val locale = getDefaultLocale()
         mainViewModel.getAppList().forEach {
             if (it.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
                 filteredList.add(it)
@@ -412,13 +413,13 @@ class NewAllApps: Fragment() {
         return filteredList
     }
     private fun getHeaderListLatter(newApps: MutableList<App>): MutableList<App> {
-        val userLanguage = Locale.getDefault()
+        val userLanguage = getDefaultLocale()
         val userLanguageHeaders = mutableSetOf<String>()
         val userLanguageApps = mutableMapOf<String, MutableList<App>>()
         val englishHeaders = mutableSetOf<String>()
         val englishApps = mutableMapOf<String, MutableList<App>>()
         val otherApps = mutableListOf<App>()
-        val defaultLocale = Locale.getDefault()
+        val defaultLocale = getDefaultLocale()
 
         val regex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getUserLanguageRegex(userLanguage).toRegex()
@@ -543,11 +544,9 @@ class NewAllApps: Fragment() {
             val inflater = LayoutInflater.from(parent.context)
 
             return if (viewType == letterHolder) {
-                val binding = AbcBinding.inflate(inflater, parent, false)
-                LetterHolder(binding)
+                LetterHolder(AbcBinding.inflate(inflater, parent, false))
             } else {
-                val binding = AppBinding.inflate(inflater, parent, false)
-                AppHolder(binding)
+                AppHolder(AppBinding.inflate(inflater, parent, false))
             }
         }
 

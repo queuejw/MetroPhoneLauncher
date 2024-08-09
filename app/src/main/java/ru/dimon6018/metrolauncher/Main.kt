@@ -56,6 +56,7 @@ import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getDefaultLocale
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
@@ -65,8 +66,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
-import java.util.Locale
-import kotlin.system.exitProcess
 
 class Main : AppCompatActivity() {
 
@@ -218,7 +217,7 @@ class Main : AppCompatActivity() {
     override fun onResume() {
         if (PREFS!!.isPrefsChanged) {
             PREFS!!.isPrefsChanged = false
-            exitProcess(0)
+            recreate()
         }
         super.onResume()
     }
@@ -411,6 +410,7 @@ class Main : AppCompatActivity() {
                 }
             }
         } else {
+            filteredList = ArrayList()
             binding.navigationSearchBar.visibility = View.VISIBLE
             searchAdapter = SearchAdapter(null)
             binding.searchBarRecyclerView.apply {
@@ -463,24 +463,24 @@ class Main : AppCompatActivity() {
         }
     }
     private fun filterSearchText(text: String, appList: List<App>) {
-        var filteredList: MutableList<App> = ArrayList()
-        val locale = Locale.getDefault()
         if (text.isEmpty()) {
             hideSearchResults()
         } else {
             showSearchResults()
         }
         val max = PREFS!!.maxResultsSearchBar
+        filteredList!!.clear()
+        val defaultLocale = getDefaultLocale()
         for (element in appList) {
-            if (element.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
-                if (filteredList.size >= max) {
+            if (element.appLabel!!.lowercase(defaultLocale).contains(text.lowercase(defaultLocale))) {
+                if (filteredList!!.size >= max) {
                     break
                 }
-                filteredList.add(element)
+                filteredList!!.add(element)
             }
         }
-        filteredList = sortApps(filteredList)
-        searchAdapter?.setData(filteredList)
+        filteredList = sortApps(filteredList!!)
+        searchAdapter?.setData(filteredList!!)
     }
     private fun setAppTheme() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

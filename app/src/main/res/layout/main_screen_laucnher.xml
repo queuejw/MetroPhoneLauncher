@@ -79,19 +79,18 @@
             android:visibility="gone">
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Metro.SearchBar"
                 android:id="@+id/searchBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                app:boxStrokeWidth="3dp"
-                app:endIconMode="none">
+                android:layout_marginEnd="16dp">
 
                 <AutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:inputType="text"
                     android:imeOptions="actionGo"
+                    android:inputType="text"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:textSize="14sp" />

@@ -17,16 +17,10 @@ import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.widget.ContentLoadingProgressBar
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -37,6 +31,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsUpdatesBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.update.UpdateDataParser
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
@@ -50,16 +45,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class UpdateActivity: AppCompatActivity() {
-    private lateinit var check: MaterialButton
-    private lateinit var checkingSub: MaterialTextView
-    private lateinit var autoUpdateCheckBox: MaterialCheckBox
-    private lateinit var updateNotificationCheckBox: MaterialCheckBox
-
-    private lateinit var progressLayout: LinearLayout
-    private lateinit var progressText: MaterialTextView
-    private lateinit var cancelDownload: MaterialTextView
-    private lateinit var updateDetails: MaterialTextView
-    private lateinit var progressBar: ContentLoadingProgressBar
 
     private var db: BSOD? = null
     private var manager: DownloadManager? = null
@@ -70,37 +55,28 @@ class UpdateActivity: AppCompatActivity() {
     private var coroutineDownloadingScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private var mainDispatcher = Dispatchers.Main
 
-    private lateinit var main: CoordinatorLayout
+    private lateinit var binding: LauncherSettingsUpdatesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(Utils.launcherAccentTheme())
+        binding = LauncherSettingsUpdatesBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_updates)
+        setContentView(binding.root)
         init()
         refreshUi()
         setOnClickers()
-        applyWindowInsets(main)
+        applyWindowInsets(binding.root)
         prepareTip()
     }
     private fun init() {
         db = BSOD.getData(this)
-        main = findViewById(R.id.coordinator)
-        progressLayout = findViewById(R.id.updateIndicator)
-        progressText = findViewById(R.id.progessText)
-        progressBar = findViewById(R.id.progress)
-        check = findViewById(R.id.checkForUpdatesBtn)
-        checkingSub = findViewById(R.id.cheking_updates_sub)
-        autoUpdateCheckBox = findViewById(R.id.AutoUpdateCheckBox)
-        updateNotificationCheckBox = findViewById(R.id.UpdateNotifyCheckBox)
-        updateDetails = findViewById(R.id.updateInfo)
-        cancelDownload = findViewById(R.id.cancel_button)
     }
     private fun setOnClickers() {
-        autoUpdateCheckBox.setOnCheckedChangeListener { _, isChecked ->
+        binding.settingsInclude.AutoUpdateCheckBox.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setAutoUpdate(isChecked)
             refreshUi()
         }
-        updateNotificationCheckBox.setOnCheckedChangeListener { _, isChecked ->
+        binding.settingsInclude.UpdateNotifyCheckBox.setOnCheckedChangeListener { _, isChecked ->
             PREFS!!.setUpdateNotification(isChecked)
             if (isChecked) {
                 UpdateWorker.scheduleWork(this)
@@ -109,13 +85,13 @@ class UpdateActivity: AppCompatActivity() {
             }
             refreshUi()
         }
-        updateDetails.setOnClickListener {
+        binding.settingsInclude.updateInfo.setOnClickListener {
             WPDialog(this).setTopDialog(true)
                 .setTitle(getString(R.string.details))
                 .setMessage(getUpdateMessage())
                 .setPositiveButton(getString(android.R.string.ok), null).show()
         }
-        check.setOnClickListener {
+        binding.settingsInclude.checkForUpdatesBtn.setOnClickListener {
             if(!checkStoragePermissions()) {
                 PREFS!!.setUpdateState(5)
                 refreshUi()
@@ -147,7 +123,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
             }
         }
-        cancelDownload.setOnClickListener {
+        binding.settingsInclude.cancelButton.setOnClickListener {
             val ver = if (UpdateDataParser.verCode == null) {
                 PREFS!!.versionCode
             } else {
@@ -184,6 +160,7 @@ class UpdateActivity: AppCompatActivity() {
         if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
@@ -274,107 +251,137 @@ class UpdateActivity: AppCompatActivity() {
         }
     }
     private fun refreshUi() {
-        autoUpdateCheckBox.isChecked = PREFS!!.isAutoUpdateEnabled
-        updateNotificationCheckBox.isChecked = PREFS!!.isUpdateNotificationEnabled
-        autoUpdateCheckBox.isEnabled = PREFS!!.isUpdateNotificationEnabled
+        binding.settingsInclude.AutoUpdateCheckBox.apply {
+            isChecked = PREFS!!.isAutoUpdateEnabled
+            isEnabled = PREFS!!.isUpdateNotificationEnabled
+        }
+        binding.settingsInclude.UpdateNotifyCheckBox.isChecked = PREFS!!.isUpdateNotificationEnabled
         when (PREFS!!.updateState) {
             1 -> {
                 //checking for updates state
-                check.visibility = View.GONE
-                checkingSub.visibility = View.VISIBLE
-                progressLayout.visibility = View.GONE
-                checkingSub.text = getString(R.string.checking_for_updates)
-                updateDetails.visibility = View.GONE
-                cancelDownload.visibility = View.VISIBLE
+                binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.checking_for_updates)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.GONE
+                binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
             2 -> {
                 // dowloading state
-                checkingSub.visibility = View.GONE
-                check.visibility = View.GONE
-                progressLayout.visibility = View.VISIBLE
-                cancelDownload.visibility = View.VISIBLE
+                binding.settingsInclude.chekingUpdatesSub.visibility = View.GONE
+                binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
+                binding.settingsInclude.updateIndicator.visibility = View.VISIBLE
+                binding.settingsInclude.cancelButton.visibility = View.VISIBLE
                 val progressString = if(isUpdateDownloading) {
-                    progressBar.progress = PREFS!!.updateProgressLevel
+                    binding.settingsInclude.progress.progress = PREFS!!.updateProgressLevel
                     getString(R.string.preparing_to_install, PREFS!!.updateProgressLevel) + "%"
                 } else {
                     getString(R.string.preparing_to_install, 0) + "%"
                 }
-                progressText.text = progressString
-                updateDetails.visibility = View.GONE
+                binding.settingsInclude.progessText.text = progressString
+                binding.settingsInclude.updateInfo.visibility = View.GONE
             }
             3 -> {
                 // up to date
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.up_to_date)
-                check.visibility = View.VISIBLE
-                check.text = getString(R.string.check_for_updates)
-                progressLayout.visibility = View.GONE
-                updateDetails.visibility = View.GONE
-                cancelDownload.visibility = View.GONE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.up_to_date)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.check_for_updates)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.GONE
+                binding.settingsInclude.cancelButton.visibility = View.GONE
             }
             4 -> {
                 // ready to install
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.ready_to_install)
-                check.visibility = View.VISIBLE
-                check.text = getString(R.string.install)
-                progressLayout.visibility = View.GONE
-                updateDetails.visibility = View.VISIBLE
-                cancelDownload.visibility = View.VISIBLE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.ready_to_install)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.install)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.VISIBLE
+                binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
             5 -> {
                 // error
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.update_failed)
-                check.visibility = View.VISIBLE
-                progressLayout.visibility = View.GONE
-                check.text = getString(R.string.retry)
-                updateDetails.visibility = View.GONE
-                cancelDownload.visibility = View.GONE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.update_failed)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.retry)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.GONE
+                binding.settingsInclude.cancelButton.visibility = View.GONE
             }
             6 -> {
                 // ready for download
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.ready_to_download)
-                check.visibility = View.VISIBLE
-                progressLayout.visibility = View.GONE
-                check.text = getString(R.string.download)
-                updateDetails.visibility = View.VISIBLE
-                cancelDownload.visibility = View.VISIBLE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.ready_to_download)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.download)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.VISIBLE
+                binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
             7 -> {
                 // BETA is ready for download
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.ready_to_download_beta)
-                check.visibility = View.VISIBLE
-                progressLayout.visibility = View.GONE
-                check.text = getString(R.string.download_beta)
-                updateDetails.visibility = View.VISIBLE
-                cancelDownload.visibility = View.VISIBLE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.ready_to_download_beta)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.download_beta)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.VISIBLE
+                binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
             8 -> {
                 // current version is newer
-                checkingSub.visibility = View.VISIBLE
-                checkingSub.text = getString(R.string.update_failed_version_bigger_than_server)
-                check.visibility = View.VISIBLE
-                progressLayout.visibility = View.GONE
-                check.text = getString(R.string.retry)
-                updateDetails.visibility = View.GONE
-                cancelDownload.visibility = View.GONE
+                binding.settingsInclude.chekingUpdatesSub.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.update_failed_version_bigger_than_server)
+                }
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.retry)
+                }
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.GONE
+                binding.settingsInclude.cancelButton.visibility = View.GONE
             }
             0 -> {
                 // default
-                check.visibility = View.VISIBLE
-                check.text = getString(R.string.check_for_updates)
-                checkingSub.visibility = View.GONE
-                progressLayout.visibility = View.GONE
-                updateDetails.visibility = View.GONE
-                cancelDownload.visibility = View.GONE
+                binding.settingsInclude.checkForUpdatesBtn.apply {
+                    visibility = View.VISIBLE
+                    text = getString(R.string.check_for_updates)
+                }
+                binding.settingsInclude.chekingUpdatesSub.visibility = View.GONE
+                binding.settingsInclude.updateIndicator.visibility = View.GONE
+                binding.settingsInclude.updateInfo.visibility = View.GONE
+                binding.settingsInclude.cancelButton.visibility = View.GONE
             }
         }
         if(!BuildConfig.UPDATES_ACITVE) {
-            check.visibility = View.GONE
-            checkingSub.apply {
+            binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
+            binding.settingsInclude.chekingUpdatesSub.apply {
                 visibility = View.VISIBLE
                 text = getString(R.string.updates_disabled)
             }
@@ -416,7 +423,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
             }
             withContext(mainDispatcher) {
-                progressBar.isIndeterminate = false
+                binding.settingsInclude.progress.isIndeterminate = false
                 refreshUi()
             }
             cancel()
@@ -475,11 +482,11 @@ class UpdateActivity: AppCompatActivity() {
                         val progressString = getString(R.string.preparing_to_install, progress) + "%"
                         PREFS!!.setUpdateProgressLevel(progress)
                         withContext(mainDispatcher) {
-                            progressText.text = progressString
+                            binding.settingsInclude.progessText.text = progressString
                             if (isGreaterThanN) {
-                                progressBar.setProgress(progress, true)
+                                binding.settingsInclude.progress.setProgress(progress, true)
                             } else {
-                                progressBar.progress = progress
+                                binding.settingsInclude.progress.progress = progress
                             }
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {

@@ -6,93 +6,77 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.materialswitch.MaterialSwitch
-import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
+import ru.dimon6018.metrolauncher.databinding.LauncherSettingsFeedbackBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class FeedbackSettingsActivity: AppCompatActivity()  {
 
-    private var main: CoordinatorLayout? = null
+    private lateinit var binding: LauncherSettingsFeedbackBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
+        binding = LauncherSettingsFeedbackBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.launcher_settings_feedback)
-        val db = BSOD.getData(this)
+        setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val info: MaterialButton = findViewById(R.id.showBsodInfo)
-        info.setOnClickListener {
+        initViews()
+        updateMaxLogsSize(binding.settingsInclude.save1bsod,0)
+        updateMaxLogsSize(binding.settingsInclude.save5bsod,1)
+        updateMaxLogsSize(binding.settingsInclude.save10bsod,2)
+        updateMaxLogsSize(binding.settingsInclude.saveallbsods,3)
+        applyWindowInsets(binding.root)
+    }
+
+    private fun initViews() {
+        binding.settingsInclude.showBsodInfo.setOnClickListener {
             startActivity(Intent(this, FeedbackBsodListActivity::class.java))
         }
-        val delInfo: MaterialButton = findViewById(R.id.deleteBsodInfo)
-        delInfo.setOnClickListener {
-           lifecycleScope.launch(Dispatchers.IO) {
-                db.clearAllTables()
-           }.start()
+        binding.settingsInclude.deleteBsodInfo.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                BSOD.getData(this@FeedbackSettingsActivity).clearAllTables()
+            }.start()
         }
-        val feedbackSwitch = findViewById<MaterialSwitch>(R.id.sendFeedbackSwitch)
-        feedbackSwitch.setChecked(PREFS!!.isFeedbackEnabled)
-        feedbackSwitch.text = if(PREFS!!.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
-        feedbackSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setFeedback(isChecked)
-            feedbackSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+        binding.settingsInclude.sendFeedbackSwitch.apply {
+            isChecked = PREFS!!.isFeedbackEnabled
+            text = if(PREFS!!.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setFeedback(isChecked)
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+            }
         }
-        val setCrashLogLimitBtn: MaterialButton = findViewById(R.id.setCrashLogLimitBtn)
-        val chooseBsodInfoLimitCard = findViewById<MaterialCardView>(R.id.chooseBsodInfoLimit)
-        setButtonText(PREFS!!, setCrashLogLimitBtn)
-        setCrashLogLimitBtn.setOnClickListener {
-            chooseBsodInfoLimitCard.visibility = View.VISIBLE
-            setCrashLogLimitBtn.visibility = View.GONE
+        binding.settingsInclude.setCrashLogLimitBtn.apply {
+            setButtonText(PREFS!!, this)
+            setOnClickListener {
+                binding.settingsInclude.chooseBsodInfoLimit.visibility = View.VISIBLE
+                visibility = View.GONE
+            }
         }
-        val save1bsod: MaterialTextView = findViewById(R.id.save1bsod)
-        save1bsod.setOnClickListener {
-            PREFS!!.setMaxCrashLogs(0)
-            chooseBsodInfoLimitCard.visibility = View.GONE
-            setCrashLogLimitBtn.visibility = View.VISIBLE
-            setButtonText(PREFS!!, setCrashLogLimitBtn)
+        binding.settingsInclude.showErrorDetailsOnBsodSwitch.apply {
+            PREFS!!.bsodOutputEnabled
+            text = if(PREFS!!.bsodOutputEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.setBsodOutput(isChecked)
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+            }
         }
-        val save5bsod: MaterialTextView = findViewById(R.id.save5bsod)
-        save5bsod.setOnClickListener {
-            PREFS!!.setMaxCrashLogs(1)
-            chooseBsodInfoLimitCard.visibility = View.GONE
-            setCrashLogLimitBtn.visibility = View.VISIBLE
-            setButtonText(PREFS!!, setCrashLogLimitBtn)
-        }
-        val save10bsod: MaterialTextView = findViewById(R.id.save10bsod)
-        save10bsod.setOnClickListener {
-            PREFS!!.setMaxCrashLogs(2)
-            chooseBsodInfoLimitCard.visibility = View.GONE
-            setCrashLogLimitBtn.visibility = View.VISIBLE
-            setButtonText(PREFS!!, setCrashLogLimitBtn)
-        }
-        val saveallbsods: MaterialTextView = findViewById(R.id.saveallbsods)
-        saveallbsods.setOnClickListener {
-            PREFS!!.setMaxCrashLogs(3)
-            chooseBsodInfoLimitCard.visibility = View.GONE
-            setCrashLogLimitBtn.visibility = View.VISIBLE
-            setButtonText(PREFS!!, setCrashLogLimitBtn)
-        }
-        main = findViewById(R.id.coordinator)
-        main?.apply { applyWindowInsets(this) }
+    }
 
-        val bsodOutputSwitch: MaterialSwitch = findViewById(R.id.showErrorDetailsOnBsodSwitch)
-        bsodOutputSwitch.isChecked = PREFS!!.bsodOutputEnabled
-        bsodOutputSwitch.text = if(PREFS!!.bsodOutputEnabled) getString(R.string.on) else getString(R.string.off)
-        bsodOutputSwitch.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setBsodOutput(isChecked)
-            bsodOutputSwitch.text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+    private fun updateMaxLogsSize(view: View, value: Int) {
+        view.setOnClickListener {
+            PREFS!!.setMaxCrashLogs(value)
+            binding.settingsInclude.chooseBsodInfoLimit.visibility = View.GONE
+            binding.settingsInclude.setCrashLogLimitBtn.visibility = View.VISIBLE
+            setButtonText(PREFS!!, binding.settingsInclude.setCrashLogLimitBtn)
         }
     }
     private fun setButtonText(prefs: Prefs, button: MaterialButton) {
@@ -105,25 +89,26 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(main == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(!PREFS!!.isTransitionAnimEnabled) {
             return
         }
+        val main = binding.root
         val animatorSet = AnimatorSet()
         if(exit) {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
+                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
+                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
+                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
+                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
             )
         } else {
             animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main!!, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main!!, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main!!, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main!!, "scaleY", 0.5f, 1f)
+                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
+                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
+                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
+                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
             )
         }
         animatorSet.setDuration(400)
