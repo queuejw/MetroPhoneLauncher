@@ -137,7 +137,7 @@ class Main : AppCompatActivity() {
                 false
             ) && PREFS!!.versionCode == VERSION_CODE
         ) {
-            PREFS!!.setUpdateState(3)
+            PREFS!!.updateState = 3
         }
     }
 
@@ -155,12 +155,12 @@ class Main : AppCompatActivity() {
 
     private fun disableAnims() {
         PREFS!!.apply {
-            setAllAppsAnim(false)
-            setAlphabetAnim(false)
-            setTransitionAnim(false)
-            setLiveTilesAnim(false)
-            setTilesScreenAnim(false)
-            setTilesAnim(false)
+            isAAllAppsAnimEnabled = false
+            isAlphabetAnimEnabled = false
+            isTransitionAnimEnabled = false
+            isLiveTilesAnimEnabled = false
+            isTilesScreenAnimEnabled = false
+            isTilesAnimEnabled = false
         }
     }
 

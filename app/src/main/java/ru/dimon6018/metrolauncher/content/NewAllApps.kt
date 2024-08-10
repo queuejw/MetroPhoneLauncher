@@ -19,6 +19,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -367,9 +368,11 @@ class NewAllApps: Fragment() {
         binding.searchBtn.visibility = View.GONE
         binding.settingsBtn.visibility = View.GONE
         binding.search.visibility = View.VISIBLE
-        binding.search.isFocusable = true
         binding.searchBackBtn.visibility = View.VISIBLE
         setRecyclerPadding(0)
+        if(PREFS!!.showKeyboardWhenSearching) {
+            showKeyboard(binding.search.editText as? AutoCompleteTextView)
+        }
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
             removeHeaders()
             (binding.search.editText as? AutoCompleteTextView)?.addTextChangedListener(object :
@@ -377,7 +380,6 @@ class NewAllApps: Fragment() {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     filterText(s.toString())
                 }
-
                 override fun beforeTextChanged(
                     s: CharSequence,
                     start: Int,
@@ -388,6 +390,15 @@ class NewAllApps: Fragment() {
 
                 override fun afterTextChanged(s: Editable) {}
             })
+        }
+    }
+    private fun showKeyboard(view: View?) {
+        if (view != null) {
+            if (view.requestFocus()) {
+                val input =
+                    ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+                input?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
         }
     }
     private fun filterText(text: String) {

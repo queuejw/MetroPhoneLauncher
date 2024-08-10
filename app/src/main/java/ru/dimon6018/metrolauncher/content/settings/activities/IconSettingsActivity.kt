@@ -78,7 +78,7 @@ class IconSettingsActivity: AppCompatActivity() {
             setUi()
         }
         binding.settingsInclude.removeIconPack.setOnClickListener {
-            PREFS!!.setIconPack("null")
+            PREFS!!.iconPackPackage = "null"
             PREFS!!.isPrefsChanged = true
             PREFS!!.iconPackChanged = true
             setUi()
@@ -201,7 +201,7 @@ class IconSettingsActivity: AppCompatActivity() {
             holder.label.text = item.name
             holder.icon.setImageBitmap(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize))
             holder.itemView.setOnClickListener {
-                PREFS!!.setIconPack(item.appPackage)
+                PREFS!!.iconPackPackage = item.appPackage
                 PREFS!!.iconPackChanged = true
                 PREFS!!.isPrefsChanged = true
                 binding.settingsInclude.iconPackList.visibility = View.GONE

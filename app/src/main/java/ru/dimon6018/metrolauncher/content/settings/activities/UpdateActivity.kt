@@ -73,11 +73,11 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun setOnClickers() {
         binding.settingsInclude.AutoUpdateCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setAutoUpdate(isChecked)
+            PREFS!!.isAutoUpdateEnabled = isChecked
             refreshUi()
         }
         binding.settingsInclude.UpdateNotifyCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            PREFS!!.setUpdateNotification(isChecked)
+            PREFS!!.isUpdateNotificationEnabled = isChecked
             if (isChecked) {
                 UpdateWorker.scheduleWork(this)
             } else {
@@ -93,7 +93,7 @@ class UpdateActivity: AppCompatActivity() {
         }
         binding.settingsInclude.checkForUpdatesBtn.setOnClickListener {
             if(!checkStoragePermissions()) {
-                PREFS!!.setUpdateState(5)
+                PREFS!!.updateState = 5
                 refreshUi()
                 showPermsDialog()
                 return@setOnClickListener
@@ -107,7 +107,7 @@ class UpdateActivity: AppCompatActivity() {
                         openFile(uri, this)
                     } catch (e: Exception) {
                         Log.i("InstallAPK", "error: $e")
-                        PREFS!!.setUpdateState(5)
+                        PREFS!!.updateState = 5
                         refreshUi()
                         saveError(e.toString(), db!!)
                     }
@@ -117,7 +117,7 @@ class UpdateActivity: AppCompatActivity() {
                     checkDownload()
                 }
                 else -> {
-                    PREFS!!.setUpdateState(1)
+                    PREFS!!.updateState = 1
                     refreshUi()
                     checkForUpdates()
                 }
@@ -130,9 +130,9 @@ class UpdateActivity: AppCompatActivity() {
                 UpdateDataParser.verCode
             }
             if (ver == VERSION_CODE) {
-                PREFS!!.setUpdateState(3)
+                PREFS!!.updateState = 3
             } else {
-                PREFS!!.setUpdateState(0)
+                PREFS!!.updateState = 0
             }
             if (PREFS!!.updateState == 1) {
                 return@setOnClickListener
@@ -408,18 +408,18 @@ class UpdateActivity: AppCompatActivity() {
     private fun checkUpdateInfo() {
         coroutineXmlScope.launch {
             if (UpdateDataParser.verCode == null) {
-                PREFS!!.setUpdateState(5)
+                PREFS!!.updateState = 5
                 return@launch
             }
             if (UpdateDataParser.verCode == VERSION_CODE) {
-                PREFS!!.setUpdateState(3)
+                PREFS!!.updateState = 3
             } else if (VERSION_CODE > UpdateDataParser.verCode!!) {
-                PREFS!!.setUpdateState(8)
+                PREFS!!.updateState = 8
             } else if(UpdateDataParser.verCode!! > VERSION_CODE) {
                 if (UpdateDataParser.isBeta == true) {
-                    PREFS!!.setUpdateState(7)
+                    PREFS!!.updateState = 7
                 } else {
-                    PREFS!!.setUpdateState(6)
+                    PREFS!!.updateState = 6
                 }
             }
             withContext(mainDispatcher) {
@@ -445,8 +445,8 @@ class UpdateActivity: AppCompatActivity() {
                 deleteUpdateFile(this@UpdateActivity)
             } catch (e: IOException) {
                 saveError(e.toString(), db!!)
-                PREFS!!.setUpdateState(5)
-                refreshUi()
+                PREFS!!.updateState = 5
+                    refreshUi()
                 withContext(mainDispatcher) {
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                         .setTitle(getString(R.string.error))
@@ -465,8 +465,8 @@ class UpdateActivity: AppCompatActivity() {
                 manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 downloadId = manager?.enqueue(request)
                 isUpdateDownloading = true
-                PREFS!!.setUpdateState(2)
-                withContext(mainDispatcher) {
+                PREFS!!.updateState = 2
+                    withContext(mainDispatcher) {
                     refreshUi()
                 }
                 val q = DownloadManager.Query()
@@ -480,7 +480,7 @@ class UpdateActivity: AppCompatActivity() {
                         val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
                         val progress: Int = ((downloaded * 100L / total)).toInt()
                         val progressString = getString(R.string.preparing_to_install, progress) + "%"
-                        PREFS!!.setUpdateProgressLevel(progress)
+                        PREFS!!.updateProgressLevel = progress
                         withContext(mainDispatcher) {
                             binding.settingsInclude.progessText.text = progressString
                             if (isGreaterThanN) {
@@ -491,15 +491,15 @@ class UpdateActivity: AppCompatActivity() {
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
                             isUpdateDownloading = false
-                            PREFS!!.setUpdateState(4)
+                            PREFS!!.updateState = 4
                             withContext(mainDispatcher) {
                                 refreshUi()
                             }
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
                             isUpdateDownloading = false
-                            PREFS!!.setUpdateState(5)
-                            withContext(mainDispatcher) {
+                            PREFS!!.updateState = 5
+                                withContext(mainDispatcher) {
                                 refreshUi()
                             }
                         }
@@ -507,8 +507,8 @@ class UpdateActivity: AppCompatActivity() {
                     } else {
                         cursor.close()
                         isUpdateDownloading = false
-                        PREFS!!.setUpdateState(0)
-                        withContext(mainDispatcher) {
+                        PREFS!!.updateState = 0
+                            withContext(mainDispatcher) {
                             this@UpdateActivity.recreate()
                         }
                     }
@@ -519,8 +519,8 @@ class UpdateActivity: AppCompatActivity() {
                     manager?.remove(downloadId!!)
                 }
                 isUpdateDownloading = false
-                PREFS!!.setUpdateState(5)
-                withContext(mainDispatcher) {
+                PREFS!!.updateState = 5
+                    withContext(mainDispatcher) {
                     refreshUi()
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                         .setTitle(getString(R.string.error))
@@ -547,8 +547,8 @@ class UpdateActivity: AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.e("CheckForUpdates", "something went wrong: $e")
-            PREFS!!.setUpdateState(5)
-            withContext(mainDispatcher) {
+            PREFS!!.updateState = 5
+                withContext(mainDispatcher) {
                 refreshUi()
             }
         }

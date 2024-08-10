@@ -45,49 +45,38 @@ class Prefs(context: Context) {
     private val alphabetAnimPrefs = "alphabetAnim"
     private val autoShutdownAnimPref = "autoStdwnAnimations"
     private val bsodOutputPref = "bsodOutputEnabled"
+    private val keyboardSearchPref = "showKeyboardWhenSearching"
 
     init {
         prefs = context.getSharedPreferences(fileName, 0)
     }
 
-    fun setWallpaper(bool: Boolean) {
-        prefs.edit().putBoolean(wallpaperPref, bool).apply()
-    }
-
-    val isWallpaperUsed: Boolean
+    var isWallpaperUsed: Boolean
         get() = prefs.getBoolean(wallpaperPref, false)
+        set(value) = prefs.edit().putBoolean(wallpaperPref, value).apply()
 
-    fun setTransparentTiles(bool: Boolean) {
-        prefs.edit().putBoolean(parallaxTilesPref, bool).apply()
-    }
-    val isTilesTransparent: Boolean
+    var isTilesTransparent: Boolean
         get() =  prefs.getBoolean(parallaxTilesPref, false)
+        set(value) = prefs.edit().putBoolean(parallaxTilesPref, value).apply()
 
-    fun setMoreTilesPref(bool: Boolean) {
-        prefs.edit().putBoolean(showMoreTilesPref, bool).apply()
-    }
-
-    val isMoreTilesEnabled: Boolean
+    var isMoreTilesEnabled: Boolean
         get() =  prefs.getBoolean(showMoreTilesPref, false)
+        set(value) = prefs.edit().putBoolean(showMoreTilesPref, value).apply()
 
-    fun useLightTheme(bool: Boolean) {
-        prefs.edit().putBoolean(lightThemePref, bool).apply()
-    }
-    fun setMaxCrashLogs(int: Int) {
-        prefs.edit().putInt(maxCrashLogsPref, int).apply()
-    }
-    val maxCrashLogs: Int
+    var maxCrashLogs: Int
         get() = prefs.getInt(maxCrashLogsPref, 1)
-    val isLightThemeUsed: Boolean
+        set(value) = prefs.edit().putInt(maxCrashLogsPref, value).apply()
+
+    var isLightThemeUsed: Boolean
         get() = prefs.getBoolean(lightThemePref, false)
+        set(value) = prefs.edit().putBoolean(lightThemePref, value).apply()
 
-    fun setFeedback(bool: Boolean) {
-        prefs.edit().putBoolean(feedbackPref, bool).apply()
-    }
-    val isFeedbackEnabled: Boolean
+    var isFeedbackEnabled: Boolean
         get() = prefs.getBoolean(feedbackPref, true)
+        set(value) = prefs.edit().putBoolean(feedbackPref, value).apply()
 
-    fun setUpdateState(int: Int) {
+    var updateState: Int
+        get() =  prefs.getInt(updateStatePref, 0)
         // 0 - nothing
         // 1 - checking
         // 2 - downloading
@@ -96,43 +85,29 @@ class Prefs(context: Context) {
         // 5 - failed
         // 6 - ready to download
         // 7 - ready to download (beta ver)
-        prefs.edit().putInt(updateStatePref, int).apply()
-    }
-    val updateState: Int
-        get() =  prefs.getInt(updateStatePref, 0)
+        set(value) = prefs.edit().putInt(updateStatePref, value).apply()
 
-    fun setUpdateProgressLevel(int: Int) {
-        prefs.edit().putInt(updatePercentagePref, int).apply()
-    }
-    val updateProgressLevel: Int
+    var updateProgressLevel: Int
         get() =  prefs.getInt(updatePercentagePref, 0)
+        set(value) = prefs.edit().putInt(updatePercentagePref, value).apply()
 
-    fun setAutoUpdate(bool: Boolean) {
-        prefs.edit().putBoolean(autoUpdatePref, bool).apply()
-    }
-    val isAutoUpdateEnabled: Boolean
+    var isAutoUpdateEnabled: Boolean
         get() = prefs.getBoolean(autoUpdatePref, false)
+        set(value) = prefs.edit().putBoolean(autoUpdatePref, value).apply()
 
-    fun setUpdateNotification(bool: Boolean) {
-        prefs.edit().putBoolean(updateNotificationPref, bool).apply()
-    }
-    val isUpdateNotificationEnabled: Boolean
+    var isUpdateNotificationEnabled: Boolean
         get() =  prefs.getBoolean(updateNotificationPref, false)
-    // is only used to save update data
-    fun setVersionCode(int: Int) {
-        prefs.edit().putInt(versionCodePref, int).apply()
-    }
-    // is only used to save update data
-    fun setUpdateMessage(value: String) {
-        prefs.edit().putString(updateMessagePref, value).apply()
-    }
-    // is only used to save update data
-    val updateMessage: String
-        get() = prefs.getString(updateMessagePref, "")!!
+        set(value) = prefs.edit().putBoolean(updateNotificationPref, value).apply()
 
     // is only used to save update data
-    val versionCode: Int
+    var updateMessage: String
+        get() = prefs.getString(updateMessagePref, "")!!
+        set(value) = prefs.edit().putString(updateMessagePref, value).apply()
+
+    // is only used to save update data
+    var versionCode: Int
         get() = prefs.getInt(versionCodePref, 0)
+        set(value) = prefs.edit().putInt(versionCodePref, value).apply()
 
     var accentColor: Int
         get() = prefs.getInt(accentColorPref, 5)
@@ -166,158 +141,112 @@ class Prefs(context: Context) {
                     .putInt(accentColorPref, color)
                     .apply()
         }
-    fun setLauncherState(int: Int) {
+    var launcherState: Int
+        get() =  prefs.getInt(launcherStatePref, 0)
         // 0 - OOBE
         // 1 - nothing
         // 2 - OOBE - selecting the type of settings (recommended or customize)
         // 3 - waiting for reset (after recovery)
-        prefs.edit().putInt(launcherStatePref, int).apply()
-    }
-    val launcherState: Int
-        get() =  prefs.getInt(launcherStatePref, 0)
+        set(value) = prefs.edit().putInt(launcherStatePref, value).apply()
 
-    fun setNavBarSetting(int: Int) {
-        // 0 - always dark
-        // 1 - always light
-        // 2 - use accent color
-        // 3 - hidden
-        // 4 - auto
-        prefs.edit().putInt(navbarColorPref, int).apply()
-    }
-    val navBarColor: Int
+    var navBarColor: Int
         get() = prefs.getInt(navbarColorPref, 4)
+        set(value) = prefs.edit().putInt(navbarColorPref, value).apply()
 
     fun reset() {
         prefs.edit().clear().apply()
     }
-    fun setIconPack(value: String) {
-        prefs.edit().putString(iconPackPref, value).apply()
-    }
-    val iconPackPackage: String?
+
+    var iconPackPackage: String?
         get() = prefs.getString(iconPackPref, "null")
+        set(value) = prefs.edit().putString(iconPackPref, value).apply()
 
     var isPrefsChanged: Boolean
         get() = prefsChanged
         set(value) {
             prefsChanged = value
         }
-    fun setPinNewApps(value: Boolean) {
-        prefs.edit().putBoolean(autoPinPref, value).apply()
-    }
-    val pinNewApps: Boolean
+    var pinNewApps: Boolean
         get() = prefs.getBoolean(autoPinPref, false)
+        set(value) = prefs.edit().putBoolean(autoPinPref, value).apply()
 
-    fun setAllAppsSettingsBtn(value: Boolean) {
-        prefs.edit().putBoolean(settingsBtnPref, value).apply()
-    }
-    val isSettingsBtnEnabled: Boolean
+    var isSettingsBtnEnabled: Boolean
         get() = prefs.getBoolean(settingsBtnPref, false)
+        set(value) = prefs.edit().putBoolean(settingsBtnPref, value).apply()
 
-
-    fun setAlphabetActive(value: Boolean) {
-        prefs.edit().putBoolean(alphabetPref, value).apply()
-    }
-    val isAlphabetEnabled: Boolean
+    var isAlphabetEnabled: Boolean
         get() = prefs.getBoolean(alphabetPref, true)
+        set(value) = prefs.edit().putBoolean(alphabetPref, value).apply()
 
-    fun setAllAppsBackground(value: Boolean) {
-        prefs.edit().putBoolean(allAppsBackgroundPref, value).apply()
-    }
-    val isAllAppsBackgroundEnabled: Boolean
+    var isAllAppsBackgroundEnabled: Boolean
         get() = prefs.getBoolean(allAppsBackgroundPref, false)
+        set(value) = prefs.edit().putBoolean(allAppsBackgroundPref, value).apply()
 
-    fun setTileTransparency(value: Float) {
-        prefs.edit().putFloat(tilesTransparencyPref, value).apply()
-    }
-    val getTilesTransparency: Float
+    var tilesTransparency: Float
         get() = prefs.getFloat(tilesTransparencyPref, 1.0f)
+        set(value) = prefs.edit().putFloat(tilesTransparencyPref, value).apply()
 
-    fun setNavBarIcon(icon: Int) {
+    var navBarIconValue: Int
+        get() = prefs.getInt(bottomBarIconPref, 0)
         // 0 - windows (default)
         // 1 - windows old
         // 2 - android
-        prefs.edit().putInt(bottomBarIconPref, icon).apply()
-    }
-    val navBarIconValue: Int
-        get() = prefs.getInt(bottomBarIconPref, 0)
+        set(value) =  prefs.edit().putInt(bottomBarIconPref, value).apply()
 
-    fun setSearchBar(value: Boolean) {
-        prefs.edit().putBoolean(searchBarPref, value).apply()
-    }
-    val isSearchBarEnabled: Boolean
+    var isSearchBarEnabled: Boolean
         get() = prefs.getBoolean(searchBarPref, false)
+        set(value) = prefs.edit().putBoolean(searchBarPref, value).apply()
 
-    fun blockStartScreen(value: Boolean) {
-        prefs.edit().putBoolean(startBlockPref, value).apply()
-    }
-    val isStartBlocked: Boolean
+    var isStartBlocked: Boolean
         get() = prefs.getBoolean(startBlockPref, false)
+        set(value) = prefs.edit().putBoolean(startBlockPref, value).apply()
 
-    fun setTransitionAnim(value: Boolean) {
-        prefs.edit().putBoolean(transitionAnimationPref, value).apply()
-    }
-    val isTransitionAnimEnabled: Boolean
+    var isTransitionAnimEnabled: Boolean
         get() = prefs.getBoolean(transitionAnimationPref, true)
+        set(value) = prefs.edit().putBoolean(transitionAnimationPref, value).apply()
 
-    fun setTilesAnim(value: Boolean) {
-        prefs.edit().putBoolean(tilesAnimationsPref, value).apply()
-    }
-    val isTilesAnimEnabled: Boolean
+    var isTilesAnimEnabled: Boolean
         get() = prefs.getBoolean(tilesAnimationsPref, true)
+        set(value) = prefs.edit().putBoolean(tilesAnimationsPref, value).apply()
 
-    fun setLiveTilesAnim(value: Boolean) {
-       prefs.edit().putBoolean(liveTilesAnimPref, value).apply()
-    }
-    val isLiveTilesAnimEnabled: Boolean
+    var isLiveTilesAnimEnabled: Boolean
         get() = prefs.getBoolean(liveTilesAnimPref, true)
+        set(value) = prefs.edit().putBoolean(liveTilesAnimPref, value).apply()
 
-    fun setAllAppsAnim(value: Boolean) {
-        prefs.edit().putBoolean(allAppsAnimationsPref, value).apply()
-    }
-    val isAAllAppsAnimEnabled: Boolean
+    var isAAllAppsAnimEnabled: Boolean
         get() = prefs.getBoolean(allAppsAnimationsPref, true)
+        set(value) = prefs.edit().putBoolean(allAppsAnimationsPref, value).apply()
 
-    fun setMaxResultCountSearchBar(size: Int) {
-        prefs.edit().putInt(searchBarMaxResultsPref, size).apply()
-    }
-    val maxResultsSearchBar: Int
+    var maxResultsSearchBar: Int
         get() = prefs.getInt(searchBarMaxResultsPref, 4)
+        set(value) = prefs.edit().putInt(searchBarMaxResultsPref, value).apply()
 
-    fun setAllAppsAvailability(value: Boolean) {
-        prefs.edit().putBoolean(allAppsScreenPref, value).apply()
-    }
-    val isAllAppsEnabled: Boolean
+    var isAllAppsEnabled: Boolean
         get() = prefs.getBoolean(allAppsScreenPref, true)
+        set(value) = prefs.edit().putBoolean(allAppsScreenPref, value).apply()
 
-    fun setAlphabetAnim(value: Boolean) {
-        prefs.edit().putBoolean(alphabetAnimPrefs, value).apply()
-    }
-    val isAlphabetAnimEnabled: Boolean
+    var isAlphabetAnimEnabled: Boolean
         get() = prefs.getBoolean(alphabetAnimPrefs, true)
+        set(value) = prefs.edit().putBoolean(alphabetAnimPrefs, value).apply()
 
-    fun setTilesScreenAnim(value: Boolean) {
-        prefs.edit().putBoolean(startScreenAnimPrefs, value).apply()
-    }
-    val isTilesScreenAnimEnabled: Boolean
+    var isTilesScreenAnimEnabled: Boolean
         get() = prefs.getBoolean(startScreenAnimPrefs, true)
+        set(value) = prefs.edit().putBoolean(startScreenAnimPrefs, value).apply()
 
     //disabling animations if developer mode is enabled (to avoid problems)
-    fun setAutoShutdownAnim(value: Boolean) {
-        prefs.edit().putBoolean(autoShutdownAnimPref, value).apply()
-    }
-    val isAutoShutdownAnimEnabled: Boolean
+    var isAutoShutdownAnimEnabled: Boolean
         get() = prefs.getBoolean(autoShutdownAnimPref, true)
+        set(value) = prefs.edit().putBoolean(autoShutdownAnimPref, value).apply()
 
-    fun setBsodOutput(value: Boolean) {
-        prefs.edit().putBoolean(bsodOutputPref, value).apply()
-    }
-    val bsodOutputEnabled: Boolean
+    var bsodOutputEnabled: Boolean
         get() = prefs.getBoolean(bsodOutputPref, false)
+        set(value) = prefs.edit().putBoolean(bsodOutputPref, value).apply()
 
     var iconPackChanged: Boolean
         get() = prefs.getBoolean("iconPackChanged", false)
-        set(value) {
-            prefs.edit().putBoolean("iconPackChanged", value).apply()
-        }
+        set(value) = prefs.edit().putBoolean("iconPackChanged", value).apply()
 
+    var showKeyboardWhenSearching: Boolean
+        get() = prefs.getBoolean(keyboardSearchPref, false)
+        set(value) = prefs.edit().putBoolean(keyboardSearchPref, value).apply()
 }

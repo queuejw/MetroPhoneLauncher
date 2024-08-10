@@ -19,7 +19,7 @@ class AlmostDoneFragment: Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        PREFS!!.setLauncherState(2)
+        PREFS!!.launcherState = 2
         super.onCreate(savedInstanceState)
     }
 
@@ -28,7 +28,7 @@ class AlmostDoneFragment: Fragment() {
         _binding = OobeFragmentAlmostdoneBinding.inflate(inflater, container, false)
         (requireActivity() as WelcomeActivity).setText(getString(R.string.welcomeAlmostDone))
         binding.next.setOnClickListener {
-            PREFS!!.setLauncherState(1)
+            PREFS!!.launcherState = 1
             exitProcess(0)
         }
         return binding.root

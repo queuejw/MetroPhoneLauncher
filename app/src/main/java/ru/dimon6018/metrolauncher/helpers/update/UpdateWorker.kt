@@ -17,6 +17,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity.DOWNLOAD_SERVICE
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
@@ -48,14 +49,24 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         val intent = Intent(Intent.ACTION_MAIN)
                 .setClass(context, UpdateActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        return NotificationCompat.Builder(context, CHAN_ID)
-                .setSmallIcon(icon)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            NotificationCompat.Builder(context, CHAN_ID)
+                    .setSmallIcon(icon)
+                    .setContentTitle(context.getString(R.string.app_name))
+                    .setShowWhen(true)
+                    .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                    .setContentText(context.getString(R.string.update_is_available))
+                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
+                    .setAutoCancel(true)
+        } else {
+            NotificationCompat.Builder(context, CHAN_ID)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setShowWhen(true)
                 .setCategory(Notification.CATEGORY_RECOMMENDATION)
                 .setContentText(context.getString(R.string.update_is_available))
                 .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
                 .setAutoCancel(true)
+        }
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun buildNotificationO(context: Context): Notification.Builder {
@@ -84,18 +95,18 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                     val link = if(UpdateDataParser.isBeta == true) URL_BETA_FILE else URL_RELEASE_FILE
                     downloadFile(name, link, context)
                 } else {
-                    prefs.setUpdateState(6)
-                    val noman = context.getSystemService(NotificationManager::class.java)
+                    prefs.updateState = 6
+                    val noman = ContextCompat.getSystemService(context, NotificationManager::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         val builder = buildNotificationO(context)
-                        noman.notify(1, builder.build())
+                        noman?.notify(1, builder.build())
                     } else {
                         val builder = buildNotificationN(context)
-                        noman.notify(1, builder.build())
+                        noman?.notify(1, builder.build())
                     }
                 }
             } else {
-                prefs.setUpdateState(3)
+                prefs.updateState = 3
             }
             Result.success()
         } catch (e: Exception) {
@@ -110,8 +121,8 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
             try {
                 deleteUpdateFile(context)
             } catch (e: IOException) {
-                Log.e("Background Update Service", "Error: $e")
-                PREFS!!.setUpdateState(5)
+                Log.e("Background Update", "Error: $e")
+                PREFS!!.updateState = 5
                 cancel()
                 return@launch
             }
@@ -124,7 +135,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 val manager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 val downloadId = manager.enqueue(request)
                 isUpdateDownloading = true
-                PREFS!!.setUpdateState(2)
+                PREFS!!.updateState = 2
                 val q = DownloadManager.Query()
                 q.setFilterById(downloadId)
                 var cursor: Cursor?
@@ -135,26 +146,26 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                         val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
                         val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
                         val progress: Int = ((downloaded * 100L / total)).toInt()
-                        PREFS!!.setUpdateProgressLevel(progress)
+                        PREFS!!.updateProgressLevel = progress
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
                             isUpdateDownloading = false
-                            PREFS!!.setUpdateState(4)
+                            PREFS!!.updateState = 4
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
                             isUpdateDownloading = false
-                            PREFS!!.setUpdateState(5)
+                            PREFS!!.updateState = 5
                         }
                         cursor.close()
                     } else {
                         cursor.close()
                         isUpdateDownloading = false
-                        PREFS!!.setUpdateState(0)
+                        PREFS!!.updateState = 0
                     }
                 }
             } catch (e: Exception) {
-                Log.e("Background Update Service", "Error: $e")
+                Log.e("Background Update", "Error: $e")
                 isUpdateDownloading = false
-                PREFS!!.setUpdateState(5)
+                PREFS!!.updateState = 5
             }
         }
     }

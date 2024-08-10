@@ -58,12 +58,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
             }
         }
         binbing.settingsInclude.chooseLight.setOnClickListener {
-            PREFS!!.useLightTheme(true)
+            PREFS!!.isLightThemeUsed = true
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
         binbing.settingsInclude.chooseDark.setOnClickListener {
-            PREFS!!.useLightTheme(false)
+            PREFS!!.isLightThemeUsed = false
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
@@ -72,7 +72,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             isChecked = PREFS!!.isMoreTilesEnabled
             text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setMoreTilesPref(isChecked)
+                PREFS!!.isMoreTilesEnabled = isChecked
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
                 PREFS!!.isPrefsChanged = true
                 setImg()
@@ -82,13 +82,13 @@ class ThemeSettingsActivity : AppCompatActivity() {
             isChecked = PREFS!!.pinNewApps
             text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setPinNewApps(isChecked)
+                PREFS!!.pinNewApps = isChecked
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
         binbing.settingsInclude.wallpaperTransparentTilesSwtich.apply {
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setTransparentTiles(isChecked)
+                PREFS!!.isTilesTransparent = isChecked
                 PREFS!!.isPrefsChanged = true
             }
         }
@@ -96,7 +96,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             isChecked = PREFS!!.isWallpaperUsed
             text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, check ->
-                PREFS!!.setWallpaper(check)
+                PREFS!!.isWallpaperUsed = check
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
             }
@@ -128,7 +128,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             isChecked = PREFS!!.isStartBlocked
             text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.blockStartScreen(isChecked)
+                PREFS!!.isStartBlocked = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }

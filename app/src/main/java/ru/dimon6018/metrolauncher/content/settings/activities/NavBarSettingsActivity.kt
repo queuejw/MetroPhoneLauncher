@@ -66,19 +66,19 @@ class NavBarSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.navbarRadioGroup.setOnCheckedChangeListener { _, checkedId ->
            when(checkedId) {
                binding.settingsInclude.alwaysDark.id -> {
-                   PREFS!!.setNavBarSetting(0)
+                   PREFS!!.navBarColor = 0
                }
                binding.settingsInclude.alwaysLight.id -> {
-                   PREFS!!.setNavBarSetting(1)
+                   PREFS!!.navBarColor = 1
                }
                binding.settingsInclude.byTheme.id -> {
-                   PREFS!!.setNavBarSetting(2)
+                   PREFS!!.navBarColor = 2
               }
                binding.settingsInclude.hidden.id -> {
-                   PREFS!!.setNavBarSetting(3)
+                   PREFS!!.navBarColor = 3
                }
                binding.settingsInclude.auto.id -> {
-                   PREFS!!.setNavBarSetting(4)
+                   PREFS!!.navBarColor = 4
                }
            }
             PREFS!!.isPrefsChanged = true
@@ -92,19 +92,19 @@ class NavBarSettingsActivity: AppCompatActivity() {
             bottomSheet.setContentView(bBidding.root)
             bottomSheet.dismissWithAnimation = true
             bBidding.icon0.setOnClickListener {
-                PREFS!!.setNavBarIcon(1)
+                PREFS!!.navBarIconValue = 1
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
             bBidding.icon1.setOnClickListener {
-                PREFS!!.setNavBarIcon(0)
+                PREFS!!.navBarIconValue = 0
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
             }
             bBidding.icon2.setOnClickListener {
-                PREFS!!.setNavBarIcon(2)
+                PREFS!!.navBarIconValue = 2
                 updateCurrentIcon()
                 PREFS!!.isPrefsChanged = true
                 bottomSheet.dismiss()
@@ -115,7 +115,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
             isChecked = PREFS!!.isSearchBarEnabled
             text = if(PREFS!!.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setSearchBar(isChecked)
+                PREFS!!.isSearchBarEnabled = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
                 PREFS!!.isPrefsChanged = true
             }
@@ -123,7 +123,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.maxResultsSlider.apply {
             value = PREFS!!.maxResultsSearchBar.toFloat()
             addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                PREFS!!.setMaxResultCountSearchBar(value.toInt())
+                PREFS!!.maxResultsSearchBar = value.toInt()
             })
         }
     }

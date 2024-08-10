@@ -50,7 +50,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             isChecked = PREFS!!.isFeedbackEnabled
             text = if(PREFS!!.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setFeedback(isChecked)
+                PREFS!!.isFeedbackEnabled = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
@@ -65,7 +65,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             PREFS!!.bsodOutputEnabled
             text = if(PREFS!!.bsodOutputEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setBsodOutput(isChecked)
+                PREFS!!.bsodOutputEnabled = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
@@ -73,7 +73,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
 
     private fun updateMaxLogsSize(view: View, value: Int) {
         view.setOnClickListener {
-            PREFS!!.setMaxCrashLogs(value)
+            PREFS!!.maxCrashLogs = value
             binding.settingsInclude.chooseBsodInfoLimit.visibility = View.GONE
             binding.settingsInclude.setCrashLogLimitBtn.visibility = View.VISIBLE
             setButtonText(PREFS!!, binding.settingsInclude.setCrashLogLimitBtn)

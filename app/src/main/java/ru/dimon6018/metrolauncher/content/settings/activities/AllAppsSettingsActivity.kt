@@ -23,7 +23,7 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             isChecked = PREFS!!.isSettingsBtnEnabled
             text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAllAppsSettingsBtn(isChecked)
+                PREFS!!.isSettingsBtnEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             }
@@ -32,7 +32,7 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             isChecked = PREFS!!.isAlphabetEnabled
             text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAlphabetActive(isChecked)
+                PREFS!!.isAlphabetEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             }
@@ -41,7 +41,7 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             isChecked = PREFS!!.isAllAppsBackgroundEnabled
             text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAllAppsBackground(isChecked)
+                PREFS!!.isAllAppsBackgroundEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
             }
@@ -50,7 +50,7 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             isChecked = PREFS!!.isAllAppsEnabled
             if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAllAppsAvailability(isChecked)
+                PREFS!!.isAllAppsEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             }

@@ -1087,7 +1087,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
                 binding.container.apply {
-                    alpha = PREFS!!.getTilesTransparency
+                    alpha = PREFS!!.tilesTransparency
                     setOnTouchListener { view, event ->
                         val x = event.x
                         val y = event.y

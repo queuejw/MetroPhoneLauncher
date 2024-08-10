@@ -24,9 +24,9 @@ class TileSettingsActivity: AppCompatActivity() {
     }
     private fun initView() {
         binding.settingsInclude.alphaSlider.apply {
-            value = PREFS!!.getTilesTransparency
+            value = PREFS!!.tilesTransparency
             addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                PREFS!!.setTileTransparency(value)
+                PREFS!!.tilesTransparency = value
                 PREFS!!.isPrefsChanged = true
             })
         }

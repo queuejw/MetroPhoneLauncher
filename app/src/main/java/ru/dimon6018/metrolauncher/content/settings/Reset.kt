@@ -36,7 +36,7 @@ class Reset : AppCompatActivity() {
             dbApps!!.clearAllTables()
             dbBsod!!.clearAllTables()
             PREFS!!.reset()
-            PREFS!!.setLauncherState(0)
+            PREFS!!.launcherState = 0
             delay(3000)
         }.invokeOnCompletion {
             exitProcess(0)

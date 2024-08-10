@@ -31,44 +31,44 @@ class AnimationSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.tilesAnimCheckbox.apply {
             isChecked = PREFS!!.isTilesAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setTilesAnim(isChecked)
+                PREFS!!.isTilesAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.liveTilesAnimCheckbox.apply {
             isChecked = PREFS!!.isLiveTilesAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setLiveTilesAnim(isChecked)
+                PREFS!!.isLiveTilesAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.allAppsAnimCheckbox.apply {
             isChecked = PREFS!!.isAAllAppsAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAllAppsAnim(isChecked)
+                PREFS!!.isAAllAppsAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.transitionAnimCheckbox.apply {
             isChecked = PREFS!!.isTransitionAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setTransitionAnim(isChecked)
+                PREFS!!.isTransitionAnimEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
             }
         }
         binding.settingsInclude.alphabetAnimCheckbox.apply {
             isChecked = PREFS!!.isAlphabetAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAlphabetAnim(isChecked)
+                PREFS!!.isAlphabetEnabled = isChecked
             }
         }
         binding.settingsInclude.tilesPhoneStartAnimCheckbox.apply {
             isChecked = PREFS!!.isTilesScreenAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setTilesScreenAnim(isChecked)
+                PREFS!!.isTilesScreenAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.autoShutdownAnimsCheckbox.apply {
             PREFS!!.isAutoShutdownAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.setAutoShutdownAnim(isChecked)
+                PREFS!!.isAutoShutdownAnimEnabled = isChecked
             }
         }
     }
