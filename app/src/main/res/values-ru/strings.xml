@@ -21,8 +21,8 @@
     <string name="dark">тёмный</string>
     <string name="automatic_repair">Автоматическое восстановление</string>
     <string name="not_start_correctly">Лаунчер запущен некорректно</string>
-    <string name="auto_repair_tip">Нажмите \'Перезагрузить\', чтобы перезапустить лаунчер. Иногда это решает проблему. Также можно нажать \'Дополнительные параметры\' и попробовать другие варианты восстановления лаунчера.</string>
-    <string name="restart">Перезагрузить</string>
+    <string name="auto_repair_tip">Нажмите \'Перезапустить\', чтобы перезапустить лаунчер. Иногда это решает проблему. Также можно нажать \'Дополнительные параметры\' и попробовать другие варианты восстановления лаунчера.</string>
+    <string name="restart">Перезапустить</string>
     <string name="advanced_options">Дополнительные параметы</string>
     <string name="feedback_limit_0">только последнюю</string>
     <string name="feedback_limit_1">последние 5</string>
@@ -231,4 +231,5 @@
     <string name="support">Поддержать</string>
     <string name="tipSettingsUpdates">На этом экране вы можете проверить наличие обновлений для лаунчера, чтобы получить исправления и новые функции.</string>
     <string name="oobe_apps_warn">Вы не выбрали никаких приложений. Хотите продолжить?</string>
+    <string name="later">Позже</string>
 </resources>

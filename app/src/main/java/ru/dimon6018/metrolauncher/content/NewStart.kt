@@ -109,9 +109,9 @@ class NewStart: Fragment(), OnStartDragListener {
         val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.startFrame.setOnClickListener {
-            if(mAdapter != null) {
-                if (mAdapter!!.isEditMode) {
-                    mAdapter!!.disableEditMode()
+            mAdapter?.apply {
+                if(isEditMode) {
+                    disableEditMode()
                 }
             }
         }
@@ -141,8 +141,7 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)
-        val callback: ItemTouchHelper.Callback = ItemTouchCallback(mAdapter!!)
-        mItemTouchHelper = ItemTouchHelper(callback)
+        mItemTouchHelper = ItemTouchHelper(ItemTouchCallback(mAdapter!!))
     }
 
     private fun configureRecyclerView() {
@@ -189,9 +188,9 @@ class NewStart: Fragment(), OnStartDragListener {
                 )
             }
         }
-        mSpannedLayoutManager!!.itemOrderIsStable = true
-        mSpannedLayoutManager!!.spanSizeLookup =
-            SpannedGridLayoutManager.SpanSizeLookup { position ->
+        mSpannedLayoutManager?.apply {
+            itemOrderIsStable = true
+            spanSizeLookup = SpannedGridLayoutManager.SpanSizeLookup { position ->
                 when (tiles!![position].tileSize) {
                     "small" -> {
                         SpanSize(1, 1)
@@ -210,8 +209,8 @@ class NewStart: Fragment(), OnStartDragListener {
                     }
                 }
             }
+        }
     }
-
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE

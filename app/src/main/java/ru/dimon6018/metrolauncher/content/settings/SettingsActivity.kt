@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
@@ -52,18 +51,20 @@ class SettingsActivity : AppCompatActivity() {
     private var job: Job? = null
     private val viewList: List<Pair<View, Long>> by lazy {
         listOf(
-            binding.settingsInclude.themeSetting to 200,
-            binding.settingsInclude.allAppsSetting to 210,
-            binding.settingsInclude.tilesSetting to 220,
-            binding.settingsInclude.iconsSetting to 225,
-            binding.settingsInclude.animSetting to 230,
-            binding.settingsInclude.feedbackSetting to 235,
-            binding.settingsInclude.weatherSetting to 240,
-            binding.settingsInclude.updatesSetting to 245,
-            binding.settingsInclude.navbarSetting to 250,
-            binding.settingsInclude.aboutSetting to 255,
-            binding.settingsInclude.leaks to 260,
-            binding.settingsInclude.expSetting to 265
+            binding.settings to 200,
+            binding.settingsLabel to 250,
+            binding.settingsInclude.themeSetting to 300,
+            binding.settingsInclude.allAppsSetting to 310,
+            binding.settingsInclude.tilesSetting to 320,
+            binding.settingsInclude.iconsSetting to 330,
+            binding.settingsInclude.animSetting to 340,
+            binding.settingsInclude.feedbackSetting to 350,
+            binding.settingsInclude.weatherSetting to 360,
+            binding.settingsInclude.updatesSetting to 370,
+            binding.settingsInclude.navbarSetting to 380,
+            binding.settingsInclude.aboutSetting to 390,
+            binding.settingsInclude.leaks to 400,
+            binding.settingsInclude.expSetting to 410
         )
     }
 
@@ -74,7 +75,7 @@ class SettingsActivity : AppCompatActivity() {
         binding = LauncherSettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        confAnim()
+        confTouchAnim()
         setOnClickers()
         applyWindowInsets(binding.root)
         prepareMessage()
@@ -173,7 +174,6 @@ class SettingsActivity : AppCompatActivity() {
         viewList.forEach { (view, duration) ->
             setupAnimForViews(view, duration)
         }
-        setupAnimForViews(binding.root, 180)
     }
     private fun setupAnimForViews(view: View, dur: Long) {
         if (!PREFS!!.isTransitionAnimEnabled) {
@@ -182,14 +182,14 @@ class SettingsActivity : AppCompatActivity() {
         val animatorSet = AnimatorSet().apply {
             playTogether(
                 ObjectAnimator.ofFloat(view, "alpha", if (isEnter) 1f else 0f, if (isEnter) 0f else 1f),
-                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -500f, if (isEnter) -500f else 0f),
+                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -200f, if (isEnter) -200f else 0f),
                 ObjectAnimator.ofFloat(view, "rotationY", if (isEnter) 0f else -90f, if (isEnter) -90f else 0f)
             )
             duration = dur
         }
         animatorSet.start()
     }
-    private fun confAnim() {
+    private fun confTouchAnim() {
         setViewInteractAnimation(binding.settingsInclude.themeSetting)
         setViewInteractAnimation(binding.settingsInclude.allAppsSetting)
         setViewInteractAnimation(binding.settingsInclude.tilesSetting)
@@ -208,14 +208,13 @@ class SettingsActivity : AppCompatActivity() {
             setupAnimations()
             isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
-                delay(500)
+                delay(350)
                 viewList.forEach { (view, _) ->
                     view.alpha = 1f
                 }
-                binding.root.alpha = 1f
                 cancel()
             }
-            delay(150)
+            delay(350)
         } else {
             isEnter = false
         }
@@ -225,7 +224,6 @@ class SettingsActivity : AppCompatActivity() {
             viewList.forEach { (view, _) ->
                 hideAnim(view)
             }
-            hideAnim(binding.root)
         }
     }
     private fun hideAnim(view: View?) {
@@ -273,15 +271,42 @@ class SettingsActivity : AppCompatActivity() {
         }.getOrElse { getString(R.string.iconPackNotSelectedSub) }
 
         if(PREFS!!.isPrefsChanged) {
-            PREFS!!.isPrefsChanged = false
-            Toast.makeText(this, getString(R.string.restart_required), Toast.LENGTH_SHORT).show()
-            exitProcess(0)
+            job?.cancel()
+            restartDialog()
         } else {
-            lifecycleScope.launch {
-                startAnim()
-            }
+            startAnimWithLifecycle()
         }
     }
+
+    private fun restartDialog() {
+        WPDialog(this).apply {
+            setTopDialog(true)
+            setTitle(getString(R.string.settings_app_title))
+            setMessage(getString(R.string.restart_required))
+            setPositiveButton(getString(R.string.restart)) {
+                dismiss()
+                restartApp()
+            }
+            setNegativeButton(getString(R.string.later)) {
+                dismiss()
+                startAnimWithLifecycle()
+            }
+            setDismissListener {
+                startAnimWithLifecycle()
+            }
+            show()
+        }
+    }
+    private fun startAnimWithLifecycle() {
+        lifecycleScope.launch {
+            startAnim()
+        }
+    }
+    private fun restartApp() {
+        PREFS!!.isPrefsChanged = false
+        exitProcess(0)
+    }
+
     override fun onPause() {
         super.onPause()
         hideViews()

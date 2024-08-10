@@ -13,22 +13,24 @@
             android:backgroundTint="?android:attr/colorBackground">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/settings"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    app:fontFamily="@font/manrope_bold"
                     android:text="@string/settings"
+                    android:textColor="@color/textColor"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/textColor"/>
+                    app:fontFamily="@font/manrope_bold" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/settings_label"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="4dp"
                     android:ellipsize="none"
                     android:singleLine="true"
-                    android:textColor="@color/textColor"
                     android:text="@string/launcher"
+                    android:textColor="@color/textColor"
                     android:textSize="52sp" />
 
         </com.google.android.material.appbar.AppBarLayout>

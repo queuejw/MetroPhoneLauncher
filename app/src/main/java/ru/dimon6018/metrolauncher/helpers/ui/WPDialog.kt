@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.helpers.ui
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -32,6 +33,7 @@ class WPDialog(private val mContext: Context) {
     private var okButtonListener: View.OnClickListener? = null
     private var cancelButtonListener: View.OnClickListener? = null
     private var neutralListener: View.OnClickListener? = null
+    private var dismissListener: DialogInterface.OnDismissListener? = null
     //Show方法
     fun show(): WPDialog {
         if(PREFS!!.isLightThemeUsed) {
@@ -157,6 +159,9 @@ class WPDialog(private val mContext: Context) {
                 } else {
                     wpNeutral.setOnClickListener(OnDialogButtonClickListener())
                 }
+                if(dismissListener != null) {
+                    setOnDismissListener(dismissListener)
+                }
             }
         }
     }
@@ -172,7 +177,10 @@ class WPDialog(private val mContext: Context) {
         mView = view
         return this
     } **/
-
+    fun setDismissListener(listener: DialogInterface.OnDismissListener?): WPDialog {
+        dismissListener = listener
+        return this
+    }
     fun setPositiveButton(text: String, listener: View.OnClickListener?): WPDialog {
         okText = text
         okButtonListener = listener

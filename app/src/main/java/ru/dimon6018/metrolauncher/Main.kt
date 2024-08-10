@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -217,9 +218,11 @@ class Main : AppCompatActivity() {
     override fun onResume() {
         if (PREFS!!.isPrefsChanged) {
             PREFS!!.isPrefsChanged = false
+            Log.d("Main", "Recreate")
             recreate()
         }
         super.onResume()
+        Log.d("Main", "RESUME")
     }
 
     override fun onDestroy() {
@@ -233,7 +236,6 @@ class Main : AppCompatActivity() {
             "ru.dimon6018.metrolauncher" -> {
                 startActivity(Intent(this@Main, SettingsActivity::class.java))
             }
-
             else -> {
                 startActivity(
                     Intent(this@Main.packageManager.getLaunchIntentForPackage(app)).addFlags(
@@ -249,8 +251,11 @@ class Main : AppCompatActivity() {
     }
 
     private suspend fun setMainViewModel() {
-        val isCustomIconsInstalled = PREFS!!.iconPackPackage != "null"
         mainViewModel.setAppList(sortApps(setUpApps(this.packageManager, this)))
+        regenerateIcons()
+    }
+    private suspend fun regenerateIcons() {
+        val isCustomIconsInstalled = PREFS!!.iconPackPackage != "null"
         var diskCache = initDiskCache(this)
         if (PREFS!!.iconPackChanged) {
             PREFS!!.iconPackChanged = false
@@ -290,7 +295,6 @@ class Main : AppCompatActivity() {
         }
         diskCache?.let { closeDiskCache(it) }
     }
-
     fun generateIcon(
         appPackage: String,
         isCustomIconsInstalled: Boolean
