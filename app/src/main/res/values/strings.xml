@@ -231,4 +231,6 @@
     <string name="tipSettingsUpdates">From this screen, you can check for updates for MPL to get fixes and new features.</string>
     <string name="oobe_apps_warn">You have not selected any applications. Do you want to continue?</string>
     <string name="later">Later</string>
+    <string name="keyboard_when_searching">Show keyboard when searching</string>
+    <string name="auto_show_keyboard_allapps">Automatically enable search when you open the All Apps screen.</string>
 </resources>

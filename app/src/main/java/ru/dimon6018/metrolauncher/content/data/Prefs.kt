@@ -46,6 +46,7 @@ class Prefs(context: Context) {
     private val autoShutdownAnimPref = "autoStdwnAnimations"
     private val bsodOutputPref = "bsodOutputEnabled"
     private val keyboardSearchPref = "showKeyboardWhenSearching"
+    private val keyboardAutoSearchPref = "showKeyboardWhenOpeningAllApps"
 
     init {
         prefs = context.getSharedPreferences(fileName, 0)
@@ -249,4 +250,8 @@ class Prefs(context: Context) {
     var showKeyboardWhenSearching: Boolean
         get() = prefs.getBoolean(keyboardSearchPref, false)
         set(value) = prefs.edit().putBoolean(keyboardSearchPref, value).apply()
+
+    var showKeyboardWhenOpeningAllApps: Boolean
+        get() = prefs.getBoolean(keyboardAutoSearchPref, false)
+        set(value) = prefs.edit().putBoolean(keyboardAutoSearchPref, value).apply()
 }

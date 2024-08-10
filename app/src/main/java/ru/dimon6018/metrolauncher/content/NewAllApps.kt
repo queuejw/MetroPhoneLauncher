@@ -313,12 +313,16 @@ class NewAllApps: Fragment() {
             appAdapter?.popupWindow?.dismiss()
             appAdapter?.popupWindow = null
         }
+        if(PREFS!!.showKeyboardWhenOpeningAllApps) {
+            disableSearch()
+        }
         super.onPause()
     }
 
     override fun onResume() {
         if(isAppOpened && !isStartMenuOpened) {
             activity?.onBackPressedDispatcher?.onBackPressed()
+            return
         }
         registerBroadcast()
         super.onResume()
@@ -339,9 +343,16 @@ class NewAllApps: Fragment() {
                 binding.appList.alpha = 1f
             }
         }
+        if(PREFS!!.showKeyboardWhenOpeningAllApps) {
+            searchFunction()
+        }
     }
     private fun disableSearch() {
         isSearching = false
+        (binding.search.editText as? AutoCompleteTextView)?.clearFocus()
+        if(PREFS!!.showKeyboardWhenSearching) {
+            hideKeyboard(binding.search.editText as? AutoCompleteTextView)
+        }
         binding.searchBtn.visibility = View.VISIBLE
         binding.search.visibility = View.GONE
         binding.searchBackBtn.visibility = View.GONE
@@ -398,6 +409,15 @@ class NewAllApps: Fragment() {
                 val input =
                     ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
                 input?.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
+    }
+    private fun hideKeyboard(view: View?) {
+        if (view != null) {
+            if (view.requestFocus()) {
+                val input =
+                    ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+                input?.hideSoftInputFromWindow(view.windowToken, 0)
             }
         }
     }

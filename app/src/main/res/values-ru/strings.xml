@@ -232,4 +232,6 @@
     <string name="tipSettingsUpdates">На этом экране вы можете проверить наличие обновлений для лаунчера, чтобы получить исправления и новые функции.</string>
     <string name="oobe_apps_warn">Вы не выбрали никаких приложений. Хотите продолжить?</string>
     <string name="later">Позже</string>
+    <string name="keyboard_when_searching">Показывать клавиатуру при поиске</string>
+    <string name="auto_show_keyboard_allapps">Автоматически открывать поиск при открытии экрана Все приложения.</string>
 </resources>

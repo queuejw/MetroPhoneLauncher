@@ -48,11 +48,27 @@ class AllAppsSettingsActivity: AppCompatActivity() {
         }
         binding.settingsInclude.disableAllAppsSwitch.apply {
             isChecked = PREFS!!.isAllAppsEnabled
-            if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+            text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS!!.isAllAppsEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+            }
+        }
+        binding.settingsInclude.keyboardWhenSearchingSwitch.apply {
+            isChecked = PREFS!!.showKeyboardWhenSearching
+            text = if(PREFS!!.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.showKeyboardWhenSearching = isChecked
+                text = if(PREFS!!.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+            }
+        }
+        binding.settingsInclude.keyboardWhenAllAppsOpened.apply {
+            isChecked = PREFS!!.showKeyboardWhenOpeningAllApps
+            text = if(PREFS!!.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.showKeyboardWhenOpeningAllApps = isChecked
+                text = if(PREFS!!.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
             }
         }
         applyWindowInsets(binding.root)

@@ -62,6 +62,7 @@
         android:textSize="20sp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"/>
+
     <com.google.android.material.textview.MaterialTextView
         android:text="@string/transparent_background_allapps_switch"
         android:layout_width="match_parent"
@@ -72,6 +73,22 @@
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/allAppsBackgroundSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="24sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:text="@string/keyboard_when_searching"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:textSize="18sp"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/keyboardWhenSearchingSwitch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -101,4 +118,21 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
         android:textSize="24sp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:text="@string/auto_show_keyboard_allapps"
+        android:layout_width="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="14dp"
+        android:textSize="18sp"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/keyboardWhenAllAppsOpened"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="24sp" />
+
 </LinearLayout>
