@@ -93,7 +93,7 @@
                         android:layout_height="42dp"
                         android:layout_gravity="center|end"
                         app:cardBackgroundColor="@android:color/transparent"
-                        app:cardCornerRadius="48dp"
+                        app:cardCornerRadius="24dp"
                         app:strokeColor="?attr/colorSurface"
                         app:strokeWidth="3dp">
 

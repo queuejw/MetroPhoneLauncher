@@ -47,7 +47,7 @@
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 app:cardBackgroundColor="?android:attr/colorBackground"
-                app:cardCornerRadius="48dp"
+                app:cardCornerRadius="24dp"
                 android:layout_marginEnd="4dp"
                 app:strokeColor="?attr/colorOnSurface"
                 app:strokeWidth="3dp"
@@ -66,7 +66,7 @@
                 android:layout_height="42dp"
                 android:layout_marginEnd="4dp"
                 app:cardBackgroundColor="?android:attr/colorBackground"
-                app:cardCornerRadius="48dp"
+                app:cardCornerRadius="24dp"
                 app:strokeColor="?attr/colorOnSurface"
                 app:strokeWidth="3dp"
                 android:layout_gravity="end|bottom">

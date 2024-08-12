@@ -11,7 +11,7 @@
         android:layout_height="32dp"
         android:layout_alignParentEnd="true"
         app:cardBackgroundColor="?android:attr/colorBackground"
-        app:cardCornerRadius="48dp"
+        app:cardCornerRadius="24dp"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="3dp">
         <ImageView
@@ -29,7 +29,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         app:cardBackgroundColor="?android:attr/colorBackground"
-        app:cardCornerRadius="48dp"
+        app:cardCornerRadius="24dp"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="3dp">
 
@@ -46,7 +46,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         app:cardBackgroundColor="?android:attr/colorBackground"
-        app:cardCornerRadius="48dp"
+        app:cardCornerRadius="24dp"
         app:strokeColor="?attr/colorOnSurface"
         app:strokeWidth="3dp">
 

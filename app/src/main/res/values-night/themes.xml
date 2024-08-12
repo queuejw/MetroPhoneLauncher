@@ -5,6 +5,7 @@
         <item name="colorOnBackground">@android:color/white</item>
         <item name="android:statusBarColor">?android:attr/colorBackground</item>
         <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="bottomSheetDialogTheme">@style/MPL.BottomSheet.AllAppsStyle</item>
         <item name="bottomSheetStyle">@style/MPL.BottomSheet.AllAppsStyle</item>
         <item name="materialAlertDialogTheme">@style/MaterialAlertDialog.App</item>
