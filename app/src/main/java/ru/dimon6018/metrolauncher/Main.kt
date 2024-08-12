@@ -214,13 +214,18 @@ class Main : AppCompatActivity() {
     }
 
     override fun onResume() {
-        super.onResume()
         if (PREFS!!.isPrefsChanged) {
-            PREFS!!.isPrefsChanged = false
-            recreate()
+            restart()
         }
+        super.onResume()
     }
-
+    private fun restart() {
+        PREFS!!.isPrefsChanged = false
+        val componentName = Intent(this, this::class.java).component
+        val intent = Intent.makeRestartActivityTask(componentName)
+        startActivity(intent)
+        Runtime.getRuntime().exit(0)
+    }
     override fun onDestroy() {
         super.onDestroy()
         unregisterPackageReceiver(this, packageReceiver)

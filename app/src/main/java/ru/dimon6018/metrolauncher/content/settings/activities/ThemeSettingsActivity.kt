@@ -33,42 +33,42 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTh
 
 class ThemeSettingsActivity : AppCompatActivity() {
 
-    private lateinit var binbing: LauncherSettingsThemeBinding
+    private lateinit var binding: LauncherSettingsThemeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
-        binbing = LauncherSettingsThemeBinding.inflate(layoutInflater)
-        setContentView(binbing.root)
+        binding = LauncherSettingsThemeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setThemeText()
         configure()
         setImg()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        applyWindowInsets(binbing.root)
+        applyWindowInsets(binding.root)
         prepareTip()
     }
 
     private fun configure() {
-        binbing.settingsInclude.choosedAccentName.text = accentName(this)
-        binbing.settingsInclude.chooseTheme.apply {
+        binding.settingsInclude.choosedAccentName.text = accentName(this)
+        binding.settingsInclude.chooseTheme.apply {
             text = if (PREFS!!.isLightThemeUsed) getString(R.string.light) else getString(R.string.dark)
             setOnClickListener {
                 visibility = View.GONE
-                binbing.settingsInclude.chooseThemeMenu.visibility = View.VISIBLE
+                binding.settingsInclude.chooseThemeMenu.visibility = View.VISIBLE
             }
         }
-        binbing.settingsInclude.chooseLight.setOnClickListener {
+        binding.settingsInclude.chooseLight.setOnClickListener {
             PREFS!!.isLightThemeUsed = true
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        binbing.settingsInclude.chooseDark.setOnClickListener {
+        binding.settingsInclude.chooseDark.setOnClickListener {
             PREFS!!.isLightThemeUsed = false
             PREFS!!.isPrefsChanged = true
             restoreThemeButtonsAndApplyChanges()
         }
-        binbing.settingsInclude.chooseAccent.setOnClickListener { AccentDialog.display(supportFragmentManager) }
-        binbing.settingsInclude.moreTilesSwitch.apply {
+        binding.settingsInclude.chooseAccent.setOnClickListener { AccentDialog.display(supportFragmentManager) }
+        binding.settingsInclude.moreTilesSwitch.apply {
             isChecked = PREFS!!.isMoreTilesEnabled
             text = if(PREFS!!.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
@@ -78,7 +78,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 setImg()
             }
         }
-        binbing.settingsInclude.newAppsToStartSwitch.apply {
+        binding.settingsInclude.newAppsToStartSwitch.apply {
             isChecked = PREFS!!.pinNewApps
             text = if(PREFS!!.pinNewApps) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
@@ -86,7 +86,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
-        binbing.settingsInclude.parallaxSwitch.apply {
+        binding.settingsInclude.parallaxSwitch.apply {
             isChecked = PREFS!!.isParallaxEnabled
             text = if(PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, chk ->
@@ -97,7 +97,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 } else {
                     if (chk) {
                         if(PREFS!!.isTransitionAnimEnabled) {
-                            binbing.root.animate().alpha(0.7f).setDuration(200).start()
+                            binding.root.animate().alpha(0.7f).setDuration(200).start()
                         }
                         isChecked = false
                         WPDialog(this@ThemeSettingsActivity).apply {
@@ -108,7 +108,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                                 PREFS!!.isParallaxEnabled = true
                                 PREFS!!.isPrefsChanged = true
                                 isChecked = true
-                                binbing.settingsInclude.wallpaperShowSwtich.isChecked = true
+                                binding.settingsInclude.wallpaperShowSwtich.isChecked = true
                                 dismiss()
                                 text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(
                                         R.string.off
@@ -119,7 +119,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                             }
                             setDismissListener {
                                 if(PREFS!!.isTransitionAnimEnabled) {
-                                    binbing.root.animate().alpha(1f).setDuration(200).start()
+                                    binding.root.animate().alpha(1f).setDuration(200).start()
                                 }
                             }
                             show()
@@ -128,7 +128,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        binbing.settingsInclude.wallpaperShowSwtich.apply {
+        binding.settingsInclude.wallpaperShowSwtich.apply {
             isChecked = PREFS!!.isWallpaperUsed
             text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, check ->
@@ -137,7 +137,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
             }
         }
-        binbing.settingsInclude.dynamicColorSwtich.apply {
+        binding.settingsInclude.dynamicColorSwtich.apply {
             if(!DynamicColors.isDynamicColorAvailable()) {
                 isEnabled = false
             }
@@ -160,7 +160,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 }
             }
         }
-        binbing.settingsInclude.blockStartSwitch.apply {
+        binding.settingsInclude.blockStartSwitch.apply {
             isChecked = PREFS!!.isStartBlocked
             text = if(PREFS!!.isStartBlocked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
@@ -174,7 +174,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         val textFinal = getString(R.string.settings_theme_accent_title_part2) + " " + getString(R.string.settings_theme_accent_title_part1) + " " + getString(R.string.settings_theme_accent_title_part3)
         val spannable: Spannable = SpannableString(textFinal)
         spannable.setSpan(ForegroundColorSpan(launcherAccentColor(theme)), textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)),textFinal.indexOf(getString(R.string.settings_theme_accent_title_part1)) + getString(R.string.settings_theme_accent_title_part1).length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        binbing.settingsInclude.accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
+        binding.settingsInclude.accentTip.setText(spannable, TextView.BufferType.SPANNABLE)
     }
     private fun prepareTip() {
         if(PREFS!!.prefs.getBoolean("tipSettingsThemeEnabled", true)) {
@@ -187,30 +187,24 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS!!.isTransitionAnimEnabled) {
             return
         }
-        val main = binbing.root
-        val animatorSet = AnimatorSet()
-        if(exit) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
+        val main = binding.root
+        val animatorSet = AnimatorSet().apply {
+            playTogether(
+                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
+                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
+                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
-        } else {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
-            )
+            duration = 400
         }
-        animatorSet.setDuration(400)
         animatorSet.start()
+    }
+    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+        return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
     override fun onPause() {
         enterAnimation(true)
@@ -221,11 +215,11 @@ class ThemeSettingsActivity : AppCompatActivity() {
         enterAnimation(false)
     }
     private fun setImg() {
-        binbing.settingsInclude.moreTilesImage.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
+        binding.settingsInclude.moreTilesImage.setImageResource(if(PREFS!!.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
     }
     private fun restoreThemeButtonsAndApplyChanges() {
-        binbing.settingsInclude.chooseTheme.visibility = View.VISIBLE
-        binbing.settingsInclude.chooseThemeMenu.visibility = View.GONE
+        binding.settingsInclude.chooseTheme.visibility = View.VISIBLE
+        binding.settingsInclude.chooseThemeMenu.visibility = View.GONE
         setAppTheme()
     }
     private fun setAppTheme() {

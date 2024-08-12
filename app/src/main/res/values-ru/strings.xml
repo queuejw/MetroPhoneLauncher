@@ -100,7 +100,7 @@
     <string name="navigation_bar_2">Панель навигации</string>
     <string name="hide_navbar">скрыть</string>
     <string name="send_launcher_usage">Отправляйте отзывы об использовании и ошибках, чтобы помочь улучшить MetroPhoneLauncher</string>
-    <string name="send_feedback">Отравлять отчеты об ошибках</string>
+    <string name="send_feedback">Отправлять отчеты об ошибках</string>
     <string name="number_of_issues_to_save">Количество ошибок для сохранения</string>
     <string name="show_bsods">показать отчеты</string>
     <string name="delete_bsods">удалить отчеты</string>

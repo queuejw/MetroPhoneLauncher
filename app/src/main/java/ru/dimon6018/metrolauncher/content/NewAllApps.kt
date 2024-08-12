@@ -17,7 +17,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -127,9 +126,13 @@ class NewAllApps: Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (context == null) {
+            requireActivity().recreate()
+            return
+        }
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
             appAdapter = AppAdapter(getHeaderListLatter(mainViewModel.getAppList()))
-            recyclerViewLM = LinearLayoutManager(requireContext())
+            recyclerViewLM = LinearLayoutManager(requireActivity())
             setAlphabetRecyclerView(requireContext())
             if (PREFS!!.prefs.getBoolean("tip2Enabled", true)) {
                 withContext(mainDispatcher) {
@@ -164,12 +167,10 @@ class NewAllApps: Fragment() {
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag", "InlinedApi")
     private fun registerBroadcast() {
-        Log.d("AllApps", "register")
         if(!isBroadcasterRegistered) {
             isBroadcasterRegistered = true
             packageBroadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-                    Log.d("AllApps", "on receive")
                     val packageName = intent.getStringExtra("package")
                     // End early if it has anything to do with us.
                     if (packageName.isNullOrEmpty()) return
@@ -211,18 +212,14 @@ class NewAllApps: Fragment() {
         }
     }
     private fun broadcastListUpdater(context: Context) {
-        Log.d("AllApps", "update list")
         mainViewModel.setAppList(setUpApps(context.packageManager, context))
         appAdapter?.setData(getHeaderListLatter(mainViewModel.getAppList()))
     }
     private fun unregisterBroadcast() {
-        Log.d("AllApps", "unreg broadcaster")
         isBroadcasterRegistered = false
         packageBroadcastReceiver?.apply {
             requireActivity().unregisterReceiver(packageBroadcastReceiver)
             packageBroadcastReceiver = null
-        } ?: run {
-            Log.d("AllApps", "unregisterBroadcast() was called to a null receiver.")
         }
     }
     override fun onDestroy() {
@@ -361,11 +358,11 @@ class NewAllApps: Fragment() {
             }
             searchLayout.animate().translationY(-128f).setDuration(200).withEndAction {
                 searchLayout.visibility = View.GONE
+                searchBtn.apply {
+                    visibility = View.VISIBLE
+                    animate().alpha(1f).setDuration(200).start()
+                }
             }.start()
-            searchBtn.apply {
-                visibility = View.VISIBLE
-                animate().alpha(1f).setDuration(100).start()
-            }
             settingsBtn.visibility = if(!PREFS!!.isSettingsBtnEnabled) View.GONE else View.VISIBLE
             appList.apply {
                 alpha = 0.5f
@@ -395,7 +392,7 @@ class NewAllApps: Fragment() {
             }.start()
             settingsBtn.visibility = View.GONE
             appList.apply {
-                animate().translationX(-150f).setDuration(200).start()
+                animate().translationX(-requireContext().resources.getDimensionPixelSize(R.dimen.recyclerViewSearchPadding).toFloat()).setDuration(200).start()
                 isVerticalScrollBarEnabled = false
             }
         }

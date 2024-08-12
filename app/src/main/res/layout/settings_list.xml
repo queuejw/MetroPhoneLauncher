@@ -14,7 +14,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/themeSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp">
 
             <LinearLayout
@@ -44,7 +44,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/allAppsSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -75,7 +75,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/tilesSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -106,7 +106,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/iconsSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -136,7 +136,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/animSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -166,7 +166,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/feedbackSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -196,7 +196,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/weatherSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -227,7 +227,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/updatesSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -257,7 +257,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/navbarSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -287,7 +287,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/aboutSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -317,7 +317,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/leaks"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 
@@ -347,7 +347,7 @@
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/expSetting"
             style="@style/Settings.Card"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="64dp"
             android:layout_marginTop="8dp">
 

@@ -89,30 +89,24 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if(!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS!!.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root
-        val animatorSet = AnimatorSet()
-        if(exit) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 0f, 300f),
-                ObjectAnimator.ofFloat(main, "rotationY", 0f, 90f),
-                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
-                ObjectAnimator.ofFloat(main, "scaleX", 1f, 0.5f),
-                ObjectAnimator.ofFloat(main, "scaleY", 1f, 0.5f),
+        val animatorSet = AnimatorSet().apply {
+            playTogether(
+                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
+                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
+                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
-        } else {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 300f, 0f),
-                ObjectAnimator.ofFloat(main, "rotationY", 90f, 0f),
-                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
-                ObjectAnimator.ofFloat(main, "scaleX", 0.5f, 1f),
-                ObjectAnimator.ofFloat(main, "scaleY", 0.5f, 1f)
-            )
+            duration = 400
         }
-        animatorSet.setDuration(400)
         animatorSet.start()
+    }
+    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+        return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
 
     override fun onResume() {
