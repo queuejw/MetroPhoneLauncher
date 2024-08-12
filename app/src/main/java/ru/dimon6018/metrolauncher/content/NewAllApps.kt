@@ -17,6 +17,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -102,6 +103,7 @@ class NewAllApps: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = AllAppsScreenBinding.inflate(inflater, container, false)
         val view = binding.root
+        Log.d("AllApps", "Init")
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         if(!PREFS!!.isAllAppsBackgroundEnabled) {
             binding.frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(requireContext(), android.R.color.background_light).toDrawable() else ContextCompat.getColor(requireContext(), android.R.color.background_dark).toDrawable()
@@ -127,11 +129,15 @@ class NewAllApps: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (context == null) {
-            requireActivity().recreate()
+            activity?.recreate()
             return
         }
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-            appAdapter = AppAdapter(getHeaderListLatter(mainViewModel.getAppList()))
+            var data = getHeaderListLatter(mainViewModel.getAppList())
+            if(data.isEmpty()) {
+                data = getHeaderListLatter(setUpApps(requireActivity().packageManager, requireActivity()))
+            }
+            appAdapter = AppAdapter(data)
             recyclerViewLM = LinearLayoutManager(requireActivity())
             setAlphabetRecyclerView(requireContext())
             if (PREFS!!.prefs.getBoolean("tip2Enabled", true)) {

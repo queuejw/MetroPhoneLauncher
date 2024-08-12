@@ -298,11 +298,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun restartApp() {
-        PREFS!!.isPrefsChanged = false
         finishAffinity()
         val componentName = Intent(this, this::class.java).component
         val intent = Intent.makeRestartActivityTask(componentName)
         startActivity(intent)
+        PREFS!!.isPrefsChanged = false
         Runtime.getRuntime().exit(0)
     }
 
