@@ -32,7 +32,6 @@ import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generatePlaceholder
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import kotlin.random.Random
 
 class AppsFragment: Fragment() {
@@ -60,7 +59,7 @@ class AppsFragment: Fragment() {
         val call = TileData.getTileData(requireContext()).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()
-            val appList = sortApps(setUpApps(requireContext().packageManager, requireContext()))
+            val appList = setUpApps(requireContext().packageManager, requireContext())
             val mAdapter = AppAdapter(appList)
             val lm = LinearLayoutManager(requireContext())
             var iconManager: IconPackManager? = null
@@ -96,7 +95,7 @@ class AppsFragment: Fragment() {
                     }
                 }
                 binding.next.setOnClickListener {
-                    if(selectedItems!!.size < 1) {
+                    if(selectedItems!!.isEmpty()) {
                         WPDialog(requireContext()).apply {
                             setTopDialog(true)
                             setTitle(getString(R.string.reset_warning_title))

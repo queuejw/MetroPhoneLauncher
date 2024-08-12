@@ -11,16 +11,20 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent">
+
     <LinearLayout
+        android:id="@+id/searchLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:translationY="-64dp"
+        android:visibility="gone">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/searchBackBtn"
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_gravity="center"
-            android:visibility="gone"
+            android:layout_marginStart="12dp"
             app:cardBackgroundColor="?android:attr/colorBackground"
             app:cardCornerRadius="48dp"
             app:strokeColor="?attr/colorOnSurface"
@@ -33,6 +37,7 @@
                 android:src="@drawable/ic_arrow_left"
                 app:tint="?attr/colorOnSurface" />
         </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -40,15 +45,20 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:visibility="gone"
+            app:boxCornerRadiusBottomEnd="0dp"
+            app:boxCornerRadiusBottomStart="0dp"
+            app:boxCornerRadiusTopStart="0dp"
+            app:boxCornerRadiusTopEnd="0dp"
             app:boxStrokeWidth="3dp"
+            app:boxBackgroundColor="@android:color/white"
             app:endIconMode="none">
 
             <AutoCompleteTextView
-                android:inputType="text"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:textColor="?attr/colorOnBackground"
+                android:inputType="text"
+                android:textColor="@android:color/black"
+                android:textCursorDrawable="@drawable/cursor"
                 android:textSize="16sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -57,11 +67,24 @@
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingStart="@dimen/recyclerViewPadding"
         android:layout_marginTop="4dp"
         android:scrollbars="vertical"
         android:scrollbarSize="6dp"
         android:nestedScrollingEnabled="true"/>
 </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/no_results"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:gravity="start"
+        android:layout_gravity="top"
+        android:textSize="22sp"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

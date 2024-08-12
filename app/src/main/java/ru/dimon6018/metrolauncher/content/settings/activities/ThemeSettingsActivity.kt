@@ -86,10 +86,46 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
-        binbing.settingsInclude.wallpaperTransparentTilesSwtich.apply {
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isTilesTransparent = isChecked
-                PREFS!!.isPrefsChanged = true
+        binbing.settingsInclude.parallaxSwitch.apply {
+            isChecked = PREFS!!.isParallaxEnabled
+            text = if(PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, chk ->
+                if (PREFS!!.isWallpaperUsed) {
+                    PREFS!!.isParallaxEnabled = chk
+                    PREFS!!.isPrefsChanged = true
+                    text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(R.string.off)
+                } else {
+                    if (chk) {
+                        if(PREFS!!.isTransitionAnimEnabled) {
+                            binbing.root.animate().alpha(0.7f).setDuration(200).start()
+                        }
+                        isChecked = false
+                        WPDialog(this@ThemeSettingsActivity).apply {
+                            setTitle(getString(R.string.tip))
+                            setMessage(context.getString(R.string.parallax_warn))
+                            setPositiveButton(getString(R.string.yes)) {
+                                PREFS!!.isWallpaperUsed = true
+                                PREFS!!.isParallaxEnabled = true
+                                PREFS!!.isPrefsChanged = true
+                                isChecked = true
+                                binbing.settingsInclude.wallpaperShowSwtich.isChecked = true
+                                dismiss()
+                                text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(
+                                        R.string.off
+                                    )
+                            }
+                            setNegativeButton(getString(android.R.string.cancel)) {
+                                dismiss()
+                            }
+                            setDismissListener {
+                                if(PREFS!!.isTransitionAnimEnabled) {
+                                    binbing.root.animate().alpha(1f).setDuration(200).start()
+                                }
+                            }
+                            show()
+                        }
+                    }
+                }
             }
         }
         binbing.settingsInclude.wallpaperShowSwtich.apply {

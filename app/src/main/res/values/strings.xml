@@ -153,7 +153,7 @@
     <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
     <string name="tip">Tips</string>
     <string name="tip1">Press your finger on a tile to open the desktop edit mode</string>
-    <string name="goodbye">Goodbye</string>
+    <string name="goodbye">goodbye</string>
     <string name="screenshots">Screenshots</string>
     <string name="app_opening_error">We were unable to open this app</string>
     <string name="current_iconpack">Current icon pack: %s</string>
@@ -182,7 +182,7 @@
     <string name="tiles">tiles</string>
     <string name="customize_tiles">customize tiles</string>
     <string name="tile_transparency">Tile transparency</string>
-    <string name="wallpaperTransparentTiles">Enable the parallax effect on your start screen</string>
+    <string name="wallpaperTransparentTiles">Enable wallpaper parallax effect on your start screen</string>
     <string name="permissionsError">Some MPL functions require permissions to operate</string>
     <string name="setAsDefaultLauncher">Want to install MPL as your default launcher?</string>
     <string name="tip2">To pin the app, hold it down</string>
@@ -233,4 +233,7 @@
     <string name="later">Later</string>
     <string name="keyboard_when_searching">Show keyboard when searching</string>
     <string name="auto_show_keyboard_allapps">Automatically enable search when you open the All Apps screen.</string>
+    <string name="tile_icon">Tile icon</string>
+    <string name="no_results_for">No results for </string>
+    <string name="parallax_warn">For wallpaper parallax to work, you\'ll need to enable the desktop wallpaper. Turn it on?</string>
 </resources>

@@ -56,7 +56,7 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean(wallpaperPref, false)
         set(value) = prefs.edit().putBoolean(wallpaperPref, value).apply()
 
-    var isTilesTransparent: Boolean
+    var isParallaxEnabled: Boolean
         get() =  prefs.getBoolean(parallaxTilesPref, false)
         set(value) = prefs.edit().putBoolean(parallaxTilesPref, value).apply()
 
@@ -248,7 +248,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putBoolean("iconPackChanged", value).apply()
 
     var showKeyboardWhenSearching: Boolean
-        get() = prefs.getBoolean(keyboardSearchPref, false)
+        get() = prefs.getBoolean(keyboardSearchPref, true)
         set(value) = prefs.edit().putBoolean(keyboardSearchPref, value).apply()
 
     var showKeyboardWhenOpeningAllApps: Boolean

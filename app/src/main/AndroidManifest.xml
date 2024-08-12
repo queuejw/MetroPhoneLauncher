@@ -31,6 +31,7 @@
             android:configChanges="screenSize|orientation|screenLayout|navigation"
             android:launchMode="singleInstance"
             android:clearTaskOnLaunch="true"
+            android:windowSoftInputMode="adjustNothing"
             android:resizeableActivity="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

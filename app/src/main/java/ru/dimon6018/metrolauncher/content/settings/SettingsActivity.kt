@@ -164,9 +164,6 @@ class SettingsActivity : AppCompatActivity() {
                     }
                     startActivity(intent)
                 }
-                job?.invokeOnCompletion {
-                    isEnter = false
-                }
             }
         }
     }
@@ -206,9 +203,9 @@ class SettingsActivity : AppCompatActivity() {
     private suspend fun startAnim() {
         if (PREFS!!.isTransitionAnimEnabled) {
             setupAnimations()
-            isEnter = false
             CoroutineScope(Dispatchers.Main).launch {
                 delay(350)
+                isEnter = false
                 viewList.forEach { (view, _) ->
                     view.alpha = 1f
                 }

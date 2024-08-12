@@ -13,7 +13,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
 import android.text.TextWatcher
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,7 +26,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
-import android.widget.Toast
+import android.widget.TextView
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
@@ -45,6 +48,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import me.everything.android.ui.overscroll.IOverScrollDecor
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
@@ -71,13 +75,15 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getUserLanguageR
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sortApps
 import kotlin.random.Random
 
 class NewAllApps: Fragment() {
 
     private lateinit var recyclerViewLM: LinearLayoutManager
+    private lateinit var decor: IOverScrollDecor
+
     private var appAdapter: AppAdapter? = null
+
     private var adapterAlphabet: AlphabetAdapter? = null
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
@@ -117,7 +123,6 @@ class NewAllApps: Fragment() {
         binding.searchBackBtn.setOnClickListener {
             disableSearch()
         }
-        setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -152,7 +157,7 @@ class NewAllApps: Fragment() {
             layoutManager = recyclerViewLM
             adapter = appAdapter
             addItemDecoration(Utils.BottomOffsetDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.recyclerViewPadding)))
-            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+            decor = OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
             visibility = View.VISIBLE
         }
     }
@@ -207,7 +212,7 @@ class NewAllApps: Fragment() {
     }
     private fun broadcastListUpdater(context: Context) {
         Log.d("AllApps", "update list")
-        mainViewModel.setAppList(sortApps(setUpApps(context.packageManager, context)))
+        mainViewModel.setAppList(setUpApps(context.packageManager, context))
         appAdapter?.setData(getHeaderListLatter(mainViewModel.getAppList()))
     }
     private fun unregisterBroadcast() {
@@ -285,7 +290,7 @@ class NewAllApps: Fragment() {
         }
         var pos = 0
         alphabetList.forEach {
-            if(it != "...") {
+            if(it.length < 2) {
                 val l = AlphabetLetter()
                 l.letter = it
                 l.isActive = false
@@ -303,7 +308,7 @@ class NewAllApps: Fragment() {
         return resultList
     }
     override fun onPause() {
-        if(isSearching) {
+        if(isSearching && !PREFS!!.showKeyboardWhenOpeningAllApps) {
             disableSearch()
         }
         if(isAlphabetVisible) {
@@ -313,16 +318,12 @@ class NewAllApps: Fragment() {
             appAdapter?.popupWindow?.dismiss()
             appAdapter?.popupWindow = null
         }
-        if(PREFS!!.showKeyboardWhenOpeningAllApps) {
-            disableSearch()
-        }
         super.onPause()
     }
 
     override fun onResume() {
         if(isAppOpened && !isStartMenuOpened) {
             activity?.onBackPressedDispatcher?.onBackPressed()
-            return
         }
         registerBroadcast()
         super.onResume()
@@ -348,21 +349,30 @@ class NewAllApps: Fragment() {
         }
     }
     private fun disableSearch() {
+        if(!isSearching) return
         isSearching = false
-        (binding.search.editText as? AutoCompleteTextView)?.clearFocus()
-        if(PREFS!!.showKeyboardWhenSearching) {
-            hideKeyboard(binding.search.editText as? AutoCompleteTextView)
+        binding.noResults.visibility = View.GONE
+        decor.attach()
+        binding.apply {
+            hideKeyboard(search.editText as? AutoCompleteTextView)
+            (search.editText as? AutoCompleteTextView)?.apply {
+                text.clear()
+                clearFocus()
+            }
+            searchLayout.animate().translationY(-128f).setDuration(200).withEndAction {
+                searchLayout.visibility = View.GONE
+            }.start()
+            searchBtn.apply {
+                visibility = View.VISIBLE
+                animate().alpha(1f).setDuration(100).start()
+            }
+            settingsBtn.visibility = if(!PREFS!!.isSettingsBtnEnabled) View.GONE else View.VISIBLE
+            appList.apply {
+                alpha = 0.5f
+                animate().translationX(0f).setDuration(200).start()
+                isVerticalScrollBarEnabled = true
+            }
         }
-        binding.searchBtn.visibility = View.VISIBLE
-        binding.search.visibility = View.GONE
-        binding.searchBackBtn.visibility = View.GONE
-        if(!PREFS!!.isSettingsBtnEnabled) {
-            binding.settingsBtn.visibility = View.GONE
-        } else {
-            binding.settingsBtn.visibility = View.VISIBLE
-        }
-        setRecyclerPadding(resources.getDimensionPixelSize(R.dimen.recyclerViewPadding))
-        binding.appList.alpha = 0.5f
         lifecycleScope.launch(defaultDispatcher) {
             val list = getHeaderListLatter(mainViewModel.getAppList())
             withContext(mainDispatcher) {
@@ -371,16 +381,24 @@ class NewAllApps: Fragment() {
             }
         }
     }
-    private fun setRecyclerPadding(pad: Int) {
-        binding.appList.setPadding(pad, 0, 0 ,0)
-    }
     private fun searchFunction() {
+        if(isSearching) return
         isSearching = true
-        binding.searchBtn.visibility = View.GONE
-        binding.settingsBtn.visibility = View.GONE
-        binding.search.visibility = View.VISIBLE
-        binding.searchBackBtn.visibility = View.VISIBLE
-        setRecyclerPadding(0)
+        decor.detach()
+        binding.apply {
+            searchLayout.apply {
+                visibility = View.VISIBLE
+                animate().translationY(0f).setDuration(200).start()
+            }
+            searchBtn.animate().alpha(0f).setDuration(100).withEndAction {
+                searchBtn.visibility = View.GONE
+            }.start()
+            settingsBtn.visibility = View.GONE
+            appList.apply {
+                animate().translationX(-150f).setDuration(200).start()
+                isVerticalScrollBarEnabled = false
+            }
+        }
         if(PREFS!!.showKeyboardWhenSearching) {
             showKeyboard(binding.search.editText as? AutoCompleteTextView)
         }
@@ -391,16 +409,12 @@ class NewAllApps: Fragment() {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     filterText(s.toString())
                 }
-                override fun beforeTextChanged(
-                    s: CharSequence,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable) {}
             })
+            withContext(mainDispatcher) {
+                binding.appList.smoothScrollToPosition(0)
+            }
         }
     }
     private fun showKeyboard(view: View?) {
@@ -421,16 +435,25 @@ class NewAllApps: Fragment() {
             }
         }
     }
-    private fun filterText(text: String) {
+    private fun filterText(searchText: String) {
         val filteredList: ArrayList<App> = ArrayList()
         val locale = getDefaultLocale()
         mainViewModel.getAppList().forEach {
-            if (it.appLabel!!.lowercase(locale).contains(text.lowercase(locale))) {
+            if (it.appLabel!!.lowercase(locale).contains(searchText.lowercase(locale))) {
                 filteredList.add(it)
             }
         }
-        if (filteredList.isNotEmpty()) {
-            appAdapter?.setData(filteredList)
+        appAdapter?.setData(filteredList)
+        binding.noResults.apply {
+            if (filteredList.isEmpty()) {
+                visibility = View.VISIBLE
+                val string = context.getString(R.string.no_results_for) + " " + searchText
+                val spannable: Spannable = SpannableString(string)
+                spannable.setSpan(ForegroundColorSpan(launcherAccentColor(requireActivity().theme)), string.indexOf(searchText),string.indexOf(searchText) + searchText.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                setText(spannable, TextView.BufferType.SPANNABLE)
+            } else {
+                visibility = View.GONE
+            }
         }
     }
     private suspend fun removeHeaders() {
@@ -451,7 +474,6 @@ class NewAllApps: Fragment() {
         val englishApps = mutableMapOf<String, MutableList<App>>()
         val otherApps = mutableListOf<App>()
         val defaultLocale = getDefaultLocale()
-
         val regex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             getUserLanguageRegex(userLanguage).toRegex()
         } else {
@@ -528,19 +550,12 @@ class NewAllApps: Fragment() {
                 setViewInteractAnimation(itemView)
                 itemView.setOnClickListener {
                     visualFeedback(itemView)
-                    try {
-                        if(PREFS!!.isAAllAppsAnimEnabled) {
-                            startDismissAnim(list[absoluteAdapterPosition])
-                        } else {
-                            if(context != null) {
-                                runApp(list[absoluteAdapterPosition].appPackage!!, requireContext().packageManager)
-                            }
+                    if(PREFS!!.isAAllAppsAnimEnabled) {
+                        startDismissAnim(list[absoluteAdapterPosition])
+                    } else {
+                        if(context != null) {
+                            runApp(list[absoluteAdapterPosition].appPackage!!, requireContext().packageManager)
                         }
-                    } catch (e: Exception) {
-                        Toast.makeText(requireContext(), getString(R.string.app_opening_error), Toast.LENGTH_SHORT).show()
-                        list.remove(list[absoluteAdapterPosition])
-                        mainViewModel.removeAppFromList(list[absoluteAdapterPosition])
-                        notifyItemRemoved(absoluteAdapterPosition)
                     }
                 }
                 itemView.setOnLongClickListener {
@@ -713,17 +728,17 @@ class NewAllApps: Fragment() {
             for (i in 0 until binding.appList.childCount) {
                 val itemView = binding.appList.getChildAt(i) ?: continue
                 animatorSetDismiss.playTogether(
-                    ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f),
-                    ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f)
+                    ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f),
+                    ObjectAnimator.ofFloat(itemView, "rotationY", 0f, -90f)
                 )
                 animatorSetDismiss.duration = (200 + (i * 2)).toLong()
                 animatorSetDismiss.start()
             }
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
+                ObjectAnimator.ofFloat(binding.appList, "alpha", 1f, 0f),
                 ObjectAnimator.ofFloat(binding.appList, "rotationY", 0f, -90f),
-                ObjectAnimator.ofFloat(binding.appList, "translationX", 0f, -600f),
-                ObjectAnimator.ofFloat(binding.appList, "alpha", 1f, 0f)
+                ObjectAnimator.ofFloat(binding.appList, "translationX", 0f, -600f)
             )
             animatorSet.duration = 325
             animatorSet.start()
@@ -734,14 +749,8 @@ class NewAllApps: Fragment() {
             }
             startAppDelay(item)
         }
-
-        private fun hideTilesStartScreen() {
-            // implement your logic here
-        }
-
         private fun startAppDelay(item: App) {
             CoroutineScope(mainDispatcher).launch {
-                hideTilesStartScreen()
                 delay(300)
                 context?.let {
                     runApp(item.appPackage!!, it.packageManager)
@@ -751,10 +760,10 @@ class NewAllApps: Fragment() {
                     for (i in 0 until binding.appList.childCount) {
                         val itemView = binding.appList.getChildAt(i) ?: continue
                         animatorSetItems.playTogether(
+                            ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f),
                             ObjectAnimator.ofFloat(itemView, "rotationY", -90f, 0f),
                             ObjectAnimator.ofFloat(itemView, "rotation", 45f, 0f),
-                            ObjectAnimator.ofFloat(itemView, "translationX", -500f, 0f),
-                            ObjectAnimator.ofFloat(itemView, "alpha", 0f, 1f)
+                            ObjectAnimator.ofFloat(itemView, "translationX", -500f, 0f)
                         )
                         animatorSetItems.start()
                     }
@@ -762,7 +771,6 @@ class NewAllApps: Fragment() {
                 cancel()
             }
         }
-
         private fun runApp(app: String, pm: PackageManager) {
             isAppOpened = true
             when (app) {

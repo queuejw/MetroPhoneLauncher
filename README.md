@@ -49,7 +49,9 @@ And many more smaller features!
 
 Please note, MPL is still in development and some features may not be fully functional or may be missing.
 
-    Download the MPL.apk file from this link.
+[Link](https://github.com/queuejw/MetroPhoneLauncher/releases/latest)
+
+    Download the MPL.apk file from the link above
 
     Install the app on your device.
 

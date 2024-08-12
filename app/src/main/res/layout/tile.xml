@@ -39,6 +39,7 @@
             android:layout_width="92dp"
             android:layout_height="92dp"
             android:layout_gravity="center"
+            android:contentDescription="@string/tile_icon"
             android:scaleType="fitCenter" />
 
         <com.google.android.material.textview.MaterialTextView

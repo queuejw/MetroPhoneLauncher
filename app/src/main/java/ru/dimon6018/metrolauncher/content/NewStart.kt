@@ -27,7 +27,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -50,8 +49,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import me.everything.android.ui.overscroll.IOverScrollDecor
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
@@ -84,7 +81,6 @@ import kotlin.random.Random
 class NewStart: Fragment(), OnStartDragListener {
 
     private lateinit var mItemTouchHelper: ItemTouchHelper
-    private lateinit var decor: IOverScrollDecor
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
@@ -148,13 +144,12 @@ class NewStart: Fragment(), OnStartDragListener {
         binding.startAppsTiles.apply {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
-            if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
-                addItemDecoration(Utils.MarginItemDecoration(6))
+            if (PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) {
+                addItemDecoration(Utils.MarginItemDecoration(this.context.resources.getDimensionPixelSize(R.dimen.tileMargin)))
             }
-            OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
+            // Minor issues when working with parallax. i should fix it later :#
+           // OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
             mItemTouchHelper.attachToRecyclerView(this)
-            decor = OverScrollDecoratorHelper.setUpOverScroll(this, OverScrollDecoratorHelper.ORIENTATION_VERTICAL)
-            decor.attach()
         }
     }
 
@@ -165,13 +160,13 @@ class NewStart: Fragment(), OnStartDragListener {
         if (!isLandscape) {
             // phone
             mSpannedLayoutManager = SpannedGridLayoutManager(
-                    orientation = RecyclerView.VERTICAL,
-                    rowCount = if(!PREFS!!.isMoreTilesEnabled) 8 else 12,
-                    columnCount = if(!PREFS!!.isMoreTilesEnabled) 4 else 6
-                )
+                orientation = RecyclerView.VERTICAL,
+                rowCount = if(!PREFS!!.isMoreTilesEnabled) 8 else 12,
+                columnCount = if(!PREFS!!.isMoreTilesEnabled) 4 else 6
+            )
         } else {
             // Landscape orientation
-            val tablet = context?.resources?.getBoolean(R.bool.isTablet) ?: false
+            val tablet = context?.resources?.getBoolean(R.bool.isTablet) == true
             mSpannedLayoutManager = if (tablet) {
                 // tablet
                 SpannedGridLayoutManager(
@@ -422,10 +417,10 @@ class NewStart: Fragment(), OnStartDragListener {
                             (requireActivity() as Main).generateIcon(packageName, bool)
                             mainViewModel.addAppToList(
                                 App(
-                                appLabel = context.packageManager.getApplicationInfo(packageName, 0).name,
-                                appPackage = packageName,
-                                id = Random.nextInt()
-                            ))
+                                    appLabel = context.packageManager.getApplicationInfo(packageName, 0).name,
+                                    appPackage = packageName,
+                                    id = Random.nextInt()
+                                ))
                             if (PREFS!!.pinNewApps) {
                                 pinApp(packageName)
                             }
@@ -563,7 +558,6 @@ class NewStart: Fragment(), OnStartDragListener {
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
-            decor.detach()
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleX", 1f, 0.85f),
@@ -571,8 +565,20 @@ class NewStart: Fragment(), OnStartDragListener {
             )
             animatorSet.setDuration(300)
             animatorSet.start()
-            binding.startAppsTiles.setBackgroundColor(if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light) else ContextCompat.getColor(context, android.R.color.background_dark))
-            binding.startFrame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(context, android.R.color.background_light).toDrawable() else ContextCompat.getColor(context, android.R.color.background_dark).toDrawable()
+            if(PREFS!!.isParallaxEnabled || !PREFS!!.isWallpaperUsed) {
+                binding.startAppsTiles.setBackgroundColor(
+                    if (PREFS!!.isLightThemeUsed) ContextCompat.getColor(
+                        context,
+                        android.R.color.background_light
+                    ) else ContextCompat.getColor(context, android.R.color.background_dark)
+                )
+                binding.startFrame.setBackgroundColor(
+                    if (PREFS!!.isLightThemeUsed) ContextCompat.getColor(
+                        context,
+                        android.R.color.background_light
+                    ) else ContextCompat.getColor(context, android.R.color.background_dark)
+                )
+            }
             isEditMode = true
             notifyDataSetChanged()
         }
@@ -580,7 +586,6 @@ class NewStart: Fragment(), OnStartDragListener {
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
             (requireActivity() as Main).configureViewPagerScroll(true)
-            decor.attach()
             val animatorSet = AnimatorSet()
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(binding.startAppsTiles, "scaleX", 0.85f, 1f),
@@ -588,8 +593,15 @@ class NewStart: Fragment(), OnStartDragListener {
             )
             animatorSet.setDuration(300)
             animatorSet.start()
-            binding.startAppsTiles.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
-            binding.startFrame.background = null
+            if(PREFS!!.isParallaxEnabled || !PREFS!!.isWallpaperUsed) {
+                binding.startAppsTiles.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        android.R.color.transparent
+                    )
+                )
+                binding.startFrame.background = null
+            }
             isEditMode = false
             clearItems()
             for(anim in animList) {
@@ -780,7 +792,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     holder.binding.container.setBackgroundColor(getTileColorFromPrefs(item.tileColor!!, context))
                 } else {
                     if (PREFS!!.isWallpaperUsed) {
-                        if(PREFS!!.isTilesTransparent) {
+                        if(PREFS!!.isParallaxEnabled) {
                             holder.binding.container.setBackgroundColor(ContextCompat.getColor(context, R.color.transparent))
                         } else {
                             holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
@@ -1084,7 +1096,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 })
             init {
                 binding.cardContainer.apply {
-                    strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
+                    strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
                 binding.container.apply {
                     alpha = PREFS!!.tilesTransparency
@@ -1156,19 +1168,19 @@ class NewStart: Fragment(), OnStartDragListener {
             override fun onItemClear() {}
         }
         /**inner class WeatherTileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
-            val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
-            val mContainer: FrameLayout = v.findViewById(R.id.container)
-            val mTextViewAppTitle: TextView = v.findViewById(android.R.id.text1)
-            val mTextViewTempValue: TextView = v.findViewById(R.id.weatherTempValue)
-            val mTextViewValue: TextView = v.findViewById(R.id.weatherValue)
-            val mTextViewCity: TextView = v.findViewById(android.R.id.text2)
+        val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
+        val mContainer: FrameLayout = v.findViewById(R.id.container)
+        val mTextViewAppTitle: TextView = v.findViewById(android.R.id.text1)
+        val mTextViewTempValue: TextView = v.findViewById(R.id.weatherTempValue)
+        val mTextViewValue: TextView = v.findViewById(R.id.weatherValue)
+        val mTextViewCity: TextView = v.findViewById(android.R.id.text2)
 
-            override fun onItemSelected() {}
-            override fun onItemClear() {}
+        override fun onItemSelected() {}
+        override fun onItemClear() {}
         }**/
         inner class SpaceViewHolder(binding: SpaceBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
-                if(PREFS!!.isWallpaperUsed && !PREFS!!.isTilesTransparent) {
+                if(PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) {
                     itemView.setBackgroundColor(transparentColor)
                 }
                 itemView.setOnClickListener {

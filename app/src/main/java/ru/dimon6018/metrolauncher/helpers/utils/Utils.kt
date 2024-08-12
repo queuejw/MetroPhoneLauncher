@@ -47,7 +47,6 @@ import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.util.Calendar
-import java.util.Collections
 import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.random.Random
@@ -209,8 +208,8 @@ class Utils {
             q.setFilterById(downloadId)
         }
 
-        fun setUpApps(pManager: PackageManager, context: Context): ArrayList<App> {
-            val list = ArrayList<App>()
+        fun setUpApps(pManager: PackageManager, context: Context): MutableList<App> {
+            val appListTemp = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
             var pos = 0
@@ -226,9 +225,53 @@ class Utils {
                     continue
                 }
                 item.type = 0
-                list.add(item)
+                appListTemp.add(item)
                 pos += 1
             }
+            val userLanguage = getDefaultLocale()
+            val userLanguageHeaders = mutableSetOf<String>()
+            val userLanguageApps = mutableMapOf<String, MutableList<App>>()
+            val englishHeaders = mutableSetOf<String>()
+            val englishApps = mutableMapOf<String, MutableList<App>>()
+            val otherApps = mutableListOf<App>()
+            val defaultLocale = getDefaultLocale()
+            val regex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                getUserLanguageRegex(userLanguage).toRegex()
+            } else {
+                getUserLanguageRegexCompat(userLanguage)
+            }
+            appListTemp.forEach { app ->
+                val label = app.appLabel ?: ""
+                when {
+                    label.first().toString().matches(regex) -> {
+                        val header = label[0].toString().lowercase(defaultLocale)
+                        userLanguageHeaders.add(header)
+                        if (userLanguageApps[header] == null) {
+                            userLanguageApps[header] = mutableListOf()
+                        }
+                        userLanguageApps[header]?.add(app)
+                    }
+                    label.matches(Regex("^[a-zA-Z].*")) -> {
+                        val header = label[0].lowercase(defaultLocale)
+                        englishHeaders.add(header)
+                        if (englishApps[header] == null) {
+                            englishApps[header] = mutableListOf()
+                        }
+                        englishApps[header]?.add(app)
+                    }
+                    else -> { otherApps.add(app) }
+                }
+            }
+            val list = mutableListOf<App>()
+            val sortedUserLanguageHeaders = userLanguageHeaders.sorted()
+            sortedUserLanguageHeaders.forEach { header ->
+                list.addAll(userLanguageApps[header] ?: emptyList())
+            }
+            val sortedEnglishHeaders = englishHeaders.sorted()
+            sortedEnglishHeaders.forEach { header ->
+                list.addAll(englishApps[header] ?: emptyList())
+            }
+            list.addAll(otherApps)
             return list
         }
 
@@ -317,28 +360,16 @@ class Utils {
         fun isScreenOn(context: Context?): Boolean {
             if (context != null) {
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                return powerManager?.isInteractive ?: false
+                return powerManager?.isInteractive == true
             } else {
                 return false
             }
-        }
-        fun sortApps(newApps: MutableList<App>): MutableList<App> {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Collections.sort(
-                    newApps,
-                    Comparator.comparing { app: App -> app.appLabel!![0].lowercase(Locale.getDefault()) })
-            } else {
-                newApps.sortWith { app1: App, app2: App ->
-                    app1.appLabel!![0].lowercase(Locale.getDefault())
-                        .compareTo(app2.appLabel!![0].lowercase(Locale.getDefault()))
-                }
-            }
-            return newApps
         }
         fun isDevMode(context: Context): Boolean {
             return Settings.Secure.getInt(context.contentResolver,
                 Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
         }
+        @SuppressLint("ClickableViewAccessibility")
         fun setViewInteractAnimation(view: View) {
             view.setOnTouchListener { _, event ->
                 val centerX = view.width / 2f
@@ -351,11 +382,6 @@ class Utils {
                         ObjectAnimator.ofFloat(view, "rotationY", -rotationY).setDuration(200).start()
                     }
                     MotionEvent.ACTION_UP -> {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            if (event.x >= 0 && event.x <= view.width && event.y >= 0 && event.y <= view.height) {
-                                view.performClick()
-                            }
-                        }, 200)
                         ObjectAnimator.ofFloat(view, "rotationX", 0f).setDuration(200).start()
                         ObjectAnimator.ofFloat(view, "rotationY", 0f).setDuration(200).start()
                     }
@@ -404,6 +430,8 @@ class Utils {
                     alphabet.add(bucket.label.lowercase(Locale.ROOT))
                 }
             }
+            alphabet.removeAt(0)
+            alphabet.removeAt(alphabet.size - 1)
             return alphabet
         }
         suspend fun generatePlaceholder(call: TileDao, value: Int) {

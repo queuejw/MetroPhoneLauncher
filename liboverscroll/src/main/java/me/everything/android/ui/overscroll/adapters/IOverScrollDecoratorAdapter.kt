@@ -1,15 +1,13 @@
-package me.everything.android.ui.overscroll.adapters;
+package me.everything.android.ui.overscroll.adapters
 
-import android.view.View;
-
-import me.everything.android.ui.overscroll.HorizontalOverScrollBounceEffectDecorator;
+import android.view.View
+import me.everything.android.ui.overscroll.HorizontalOverScrollBounceEffectDecorator
 
 /**
  * @see HorizontalOverScrollBounceEffectDecorator
  */
-public interface IOverScrollDecoratorAdapter {
-
-    View getView();
+interface IOverScrollDecoratorAdapter {
+    val view: View
 
     /**
      * Is view in it's absolute start position - such that a negative over-scroll can potentially
@@ -18,7 +16,7 @@ public interface IOverScrollDecoratorAdapter {
      *
      * @return Whether in absolute start position.
      */
-    boolean isInAbsoluteStart();
+    val isInAbsoluteStart: Boolean
 
     /**
      * Is view in it's absolute end position - such that an over-scroll can potentially
@@ -27,5 +25,5 @@ public interface IOverScrollDecoratorAdapter {
      *
      * @return Whether in absolute end position.
      */
-    boolean isInAbsoluteEnd();
+    val isInAbsoluteEnd: Boolean
 }

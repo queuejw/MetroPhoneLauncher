@@ -154,7 +154,7 @@
     <string name="oobe_apps_tip">Выберите приложения, которые хотите закрепить на начальном экране</string>
     <string name="tip">Подсказки</string>
     <string name="tip1">Зажмите палец на плитке, чтобы открыть открыть режим редактирования рабочего стола</string>
-    <string name="goodbye">До свидания</string>
+    <string name="goodbye">до свидания</string>
     <string name="screenshots">Скриншоты</string>
     <string name="app_opening_error">Нам не удалось открыть это приложение</string>
     <string name="current_iconpack">Текущий набор значков: %s</string>
@@ -183,7 +183,7 @@
     <string name="tiles">плитки</string>
     <string name="customize_tiles">настройте плитки</string>
     <string name="tile_transparency">Прозрачность плиток</string>
-    <string name="wallpaperTransparentTiles">Включить эффект параллакса на рабочем столе</string>
+    <string name="wallpaperTransparentTiles">Включить эффект параллакса обоев на рабочем столе</string>
     <string name="permissionsError">Для работы некоторых функций приложения требуется выдать разрешения</string>
     <string name="setAsDefaultLauncher">Желаете установить MPL в качестве основного лаунчера?</string>
     <string name="tip2">Чтобы закрепить приложение, удерживайте его.</string>
@@ -234,4 +234,7 @@
     <string name="later">Позже</string>
     <string name="keyboard_when_searching">Показывать клавиатуру при поиске</string>
     <string name="auto_show_keyboard_allapps">Автоматически открывать поиск при открытии экрана Все приложения.</string>
+    <string name="tile_icon">Иконка приложения</string>
+    <string name="no_results_for">Нет результатов: </string>
+    <string name="parallax_warn">Для работы параллакса обоев потребуется включить фон рабочего стола. Включить его?</string>
 </resources>
