@@ -590,12 +590,11 @@ class NewStart: Fragment(), OnStartDragListener {
             val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
             diffResult.dispatchUpdatesTo(this)
         }
-        @SuppressLint("NotifyDataSetChanged")
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
             binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
-            binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
+            binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.82f).setDuration(300).start()
             if(PREFS!!.isParallaxEnabled || !PREFS!!.isWallpaperUsed) {
                 binding.startFrame.setBackgroundColor(
                     if (PREFS!!.isLightThemeUsed) ContextCompat.getColor(
@@ -604,10 +603,11 @@ class NewStart: Fragment(), OnStartDragListener {
                     ) else ContextCompat.getColor(context, android.R.color.background_dark)
                 )
             }
+            for(anim in animList) {
+                anim.start()
+            }
             isEditMode = true
-            notifyDataSetChanged()
         }
-        @SuppressLint("NotifyDataSetChanged")
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
             (requireActivity() as Main).configureViewPagerScroll(true)
@@ -621,8 +621,11 @@ class NewStart: Fragment(), OnStartDragListener {
             for(anim in animList) {
                 anim.cancel()
             }
-            animList.clear()
-            notifyDataSetChanged()
+            for (i in 0..<binding.startAppsTiles.childCount) {
+                val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+                if(holder.itemViewType == spaceType) continue
+                holder.itemView.animate().rotation(0f).setDuration(100).start()
+            }
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -774,26 +777,21 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         private fun setTileEditModeAnim(holder: TileViewHolder, item: Tile, position: Int) {
-            if(isEditMode) {
-                val anim = createBaseWobble(holder.itemView)
-                if(item.isSelected == false) {
-                    if (position % 2 == 0) {
-                        anim.setFloatValues(-1.2f, 1.2f)
-                    } else {
-                        anim.setFloatValues(1.2f, -1.2f)
-                    }
-                    animList.add(anim)
-                    anim.start()
+            val anim = createBaseWobble(holder.itemView)
+            if (item.isSelected == false) {
+                if (position % 2 == 0) {
+                    anim.setFloatValues(-1.2f, 1.2f)
                 } else {
-                    try {
-                        animList[position].cancel()
-                        anim.cancel()
-                    } catch (e: IndexOutOfBoundsException) {
-                        e.printStackTrace()
-                    }
+                    anim.setFloatValues(1.2f, -1.2f)
                 }
+                animList.add(anim)
             } else {
-                holder.itemView.rotation = 0f
+                try {
+                    animList[position].cancel()
+                    anim.cancel()
+                } catch (e: IndexOutOfBoundsException) {
+                    e.printStackTrace()
+                }
             }
         }
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
