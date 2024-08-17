@@ -68,8 +68,7 @@ class Utils {
 
         fun applyWindowInsets(target: View) {
             ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
-                val paddingBottom =
-                    insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
+                val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
                 val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
                 view.setPadding(0, paddingTop, 0, paddingBottom)
                 WindowInsetsCompat.CONSUMED
@@ -434,8 +433,9 @@ class Utils {
         }
         suspend fun generatePlaceholder(call: TileDao, value: Int) {
             val size = if(PREFS!!.isMoreTilesEnabled) value * 2 else value
-            val startFrom = call.getUserTiles().size
-            for (i in startFrom..size) {
+            val startFrom = call.getTilesList().size
+            val end = startFrom + size
+            for (i in startFrom..end) {
                 val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
                     isSelected = false,
                     tileSize = "small",
@@ -450,6 +450,17 @@ class Utils {
         }
         fun getEnglishLanguage(): String {
             return Locale.ENGLISH.language
+        }
+        fun checkStoragePermissions(context: Context): Boolean {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                Environment.isExternalStorageManager()
+            } else {
+                val write =
+                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                val read =
+                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
+            }
         }
     }
     class MarginItemDecoration(private val spaceSize: Int) : ItemDecoration() {

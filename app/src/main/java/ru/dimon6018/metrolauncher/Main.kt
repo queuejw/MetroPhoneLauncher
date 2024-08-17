@@ -12,7 +12,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.FrameLayout
@@ -59,7 +58,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getDefaultLocale
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
@@ -83,7 +81,6 @@ class Main : AppCompatActivity() {
     private lateinit var binding: MainScreenLaucnherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         setAppTheme()
         handleDevMode()
         super.onCreate(savedInstanceState)
@@ -129,10 +126,9 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        WindowCompat.setDecorFitsSystemWindows(window, true)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        applyWindowInsets(binding.coordinator)
-        configureWallpaper()
+        applyWindowInsets(binding.root)
         registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
@@ -142,16 +138,6 @@ class Main : AppCompatActivity() {
             PREFS!!.updateState = 3
         }
     }
-
-    private fun configureWallpaper() {
-        if (PREFS!!.isWallpaperUsed) {
-            window?.apply {
-                setBackgroundDrawable(ContextCompat.getDrawable(this@Main, R.drawable.start_transparent))
-                addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER)
-            }
-        }
-    }
-
     private fun disableAnims() {
         PREFS!!.apply {
             isAAllAppsAnimEnabled = false

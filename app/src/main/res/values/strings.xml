@@ -148,7 +148,7 @@
     <string name="color_taupe">taupe</string>
     <string name="color_yellow">yellow</string>
     <string name="color_brown">brown</string>
-    <string name="wallpaper_error">We can\'t use your wallpaper without permission.</string>
+    <string name="wallpaper_error">Interacting with the wallpaper requires access to the device\'s memory.</string>
     <string name="update_err_saving_error">Feedback are disabled. No information has been saved</string>
     <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
     <string name="tip">Tips</string>
@@ -236,4 +236,12 @@
     <string name="tile_icon">Tile icon</string>
     <string name="no_results_for">No results for </string>
     <string name="parallax_warn">For wallpaper parallax to work, you\'ll need to enable the desktop wallpaper. Turn it on?</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="deny">Deny</string>
+    <string name="allow">Allow</string>
+    <string name="screen_orientation">Screen orientation</string>
+    <string name="portrait_orientation">portrait</string>
+    <string name="landscape_orientation">landscape</string>
+    <string name="default_orientation">default</string>
+    <string name="colored_switch">Enable colored stroke on tiles</string>
 </resources>

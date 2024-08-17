@@ -25,7 +25,6 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
 import ru.dimon6018.metrolauncher.databinding.BsodItemBinding
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsFeedbackBsodsBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 
 class FeedbackBsodListActivity: AppCompatActivity() {
@@ -33,7 +32,6 @@ class FeedbackBsodListActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsFeedbackBsodsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         binding = LauncherSettingsFeedbackBsodsBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)

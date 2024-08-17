@@ -37,7 +37,6 @@ import ru.dimon6018.metrolauncher.databinding.LauncherSettingsMainBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
 import kotlin.random.Random
 
@@ -68,7 +67,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         setAppTheme()
         super.onCreate(savedInstanceState)
         binding = LauncherSettingsMainBinding.inflate(layoutInflater)

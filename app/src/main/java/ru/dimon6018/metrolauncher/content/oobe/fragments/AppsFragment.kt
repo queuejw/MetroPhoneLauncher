@@ -29,7 +29,6 @@ import ru.dimon6018.metrolauncher.databinding.OobeAppItemBinding
 import ru.dimon6018.metrolauncher.databinding.OobeFragmentAppsBinding
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generatePlaceholder
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import kotlin.random.Random
@@ -130,7 +129,6 @@ class AppsFragment: Fragment() {
     }
     private fun addApps(call: TileDao) {
         lifecycleScope.launch(Dispatchers.Default) {
-            generatePlaceholder(call, selectedItems!!.size * 2)
             var pos = 0
             for (i in selectedItems!!) {
                 val id = Random.nextLong(1000, 2000000)
@@ -141,7 +139,7 @@ class AppsFragment: Fragment() {
                     appLabel = i.appLabel!!,
                     appPackage = i.appPackage!!
                 )
-                call.addTile(entity)
+                call.updateTile(entity)
                 pos += 1
             }
             withContext(Dispatchers.Main) {

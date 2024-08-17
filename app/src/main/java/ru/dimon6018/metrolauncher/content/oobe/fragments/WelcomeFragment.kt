@@ -59,7 +59,7 @@ class WelcomeFragment : Fragment() {
     private fun generatePlaceholders() {
         placeholderCoroutine.launch {
             Application.PREFS!!.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
-            generatePlaceholder(TileData.getTileData(requireContext()).getTileDao(), 32)
+            generatePlaceholder(TileData.getTileData(requireContext()).getTileDao(), 84)
             cancel()
         }
     }

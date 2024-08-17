@@ -6,6 +6,7 @@
     android:layout_height="54dp"
     android:layout_marginTop="6dp"
     android:layout_marginBottom="6dp"
+    android:transformPivotX="0dp"
     app:cardBackgroundColor="@color/transparent"
     app:cardCornerRadius="0dp"
     app:strokeColor="?attr/colorPrimary"

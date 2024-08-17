@@ -54,36 +54,10 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/transparent_background_allapps_settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:text="@string/transparent_background_allapps_switch"
-        android:layout_width="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/allAppsBackgroundSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="4dp"
-        android:textSize="24sp" />
-
-    <com.google.android.material.textview.MaterialTextView
         android:text="@string/keyboard_when_searching"
         android:layout_width="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:textSize="18sp"
         android:layout_height="wrap_content"/>
 

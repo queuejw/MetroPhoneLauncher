@@ -13,7 +13,6 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsNavbarBinding
 import ru.dimon6018.metrolauncher.databinding.NavbarIconChooseBinding
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class NavBarSettingsActivity: AppCompatActivity() {
@@ -21,7 +20,6 @@ class NavBarSettingsActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsNavbarBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Utils.launcherAccentTheme())
         binding = LauncherSettingsNavbarBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

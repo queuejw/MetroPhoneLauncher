@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -19,6 +20,7 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.snackbar.Snackbar
 import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -29,14 +31,12 @@ import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class ThemeSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsThemeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         super.onCreate(savedInstanceState)
         binding = LauncherSettingsThemeBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -93,37 +93,14 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 if (PREFS!!.isWallpaperUsed) {
                     PREFS!!.isParallaxEnabled = chk
                     PREFS!!.isPrefsChanged = true
-                    text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(R.string.off)
+                    text = if (chk) getString(R.string.on) else getString(R.string.off)
                 } else {
                     if (chk) {
                         if(PREFS!!.isTransitionAnimEnabled) {
                             binding.root.animate().alpha(0.7f).setDuration(200).start()
                         }
                         isChecked = false
-                        WPDialog(this@ThemeSettingsActivity).apply {
-                            setTitle(getString(R.string.tip))
-                            setMessage(context.getString(R.string.parallax_warn))
-                            setPositiveButton(getString(R.string.yes)) {
-                                PREFS!!.isWallpaperUsed = true
-                                PREFS!!.isParallaxEnabled = true
-                                PREFS!!.isPrefsChanged = true
-                                isChecked = true
-                                binding.settingsInclude.wallpaperShowSwtich.isChecked = true
-                                dismiss()
-                                text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(
-                                        R.string.off
-                                    )
-                            }
-                            setNegativeButton(getString(android.R.string.cancel)) {
-                                dismiss()
-                            }
-                            setDismissListener {
-                                if(PREFS!!.isTransitionAnimEnabled) {
-                                    binding.root.animate().alpha(1f).setDuration(200).start()
-                                }
-                            }
-                            show()
-                        }
+                        parallaxDialog(this@ThemeSettingsActivity, this)
                     }
                 }
             }
@@ -134,7 +111,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, check ->
                 PREFS!!.isWallpaperUsed = check
                 PREFS!!.isPrefsChanged = true
-                text = if(PREFS!!.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
+                text = if(check) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.dynamicColorSwtich.apply {
@@ -168,6 +145,16 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
+        binding.settingsInclude.coloredStrokeSwitch.apply {
+            isChecked = PREFS!!.coloredStroke
+            text = if(PREFS!!.coloredStroke) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS!!.coloredStroke = isChecked
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+                PREFS!!.isPrefsChanged = true
+            }
+        }
+        setOrientationButtons()
     }
 
     private fun setThemeText() {
@@ -410,6 +397,58 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 accentDialog.show(fragmentManager!!, TAG)
                 return accentDialog
             }
+        }
+    }
+    fun setOrientationButtons() {
+        val orientations = mapOf(
+            "p" to Triple(true, false, false),
+            "l" to Triple(false, true, false)
+        )
+        val (portrait, landscape, default) = orientations[PREFS!!.orientation] ?: Triple(false, false, true)
+        binding.settingsInclude.portraitOrientation.isChecked = portrait
+        binding.settingsInclude.landscapeOrientation.isChecked = landscape
+        binding.settingsInclude.defaultOrientation.isChecked = default
+
+        binding.settingsInclude.orientationRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when(checkedId) {
+                binding.settingsInclude.portraitOrientation.id -> {
+                    PREFS!!.orientation = "p"
+                }
+                binding.settingsInclude.landscapeOrientation.id -> {
+                    PREFS!!.orientation = "l"
+                }
+                binding.settingsInclude.defaultOrientation.id -> {
+                    PREFS!!.orientation = "default"
+                }
+            }
+            PREFS!!.isPrefsChanged = true
+        }
+    }
+
+    fun parallaxDialog(context: Context, switch: MaterialSwitch) {
+        WPDialog(context).apply {
+            setTitle(getString(R.string.tip))
+            setMessage(context.getString(R.string.parallax_warn))
+            setPositiveButton(getString(R.string.yes)) {
+                PREFS!!.isWallpaperUsed = true
+                PREFS!!.isParallaxEnabled = true
+                PREFS!!.isPrefsChanged = true
+                switch.isChecked = true
+                binding.settingsInclude.wallpaperShowSwtich.isChecked = true
+                dismiss()
+                switch.text = if (PREFS!!.isParallaxEnabled) getString(R.string.on) else getString(
+                    R.string.off
+                )
+            }
+            setNegativeButton(getString(android.R.string.cancel)) {
+                dismiss()
+            }
+            setDismissListener {
+                if(PREFS!!.isTransitionAnimEnabled) {
+                    binding.root.animate().alpha(1f).setDuration(200).start()
+                }
+            }
+            show()
         }
     }
 }

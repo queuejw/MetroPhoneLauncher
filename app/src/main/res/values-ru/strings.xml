@@ -149,7 +149,7 @@
     <string name="color_taupe">темно-серый</string>
     <string name="color_yellow">желтый</string>
     <string name="color_brown">коричневый</string>
-    <string name="wallpaper_error">Мы не можем использовать ваши обои без разрешения.</string>
+    <string name="wallpaper_error">Для взаимодействия с обоями требуется доступ к памяти устройства.</string>
     <string name="update_err_saving_error">Отключены отчеты об ошибках. Информация не сохранена.</string>
     <string name="oobe_apps_tip">Выберите приложения, которые хотите закрепить на начальном экране</string>
     <string name="tip">Подсказки</string>
@@ -237,4 +237,12 @@
     <string name="tile_icon">Иконка приложения</string>
     <string name="no_results_for">Нет результатов: </string>
     <string name="parallax_warn">Для работы параллакса обоев потребуется включить фон рабочего стола. Включить его?</string>
+    <string name="wallpaper">Обои</string>
+    <string name="deny">Запретить</string>
+    <string name="allow">Разрешить</string>
+    <string name="screen_orientation">Ориентация экрана</string>
+    <string name="portrait_orientation">портретная</string>
+    <string name="landscape_orientation">альбомная</string>
+    <string name="default_orientation">стандартно</string>
+    <string name="colored_switch">Включить цветную обводку у плиток</string>
 </resources>

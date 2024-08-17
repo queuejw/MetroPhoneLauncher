@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsExperimentsBinding
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class ExperimentsSettingsActivity: AppCompatActivity() {
@@ -14,7 +13,6 @@ class ExperimentsSettingsActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsExperimentsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Utils.launcherAccentTheme())
         binding = LauncherSettingsExperimentsBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)

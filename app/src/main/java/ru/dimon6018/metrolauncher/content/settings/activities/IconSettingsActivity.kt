@@ -21,7 +21,6 @@ import ru.dimon6018.metrolauncher.databinding.LauncherSettingsIconBinding
 import ru.dimon6018.metrolauncher.helpers.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 
 class IconSettingsActivity: AppCompatActivity() {
@@ -44,7 +43,6 @@ class IconSettingsActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsIconBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         binding = LauncherSettingsIconBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)

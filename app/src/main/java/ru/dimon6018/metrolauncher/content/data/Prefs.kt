@@ -30,7 +30,6 @@ class Prefs(context: Context) {
     private val settingsBtnPref = "allAppsSettingsBtnEnabled"
     private val alphabetPref = "alphabetEnabled"
     private val parallaxTilesPref = "parallaxEnabled"
-    private val allAppsBackgroundPref = "allAppsWallpaperBackground"
     private val tilesTransparencyPref = "tilesTransparency"
     private val searchBarPref = "searchBarEnabled"
     private val bottomBarIconPref = "bottomBarIcon"
@@ -47,9 +46,14 @@ class Prefs(context: Context) {
     private val bsodOutputPref = "bsodOutputEnabled"
     private val keyboardSearchPref = "showKeyboardWhenSearching"
     private val keyboardAutoSearchPref = "showKeyboardWhenOpeningAllApps"
+    private val orientationPref = "orientation"
+    private val coloredStrokePref = "coloredStroke"
 
     init {
         prefs = context.getSharedPreferences(fileName, 0)
+    }
+    fun reset() {
+        prefs.edit().clear().apply()
     }
 
     var isWallpaperUsed: Boolean
@@ -154,10 +158,6 @@ class Prefs(context: Context) {
         get() = prefs.getInt(navbarColorPref, 4)
         set(value) = prefs.edit().putInt(navbarColorPref, value).apply()
 
-    fun reset() {
-        prefs.edit().clear().apply()
-    }
-
     var iconPackPackage: String?
         get() = prefs.getString(iconPackPref, "null")
         set(value) = prefs.edit().putString(iconPackPref, value).apply()
@@ -178,10 +178,6 @@ class Prefs(context: Context) {
     var isAlphabetEnabled: Boolean
         get() = prefs.getBoolean(alphabetPref, true)
         set(value) = prefs.edit().putBoolean(alphabetPref, value).apply()
-
-    var isAllAppsBackgroundEnabled: Boolean
-        get() = prefs.getBoolean(allAppsBackgroundPref, false)
-        set(value) = prefs.edit().putBoolean(allAppsBackgroundPref, value).apply()
 
     var tilesTransparency: Float
         get() = prefs.getFloat(tilesTransparencyPref, 1.0f)
@@ -254,4 +250,12 @@ class Prefs(context: Context) {
     var showKeyboardWhenOpeningAllApps: Boolean
         get() = prefs.getBoolean(keyboardAutoSearchPref, false)
         set(value) = prefs.edit().putBoolean(keyboardAutoSearchPref, value).apply()
+
+    var orientation: String?
+        get() = prefs.getString(orientationPref, "default")
+        set(value) = prefs.edit().putString(orientationPref, value).apply()
+
+    var coloredStroke: Boolean
+        get() = prefs.getBoolean(coloredStrokePref, false)
+        set(value) = prefs.edit().putBoolean(coloredStrokePref, value).apply()
 }

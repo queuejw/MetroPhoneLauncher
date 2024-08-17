@@ -22,7 +22,7 @@ interface TileDao {
     fun getTilesLiveData(): LiveData<MutableList<Tile>>
     @Query("SELECT * FROM tiles")
     suspend fun getTilesList(): MutableList<Tile>
-    @Query("SELECT * FROM tiles WHERE tileType = -1") //-1
+    @Query("SELECT * FROM tiles WHERE tileType != -1") //-1
     suspend fun getUserTiles(): MutableList<Tile>
     @Query("SELECT * FROM tiles WHERE appPos = :pos")
     fun getTileFromPosition(pos: Int): Tile

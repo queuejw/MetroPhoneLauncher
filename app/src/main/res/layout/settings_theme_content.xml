@@ -112,11 +112,28 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/colored_switch"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/coloredStrokeSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:checked="false"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
                     android:text="@string/dynamicColor_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="54dp"
+                    android:layout_marginTop="24dp"
                     android:textSize="20sp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"/>
@@ -137,6 +154,7 @@
                     android:layout_marginEnd="16dp"
                     android:checked="false"
                     android:textSize="24sp" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/wallpaper_setting"
                     android:layout_width="match_parent"
@@ -146,6 +164,7 @@
                     android:textSize="20sp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"/>
+
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/wallpaper_switch"
                     android:layout_width="match_parent"
@@ -204,31 +223,6 @@
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/block_start_tip"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="54dp"
-                    android:textSize="20sp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
-                <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/block_start"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/blockStartSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="24sp" />
-
-                <com.google.android.material.textview.MaterialTextView
                     android:text="@string/more_tiles_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -256,5 +250,70 @@
                     android:id="@+id/moreTilesImage"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/themeSettingsImgSize" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_marginTop="16dp"
+                    android:alpha="0.7"
+                    android:text="@string/navigation_bar_3"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:text="@string/block_start_tip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:textSize="20sp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:text="@string/block_start"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="14dp"
+                    android:textSize="18sp"
+                    android:layout_height="wrap_content"/>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/blockStartSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:textSize="18sp"
+                    android:alpha="0.7"
+                    android:text="@string/screen_orientation"/>
+                <RadioGroup
+                    android:id="@+id/orientationRadioGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/portrait_orientation"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textSize="18sp"
+                            android:text="@string/portrait_orientation"/>
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/landscape_orientation"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textSize="18sp"
+                            android:text="@string/landscape_orientation"/>
+                        <com.google.android.material.radiobutton.MaterialRadioButton
+                            android:id="@+id/default_orientation"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textSize="18sp"
+                            android:text="@string/default_orientation"/>
+                </RadioGroup>
         </LinearLayout>
 </ScrollView>

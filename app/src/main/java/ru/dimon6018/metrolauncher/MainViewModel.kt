@@ -15,7 +15,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var appList: MutableList<App> = ArrayList()
 
     fun addIconToCache(appPackage: String, bitmap: Bitmap?) {
-        if(icons.get(appPackage.hashCode()) == null) {
+        if(icons[appPackage.hashCode()] == null) {
             icons.append(appPackage.hashCode(), bitmap)
         }
     }

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAllappsBinding
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class AllAppsSettingsActivity: AppCompatActivity() {
@@ -15,7 +14,6 @@ class AllAppsSettingsActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsAllappsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Utils.launcherAccentTheme())
         binding = LauncherSettingsAllappsBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -35,15 +33,6 @@ class AllAppsSettingsActivity: AppCompatActivity() {
                 PREFS!!.isAlphabetEnabled = isChecked
                 PREFS!!.isPrefsChanged = true
                 text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
-            }
-        }
-        binding.settingsInclude.allAppsBackgroundSwitch.apply {
-            isChecked = PREFS!!.isAllAppsBackgroundEnabled
-            text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAllAppsBackgroundEnabled = isChecked
-                PREFS!!.isPrefsChanged = true
-                text = if(PREFS!!.isAllAppsBackgroundEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.disableAllAppsSwitch.apply {

@@ -8,7 +8,6 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAnimationsBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 
@@ -17,7 +16,6 @@ class AnimationSettingsActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsAnimationsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Utils.launcherAccentTheme())
         binding = LauncherSettingsAnimationsBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -56,7 +54,7 @@ class AnimationSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.alphabetAnimCheckbox.apply {
             isChecked = PREFS!!.isAlphabetAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAlphabetEnabled = isChecked
+                PREFS!!.isAlphabetAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.tilesPhoneStartAnimCheckbox.apply {
@@ -66,7 +64,7 @@ class AnimationSettingsActivity: AppCompatActivity() {
             }
         }
         binding.settingsInclude.autoShutdownAnimsCheckbox.apply {
-            PREFS!!.isAutoShutdownAnimEnabled
+            isChecked = PREFS!!.isAutoShutdownAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS!!.isAutoShutdownAnimEnabled = isChecked
             }

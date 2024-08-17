@@ -8,7 +8,6 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
@@ -19,7 +18,6 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,9 +33,9 @@ import ru.dimon6018.metrolauncher.databinding.LauncherSettingsUpdatesBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.update.UpdateDataParser
 import ru.dimon6018.metrolauncher.helpers.update.UpdateWorker
-import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.checkStoragePermissions
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
 import java.io.File
 import java.io.IOException
@@ -58,7 +56,6 @@ class UpdateActivity: AppCompatActivity() {
     private lateinit var binding: LauncherSettingsUpdatesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(Utils.launcherAccentTheme())
         binding = LauncherSettingsUpdatesBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -92,7 +89,7 @@ class UpdateActivity: AppCompatActivity() {
                 .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         binding.settingsInclude.checkForUpdatesBtn.setOnClickListener {
-            if(!checkStoragePermissions()) {
+            if(!checkStoragePermissions(this)) {
                 PREFS!!.updateState = 5
                 refreshUi()
                 showPermsDialog()
@@ -142,7 +139,7 @@ class UpdateActivity: AppCompatActivity() {
             deleteUpdateFile(this)
             refreshUi()
         }
-        if(PREFS!!.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions()) {
+        if(PREFS!!.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions(this)) {
             showPermsDialog()
         }
     }
@@ -217,17 +214,6 @@ class UpdateActivity: AppCompatActivity() {
     }
     private fun hideDialogForever() {
         PREFS!!.prefs.edit().putBoolean("permsDialogUpdateScreenEnabled", false).apply()
-    }
-    private fun checkStoragePermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            val write =
-                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            val read =
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
-        }
     }
     private fun getPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -492,7 +478,7 @@ class UpdateActivity: AppCompatActivity() {
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
                             isUpdateDownloading = false
                             PREFS!!.updateState = 5
-                                withContext(mainDispatcher) {
+                            withContext(mainDispatcher) {
                                 refreshUi()
                             }
                         }
@@ -501,7 +487,7 @@ class UpdateActivity: AppCompatActivity() {
                         cursor.close()
                         isUpdateDownloading = false
                         PREFS!!.updateState = 0
-                            withContext(mainDispatcher) {
+                        withContext(mainDispatcher) {
                             this@UpdateActivity.recreate()
                         }
                     }

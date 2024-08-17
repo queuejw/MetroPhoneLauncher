@@ -25,7 +25,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.TIME
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
@@ -34,7 +33,6 @@ class AboutSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(launcherAccentTheme())
         binding = LauncherSettingsAboutBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)

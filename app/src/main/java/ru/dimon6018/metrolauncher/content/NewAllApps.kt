@@ -105,11 +105,6 @@ class NewAllApps: Fragment() {
         val view = binding.root
         Log.d("AllApps", "Init")
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        if(!PREFS!!.isAllAppsBackgroundEnabled) {
-            binding.frame.background = if(PREFS!!.isLightThemeUsed) ContextCompat.getColor(requireContext(), android.R.color.background_light).toDrawable() else ContextCompat.getColor(requireContext(), android.R.color.background_dark).toDrawable()
-        } else {
-            binding.frame.background = ContextCompat.getColor(requireContext(), R.color.transparent).toDrawable()
-        }
         binding.settingsBtn.setOnClickListener {
             activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
         }
@@ -708,20 +703,19 @@ class NewAllApps: Fragment() {
                 for (i in first..last) {
                     val itemView = binding.appList.findViewHolderForAdapterPosition(i)?.itemView
                     itemView?.let {
-                        ObjectAnimator.ofFloat(it, "alpha", 0.5f, 1f).setDuration(500).start()
+                        it.animate().alpha(1f).scaleY(1f).scaleX(1f).setDuration(500).start()
                     }
                 }
             } else {
                 for (i in first..last) {
-                    if (list[i] == app) continue
                     val itemView = binding.appList.findViewHolderForAdapterPosition(i)?.itemView
+                    if (list[i] == app) continue
                     itemView?.let {
-                        ObjectAnimator.ofFloat(it, "alpha", 1f, 0.5f).setDuration(500).start()
+                        it.animate().alpha(0.5f).scaleY(0.95f).scaleX(0.95f).setDuration(500).start()
                     }
                 }
             }
         }
-
         private fun startDismissAnim(item: App) {
             if (appAdapter == null || !PREFS!!.isAAllAppsAnimEnabled) {
                 startAppDelay(item)
