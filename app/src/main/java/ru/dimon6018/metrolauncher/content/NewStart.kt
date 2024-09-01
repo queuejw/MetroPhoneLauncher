@@ -112,7 +112,7 @@ class NewStart: Fragment(), OnStartDragListener {
         _binding = StartScreenBinding.inflate(inflater, container, false)
         val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        if(PREFS!!.isWallpaperUsed) {
+        if(PREFS.isWallpaperUsed && activity != null) {
             setWallpaper()
         }
         binding.startFrame.setOnClickListener {
@@ -145,8 +145,8 @@ class NewStart: Fragment(), OnStartDragListener {
                 dismiss()
             }
             setNegativeButton(getString(R.string.deny)) {
-                PREFS!!.isWallpaperUsed = false
-                PREFS!!.isParallaxEnabled = false
+                PREFS.isWallpaperUsed = false
+                PREFS.isParallaxEnabled = false
                 dismiss()
                 requireActivity().recreate()
             }
@@ -189,8 +189,7 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onViewCreated(view, savedInstanceState)
         if(context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-                lastItemPos = mainViewModel.getTileDao().getUserTiles().last().appPos!! + 6
-                Log.d("start", lastItemPos.toString())
+                lastItemPos = mainViewModel.getTileDao().getUserTiles().size + 6
                 tiles = mainViewModel.getTileDao().getTilesList()
                 setupRecyclerViewLayoutManager(requireContext())
                 setupAdapter()
@@ -217,11 +216,11 @@ class NewStart: Fragment(), OnStartDragListener {
         binding.startAppsTiles.apply {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
-            if (PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) {
+            if (PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) {
                 addItemDecoration(Utils.MarginItemDecoration(this.context.resources.getDimensionPixelSize(R.dimen.tileMargin)))
             }
             mItemTouchHelper.attachToRecyclerView(this)
-            if(PREFS!!.isWallpaperUsed && checkStoragePermissions(requireActivity())) {
+            if(PREFS.isWallpaperUsed && checkStoragePermissions(requireActivity())) {
                 binding.backgroundWallpaper.visibility = View.VISIBLE
                 addOnScrollListener(ParallaxScroll(binding.backgroundWallpaper, mAdapter!!))
             }
@@ -237,8 +236,8 @@ class NewStart: Fragment(), OnStartDragListener {
             // phone
             mSpannedLayoutManager = SpannedGridLayoutManager(
                 orientation = RecyclerView.VERTICAL,
-                rowCount = if(!PREFS!!.isMoreTilesEnabled) 8 else 12,
-                columnCount = if(!PREFS!!.isMoreTilesEnabled) 4 else 6
+                rowCount = if(!PREFS.isMoreTilesEnabled) 8 else 12,
+                columnCount = if(!PREFS.isMoreTilesEnabled) 4 else 6
             )
         } else {
             // Landscape orientation
@@ -247,15 +246,15 @@ class NewStart: Fragment(), OnStartDragListener {
                 // tablet
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
-                    rowCount =  if(!PREFS!!.isMoreTilesEnabled) 2 else 3,
-                    columnCount = if(!PREFS!!.isMoreTilesEnabled) 4 else 6
+                    rowCount =  if(!PREFS.isMoreTilesEnabled) 2 else 3,
+                    columnCount = if(!PREFS.isMoreTilesEnabled) 4 else 6
                 )
             } else {
                 // phone but landscape
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
                     rowCount = 3,
-                    columnCount = if(!PREFS!!.isMoreTilesEnabled) 4 else 6
+                    columnCount = if(!PREFS.isMoreTilesEnabled) 4 else 6
                 )
             }
         }
@@ -317,7 +316,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private fun runAnim() {
-        if(PREFS!!.isTilesAnimEnabled) {
+        if(PREFS.isTilesAnimEnabled) {
             if (!mAdapter!!.isTopRight && !mAdapter!!.isTopLeft && !mAdapter!!.isBottomRight && !mAdapter!!.isBottomLeft) {
                 mAdapter!!.isTopRight = true
             }
@@ -363,15 +362,15 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun setEnterAnim() {
         mAdapter ?: return
+        val rotationY = when {
+            mAdapter!!.isTopLeft || mAdapter!!.isBottomLeft -> -90f
+            mAdapter!!.isBottomRight -> 90f
+            else -> 0f
+        }
         for (i in 0 until binding.startAppsTiles.childCount) {
             val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
             if(holder.itemViewType == mAdapter!!.spaceType) continue
             val animatorSet = AnimatorSet()
-            val rotationY = when {
-                mAdapter!!.isTopLeft || mAdapter!!.isBottomLeft -> -90f
-                mAdapter!!.isBottomRight -> 90f
-                else -> 0f
-            }
             val rotation = when {
                 mAdapter!!.isTopLeft || mAdapter!!.isBottomRight -> Random.nextInt(25, 45).toFloat()
                 mAdapter!!.isTopRight || mAdapter!!.isBottomLeft -> Random.nextInt(-45, -25).toFloat()
@@ -389,17 +388,13 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun hideTiles(showTiles: Boolean) {
         CoroutineScope(mainDispatcher).launch {
-            if (mAdapter == null || !PREFS!!.isTilesAnimEnabled) {
+            if (mAdapter == null || !PREFS.isTilesAnimEnabled) {
                 cancel()
                 return@launch
             }
             for (i in 0..<binding.startAppsTiles.childCount) {
                 val itemView = binding.startAppsTiles.findViewHolderForAdapterPosition(i)?.itemView ?: continue
-                if (showTiles) {
-                    itemView.animate().alpha(1f).start()
-                } else {
-                    itemView.animate().alpha(0f).start()
-                }
+                itemView.animate().alpha(if(showTiles) 1f else 0f).start()
             }
             cancel()
         }
@@ -409,7 +404,7 @@ class NewStart: Fragment(), OnStartDragListener {
         isStartMenuOpened = false
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
-        if (viewHolder != null && !PREFS!!.isStartBlocked && mAdapter != null) {
+        if (viewHolder != null && !PREFS.isStartBlocked && mAdapter != null) {
             if(!mAdapter!!.isEditMode) {
                 mAdapter!!.enableEditMode()
             }
@@ -432,7 +427,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     when (action) {
                         PackageChangesReceiver.PACKAGE_INSTALLED -> {
                             Log.d("Start", "pkg installed")
-                            val bool = PREFS!!.iconPackPackage != "null"
+                            val bool = PREFS.iconPackPackage != "null"
                             (requireActivity() as Main).generateIcon(packageName, bool)
                             mainViewModel.addAppToList(
                                 App(
@@ -440,7 +435,7 @@ class NewStart: Fragment(), OnStartDragListener {
                                     appPackage = packageName,
                                     id = Random.nextInt()
                                 ))
-                            if (PREFS!!.pinNewApps) {
+                            if (PREFS.pinNewApps) {
                                 pinApp(packageName)
                             }
                         }
@@ -528,20 +523,20 @@ class NewStart: Fragment(), OnStartDragListener {
             Log.d("Start", "unregisterBroadcast() was called to a null receiver.")
         }
     }
-
     override fun onDestroy() {
         super.onDestroy()
         unregisterBroadcast()
     }
-
-    private suspend fun destroyTile(it: Tile) {
-        it.tileType = -1
-        it.tileSize = "small"
-        it.appPackage = ""
-        it.tileColor = -1
-        it.appLabel = ""
-        it.id = it.id!! / 2
-        mainViewModel.getTileDao().updateTile(it)
+    private suspend fun destroyTile(tile: Tile) {
+        tile.apply {
+            tileType = -1
+            tileSize = "small"
+            appPackage = ""
+            tileColor = -1
+            appLabel = ""
+            id = this.id!! / 2
+            mainViewModel.getTileDao().updateTile(this)
+        }
     }
     inner class ScrollListener(): RecyclerView.OnScrollListener() {
 
@@ -595,12 +590,10 @@ class NewStart: Fragment(), OnStartDragListener {
             (requireActivity() as Main).configureViewPagerScroll(false)
             binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
             binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.82f).setDuration(300).start()
-            if(PREFS!!.isParallaxEnabled || !PREFS!!.isWallpaperUsed) {
-                binding.startFrame.setBackgroundColor(
-                    if (PREFS!!.isLightThemeUsed) ContextCompat.getColor(
-                        context,
-                        android.R.color.background_light
-                    ) else ContextCompat.getColor(context, android.R.color.background_dark)
+            if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
+                binding.startFrame.setBackgroundColor(ContextCompat.getColor(
+                        context, if(PREFS.isLightThemeUsed) android.R.color.background_light else android.R.color.background_dark
+                    )
                 )
             }
             for(anim in animList) {
@@ -613,7 +606,7 @@ class NewStart: Fragment(), OnStartDragListener {
             (requireActivity() as Main).configureViewPagerScroll(true)
             binding.startAppsTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
             binding.backgroundWallpaper.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
-            if(PREFS!!.isParallaxEnabled || !PREFS!!.isWallpaperUsed) {
+            if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
                 binding.startFrame.background = null
             }
             isEditMode = false
@@ -719,34 +712,25 @@ class NewStart: Fragment(), OnStartDragListener {
             imageView.layoutParams.apply {
                 when (tileSize) {
                     "small" -> {
-                        width =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_small_moreTiles_off
-                            )
-                        height =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_small_moreTiles_off
-                            )
+                        val size = if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on) else res.getDimensionPixelSize(
+                            R.dimen.tile_small_moreTiles_off
+                        )
+                        width = size
+                        height = size
                     }
                     "medium" -> {
-                        width =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_medium_moreTiles_off
-                            )
-                        height =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_medium_moreTiles_off
-                            )
+                        val size = if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on) else res.getDimensionPixelSize(
+                            R.dimen.tile_medium_moreTiles_off
+                        )
+                        width = size
+                        height = size
                     }
                     "big" -> {
-                        width =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_big_moreTiles_off
-                            )
-                        height =
-                            if (PREFS!!.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on) else res.getDimensionPixelSize(
-                                R.dimen.tile_big_moreTiles_off
-                            )
+                        val size = if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on) else res.getDimensionPixelSize(
+                            R.dimen.tile_big_moreTiles_off
+                        )
+                        width = size
+                        height = size
                     }
                     else -> {
                         width = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
@@ -764,9 +748,9 @@ class NewStart: Fragment(), OnStartDragListener {
                     )
                 )
             } else {
-                if (PREFS!!.isWallpaperUsed) {
+                if (PREFS.isWallpaperUsed) {
                     holder.binding.container.setBackgroundColor(
-                        if (PREFS!!.isParallaxEnabled) ContextCompat.getColor(
+                        if (PREFS.isParallaxEnabled) ContextCompat.getColor(
                             context,
                             R.color.transparent
                         ) else accentColorFromPrefs(context)
@@ -800,7 +784,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     mTextView.text = null
                 }
                 "medium" -> {
-                    if (PREFS!!.isMoreTilesEnabled) {
+                    if (PREFS.isMoreTilesEnabled) {
                         mTextView.text = null
                     } else {
                         mTextView.text = item.appLabel
@@ -858,7 +842,7 @@ class NewStart: Fragment(), OnStartDragListener {
         private fun showPopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
             binding.startAppsTiles.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-            val popupView: View = if(item.tileSize == "small" && PREFS!!.isMoreTilesEnabled) inflater.inflate(R.layout.tile_window_small, holder.itemView as ViewGroup, false) else inflater.inflate(R.layout.tile_window, holder.itemView as ViewGroup, false)
+            val popupView: View = inflater.inflate(if(item.tileSize == "small" && PREFS.isMoreTilesEnabled) R.layout.tile_window_small else R.layout.tile_window, holder.itemView as ViewGroup, false)
             val width = holder.itemView.width
             val height = holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
@@ -1050,11 +1034,11 @@ class NewStart: Fragment(), OnStartDragListener {
                 })
             init {
                 binding.cardContainer.apply {
-                    if (PREFS!!.coloredStroke) strokeColor = Utils.launcherAccentColor(requireActivity().theme)
-                    strokeWidth = if (PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
+                    if (PREFS.coloredStroke) strokeColor = Utils.launcherAccentColor(requireActivity().theme)
+                    strokeWidth = if (PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidthDisabled)!! else context.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
                 binding.container.apply {
-                    alpha = PREFS!!.tilesTransparency
+                    alpha = PREFS.tilesTransparency
                     setOnTouchListener { view, event ->
                         val x = event.x
                         val y = event.y
@@ -1087,12 +1071,12 @@ class NewStart: Fragment(), OnStartDragListener {
                         item.isSelected = true
                         mainViewModel.getTileDao().updateTile(item)
                         withContext(mainDispatcher) {
-                            showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
                             notifyItemChanged(absoluteAdapterPosition)
+                            showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
                         }
                     }
                 } else {
-                    if(PREFS!!.isTilesAnimEnabled) {
+                    if(PREFS.isTilesAnimEnabled) {
                         mAdapter?.startDismissTilesAnim(item)
                     } else {
                         startApp(item.appPackage)
@@ -1101,7 +1085,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
 
             private fun handleLongClick() {
-                if(!isEditMode && !PREFS!!.isStartBlocked) {
+                if(!isEditMode && !PREFS.isStartBlocked) {
                     enableEditMode()
                 }
             }
@@ -1135,7 +1119,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }**/
         inner class SpaceViewHolder(binding: SpaceBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
-                if(PREFS!!.isWallpaperUsed && !PREFS!!.isParallaxEnabled) {
+                if(PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) {
                     itemView.setBackgroundColor(transparentColor)
                 }
                 itemView.setOnClickListener {
@@ -1310,7 +1294,7 @@ class ParallaxScroll(private val wallpaper: ImageView, private val adapter: NewS
 @Suppress("DEPRECATION")
 class BackgroundDecoration() : RecyclerView.ItemDecoration() {
 
-    private val backgroundColor = if(PREFS!!.isLightThemeUsed) Color.WHITE else Color.BLACK
+    private val backgroundColor = if(PREFS.isLightThemeUsed) Color.WHITE else Color.BLACK
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(c, parent, state)

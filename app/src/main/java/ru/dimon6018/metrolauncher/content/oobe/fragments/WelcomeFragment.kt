@@ -42,9 +42,9 @@ class WelcomeFragment : Fragment() {
                 }
             }
         }
-        if(!Application.PREFS!!.prefs.getBoolean("channelConfigured", false)) {
+        if(!Application.PREFS.prefs.getBoolean("channelConfigured", false)) {
             UpdateWorker.setupNotificationChannels(requireActivity())
-            Application.PREFS!!.prefs.edit().putBoolean("channelConfigured", true).apply()
+            Application.PREFS.prefs.edit().putBoolean("channelConfigured", true).apply()
         }
         return binding.root
     }
@@ -58,7 +58,7 @@ class WelcomeFragment : Fragment() {
     }
     private fun generatePlaceholders() {
         placeholderCoroutine.launch {
-            Application.PREFS!!.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
+            Application.PREFS.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
             generatePlaceholder(TileData.getTileData(requireContext()).getTileDao(), 84)
             cancel()
         }

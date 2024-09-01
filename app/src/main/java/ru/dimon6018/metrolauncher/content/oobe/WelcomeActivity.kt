@@ -21,7 +21,7 @@ class WelcomeActivity: AppCompatActivity() {
         binding = OobeBinding.inflate(layoutInflater)
         setContentView(binding.root)
         applyWindowInsets(binding.coordinator)
-        if (PREFS!!.launcherState != 2) {
+        if (PREFS.launcherState != 2) {
             supportFragmentManager.commit {
                 replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
             }

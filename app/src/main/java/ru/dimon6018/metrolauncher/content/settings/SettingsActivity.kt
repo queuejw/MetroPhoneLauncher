@@ -92,7 +92,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun prepareMessage() {
-        if(!PREFS!!.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.08 && PREFS!!.prefs.getBoolean("messageEnabled", true)) {
+        if(!PREFS.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.08 && PREFS.prefs.getBoolean("messageEnabled", true)) {
             WPDialog(this).apply {
                 setTopDialog(true)
                 setTitle(getString(R.string.developer))
@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity() {
                     dismiss()
                 }
                 setNeutralButton(getString(R.string.not_show_again)) {
-                    PREFS!!.prefs.edit().putBoolean("messageEnabled", false).apply()
+                    PREFS.prefs.edit().putBoolean("messageEnabled", false).apply()
                     dismiss()
                 }
                 show()
@@ -116,7 +116,7 @@ class SettingsActivity : AppCompatActivity() {
             setTitle(getString(R.string.developer))
             setMessage(getString(R.string.dev_p2))
             setPositiveButton(getString(R.string.hide)) {
-                PREFS!!.prefs.edit().putBoolean("messageEnabled", false).apply()
+                PREFS.prefs.edit().putBoolean("messageEnabled", false).apply()
                 dismiss()
             }
             setNegativeButton(getString(R.string.support)) {
@@ -127,13 +127,13 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun prepareTip() {
-        if(PREFS!!.prefs.getBoolean("tipSettingsEnabled", true)) {
+        if(PREFS.prefs.getBoolean("tipSettingsEnabled", true)) {
             WPDialog(this).setTopDialog(true)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.tipSettings))
                 .setPositiveButton(getString(android.R.string.ok), null)
                 .show()
-            PREFS!!.prefs.edit().putBoolean("tipSettingsEnabled", false).apply()
+            PREFS.prefs.edit().putBoolean("tipSettingsEnabled", false).apply()
         }
     }
     private fun setOnClickers() {
@@ -156,7 +156,7 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 job?.cancel()
                 job = lifecycleScope.launch {
-                    if (PREFS!!.isTransitionAnimEnabled) {
+                    if (PREFS.isTransitionAnimEnabled) {
                         startAnim()
                     }
                     startActivity(intent)
@@ -170,7 +170,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun setupAnimForViews(view: View, dur: Long) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val animatorSet = AnimatorSet().apply {
@@ -198,7 +198,7 @@ class SettingsActivity : AppCompatActivity() {
         setViewInteractAnimation(binding.settingsInclude.expSetting)
     }
     private suspend fun startAnim() {
-        if (PREFS!!.isTransitionAnimEnabled) {
+        if (PREFS.isTransitionAnimEnabled) {
             setupAnimations()
             CoroutineScope(Dispatchers.Main).launch {
                 delay(200)
@@ -214,20 +214,20 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun hideViews() {
-        if (PREFS!!.isTransitionAnimEnabled) {
+        if (PREFS.isTransitionAnimEnabled) {
             viewList.forEach { (view, _) ->
                 hideAnim(view)
             }
         }
     }
     private fun hideAnim(view: View?) {
-        if(view == null || !PREFS!!.isTransitionAnimEnabled) {
+        if(view == null || !PREFS.isTransitionAnimEnabled) {
             return
         }
         ObjectAnimator.ofFloat(view, "alpha", 1f, 0f).start()
     }
     private fun setAppTheme() {
-        if (PREFS!!.isLightThemeUsed) {
+        if (PREFS.isLightThemeUsed) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 (application as Application).setNightMode()
             } else {
@@ -251,7 +251,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.settingsInclude.themeSub.text = accentName(this)
-        binding.settingsInclude.navbarSub.text = when (PREFS!!.navBarColor) {
+        binding.settingsInclude.navbarSub.text = when (PREFS.navBarColor) {
             0 -> getString(R.string.always_dark)
             1 -> getString(R.string.always_light)
             2 -> getString(R.string.matches_accent_color)
@@ -260,11 +260,11 @@ class SettingsActivity : AppCompatActivity() {
             else -> getString(R.string.navigation_bar_2)
         }
         binding.settingsInclude.iconsSub.text = runCatching {
-            if (PREFS!!.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub)
-            else packageManager.getApplicationLabel(packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0))
+            if (PREFS.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub)
+            else packageManager.getApplicationLabel(packageManager.getApplicationInfo(PREFS.iconPackPackage!!, 0))
         }.getOrElse { getString(R.string.iconPackNotSelectedSub) }
 
-        if(PREFS!!.isPrefsChanged) {
+        if(PREFS.isPrefsChanged) {
             job?.cancel()
             restartDialog()
         } else {
@@ -300,7 +300,7 @@ class SettingsActivity : AppCompatActivity() {
         val componentName = Intent(this, this::class.java).component
         val intent = Intent.makeRestartActivityTask(componentName)
         startActivity(intent)
-        PREFS!!.isPrefsChanged = false
+        PREFS.isPrefsChanged = false
         Runtime.getRuntime().exit(0)
     }
 

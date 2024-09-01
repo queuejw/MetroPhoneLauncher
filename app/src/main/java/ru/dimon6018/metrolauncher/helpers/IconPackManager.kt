@@ -56,7 +56,7 @@ class IconPackManager(context: Context) {
                         factory.isNamespaceAware = true
                         xpp = factory.newPullParser()
                         xpp.setInput(appFilterStream, "utf-8")
-                    } catch (e1: IOException) {
+                    } catch (_: IOException) {
                         //Ln.d("No appfilter.xml file");
                     }
                 }
@@ -112,9 +112,9 @@ class IconPackManager(context: Context) {
                 }
                 mLoaded = true
             } catch (e: PackageManager.NameNotFoundException) {
-                //Ln.d("Cannot load icon pack");
+                e.printStackTrace()
             } catch (e: XmlPullParserException) {
-                //Ln.d("Cannot parse icon pack appfilter.xml");
+                e.printStackTrace()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -193,7 +193,7 @@ class IconPackManager(context: Context) {
             if (mBackImages.size() == 0) return defaultBitmap
             val r = Random()
             val backImageInd = r.nextInt(mBackImages.size())
-            val backImage = mBackImages.get(backImageInd)
+            val backImage = mBackImages[backImageInd]
             val w = backImage!!.getWidth()
             val h = backImage.getHeight()
 

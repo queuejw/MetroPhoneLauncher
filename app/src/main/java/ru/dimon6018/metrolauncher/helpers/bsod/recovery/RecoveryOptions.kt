@@ -37,7 +37,7 @@ class RecoveryOptions: AppCompatActivity() {
         }
         refresh.setOnClickListener {
             if(checkStoragePermissions()) {
-                PREFS!!.reset()
+                PREFS.reset()
                 downloadUpdate(this)
             } else {
                 getPermission()

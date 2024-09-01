@@ -16,7 +16,7 @@ class ItemTouchCallback(private val mAdapter: NewStart.NewStartAdapter) : ItemTo
     }
     override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
         Log.d("moved", "move")
-        if(!PREFS!!.isStartBlocked && mAdapter.isEditMode && viewHolder.itemViewType != mAdapter.spaceType) {
+        if(!PREFS.isStartBlocked && mAdapter.isEditMode && viewHolder.itemViewType != mAdapter.spaceType) {
             mAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
             return true
         } else {

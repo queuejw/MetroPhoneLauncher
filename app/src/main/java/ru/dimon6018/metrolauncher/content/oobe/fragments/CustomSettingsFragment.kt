@@ -38,7 +38,7 @@ class CustomSettingsFragment: Fragment() {
                 enterAnimation(true)
                 delay(200)
                 requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, AdFragment(), "oobe")
+                    replace(R.id.fragment_container_view, AppsFragment(), "oobe")
                 }
             }
         }

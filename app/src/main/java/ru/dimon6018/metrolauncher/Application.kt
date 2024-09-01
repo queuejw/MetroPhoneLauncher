@@ -25,7 +25,7 @@ class Application : Application() {
         PREFS = Prefs(applicationContext)
         //EXP_PREFS = ExperimentPrefs(applicationContext)
         setNightMode()
-        if(PREFS!!.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
+        if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
         super.onCreate()
@@ -33,7 +33,7 @@ class Application : Application() {
             @SuppressLint("SourceLockedOrientationActivity")
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 activity.setTheme(launcherAccentTheme())
-                when(PREFS!!.orientation) {
+                when(PREFS.orientation) {
                     "p" -> {
                         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
                     }
@@ -55,7 +55,7 @@ class Application : Application() {
     fun setNightMode() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val uiMan: UiModeManager = (applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager)
-            if(PREFS!!.isLightThemeUsed) {
+            if(PREFS.isLightThemeUsed) {
                 uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
             } else {
                 uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
@@ -63,7 +63,7 @@ class Application : Application() {
         }
     }
     companion object {
-        var PREFS: Prefs? = null
+        lateinit var PREFS: Prefs
         //var EXP_PREFS: ExperimentPrefs? = null
 
         var isUpdateDownloading = false

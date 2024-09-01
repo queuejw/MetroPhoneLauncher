@@ -80,7 +80,7 @@ class AboutSettingsActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

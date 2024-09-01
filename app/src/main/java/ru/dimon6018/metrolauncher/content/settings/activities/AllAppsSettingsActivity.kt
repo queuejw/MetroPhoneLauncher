@@ -18,52 +18,52 @@ class AllAppsSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         binding.settingsInclude.settingsBtnSwitch.apply {
-            isChecked = PREFS!!.isSettingsBtnEnabled
-            text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.isSettingsBtnEnabled
+            text = if(PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isSettingsBtnEnabled = isChecked
-                PREFS!!.isPrefsChanged = true
-                text = if(PREFS!!.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
+                PREFS.isSettingsBtnEnabled = isChecked
+                PREFS.isPrefsChanged = true
+                text = if(PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.alphabetSwitch.apply {
-            isChecked = PREFS!!.isAlphabetEnabled
-            text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.isAlphabetEnabled
+            text = if(PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAlphabetEnabled = isChecked
-                PREFS!!.isPrefsChanged = true
-                text = if(PREFS!!.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
+                PREFS.isAlphabetEnabled = isChecked
+                PREFS.isPrefsChanged = true
+                text = if(PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.disableAllAppsSwitch.apply {
-            isChecked = PREFS!!.isAllAppsEnabled
-            text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.isAllAppsEnabled
+            text = if(PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAllAppsEnabled = isChecked
-                PREFS!!.isPrefsChanged = true
-                text = if(PREFS!!.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+                PREFS.isAllAppsEnabled = isChecked
+                PREFS.isPrefsChanged = true
+                text = if(PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.keyboardWhenSearchingSwitch.apply {
-            isChecked = PREFS!!.showKeyboardWhenSearching
-            text = if(PREFS!!.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.showKeyboardWhenSearching
+            text = if(PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.showKeyboardWhenSearching = isChecked
-                text = if(PREFS!!.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+                PREFS.showKeyboardWhenSearching = isChecked
+                text = if(PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.keyboardWhenAllAppsOpened.apply {
-            isChecked = PREFS!!.showKeyboardWhenOpeningAllApps
-            text = if(PREFS!!.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.showKeyboardWhenOpeningAllApps
+            text = if(PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.showKeyboardWhenOpeningAllApps = isChecked
-                text = if(PREFS!!.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
+                PREFS.showKeyboardWhenOpeningAllApps = isChecked
+                text = if(PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
             }
         }
         applyWindowInsets(binding.root)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

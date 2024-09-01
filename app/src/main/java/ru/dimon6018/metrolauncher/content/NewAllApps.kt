@@ -108,7 +108,7 @@ class NewAllApps: Fragment() {
         binding.settingsBtn.setOnClickListener {
             activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
         }
-        if(!PREFS!!.isSettingsBtnEnabled) {
+        if(!PREFS.isSettingsBtnEnabled) {
             binding.settingsBtn.visibility = View.GONE
         } else {
             binding.settingsBtn.visibility = View.VISIBLE
@@ -135,7 +135,7 @@ class NewAllApps: Fragment() {
             appAdapter = AppAdapter(data)
             recyclerViewLM = LinearLayoutManager(requireActivity())
             setAlphabetRecyclerView(requireContext())
-            if (PREFS!!.prefs.getBoolean("tip2Enabled", true)) {
+            if (PREFS.prefs.getBoolean("tip2Enabled", true)) {
                 withContext(mainDispatcher) {
                     WPDialog(requireContext()).setTopDialog(true)
                         .setTitle(getString(R.string.tip))
@@ -143,7 +143,7 @@ class NewAllApps: Fragment() {
                         .setPositiveButton(getString(android.R.string.ok), null)
                         .show()
                 }
-                PREFS!!.prefs.edit().putBoolean("tip2Enabled", false).apply()
+                PREFS.prefs.edit().putBoolean("tip2Enabled", false).apply()
             }
             withContext(mainDispatcher) {
                 configureRecyclerView()
@@ -179,7 +179,7 @@ class NewAllApps: Fragment() {
                     packageName.apply {
                         when(action) {
                             PackageChangesReceiver.PACKAGE_INSTALLED -> {
-                                val bool = PREFS!!.iconPackPackage != "null"
+                                val bool = PREFS.iconPackPackage != "null"
                                 (requireActivity() as Main).generateIcon(packageName, bool)
                                 broadcastListUpdater(context)
                             }
@@ -250,22 +250,22 @@ class NewAllApps: Fragment() {
     }
     private fun showAlphabet() {
         adapterAlphabet!!.setNewData(getAlphabetList())
-        if(PREFS!!.isAlphabetAnimEnabled) {
+        if(PREFS.isAlphabetAnimEnabled) {
             ObjectAnimator.ofFloat(binding.appList, "alpha", 1f, 0.7f).setDuration(300).start()
         }
         isAlphabetVisible = true
-        if(PREFS!!.isAlphabetAnimEnabled) {
+        if(PREFS.isAlphabetAnimEnabled) {
             binding.alphabetLayout.visibility = View.VISIBLE
         } else {
             binding.alphabetLayout.visibility = View.VISIBLE
         }
     }
     private fun hideAlphabet() {
-        if(PREFS!!.isAlphabetAnimEnabled) {
+        if(PREFS.isAlphabetAnimEnabled) {
             ObjectAnimator.ofFloat(binding.appList, "alpha", 0.7f, 1f).setDuration(300).start()
         }
         isAlphabetVisible = false
-        if(PREFS!!.isAlphabetAnimEnabled) {
+        if(PREFS.isAlphabetAnimEnabled) {
             binding.alphabetLayout.visibility = View.INVISIBLE
             binding.alphabetList.scrollToPosition(0)
         } else {
@@ -306,7 +306,7 @@ class NewAllApps: Fragment() {
         return resultList
     }
     override fun onPause() {
-        if(isSearching && !PREFS!!.showKeyboardWhenOpeningAllApps) {
+        if(isSearching && !PREFS.showKeyboardWhenOpeningAllApps) {
             disableSearch()
         }
         if(isAlphabetVisible) {
@@ -329,7 +329,7 @@ class NewAllApps: Fragment() {
             binding.appList.visibility = View.VISIBLE
         }
         if(binding.appList.alpha != 1f) {
-            if (PREFS!!.isAAllAppsAnimEnabled) {
+            if (PREFS.isAAllAppsAnimEnabled) {
                 binding.appList.apply {
                     val anim = ObjectAnimator.ofFloat(this, "alpha", 0f, 1f)
                     anim.duration = 100
@@ -342,7 +342,7 @@ class NewAllApps: Fragment() {
                 binding.appList.alpha = 1f
             }
         }
-        if(PREFS!!.showKeyboardWhenOpeningAllApps) {
+        if(PREFS.showKeyboardWhenOpeningAllApps) {
             searchFunction()
         }
     }
@@ -364,7 +364,7 @@ class NewAllApps: Fragment() {
                     animate().alpha(1f).setDuration(200).start()
                 }
             }.start()
-            settingsBtn.visibility = if(!PREFS!!.isSettingsBtnEnabled) View.GONE else View.VISIBLE
+            settingsBtn.visibility = if(!PREFS.isSettingsBtnEnabled) View.GONE else View.VISIBLE
             appList.apply {
                 alpha = 0.5f
                 animate().translationX(0f).setDuration(200).start()
@@ -397,7 +397,7 @@ class NewAllApps: Fragment() {
                 isVerticalScrollBarEnabled = false
             }
         }
-        if(PREFS!!.showKeyboardWhenSearching) {
+        if(PREFS.showKeyboardWhenSearching) {
             showKeyboard(binding.search.editText as? AutoCompleteTextView)
         }
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
@@ -535,7 +535,7 @@ class NewAllApps: Fragment() {
 
         inner class LetterHolder(val binding: AbcBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
-                if (PREFS!!.isAAllAppsAnimEnabled) {
+                if (PREFS.isAAllAppsAnimEnabled) {
                     setViewInteractAnimation(itemView)
                 }
                 itemView.setOnClickListener {
@@ -548,7 +548,7 @@ class NewAllApps: Fragment() {
                 setViewInteractAnimation(itemView)
                 itemView.setOnClickListener {
                     visualFeedback(itemView)
-                    if(PREFS!!.isAAllAppsAnimEnabled) {
+                    if(PREFS.isAAllAppsAnimEnabled) {
                         startDismissAnim(list[absoluteAdapterPosition])
                     } else {
                         if(context != null) {
@@ -717,7 +717,7 @@ class NewAllApps: Fragment() {
             }
         }
         private fun startDismissAnim(item: App) {
-            if (appAdapter == null || !PREFS!!.isAAllAppsAnimEnabled) {
+            if (appAdapter == null || !PREFS.isAAllAppsAnimEnabled) {
                 startAppDelay(item)
                 return
             }

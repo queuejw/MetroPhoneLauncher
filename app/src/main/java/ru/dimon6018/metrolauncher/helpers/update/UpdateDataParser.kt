@@ -54,13 +54,13 @@ class UpdateDataParser {
                 "ru" -> {
                     if(valueKey == "message_ru") {
                         updateMsg = name
-                        PREFS!!.updateMessage = name
+                        PREFS.updateMessage = name
                     }
                 }
                 else -> {
                     if(valueKey == "message") {
                         updateMsg = name
-                        PREFS!!.updateMessage = name
+                        PREFS.updateMessage = name
                     }
                 }
 
@@ -104,7 +104,7 @@ class UpdateDataParser {
             val valueKey = parser.getAttributeValue(null, "name")
             if(valueKey == "versionCode") {
                 verCode = valueData.toInt()
-                PREFS!!.versionCode = valueData.toInt()
+                PREFS.versionCode = valueData.toInt()
             }
             parser.nextTag()
             Log.i("parserInt", "key: $valueKey value: $valueData")

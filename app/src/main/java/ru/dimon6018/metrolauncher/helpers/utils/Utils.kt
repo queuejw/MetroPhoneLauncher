@@ -143,7 +143,7 @@ class Utils {
         }
 
         fun launcherAccentTheme(): Int {
-            val selectedColor = PREFS!!.accentColor
+            val selectedColor = PREFS.accentColor
             return if (selectedColor >= 0 && selectedColor < themeStyles.size) {
                 themeStyles[selectedColor]
             } else {
@@ -170,7 +170,7 @@ class Utils {
             return typedValue.data
         }
         fun accentName(context: Context): String {
-            val selectedColor = PREFS!!.accentColor
+            val selectedColor = PREFS.accentColor
             return if (selectedColor >= 0 && selectedColor < accentNames.size) {
                 context.getString(accentNames[selectedColor])
             } else {
@@ -274,14 +274,14 @@ class Utils {
 
         fun saveError(e: String, db: BSOD) {
             CoroutineScope(Dispatchers.IO).launch {
-                if (PREFS!!.isFeedbackEnabled) {
+                if (PREFS.isFeedbackEnabled) {
                     Log.e("BSOD", e)
                     val entity = BSODEntity()
                     entity.date = Calendar.getInstance().time.toString()
                     entity.log = e
                     val dao = db.getDao()
                     val pos: Int
-                    when (PREFS!!.maxCrashLogs) {
+                    when (PREFS.maxCrashLogs) {
                         0 -> {
                             db.clearAllTables()
                             pos = 0
@@ -432,7 +432,7 @@ class Utils {
             return alphabet
         }
         suspend fun generatePlaceholder(call: TileDao, value: Int) {
-            val size = if(PREFS!!.isMoreTilesEnabled) value * 2 else value
+            val size = if(PREFS.isMoreTilesEnabled) value * 2 else value
             val startFrom = call.getTilesList().size
             val end = startFrom + size
             for (i in startFrom..end) {

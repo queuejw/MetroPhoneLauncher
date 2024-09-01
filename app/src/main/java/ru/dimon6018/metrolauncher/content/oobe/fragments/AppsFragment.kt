@@ -63,7 +63,7 @@ class AppsFragment: Fragment() {
             val lm = LinearLayoutManager(requireContext())
             var iconManager: IconPackManager? = null
             var isCustomIconsInstalled = false
-            if (PREFS!!.iconPackPackage != "null") {
+            if (PREFS.iconPackPackage != "null") {
                 iconManager = IconPackManager(requireContext())
                 isCustomIconsInstalled = true
             }
@@ -74,7 +74,7 @@ class AppsFragment: Fragment() {
                     val bmp = if (!isCustomIconsInstalled)
                         pm.getApplicationIcon(it.appPackage!!)
                     else
-                            iconManager?.getIconPackWithName(PREFS!!.iconPackPackage)
+                            iconManager?.getIconPackWithName(PREFS.iconPackPackage)
                                 ?.getDrawableIconForPackage(it.appPackage!!, null)
                     hashCache.append(it.id, bmp)
                 }
@@ -89,7 +89,7 @@ class AppsFragment: Fragment() {
                         enterAnimation(true)
                         delay(200)
                         requireActivity().supportFragmentManager.commit {
-                            replace(R.id.fragment_container_view, AdFragment(), "oobe")
+                            replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
                         }
                     }
                 }

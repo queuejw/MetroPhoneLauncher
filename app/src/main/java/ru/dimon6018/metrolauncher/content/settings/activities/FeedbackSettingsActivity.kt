@@ -45,25 +45,25 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
             }.start()
         }
         binding.settingsInclude.sendFeedbackSwitch.apply {
-            isChecked = PREFS!!.isFeedbackEnabled
-            text = if(PREFS!!.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.isFeedbackEnabled
+            text = if(PREFS.isFeedbackEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isFeedbackEnabled = isChecked
+                PREFS.isFeedbackEnabled = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.setCrashLogLimitBtn.apply {
-            setButtonText(PREFS!!, this)
+            setButtonText(PREFS, this)
             setOnClickListener {
                 binding.settingsInclude.chooseBsodInfoLimit.visibility = View.VISIBLE
                 visibility = View.GONE
             }
         }
         binding.settingsInclude.showErrorDetailsOnBsodSwitch.apply {
-            PREFS!!.bsodOutputEnabled
-            text = if(PREFS!!.bsodOutputEnabled) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.bsodOutputEnabled
+            text = if(PREFS.bsodOutputEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.bsodOutputEnabled = isChecked
+                PREFS.bsodOutputEnabled = isChecked
                 text = if(isChecked) getString(R.string.on) else getString(R.string.off)
             }
         }
@@ -71,10 +71,10 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
 
     private fun updateMaxLogsSize(view: View, value: Int) {
         view.setOnClickListener {
-            PREFS!!.maxCrashLogs = value
+            PREFS.maxCrashLogs = value
             binding.settingsInclude.chooseBsodInfoLimit.visibility = View.GONE
             binding.settingsInclude.setCrashLogLimitBtn.visibility = View.VISIBLE
-            setButtonText(PREFS!!, binding.settingsInclude.setCrashLogLimitBtn)
+            setButtonText(PREFS, binding.settingsInclude.setCrashLogLimitBtn)
         }
     }
     private fun setButtonText(prefs: Prefs, button: MaterialButton) {
@@ -87,7 +87,7 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

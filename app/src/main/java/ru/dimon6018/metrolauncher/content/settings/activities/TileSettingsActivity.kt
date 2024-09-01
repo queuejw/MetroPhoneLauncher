@@ -22,10 +22,10 @@ class TileSettingsActivity: AppCompatActivity() {
     }
     private fun initView() {
         binding.settingsInclude.alphaSlider.apply {
-            value = PREFS!!.tilesTransparency
+            value = PREFS.tilesTransparency
             addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                PREFS!!.tilesTransparency = value
-                PREFS!!.isPrefsChanged = true
+                PREFS.tilesTransparency = value
+                PREFS.isPrefsChanged = true
             })
         }
     }
@@ -34,7 +34,7 @@ class TileSettingsActivity: AppCompatActivity() {
         enterAnimation(false)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

@@ -36,7 +36,7 @@ class WPDialog(private val mContext: Context) {
     private var dismissListener: DialogInterface.OnDismissListener? = null
     //Show方法
     fun show(): WPDialog {
-        if(PREFS!!.isLightThemeUsed) {
+        if(PREFS.isLightThemeUsed) {
             setLightTheme()
         }
         Builder()

@@ -19,7 +19,7 @@ class WeatherSettingsActivity: AppCompatActivity() {
         applyWindowInsets(binding.root)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

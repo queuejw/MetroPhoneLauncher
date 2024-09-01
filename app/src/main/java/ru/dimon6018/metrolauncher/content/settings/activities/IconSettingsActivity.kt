@@ -3,7 +3,6 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -76,13 +75,15 @@ class IconSettingsActivity: AppCompatActivity() {
             setUi()
         }
         binding.settingsInclude.removeIconPack.setOnClickListener {
-            PREFS!!.iconPackPackage = "null"
-            PREFS!!.isPrefsChanged = true
-            PREFS!!.iconPackChanged = true
+            PREFS.apply {
+                iconPackPackage = "null"
+                iconPackChanged = true
+                isPrefsChanged = true
+            }
             setUi()
         }
         binding.settingsInclude.downloadIconPacks.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/lawnicons-m/releases/latest")))
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/mpl_updates/releases/download/release/Lawnicons.apk")))
         }
     }
     private fun setIconPacks() {
@@ -118,7 +119,7 @@ class IconSettingsActivity: AppCompatActivity() {
             }
             binding.settingsInclude.removeIconPack.visibility = View.GONE
         } else {
-            val label = if(PREFS!!.iconPackPackage == "null") {
+            val label = if(PREFS.iconPackPackage == "null") {
                 binding.settingsInclude.currentIconPackText.visibility = View.GONE
                 binding.settingsInclude.removeIconPack.visibility = View.GONE
                 binding.settingsInclude.currentIconPackError.apply {
@@ -127,12 +128,12 @@ class IconSettingsActivity: AppCompatActivity() {
                 }
                 "null"
             } else {
-                try {
+                runCatching {
                     binding.settingsInclude.currentIconPackText.visibility = View.VISIBLE
                     binding.settingsInclude.currentIconPackError.visibility = View.GONE
                     binding.settingsInclude.removeIconPack.visibility = View.VISIBLE
-                    packageManager!!.getApplicationLabel(packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0))
-                } catch (e: PackageManager.NameNotFoundException) {
+                    packageManager!!.getApplicationLabel(packageManager.getApplicationInfo(PREFS.iconPackPackage!!, 0)).toString()
+                }.getOrElse {
                     binding.settingsInclude.currentIconPackText.visibility = View.GONE
                     binding.settingsInclude.currentIconPackError.apply {
                         visibility = View.VISIBLE
@@ -146,7 +147,7 @@ class IconSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.chooseIconPack.text =  if(isListVisible) getString(android.R.string.cancel) else getString(R.string.choose_icon_pack)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root
@@ -193,9 +194,11 @@ class IconSettingsActivity: AppCompatActivity() {
             holder.label.text = item.name
             holder.icon.setImageBitmap(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize))
             holder.itemView.setOnClickListener {
-                PREFS!!.iconPackPackage = item.appPackage
-                PREFS!!.iconPackChanged = true
-                PREFS!!.isPrefsChanged = true
+                PREFS.apply {
+                    iconPackPackage = item.appPackage
+                    iconPackChanged = true
+                    isPrefsChanged = true
+                }
                 binding.settingsInclude.iconPackList.visibility = View.GONE
                 isListVisible = false
                 setUi()

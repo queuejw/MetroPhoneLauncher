@@ -24,7 +24,35 @@ class NavBarSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(binding.root)
-        when(PREFS!!.navBarColor) {
+        setNavBarColorRadioGroup()
+        binding.settingsInclude.navbarRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            changeNavBarColor(checkedId)
+            PREFS.isPrefsChanged = true
+        }
+        applyWindowInsets(binding.root)
+        updateCurrentIcon()
+
+        binding.settingsInclude.chooseStartIconBtn.setOnClickListener {
+            iconsBottomSheet()
+        }
+        binding.settingsInclude.searchBarSwitch.apply {
+            isChecked = PREFS.isSearchBarEnabled
+            text = if(PREFS.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS.isSearchBarEnabled = isChecked
+                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+                PREFS.isPrefsChanged = true
+            }
+        }
+        binding.settingsInclude.maxResultsSlider.apply {
+            value = PREFS.maxResultsSearchBar.toFloat()
+            addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
+                PREFS.maxResultsSearchBar = value.toInt()
+            })
+        }
+    }
+    private fun setNavBarColorRadioGroup() {
+        when(PREFS.navBarColor) {
             0 -> {
                 binding.settingsInclude.alwaysDark.isChecked = true
                 binding.settingsInclude.alwaysLight.isChecked = false
@@ -61,72 +89,9 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 binding.settingsInclude.auto.isChecked = true
             }
         }
-        binding.settingsInclude.navbarRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-           when(checkedId) {
-               binding.settingsInclude.alwaysDark.id -> {
-                   PREFS!!.navBarColor = 0
-               }
-               binding.settingsInclude.alwaysLight.id -> {
-                   PREFS!!.navBarColor = 1
-               }
-               binding.settingsInclude.byTheme.id -> {
-                   PREFS!!.navBarColor = 2
-              }
-               binding.settingsInclude.hidden.id -> {
-                   PREFS!!.navBarColor = 3
-               }
-               binding.settingsInclude.auto.id -> {
-                   PREFS!!.navBarColor = 4
-               }
-           }
-            PREFS!!.isPrefsChanged = true
-        }
-        applyWindowInsets(binding.root)
-        updateCurrentIcon()
-
-        binding.settingsInclude.chooseStartIconBtn.setOnClickListener {
-            val bottomSheet = BottomSheetDialog(this)
-            val bBidding = NavbarIconChooseBinding.inflate(LayoutInflater.from(this))
-            bottomSheet.setContentView(bBidding.root)
-            bottomSheet.dismissWithAnimation = true
-            bBidding.icon0.setOnClickListener {
-                PREFS!!.navBarIconValue = 1
-                updateCurrentIcon()
-                PREFS!!.isPrefsChanged = true
-                bottomSheet.dismiss()
-            }
-            bBidding.icon1.setOnClickListener {
-                PREFS!!.navBarIconValue = 0
-                updateCurrentIcon()
-                PREFS!!.isPrefsChanged = true
-                bottomSheet.dismiss()
-            }
-            bBidding.icon2.setOnClickListener {
-                PREFS!!.navBarIconValue = 2
-                updateCurrentIcon()
-                PREFS!!.isPrefsChanged = true
-                bottomSheet.dismiss()
-            }
-            bottomSheet.show()
-        }
-        binding.settingsInclude.searchBarSwitch.apply {
-            isChecked = PREFS!!.isSearchBarEnabled
-            text = if(PREFS!!.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isSearchBarEnabled = isChecked
-                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
-                PREFS!!.isPrefsChanged = true
-            }
-        }
-        binding.settingsInclude.maxResultsSlider.apply {
-            value = PREFS!!.maxResultsSearchBar.toFloat()
-            addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
-                PREFS!!.maxResultsSearchBar = value.toInt()
-            })
-        }
     }
     private fun updateCurrentIcon() {
-        binding.settingsInclude.currentStartIcon.setImageDrawable(when(PREFS!!.navBarIconValue) {
+        binding.settingsInclude.currentStartIcon.setImageDrawable(when(PREFS.navBarIconValue) {
             0 -> {
                 ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
             }
@@ -142,7 +107,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         })
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root
@@ -169,5 +134,51 @@ class NavBarSettingsActivity: AppCompatActivity() {
     override fun onPause() {
         enterAnimation(true)
         super.onPause()
+    }
+
+    fun changeNavBarColor(checkedId: Int) {
+        when(checkedId) {
+            binding.settingsInclude.alwaysDark.id -> {
+                PREFS.navBarColor = 0
+            }
+            binding.settingsInclude.alwaysLight.id -> {
+                PREFS.navBarColor = 1
+            }
+            binding.settingsInclude.byTheme.id -> {
+                PREFS.navBarColor = 2
+            }
+            binding.settingsInclude.hidden.id -> {
+                PREFS.navBarColor = 3
+            }
+            binding.settingsInclude.auto.id -> {
+                PREFS.navBarColor = 4
+            }
+        }
+    }
+
+    fun iconsBottomSheet() {
+        val bottomSheet = BottomSheetDialog(this)
+        val bBidding = NavbarIconChooseBinding.inflate(LayoutInflater.from(this))
+        bottomSheet.setContentView(bBidding.root)
+        bottomSheet.dismissWithAnimation = true
+        bBidding.icon0.setOnClickListener {
+            PREFS.navBarIconValue = 1
+            updateCurrentIcon()
+            PREFS.isPrefsChanged = true
+            bottomSheet.dismiss()
+        }
+        bBidding.icon1.setOnClickListener {
+            PREFS.navBarIconValue = 0
+            updateCurrentIcon()
+            PREFS.isPrefsChanged = true
+            bottomSheet.dismiss()
+        }
+        bBidding.icon2.setOnClickListener {
+            PREFS.navBarIconValue = 2
+            updateCurrentIcon()
+            PREFS.isPrefsChanged = true
+            bottomSheet.dismiss()
+        }
+        bottomSheet.show()
     }
 }

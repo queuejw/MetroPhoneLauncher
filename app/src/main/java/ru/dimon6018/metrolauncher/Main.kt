@@ -85,7 +85,7 @@ class Main : AppCompatActivity() {
         handleDevMode()
         super.onCreate(savedInstanceState)
 
-        if (PREFS!!.launcherState == 0) {
+        if (PREFS.launcherState == 0) {
             runOOBE()
             return
         }
@@ -106,7 +106,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun handleDevMode() {
-        if (isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
+        if (isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
             disableAnims()
         }
     }
@@ -134,12 +134,12 @@ class Main : AppCompatActivity() {
     }
 
     private fun checkUpdate() {
-        if (PREFS!!.prefs.getBoolean("updateInstalled", false) && PREFS!!.versionCode == VERSION_CODE) {
-            PREFS!!.updateState = 3
+        if (PREFS.prefs.getBoolean("updateInstalled", false) && PREFS.versionCode == VERSION_CODE) {
+            PREFS.updateState = 3
         }
     }
     private fun disableAnims() {
-        PREFS!!.apply {
+        PREFS.apply {
             isAAllAppsAnimEnabled = false
             isAlphabetAnimEnabled = false
             isTransitionAnimEnabled = false
@@ -154,7 +154,7 @@ class Main : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 if (binding.pager.currentItem != 0) {
                     binding.pager.currentItem -= 1
-                } else if (searching && PREFS!!.isSearchBarEnabled) {
+                } else if (searching && PREFS.isSearchBarEnabled) {
                     hideSearch()
                 }
             }
@@ -178,15 +178,15 @@ class Main : AppCompatActivity() {
         }
 
         private fun updateNavigationBarColors(position: Int) {
-            if (!PREFS!!.isSearchBarEnabled && PREFS!!.navBarColor != 2) {
+            if (!PREFS.isSearchBarEnabled && PREFS.navBarColor != 2) {
                 val (startColor, searchColor) = when {
-                    position == 0 && (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) -> {
+                    position == 0 && (PREFS.navBarColor == 1 || PREFS.isLightThemeUsed) -> {
                         launcherAccentColor(this@Main.theme) to blackColor
                     }
                     position == 0 -> {
                         launcherAccentColor(this@Main.theme) to whiteColor
                     }
-                    (PREFS!!.navBarColor == 1 || PREFS!!.isLightThemeUsed) -> {
+                    (PREFS.navBarColor == 1 || PREFS.isLightThemeUsed) -> {
                         blackColor to launcherAccentColor(this@Main.theme)
                     }
                     else -> {
@@ -200,13 +200,13 @@ class Main : AppCompatActivity() {
     }
 
     override fun onResume() {
-        if (PREFS!!.isPrefsChanged) {
+        if (PREFS.isPrefsChanged) {
             restart()
         }
         super.onResume()
     }
     private fun restart() {
-        PREFS!!.isPrefsChanged = false
+        PREFS.isPrefsChanged = false
         val componentName = Intent(this, this::class.java).component
         val intent = Intent.makeRestartActivityTask(componentName)
         startActivity(intent)
@@ -238,13 +238,13 @@ class Main : AppCompatActivity() {
     }
 
     private suspend fun regenerateIcons() {
-        val isCustomIconsInstalled = PREFS!!.iconPackPackage != "null"
+        val isCustomIconsInstalled = PREFS.iconPackPackage != "null"
         var diskCache = initDiskCache(this)
         if(isCustomIconsInstalled) {
             checkIconPack(diskCache)
         }
-        if (PREFS!!.iconPackChanged) {
-            PREFS!!.iconPackChanged = false
+        if (PREFS.iconPackChanged) {
+            PREFS.iconPackChanged = false
             diskCache?.apply {
                 delete()
                 close()
@@ -269,10 +269,10 @@ class Main : AppCompatActivity() {
 
     private fun checkIconPack(disk: DiskLruCache?): Boolean {
         return runCatching {
-            packageManager.getApplicationInfo(PREFS!!.iconPackPackage!!, 0)
+            packageManager.getApplicationInfo(PREFS.iconPackPackage!!, 0)
             true
         }.getOrElse {
-            PREFS!!.iconPackPackage = "null"
+            PREFS.iconPackPackage = "null"
             disk?.apply {
                 delete()
                 close()
@@ -285,7 +285,7 @@ class Main : AppCompatActivity() {
         val icon = if (!isCustomIconsInstalled) {
             packageManager.getApplicationIcon(appPackage)
         } else {
-            iconPackManager.getIconPackWithName(PREFS!!.iconPackPackage)
+            iconPackManager.getIconPackWithName(PREFS.iconPackPackage)
                 ?.getDrawableIconForPackage(appPackage, null)
                 ?: packageManager.getApplicationIcon(appPackage)
         }
@@ -298,9 +298,9 @@ class Main : AppCompatActivity() {
     }
 
     private fun otherTasks() {
-        if (PREFS!!.prefs.getBoolean("tip1Enabled", true)) {
+        if (PREFS.prefs.getBoolean("tip1Enabled", true)) {
             showTipDialog()
-            PREFS!!.prefs.edit().putBoolean("tip1Enabled", false).apply()
+            PREFS.prefs.edit().putBoolean("tip1Enabled", false).apply()
         }
         crashCheck()
     }
@@ -316,15 +316,15 @@ class Main : AppCompatActivity() {
     }
 
     private fun crashCheck() {
-        if (PREFS!!.prefs.getBoolean("app_crashed", false)) {
+        if (PREFS.prefs.getBoolean("app_crashed", false)) {
             lifecycleScope.launch(Dispatchers.Default) {
                 delay(5000)
-                PREFS!!.prefs.edit().apply {
+                PREFS.prefs.edit().apply {
                     putBoolean("app_crashed", false)
                     putInt("crashCounter", 0)
                     apply()
                 }
-                if (PREFS!!.isFeedbackEnabled) {
+                if (PREFS.isFeedbackEnabled) {
                     handleCrashFeedback()
                 }
             }
@@ -359,7 +359,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun getNavBarColor(): Int {
-        return when (PREFS!!.navBarColor) {
+        return when (PREFS.navBarColor) {
             0 -> ContextCompat.getColor(this, android.R.color.background_dark)
             1 -> ContextCompat.getColor(this, android.R.color.background_light)
             2 -> accentColorFromPrefs(this)
@@ -372,7 +372,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun configureBottomBar() {
-        if (!PREFS!!.isSearchBarEnabled) {
+        if (!PREFS.isSearchBarEnabled) {
             setupNavigationBarButtons()
         } else {
             setupSearchBar()
@@ -386,7 +386,7 @@ class Main : AppCompatActivity() {
             setOnClickListener { binding.pager.setCurrentItem(0, true) }
         }
         binding.navigationSearchBtn.setOnClickListener {
-            if (PREFS!!.isAllAppsEnabled) {
+            if (PREFS.isAllAppsEnabled) {
                 binding.pager.setCurrentItem(1, true)
             }
         }
@@ -394,7 +394,7 @@ class Main : AppCompatActivity() {
 
     private fun getNavBarIconDrawable(): Drawable? {
         return ContextCompat.getDrawable(
-            this, when (PREFS!!.navBarIconValue) {
+            this, when (PREFS.navBarIconValue) {
                 0 -> R.drawable.ic_os_windows_8
                 1 -> R.drawable.ic_os_windows
                 2 -> R.drawable.ic_os_android
@@ -444,7 +444,7 @@ class Main : AppCompatActivity() {
         lifecycleScope.launch {
             searching = false
             binding.searchBarResults.apply {
-                if (PREFS!!.isTransitionAnimEnabled) {
+                if (PREFS.isTransitionAnimEnabled) {
                     ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
                 }
                 visibility = View.GONE
@@ -455,7 +455,7 @@ class Main : AppCompatActivity() {
     private fun showSearchResults() {
         searching = true
         binding.searchBarResults.apply {
-            if (PREFS!!.isTransitionAnimEnabled) {
+            if (PREFS.isTransitionAnimEnabled) {
                 ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
             }
             visibility = View.VISIBLE
@@ -469,7 +469,7 @@ class Main : AppCompatActivity() {
             showSearchResults()
         }
 
-        val max = PREFS!!.maxResultsSearchBar
+        val max = PREFS.maxResultsSearchBar
         val defaultLocale = getDefaultLocale()
         filteredList.clear()
 
@@ -483,7 +483,7 @@ class Main : AppCompatActivity() {
 
     private fun setAppTheme() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            val nightMode = if (PREFS!!.isLightThemeUsed) {
+            val nightMode = if (PREFS.isLightThemeUsed) {
                 AppCompatDelegate.MODE_NIGHT_NO
             } else {
                 AppCompatDelegate.MODE_NIGHT_YES
@@ -498,11 +498,11 @@ class Main : AppCompatActivity() {
 
     inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
-        override fun getItemCount(): Int = if (PREFS!!.isAllAppsEnabled) 2 else 1
+        override fun getItemCount(): Int = if (PREFS.isAllAppsEnabled) 2 else 1
 
         override fun createFragment(position: Int): Fragment {
             return when {
-                !PREFS!!.isAllAppsEnabled -> NewStart()
+                !PREFS.isAllAppsEnabled -> NewStart()
                 position == 1 -> NewAllApps()
                 else -> NewStart()
             }

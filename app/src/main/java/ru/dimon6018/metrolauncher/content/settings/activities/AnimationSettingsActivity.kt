@@ -21,57 +21,57 @@ class AnimationSettingsActivity: AppCompatActivity() {
         setContentView(binding.root)
         applyWindowInsets(binding.root)
         setupLayout()
-        if(isDevMode(this) && PREFS!!.isAutoShutdownAnimEnabled) {
+        if(isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
             WPDialog(this).setTopDialog(true).setTitle(getString(R.string.tip)).setMessage(getString(R.string.animations_dev_mode)).setPositiveButton(getString(android.R.string.ok), null).show()
         }
     }
     private fun setupLayout() {
         binding.settingsInclude.tilesAnimCheckbox.apply {
-            isChecked = PREFS!!.isTilesAnimEnabled
+            isChecked = PREFS.isTilesAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isTilesAnimEnabled = isChecked
+                PREFS.isTilesAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.liveTilesAnimCheckbox.apply {
-            isChecked = PREFS!!.isLiveTilesAnimEnabled
+            isChecked = PREFS.isLiveTilesAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isLiveTilesAnimEnabled = isChecked
+                PREFS.isLiveTilesAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.allAppsAnimCheckbox.apply {
-            isChecked = PREFS!!.isAAllAppsAnimEnabled
+            isChecked = PREFS.isAAllAppsAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAAllAppsAnimEnabled = isChecked
+                PREFS.isAAllAppsAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.transitionAnimCheckbox.apply {
-            isChecked = PREFS!!.isTransitionAnimEnabled
+            isChecked = PREFS.isTransitionAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isTransitionAnimEnabled = isChecked
-                PREFS!!.isPrefsChanged = true
+                PREFS.isTransitionAnimEnabled = isChecked
+                PREFS.isPrefsChanged = true
             }
         }
         binding.settingsInclude.alphabetAnimCheckbox.apply {
-            isChecked = PREFS!!.isAlphabetAnimEnabled
+            isChecked = PREFS.isAlphabetAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAlphabetAnimEnabled = isChecked
+                PREFS.isAlphabetAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.tilesPhoneStartAnimCheckbox.apply {
-            isChecked = PREFS!!.isTilesScreenAnimEnabled
+            isChecked = PREFS.isTilesScreenAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isTilesScreenAnimEnabled = isChecked
+                PREFS.isTilesScreenAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.autoShutdownAnimsCheckbox.apply {
-            isChecked = PREFS!!.isAutoShutdownAnimEnabled
+            isChecked = PREFS.isAutoShutdownAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
-                PREFS!!.isAutoShutdownAnimEnabled = isChecked
+                PREFS.isAutoShutdownAnimEnabled = isChecked
             }
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS!!.isTransitionAnimEnabled) {
+        if (!PREFS.isTransitionAnimEnabled) {
             return
         }
         val main = binding.root

@@ -90,7 +90,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         val state: Result = try {
             downloadXml(URL)
             if(isUpdateAvailable()) {
-                if(PREFS!!.isAutoUpdateEnabled) {
+                if(PREFS.isAutoUpdateEnabled) {
                     val name = if(UpdateDataParser.isBeta == true) "MPL BETA" else "MPL"
                     val link = if(UpdateDataParser.isBeta == true) URL_BETA_FILE else URL_RELEASE_FILE
                     downloadFile(name, link, context)
@@ -109,7 +109,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 prefs.updateState = 3
             }
             Result.success()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Result.failure()
         }
         scheduleWork(context)
@@ -122,7 +122,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 deleteUpdateFile(context)
             } catch (e: IOException) {
                 Log.e("Background Update", "Error: $e")
-                PREFS!!.updateState = 5
+                PREFS.updateState = 5
                 cancel()
                 return@launch
             }
@@ -135,7 +135,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 val manager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 val downloadId = manager.enqueue(request)
                 isUpdateDownloading = true
-                PREFS!!.updateState = 2
+                PREFS.updateState = 2
                 val q = DownloadManager.Query()
                 q.setFilterById(downloadId)
                 var cursor: Cursor?
@@ -146,26 +146,26 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                         val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
                         val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
                         val progress: Int = ((downloaded * 100L / total)).toInt()
-                        PREFS!!.updateProgressLevel = progress
+                        PREFS.updateProgressLevel = progress
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
                             isUpdateDownloading = false
-                            PREFS!!.updateState = 4
+                            PREFS.updateState = 4
                         }
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_FAILED) {
                             isUpdateDownloading = false
-                            PREFS!!.updateState = 5
+                            PREFS.updateState = 5
                         }
                         cursor.close()
                     } else {
                         cursor.close()
                         isUpdateDownloading = false
-                        PREFS!!.updateState = 0
+                        PREFS.updateState = 0
                     }
                 }
             } catch (e: Exception) {
                 Log.e("Background Update", "Error: $e")
                 isUpdateDownloading = false
-                PREFS!!.updateState = 5
+                PREFS.updateState = 5
             }
         }
     }

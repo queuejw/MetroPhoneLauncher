@@ -30,10 +30,10 @@ class BsodScreen : AppCompatActivity() {
     private var db: BSOD? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var counter = PREFS!!.prefs.getInt("crashCounter", 0)
+        var counter = PREFS.prefs.getInt("crashCounter", 0)
         counter += 1
-        PREFS!!.prefs.edit().putBoolean("app_crashed", true).apply()
-        PREFS!!.prefs.edit().putInt("crashCounter", counter).apply()
+        PREFS.prefs.edit().putBoolean("app_crashed", true).apply()
+        PREFS.prefs.edit().putInt("crashCounter", counter).apply()
         setTheme(R.style.bsod)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.bsod)
@@ -49,7 +49,7 @@ class BsodScreen : AppCompatActivity() {
             val error = "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
             Log.e("BSOD", error)
             saveError(error, db!!)
-            if(PREFS!!.bsodOutputEnabled) {
+            if(PREFS.bsodOutputEnabled) {
                 withContext(Dispatchers.Main) {
                     val errorTextView = findViewById<MaterialTextView>(R.id.bsodDetailsText)
                     errorTextView.text = error
