@@ -1,6 +1,7 @@
 package ru.dimon6018.metrolauncher.helpers.bsod.recovery
 
 import android.Manifest
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -8,8 +9,10 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -37,12 +40,32 @@ class RecoveryOptions: AppCompatActivity() {
         }
         refresh.setOnClickListener {
             if(checkStoragePermissions()) {
-                PREFS.reset()
-                downloadUpdate(this)
+                if(areNotificationsEnabled(NotificationManagerCompat.from(this))) {
+                    PREFS.reset()
+                    downloadUpdate(this)
+                } else {
+                    Toast.makeText(this, getString(R.string.allow_notifications_recovery_error), Toast.LENGTH_LONG).show()
+                    openSettings()
+                }
             } else {
                 getPermission()
             }
         }
+    }
+    private fun openSettings() {
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        val uri = Uri.fromParts("package", packageName, null)
+        intent.setData(uri)
+        startActivity(intent)
+    }
+    private fun areNotificationsEnabled(noman: NotificationManagerCompat) = when {
+        noman.areNotificationsEnabled().not() -> false
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+            noman.notificationChannels.firstOrNull { channel ->
+                channel.importance == NotificationManager.IMPORTANCE_NONE
+            } == null
+        }
+        else -> true
     }
     private fun checkStoragePermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

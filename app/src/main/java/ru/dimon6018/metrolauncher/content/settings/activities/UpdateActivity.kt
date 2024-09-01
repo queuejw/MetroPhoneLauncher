@@ -527,7 +527,7 @@ class UpdateActivity: AppCompatActivity() {
         } catch (e: Exception) {
             Log.e("CheckForUpdates", "something went wrong: $e")
             PREFS.updateState = 5
-                withContext(mainDispatcher) {
+            withContext(mainDispatcher) {
                 refreshUi()
             }
         }

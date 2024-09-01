@@ -189,8 +189,9 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onViewCreated(view, savedInstanceState)
         if(context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-                lastItemPos = mainViewModel.getTileDao().getTileLastPosition().appPos!! + 6
                 tiles = mainViewModel.getTileDao().getTilesList()
+                val userTiles = mainViewModel.getTileDao().getUserTiles()
+                lastItemPos = if(userTiles.isNotEmpty()) userTiles.last().appPos!! + 6 else tiles!!.size
                 setupRecyclerViewLayoutManager(requireContext())
                 setupAdapter()
                 withContext(mainDispatcher) {
@@ -831,7 +832,8 @@ class NewStart: Fragment(), OnStartDragListener {
                     mainViewModel.getTileDao().updateTile(item)
                 }
                 val updatedList = mainViewModel.getTileDao().getTilesList()
-                lastItemPos = mainViewModel.getTileDao().getTileLastPosition().appPos!! + 6
+                val userTiles = mainViewModel.getTileDao().getUserTiles()
+                lastItemPos = if(userTiles.isNotEmpty()) userTiles.last().appPos!! + 6 else updatedList.size
                 withContext(mainDispatcher) {
                     if (isEditMode) {
                         refreshData(updatedList)
