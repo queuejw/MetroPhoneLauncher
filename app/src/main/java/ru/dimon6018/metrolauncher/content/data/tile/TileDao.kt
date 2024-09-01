@@ -30,4 +30,6 @@ interface TileDao {
     fun getTileByID(id: Int): Tile
     @Query("DELETE FROM tiles")
     fun deleteAllTiles()
+    @Query("SELECT * FROM tiles WHERE tileType != -1 ORDER BY appPos DESC LIMIT 1")
+    fun getTileLastPosition(): Tile
 }
