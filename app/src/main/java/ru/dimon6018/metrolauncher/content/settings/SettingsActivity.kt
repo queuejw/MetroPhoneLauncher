@@ -4,12 +4,10 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +17,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import leakcanary.LeakCanary
-import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
@@ -67,7 +64,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setAppTheme()
         super.onCreate(savedInstanceState)
         binding = LauncherSettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -225,21 +221,6 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         ObjectAnimator.ofFloat(view, "alpha", 1f, 0f).start()
-    }
-    private fun setAppTheme() {
-        if (PREFS.isLightThemeUsed) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                (application as Application).setNightMode()
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                (application as Application).setNightMode()
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-        }
     }
     private fun isHomeApp(): Boolean {
         val intent = Intent(Intent.ACTION_MAIN)

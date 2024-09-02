@@ -41,7 +41,7 @@
                         android:orientation="vertical"
                         android:layout_marginEnd="4dp"
                         android:layout_marginStart="4dp"
-                        android:layout_height="100dp"
+                        android:layout_height="150dp"
                         app:cardCornerRadius="0dp"
                         app:strokeColor="?attr/colorPrimaryContainer"
                         app:strokeWidth="2dp"
@@ -60,15 +60,24 @@
                                 android:id="@+id/chooseLight"/>
                         <com.google.android.material.textview.MaterialTextView
                                 android:text="@string/dark"
-                                android:layout_marginTop="12dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="36dp"
                                 android:textColor="?attr/colorSurface"
-                                android:layout_gravity="bottom"
-                                android:layout_marginBottom="4dp"
+                                android:layout_gravity="center|start"
                                 android:layout_marginStart="24dp"
                                 android:textSize="22sp"
                                 android:id="@+id/chooseDark"/>
+                        <com.google.android.material.textview.MaterialTextView
+                            android:text="@string/auto"
+                            android:layout_marginTop="12dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="36dp"
+                            android:textColor="?attr/colorSurface"
+                            android:layout_gravity="bottom"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginStart="24dp"
+                            android:textSize="22sp"
+                            android:id="@+id/chooseAuto"/>
                 </com.google.android.material.card.MaterialCardView>
                 <com.google.android.material.textview.MaterialTextView
                         android:text="@string/accent_color"

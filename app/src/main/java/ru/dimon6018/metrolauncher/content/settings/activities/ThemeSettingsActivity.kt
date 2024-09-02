@@ -3,7 +3,6 @@ package ru.dimon6018.metrolauncher.content.settings.activities
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -22,7 +21,6 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.snackbar.Snackbar
-import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
@@ -51,25 +49,34 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private fun configure() {
         binding.settingsInclude.choosedAccentName.text = accentName(this)
         binding.settingsInclude.chooseTheme.apply {
-            text = if (PREFS.isLightThemeUsed) getString(R.string.light) else getString(R.string.dark)
+            text = when(PREFS.appTheme) {
+                0 -> getString(R.string.auto)
+                1 -> getString(R.string.dark)
+                2 -> getString(R.string.light)
+                else -> getString(R.string.auto)
+            }
             setOnClickListener {
                 visibility = View.GONE
                 binding.settingsInclude.chooseThemeMenu.visibility = View.VISIBLE
             }
         }
+        binding.settingsInclude.chooseAuto.setOnClickListener {
+            PREFS.apply {
+                PREFS.appTheme = 0
+            }
+            applyTheme()
+        }
         binding.settingsInclude.chooseLight.setOnClickListener {
             PREFS.apply {
-                isLightThemeUsed = true
-                isPrefsChanged = true
+                PREFS.appTheme = 2
             }
-            restoreThemeButtonsAndApplyChanges()
+            applyTheme()
         }
         binding.settingsInclude.chooseDark.setOnClickListener {
             PREFS.apply {
-                isLightThemeUsed = false
-                isPrefsChanged = true
+                PREFS.appTheme = 1
             }
-            restoreThemeButtonsAndApplyChanges()
+            applyTheme()
         }
         binding.settingsInclude.chooseAccent.setOnClickListener { AccentDialog.display(supportFragmentManager) }
         binding.settingsInclude.moreTilesSwitch.apply {
@@ -210,24 +217,21 @@ class ThemeSettingsActivity : AppCompatActivity() {
     private fun setImg() {
         binding.settingsInclude.moreTilesImage.setImageResource(if(PREFS.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default)
     }
-    private fun restoreThemeButtonsAndApplyChanges() {
-        binding.settingsInclude.chooseTheme.visibility = View.VISIBLE
+    private fun applyTheme() {
+        binding.settingsInclude.chooseTheme.apply {
+            text = when(PREFS.appTheme) {
+                0 -> getString(R.string.auto)
+                1 -> getString(R.string.dark)
+                2 -> getString(R.string.light)
+                else -> getString(R.string.auto)
+            }
+            visibility = View.VISIBLE
+        }
         binding.settingsInclude.chooseThemeMenu.visibility = View.GONE
-        setAppTheme()
-    }
-    private fun setAppTheme() {
-        if (PREFS.isLightThemeUsed) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                (application as Application).setNightMode()
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                (application as Application).setNightMode()
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
+        when(PREFS.appTheme) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
     class AccentDialog : DialogFragment() {

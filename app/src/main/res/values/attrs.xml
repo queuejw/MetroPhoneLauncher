@@ -6,4 +6,5 @@
         <attr name="aspectRatio" format="string" />
     </declare-styleable>
     <bool name="isTablet">false</bool>
+	<bool name="isDark">false</bool>
 </resources>

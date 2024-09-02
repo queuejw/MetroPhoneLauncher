@@ -499,7 +499,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
                 isUpdateDownloading = false
                 PREFS.updateState = 5
-                    withContext(mainDispatcher) {
+                withContext(mainDispatcher) {
                     refreshUi()
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                         .setTitle(getString(R.string.error))

@@ -59,6 +59,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
+import ru.dimon6018.metrolauncher.Main.Companion.isDarkMode
 import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
 import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
@@ -593,7 +594,7 @@ class NewStart: Fragment(), OnStartDragListener {
             binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.82f).setDuration(300).start()
             if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
                 binding.startFrame.setBackgroundColor(ContextCompat.getColor(
-                        context, if(PREFS.isLightThemeUsed) android.R.color.background_light else android.R.color.background_dark
+                        context, if(isDarkMode) android.R.color.background_light else android.R.color.background_dark
                     )
                 )
             }
@@ -1296,7 +1297,7 @@ class ParallaxScroll(private val wallpaper: ImageView, private val adapter: NewS
 @Suppress("DEPRECATION")
 class BackgroundDecoration() : RecyclerView.ItemDecoration() {
 
-    private val backgroundColor = if(PREFS.isLightThemeUsed) Color.WHITE else Color.BLACK
+    private val backgroundColor = if(isDarkMode) Color.WHITE else Color.BLACK
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(c, parent, state)

@@ -1,14 +1,13 @@
 package ru.dimon6018.metrolauncher
 
+//import ru.dimon6018.metrolauncher.content.data.ExperimentPrefs
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
-import android.app.UiModeManager
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
-//import ru.dimon6018.metrolauncher.content.data.ExperimentPrefs
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
@@ -24,7 +23,6 @@ class Application : Application() {
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         PREFS = Prefs(applicationContext)
         //EXP_PREFS = ExperimentPrefs(applicationContext)
-        setNightMode()
         if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
@@ -32,6 +30,7 @@ class Application : Application() {
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             @SuppressLint("SourceLockedOrientationActivity")
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
+                setNightMode()
                 activity.setTheme(launcherAccentTheme())
                 when(PREFS.orientation) {
                     "p" -> {
@@ -52,20 +51,16 @@ class Application : Application() {
             override fun onActivityDestroyed(activity: Activity) {}
         })
     }
-    fun setNightMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val uiMan: UiModeManager = (applicationContext.getSystemService(UI_MODE_SERVICE) as UiModeManager)
-            if(PREFS.isLightThemeUsed) {
-                uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
-            } else {
-                uiMan.setApplicationNightMode(UiModeManager.MODE_NIGHT_YES)
-            }
+    private fun setNightMode() {
+        when(PREFS.appTheme) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
     companion object {
         lateinit var PREFS: Prefs
         //var EXP_PREFS: ExperimentPrefs? = null
-
         var isUpdateDownloading = false
         var isAppOpened = false
         var isStartMenuOpened = false

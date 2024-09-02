@@ -21,7 +21,7 @@ class Prefs(context: Context) {
     private val updateNotificationPref = "updateNotificationEnabled"
     private val feedbackPref = "feedbackEnabled"
     private val launcherStatePref = "launcherState"
-    private val lightThemePref = "useLightTheme"
+    private val lightThemePref = "launcherTheme"
     private val navbarColorPref = "navBarColor"
     private val showMoreTilesPref = "isMoreTilesEnabled"
     private val wallpaperPref = "wallpaperUsing"
@@ -72,9 +72,9 @@ class Prefs(context: Context) {
         get() = prefs.getInt(maxCrashLogsPref, 1)
         set(value) = prefs.edit().putInt(maxCrashLogsPref, value).apply()
 
-    var isLightThemeUsed: Boolean
-        get() = prefs.getBoolean(lightThemePref, false)
-        set(value) = prefs.edit().putBoolean(lightThemePref, value).apply()
+    var appTheme: Int
+        get() = prefs.getInt(lightThemePref, 0) // 0 - auto, 1 - dark, 2 - light
+        set(value) = prefs.edit().putInt(lightThemePref, value).apply()
 
     var isFeedbackEnabled: Boolean
         get() = prefs.getBoolean(feedbackPref, true)

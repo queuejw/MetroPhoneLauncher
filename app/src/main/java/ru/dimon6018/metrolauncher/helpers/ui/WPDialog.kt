@@ -19,6 +19,7 @@ import ru.dimon6018.metrolauncher.R
 */
 class WPDialog(private val mContext: Context) {
     private var wp: Dialog? = null
+    private val isDarkMode = mContext.resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
     private var defStyle: Int
     private var title = ""
     private var messageText = ""
@@ -36,7 +37,7 @@ class WPDialog(private val mContext: Context) {
     private var dismissListener: DialogInterface.OnDismissListener? = null
     //Show方法
     fun show(): WPDialog {
-        if(PREFS.isLightThemeUsed) {
+        if(!isDarkMode) {
             setLightTheme()
         }
         Builder()

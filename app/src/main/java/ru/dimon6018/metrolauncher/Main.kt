@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,11 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
-import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -58,6 +55,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getDefaultLocale
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherOnSurfaceColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherSurfaceColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.registerPackageReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
@@ -72,6 +70,9 @@ class Main : AppCompatActivity() {
     private val packageReceiver: PackageChangesReceiver by lazy { PackageChangesReceiver() }
     private val defaultIconSize: Int by lazy { resources.getDimensionPixelSize(R.dimen.tile_default_size) }
 
+    private val accentColor: Int by lazy { launcherAccentColor(this@Main.theme) }
+    private val onSurfaceColor: Int by lazy { launcherOnSurfaceColor(this@Main.theme) }
+
     private var searchAdapter: SearchAdapter? = null
     private var filteredList = mutableListOf<App>()
 
@@ -81,7 +82,7 @@ class Main : AppCompatActivity() {
     private lateinit var binding: MainScreenLaucnherBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setAppTheme()
+        isDarkMode = resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
         handleDevMode()
         super.onCreate(savedInstanceState)
 
@@ -169,29 +170,15 @@ class Main : AppCompatActivity() {
     }
 
     private fun createPageChangeCallback() = object : ViewPager2.OnPageChangeCallback() {
-        val blackColor = ContextCompat.getColor(this@Main, android.R.color.black)
-        val whiteColor = ContextCompat.getColor(this@Main, android.R.color.white)
-
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
             updateNavigationBarColors(position)
         }
-
         private fun updateNavigationBarColors(position: Int) {
             if (!PREFS.isSearchBarEnabled && PREFS.navBarColor != 2) {
                 val (startColor, searchColor) = when {
-                    position == 0 && (PREFS.navBarColor == 1 || PREFS.isLightThemeUsed) -> {
-                        launcherAccentColor(this@Main.theme) to blackColor
-                    }
-                    position == 0 -> {
-                        launcherAccentColor(this@Main.theme) to whiteColor
-                    }
-                    (PREFS.navBarColor == 1 || PREFS.isLightThemeUsed) -> {
-                        blackColor to launcherAccentColor(this@Main.theme)
-                    }
-                    else -> {
-                        whiteColor to launcherAccentColor(this@Main.theme)
-                    }
+                    position == 0 -> accentColor to onSurfaceColor
+                    else -> onSurfaceColor to accentColor
                 }
                 binding.navigationStartBtn.setColorFilter(startColor)
                 binding.navigationSearchBtn.setColorFilter(searchColor)
@@ -250,21 +237,25 @@ class Main : AppCompatActivity() {
                 close()
             }
         }
-        diskCache = initDiskCache(this)
-        mainViewModel.getAppList().forEach { app ->
-            if (app.type != 1) {
-                withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
+            diskCache = initDiskCache(this@Main)
+            mainViewModel.getAppList().forEach { app ->
+                if (app.type != 1) {
                     val icon = diskCache?.let { loadIconFromDiskCache(it, app.appPackage!!) }
                     if (icon == null) {
                         generateIcon(app.appPackage!!, isCustomIconsInstalled)
-                        saveIconToDiskCache(diskCache, app.appPackage!!, mainViewModel.getIconFromCache(app.appPackage!!))
+                        saveIconToDiskCache(
+                            diskCache,
+                            app.appPackage!!,
+                            mainViewModel.getIconFromCache(app.appPackage!!)
+                        )
                     } else {
                         mainViewModel.addIconToCache(app.appPackage!!, icon)
                     }
                 }
             }
+            diskCache?.let { closeDiskCache(it) }
         }
-        diskCache?.let { closeDiskCache(it) }
     }
 
     private fun checkIconPack(disk: DiskLruCache?): Boolean {
@@ -353,8 +344,7 @@ class Main : AppCompatActivity() {
     private fun setupNavigationBar() {
         if (bottomViewReady) return
         bottomViewReady = true
-        val bottomView: FrameLayout = findViewById(R.id.navigation)
-        bottomView.setBackgroundColor(getNavBarColor())
+        binding.navigation.setBackgroundColor(getNavBarColor())
         configureBottomBar()
     }
 
@@ -364,7 +354,7 @@ class Main : AppCompatActivity() {
             1 -> ContextCompat.getColor(this, android.R.color.background_light)
             2 -> accentColorFromPrefs(this)
             3 -> {
-                findViewById<FrameLayout>(R.id.navigation).visibility = View.GONE
+                binding.navigation.visibility = View.GONE
                 return ContextCompat.getColor(this, android.R.color.transparent)
             }
             else -> launcherSurfaceColor(theme)
@@ -480,20 +470,9 @@ class Main : AppCompatActivity() {
         filteredList.sortWith(compareBy { it.appLabel })
         searchAdapter?.setData(filteredList)
     }
-
-    private fun setAppTheme() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            val nightMode = if (PREFS.isLightThemeUsed) {
-                AppCompatDelegate.MODE_NIGHT_NO
-            } else {
-                AppCompatDelegate.MODE_NIGHT_YES
-            }
-            AppCompatDelegate.setDefaultNightMode(nightMode)
-        }
-    }
-
     companion object {
         var isLandscape: Boolean = false
+        var isDarkMode: Boolean = false
     }
 
     inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
