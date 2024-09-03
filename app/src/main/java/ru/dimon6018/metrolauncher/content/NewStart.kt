@@ -31,6 +31,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
@@ -82,7 +83,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.checkStoragePerm
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
-import kotlin.properties.Delegates
 import kotlin.random.Random
 
 class NewStart: Fragment(), OnStartDragListener {
@@ -109,6 +109,15 @@ class NewStart: Fragment(), OnStartDragListener {
 
     private var lastItemPos: Int? = null
 
+    private val backCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            mAdapter?.apply {
+                if(isEditMode) {
+                    disableEditMode()
+                }
+            }
+        }
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = StartScreenBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -209,11 +218,16 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onDestroyView()
         _binding = null
     }
-    private fun setupAdapter() {
+    private suspend fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)
         mItemTouchHelper = ItemTouchHelper(ItemTouchCallback(mAdapter!!))
     }
-
+    private fun addCallback() {
+        activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backCallback)
+    }
+    private fun removeCallback() {
+        backCallback.remove()
+    }
     private fun configureRecyclerView() {
         binding.startAppsTiles.apply {
             layoutManager = mSpannedLayoutManager
@@ -563,7 +577,11 @@ class NewStart: Fragment(), OnStartDragListener {
         val spaceType: Int = -1
 
         private val animList: MutableList<ObjectAnimator> = ArrayList()
-        private var transparentColor by Delegates.notNull<Int>()
+        private val transparentColor: Int by lazy { ContextCompat.getColor(context, R.color.transparent) }
+        private val surfaceColor: Int by lazy {
+            if(isDarkMode) ContextCompat.getColor(context, android.R.color.background_dark)
+            else ContextCompat.getColor(context, android.R.color.background_light)
+        }
 
         var isEditMode = false
         var isTopLeft = false
@@ -573,7 +591,6 @@ class NewStart: Fragment(), OnStartDragListener {
 
         init {
             setHasStableIds(true)
-            transparentColor = ContextCompat.getColor(context, R.color.transparent)
         }
         fun setData(newData: MutableList<Tile>) {
             val diffUtilCallback = DiffUtilCallback(list, newData)
@@ -590,13 +607,11 @@ class NewStart: Fragment(), OnStartDragListener {
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
+            addCallback()
             binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
             binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.82f).setDuration(300).start()
             if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
-                binding.startFrame.setBackgroundColor(ContextCompat.getColor(
-                        context, if(isDarkMode) android.R.color.background_light else android.R.color.background_dark
-                    )
-                )
+                binding.startFrame.setBackgroundColor(surfaceColor)
             }
             for(anim in animList) {
                 anim.start()
@@ -605,6 +620,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
+            removeCallback()
             (requireActivity() as Main).configureViewPagerScroll(true)
             binding.startAppsTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
             binding.backgroundWallpaper.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
@@ -995,8 +1011,10 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             changeColor.setOnClickListener {
                 val dialog = AccentDialog()
-                dialog.configure(item, this, mainViewModel.getTileDao())
-                dialog.show(childFragmentManager, "accentDialog")
+                dialog.apply {
+                    configure(item, this@NewStartAdapter, mainViewModel.getTileDao())
+                    show(childFragmentManager, "accentDialog")
+                }
                 bottomsheet.dismiss()
             }
             uninstall.setOnClickListener {
@@ -1010,15 +1028,14 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun startApp(packageName: String) {
             isAppOpened = true
-            when (packageName) {
-                "ru.dimon6018.metrolauncher" -> {
-                    startActivity(Intent(requireActivity(), SettingsActivity::class.java))
+            if (activity != null) {
+                val intent = when (packageName) {
+                    "ru.dimon6018.metrolauncher" -> Intent(requireActivity(), SettingsActivity::class.java)
+                    else -> requireActivity().packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
                 }
-                else -> {
-                    val intent = context.packageManager!!.getLaunchIntentForPackage(packageName)
-                    intent!!.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                }
+                intent?.let { startActivity(it) }
             }
         }
         @SuppressLint("ClickableViewAccessibility")
@@ -1179,87 +1196,32 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            val lime = view.findViewById<ImageView>(R.id.choose_color_lime)
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
-            lime.setOnClickListener {
-                updateTileColor(0)
-            }
-            val green = view.findViewById<ImageView>(R.id.choose_color_green)
-            green.setOnClickListener {
-                updateTileColor(1)
-            }
-            val emerald = view.findViewById<ImageView>(R.id.choose_color_emerald)
-            emerald.setOnClickListener {
-                updateTileColor(2)
-            }
-            val cyan = view.findViewById<ImageView>(R.id.choose_color_cyan)
-            cyan.setOnClickListener {
-                updateTileColor(3)
-            }
-            val teal = view.findViewById<ImageView>(R.id.choose_color_teal)
-            teal.setOnClickListener {
-                updateTileColor(4)
-            }
-            val cobalt = view.findViewById<ImageView>(R.id.choose_color_cobalt)
-            cobalt.setOnClickListener {
-                updateTileColor(5)
-            }
-            val indigo = view.findViewById<ImageView>(R.id.choose_color_indigo)
-            indigo.setOnClickListener {
-                updateTileColor(6)
-            }
-            val violet = view.findViewById<ImageView>(R.id.choose_color_violet)
-            violet.setOnClickListener {
-                updateTileColor(7)
-            }
-            val pink = view.findViewById<ImageView>(R.id.choose_color_pink)
-            pink.setOnClickListener {
-                updateTileColor(8)
-            }
-            val magenta = view.findViewById<ImageView>(R.id.choose_color_magenta)
-            magenta.setOnClickListener {
-                updateTileColor(9)
-            }
-            val crimson = view.findViewById<ImageView>(R.id.choose_color_crimson)
-            crimson.setOnClickListener {
-                updateTileColor(10)
-            }
-            val red = view.findViewById<ImageView>(R.id.choose_color_red)
-            red.setOnClickListener {
-                updateTileColor(11)
-            }
-            val orange = view.findViewById<ImageView>(R.id.choose_color_orange)
-            orange.setOnClickListener {
-                updateTileColor(12)
-            }
-            val amber = view.findViewById<ImageView>(R.id.choose_color_amber)
-            amber.setOnClickListener {
-                updateTileColor(13)
-            }
-            val yellow = view.findViewById<ImageView>(R.id.choose_color_yellow)
-            yellow.setOnClickListener {
-                updateTileColor(14)
-            }
-            val brown = view.findViewById<ImageView>(R.id.choose_color_brown)
-            brown.setOnClickListener {
-                updateTileColor(15)
-            }
-            val olive = view.findViewById<ImageView>(R.id.choose_color_olive)
-            olive.setOnClickListener {
-                updateTileColor(16)
-            }
-            val steel = view.findViewById<ImageView>(R.id.choose_color_steel)
-            steel.setOnClickListener {
-                updateTileColor(17)
-            }
-            val mauve = view.findViewById<ImageView>(R.id.choose_color_mauve)
-            mauve.setOnClickListener {
-                updateTileColor(18)
-            }
-            val taupe = view.findViewById<ImageView>(R.id.choose_color_taupe)
-            taupe.setOnClickListener {
-                updateTileColor(19)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_lime), 0)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_green), 1)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_emerald), 2)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_cyan), 3)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_teal), 4)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_cobalt), 5)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_indigo), 6)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_violet), 7)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_pink), 8)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_magenta), 9)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_crimson), 10)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_red), 11)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_orange), 12)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_amber), 13)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_yellow), 14)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_brown), 15)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_olive), 16)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_steel), 17)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_mauve), 18)
+            setOnClick(view.findViewById<ImageView>(R.id.choose_color_taupe), 19)
+        }
+        private fun setOnClick(colorView: View, value: Int) {
+            colorView.setOnClickListener {
+                updateTileColor(value)
             }
         }
         private fun updateTileColor(color: Int) {
@@ -1297,7 +1259,7 @@ class ParallaxScroll(private val wallpaper: ImageView, private val adapter: NewS
 @Suppress("DEPRECATION")
 class BackgroundDecoration() : RecyclerView.ItemDecoration() {
 
-    private val backgroundColor = if(isDarkMode) Color.WHITE else Color.BLACK
+    private val backgroundColor = if(isDarkMode) Color.BLACK else Color.WHITE
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         super.onDraw(c, parent, state)
@@ -1306,15 +1268,12 @@ class BackgroundDecoration() : RecyclerView.ItemDecoration() {
         val top = parent.paddingTop
         val right = parent.width - parent.paddingRight
         val bottom = parent.height - parent.paddingBottom
-
         c.save()
         c.clipRect(left, top, right, bottom)
-
         for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
             c.clipRect(child.left.toFloat(), child.top.toFloat(), child.right.toFloat(), child.bottom.toFloat(), Region.Op.DIFFERENCE)
         }
-
         c.drawColor(backgroundColor)
         c.restore()
     }
