@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
         android:background="@android:color/transparent"
+        android:padding="6dp"
         android:clipChildren="false"
         android:clipToPadding="false"/>
 </FrameLayout>

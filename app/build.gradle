@@ -17,8 +17,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 21
         targetSdk 35
-        versionCode 53
-        versionName "1.0 Pre-Alpha 5.1.2.3"
+        versionCode 54
+        versionName "Exp. 7743"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -51,12 +51,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.13.0-alpha05'
     implementation 'androidx.recyclerview:recyclerview:1.4.0-beta01'
     implementation 'androidx.core:core-ktx:1.13.1'
-    implementation 'androidx.fragment:fragment-ktx:1.8.2'
+    implementation 'androidx.fragment:fragment-ktx:1.8.3'
     implementation "androidx.dynamicanimation:dynamicanimation:1.1.0-alpha03"
     implementation "androidx.room:room-runtime:2.6.1"
     implementation "androidx.room:room-ktx:2.6.1"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.4"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.8.5"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.5"
     implementation "androidx.work:work-runtime-ktx:2.9.1"
     implementation "androidx.core:core-splashscreen:1.1.0-rc01"
 
@@ -65,7 +65,6 @@ dependencies {
 
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
     implementation 'io.coil-kt.coil3:coil:3.0.0-alpha10'
-    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-alpha10'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
    // testImplementation 'junit:junit:4.13.2'

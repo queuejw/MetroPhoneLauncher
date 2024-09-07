@@ -40,7 +40,6 @@ class Prefs(context: Context) {
     private val liveTilesAnimPref = "liveTileAnim"
     private val searchBarMaxResultsPref = "maxResultsSearchBar"
     private val allAppsScreenPref = "allAppsEnabled"
-    private val startScreenAnimPrefs = "startScreenAnim"
     private val alphabetAnimPrefs = "alphabetAnim"
     private val autoShutdownAnimPref = "autoStdwnAnimations"
     private val bsodOutputPref = "bsodOutputEnabled"
@@ -225,10 +224,6 @@ class Prefs(context: Context) {
     var isAlphabetAnimEnabled: Boolean
         get() = prefs.getBoolean(alphabetAnimPrefs, true)
         set(value) = prefs.edit().putBoolean(alphabetAnimPrefs, value).apply()
-
-    var isTilesScreenAnimEnabled: Boolean
-        get() = prefs.getBoolean(startScreenAnimPrefs, true)
-        set(value) = prefs.edit().putBoolean(startScreenAnimPrefs, value).apply()
 
     //disabling animations if developer mode is enabled (to avoid problems)
     var isAutoShutdownAnimEnabled: Boolean

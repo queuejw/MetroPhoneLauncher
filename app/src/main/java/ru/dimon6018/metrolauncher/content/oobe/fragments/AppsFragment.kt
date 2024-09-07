@@ -136,8 +136,8 @@ class AppsFragment: Fragment() {
                     pos, id, -1, 0,
                     isSelected = false,
                     tileSize = generateRandomTileSize(false),
-                    appLabel = i.appLabel!!,
-                    appPackage = i.appPackage!!
+                    tileLabel = i.appLabel!!,
+                    tilePackage = i.appPackage!!
                 )
                 call.updateTile(entity)
                 pos += 1

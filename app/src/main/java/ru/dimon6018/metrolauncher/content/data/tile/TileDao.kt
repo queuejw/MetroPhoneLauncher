@@ -24,7 +24,7 @@ interface TileDao {
     suspend fun getTilesList(): MutableList<Tile>
     @Query("SELECT * FROM tiles WHERE tileType != -1") //-1
     suspend fun getUserTiles(): MutableList<Tile>
-    @Query("SELECT * FROM tiles WHERE appPos = :pos")
+    @Query("SELECT * FROM tiles WHERE tilePosition = :pos")
     fun getTileFromPosition(pos: Int): Tile
     @Query("SELECT * FROM tiles WHERE id = :id")
     fun getTileByID(id: Int): Tile

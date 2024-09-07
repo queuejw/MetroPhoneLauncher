@@ -655,7 +655,7 @@ class NewAllApps: Fragment() {
             lifecycleScope.launch(defaultDispatcher) {
                 val dbList = mainViewModel.getTileDao().getTilesList()
                 dbList.forEach {
-                    if (it.appPackage == app.appPackage) {
+                    if (it.tilePackage == app.appPackage) {
                         isAppAlreadyPinned = true
                         return@forEach
                     }
@@ -785,7 +785,7 @@ class NewAllApps: Fragment() {
             lifecycleScope.launch(defaultDispatcher) {
                 val dataList = mainViewModel.getTileDao().getTilesList()
                 dataList.forEach {
-                    if (it.appPackage == app.appPackage) {
+                    if (it.tilePackage == app.appPackage) {
                         //db already has this app. we must stop this
                         return@launch
                     }
@@ -802,8 +802,8 @@ class NewAllApps: Fragment() {
                     pos, id, -1, 0,
                     isSelected = false,
                     tileSize = generateRandomTileSize(true),
-                    appLabel = app.appLabel!!,
-                    appPackage = app.appPackage!!
+                    tileLabel = app.appLabel!!,
+                    tilePackage = app.appPackage!!
                 )
                 mainViewModel.getTileDao().addTile(item)
             }

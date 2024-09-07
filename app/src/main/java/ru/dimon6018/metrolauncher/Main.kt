@@ -145,7 +145,6 @@ class Main : AppCompatActivity() {
             isAlphabetAnimEnabled = false
             isTransitionAnimEnabled = false
             isLiveTilesAnimEnabled = false
-            isTilesScreenAnimEnabled = false
             isTilesAnimEnabled = false
         }
     }

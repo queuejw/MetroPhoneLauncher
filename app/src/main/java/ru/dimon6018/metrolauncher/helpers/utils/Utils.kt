@@ -448,8 +448,8 @@ class Utils {
                 val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
                     isSelected = false,
                     tileSize = "small",
-                    appLabel = "",
-                    appPackage = ""
+                    tileLabel = "",
+                    tilePackage = ""
                 )
                 call.addTile(placeholder)
             }

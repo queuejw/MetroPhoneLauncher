@@ -57,12 +57,6 @@ class AnimationSettingsActivity: AppCompatActivity() {
                 PREFS.isAlphabetAnimEnabled = isChecked
             }
         }
-        binding.settingsInclude.tilesPhoneStartAnimCheckbox.apply {
-            isChecked = PREFS.isTilesScreenAnimEnabled
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS.isTilesScreenAnimEnabled = isChecked
-            }
-        }
         binding.settingsInclude.autoShutdownAnimsCheckbox.apply {
             isChecked = PREFS.isAutoShutdownAnimEnabled
             setOnCheckedChangeListener { _, isChecked ->
