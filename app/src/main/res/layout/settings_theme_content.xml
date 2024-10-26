@@ -162,7 +162,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
                     android:checked="false"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:text="@string/wallpaper_setting"
@@ -183,23 +183,7 @@
                     android:layout_height="wrap_content"/>
 
                 <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/wallpaperShowSwtich"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="24sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/wallpaperTransparentTiles"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/parallaxSwitch"
+                    android:id="@+id/wallpaperShowSwitch"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

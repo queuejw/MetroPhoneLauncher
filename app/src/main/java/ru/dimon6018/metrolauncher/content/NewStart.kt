@@ -1,16 +1,12 @@
 package ru.dimon6018.metrolauncher.content
 
 import android.annotation.SuppressLint
-import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Region
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +26,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -73,10 +68,8 @@ import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
-import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.checkStoragePermissions
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
@@ -108,89 +101,17 @@ class NewStart: Fragment(), OnStartDragListener {
 
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            mAdapter?.apply {
-                if(isEditMode) {
-                    disableEditMode()
-                }
-            }
+            mAdapter?.let { if(it.isEditMode) it.disableEditMode() }
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = StartScreenBinding.inflate(inflater, container, false)
         val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        if(PREFS.isWallpaperUsed && activity != null) {
-            setWallpaper()
-        }
         binding.startFrame.setOnClickListener {
-            mAdapter?.apply {
-                if(isEditMode) {
-                    disableEditMode()
-                }
-            }
+            mAdapter?.let { if(it.isEditMode) it.disableEditMode() }
         }
         return view
-    }
-    private fun setWallpaper() {
-        if(checkStoragePermissions(requireActivity())) {
-            binding.backgroundWallpaper.setImageDrawable(
-                WallpaperManager.getInstance(
-                    requireActivity()
-                ).fastDrawable
-            )
-        } else {
-            wallpaperDialog()
-        }
-    }
-    private fun wallpaperDialog() {
-        binding.root.animate().alpha(0.5f).setDuration(500).start()
-        WPDialog(requireActivity()).apply {
-            setTitle(getString(R.string.reset_warning_title))
-            setMessage(getString(R.string.wallpaper_error))
-            setPositiveButton(getString(R.string.allow)) {
-                getPermission()
-                dismiss()
-            }
-            setNegativeButton(getString(R.string.deny)) {
-                PREFS.isWallpaperUsed = false
-                PREFS.isParallaxEnabled = false
-                dismiss()
-                requireActivity().recreate()
-            }
-            setCancelable(false)
-            setDismissListener {
-                binding.root.animate().alpha(1f).setDuration(500).start()
-            }
-            show()
-        }
-    }
-    private fun getPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", requireActivity().packageName)))
-            startActivity(intent)
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE
-                ),
-                1507
-            )
-        }
-        WPDialog(requireActivity()).apply {
-            setTitle(getString(R.string.tip))
-            setMessage(getString(R.string.restart_required))
-            setPositiveButton(getString(android.R.string.ok)) {
-                requireActivity().recreate()
-                dismiss()
-            }
-            setNegativeButton(getString(android.R.string.cancel)) {
-                dismiss()
-            }
-            setTopDialog(true)
-            setCancelable(false)
-            show()
-        }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -215,7 +136,7 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onDestroyView()
         _binding = null
     }
-    private suspend fun setupAdapter() {
+    private fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)
         mItemTouchHelper = ItemTouchHelper(ItemTouchCallback(mAdapter!!))
     }
@@ -229,15 +150,7 @@ class NewStart: Fragment(), OnStartDragListener {
         binding.startAppsTiles.apply {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
-            if (PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) {
-                addItemDecoration(Utils.MarginItemDecoration(this.context.resources.getDimensionPixelSize(R.dimen.tileMargin)))
-            }
             mItemTouchHelper.attachToRecyclerView(this)
-            if(PREFS.isWallpaperUsed && checkStoragePermissions(requireActivity())) {
-                binding.backgroundWallpaper.visibility = View.VISIBLE
-                addOnScrollListener(ParallaxScroll(binding.backgroundWallpaper, mAdapter!!))
-            }
-            addItemDecoration(BackgroundDecoration())
             addOnScrollListener(ScrollListener())
         }
     }
@@ -339,9 +252,7 @@ class NewStart: Fragment(), OnStartDragListener {
             }
         }
         mAdapter?.apply {
-            if(isEditMode) {
-                disableEditMode()
-            }
+            if(isEditMode) disableEditMode()
         }
         isStartMenuOpened = false
     }
@@ -384,14 +295,10 @@ class NewStart: Fragment(), OnStartDragListener {
                             }
                         }
                         PackageChangesReceiver.PACKAGE_REMOVED -> {
-                            packageName.apply {
-                                broadcastListUpdater(this, true)
-                            }
+                            packageName.apply { broadcastListUpdater(this, true) }
                         }
                         else -> {
-                            packageName.apply {
-                                broadcastListUpdater(this, false)
-                            }
+                            packageName.apply { broadcastListUpdater(this, false) }
                         }
                     }
                 }
@@ -561,7 +468,6 @@ class NewStart: Fragment(), OnStartDragListener {
         val defaultTileType: Int = 0
         val spaceType: Int = -1
 
-        private val transparentColor: Int by lazy { ContextCompat.getColor(context, R.color.transparent) }
         private val surfaceColor: Int by lazy {
             if(isDarkMode) ContextCompat.getColor(context, android.R.color.background_dark)
             else ContextCompat.getColor(context, android.R.color.background_light)
@@ -594,7 +500,6 @@ class NewStart: Fragment(), OnStartDragListener {
             (requireActivity() as Main).configureViewPagerScroll(false)
             addCallback()
             binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
-            binding.backgroundWallpaper.animate().scaleX(0.9f).scaleY(0.82f).setDuration(300).start()
             if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
                 binding.startFrame.setBackgroundColor(surfaceColor)
             }
@@ -606,7 +511,6 @@ class NewStart: Fragment(), OnStartDragListener {
             removeCallback()
             (requireActivity() as Main).configureViewPagerScroll(true)
             binding.startAppsTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
-            binding.backgroundWallpaper.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
             if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
                 binding.startFrame.background = null
             }
@@ -690,16 +594,7 @@ class NewStart: Fragment(), OnStartDragListener {
                     )
                 )
             } else {
-                if (PREFS.isWallpaperUsed) {
-                    holder.binding.container.setBackgroundColor(
-                        if (PREFS.isParallaxEnabled) ContextCompat.getColor(
-                            context,
-                            R.color.transparent
-                        ) else accentColorFromPrefs(context)
-                    )
-                } else {
-                    holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
-                }
+                holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
             }
         }
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
@@ -906,10 +801,8 @@ class NewStart: Fragment(), OnStartDragListener {
             }
             changeColor.setOnClickListener {
                 val dialog = AccentDialog()
-                dialog.apply {
-                    configure(item, this@NewStartAdapter, mainViewModel.getTileDao())
-                    show(childFragmentManager, "accentDialog")
-                }
+                dialog.configure(item, this@NewStartAdapter, mainViewModel.getTileDao())
+                dialog.show(childFragmentManager, "accentDialog")
                 bottomsheet.dismiss()
             }
             uninstall.setOnClickListener {
@@ -979,7 +872,7 @@ class NewStart: Fragment(), OnStartDragListener {
             init {
                 binding.cardContainer.apply {
                     if (PREFS.coloredStroke) strokeColor = accentColor
-                    strokeWidth = context?.resources?.getDimensionPixelSize(if (PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) R.dimen.tileStrokeWidthDisabled else R.dimen.tileStrokeWidth)!!
+                    strokeWidth = context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
                 binding.container.apply {
                     alpha = PREFS.tilesTransparency
@@ -1022,9 +915,7 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
             private fun handleLongClick() {
-                if(!isEditMode && !PREFS.isStartBlocked) {
-                    enableEditMode()
-                }
+                if(!isEditMode && !PREFS.isStartBlocked) enableEditMode()
             }
             override fun onItemSelected() {}
             override fun onItemClear() {}
@@ -1042,9 +933,6 @@ class NewStart: Fragment(), OnStartDragListener {
         }**/
         inner class SpaceViewHolder(binding: SpaceBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
-                if(PREFS.isWallpaperUsed && !PREFS.isParallaxEnabled) {
-                    itemView.setBackgroundColor(transparentColor)
-                }
                 itemView.setOnClickListener {
                     if (isEditMode) {
                         disableEditMode()
@@ -1077,6 +965,16 @@ class NewStart: Fragment(), OnStartDragListener {
         private lateinit var dao: TileDao
         private lateinit var mAdapter: NewStartAdapter
 
+        private val viewIds = arrayOf(
+            R.id.choose_color_lime, R.id.choose_color_green, R.id.choose_color_emerald,
+            R.id.choose_color_cyan, R.id.choose_color_teal, R.id.choose_color_cobalt,
+            R.id.choose_color_indigo, R.id.choose_color_violet, R.id.choose_color_pink,
+            R.id.choose_color_magenta, R.id.choose_color_crimson, R.id.choose_color_red,
+            R.id.choose_color_orange, R.id.choose_color_amber, R.id.choose_color_yellow,
+            R.id.choose_color_brown, R.id.choose_color_olive, R.id.choose_color_steel,
+            R.id.choose_color_mauve, R.id.choose_color_taupe
+        )
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             setStyle(STYLE_NORMAL, R.style.AppTheme_FullScreenDialog)
@@ -1101,26 +999,9 @@ class NewStart: Fragment(), OnStartDragListener {
             super.onViewCreated(view, savedInstanceState)
             val back = view.findViewById<FrameLayout>(R.id.back_accent_menu)
             back.setOnClickListener { dismiss() }
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_lime), 0)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_green), 1)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_emerald), 2)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_cyan), 3)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_teal), 4)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_cobalt), 5)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_indigo), 6)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_violet), 7)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_pink), 8)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_magenta), 9)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_crimson), 10)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_red), 11)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_orange), 12)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_amber), 13)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_yellow), 14)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_brown), 15)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_olive), 16)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_steel), 17)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_mauve), 18)
-            setOnClick(view.findViewById<ImageView>(R.id.choose_color_taupe), 19)
+            for(i in 0..<viewIds.size) {
+                setOnClick(view.findViewById<ImageView>(viewIds[i]), i)
+            }
         }
         private fun setOnClick(colorView: View, value: Int) {
             colorView.setOnClickListener {
@@ -1141,43 +1022,5 @@ class NewStart: Fragment(), OnStartDragListener {
             mAdapter.showSettingsBottomSheet(item, item.tilePosition!!)
             super.dismiss()
         }
-    }
-}
-class ParallaxScroll(private val wallpaper: ImageView, private val adapter: NewStart.NewStartAdapter) : RecyclerView.OnScrollListener() {
-
-    private val imageHeight = wallpaper.drawable.intrinsicHeight
-
-    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        super.onScrolled(recyclerView, dx, dy)
-        val recyclerViewHeight = recyclerView.height
-        val offset = (imageHeight - recyclerViewHeight) / 2
-        wallpaper.translationY = -(recyclerView.computeVerticalScrollOffset() * calculateParallax(adapter.itemCount)).coerceIn(-offset.toFloat(), offset.toFloat())
-    }
-    private fun calculateParallax(itemCount: Int): Float {
-        val min = 0.1f
-        val max = 0.5f
-        return min + (max - min) * (itemCount - 10) / 100f
-    }
-}
-@Suppress("DEPRECATION")
-class BackgroundDecoration() : RecyclerView.ItemDecoration() {
-
-    private val backgroundColor = if(isDarkMode) Color.BLACK else Color.WHITE
-
-    override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        super.onDraw(c, parent, state)
-
-        val left = parent.paddingLeft
-        val top = parent.paddingTop
-        val right = parent.width - parent.paddingRight
-        val bottom = parent.height - parent.paddingBottom
-        c.save()
-        c.clipRect(left, top, right, bottom)
-        for (i in 0 until parent.childCount) {
-            val child = parent.getChildAt(i)
-            c.clipRect(child.left.toFloat(), child.top.toFloat(), child.right.toFloat(), child.bottom.toFloat(), Region.Op.DIFFERENCE)
-        }
-        c.drawColor(backgroundColor)
-        c.restore()
     }
 }

@@ -5,21 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/backgroundWallpaper"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/wallpaper"
-        android:scaleType="centerCrop"
-        android:visibility="gone"/>
-
     <ru.dimon6018.metrolauncher.helpers.ui.MetroRecyclerView
         android:id="@+id/start_apps_tiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:nestedScrollingEnabled="true"
         android:background="@android:color/transparent"
-        android:padding="6dp"
         android:clipChildren="false"
         android:clipToPadding="false"/>
 </FrameLayout>

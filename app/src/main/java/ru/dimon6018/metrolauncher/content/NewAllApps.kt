@@ -434,7 +434,7 @@ class NewAllApps: Fragment() {
         }
     }
     private fun filterText(searchText: String) {
-        val filteredList: ArrayList<App> = ArrayList()
+        val filteredList: MutableList<App> = ArrayList()
         val locale = getDefaultLocale()
         mainViewModel.getAppList().forEach {
             if (it.appLabel!!.lowercase(locale).contains(searchText.lowercase(locale))) {
@@ -702,17 +702,13 @@ class NewAllApps: Fragment() {
             if (restoreAll) {
                 for (i in first..last) {
                     val itemView = binding.appList.findViewHolderForAdapterPosition(i)?.itemView
-                    itemView?.let {
-                        it.animate().alpha(1f).scaleY(1f).scaleX(1f).setDuration(500).start()
-                    }
+                    itemView?.animate()?.alpha(1f)?.scaleY(1f)?.scaleX(1f)?.setDuration(500)?.start()
                 }
             } else {
                 for (i in first..last) {
                     val itemView = binding.appList.findViewHolderForAdapterPosition(i)?.itemView
                     if (list[i] == app) continue
-                    itemView?.let {
-                        it.animate().alpha(0.5f).scaleY(0.95f).scaleX(0.95f).setDuration(500).start()
-                    }
+                    itemView?.animate()?.alpha(0.5f)?.scaleY(0.95f)?.scaleX(0.95f)?.setDuration(500)?.start()
                 }
             }
         }

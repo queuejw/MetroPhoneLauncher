@@ -15,9 +15,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var appList: MutableList<App> = ArrayList()
 
     fun addIconToCache(appPackage: String, bitmap: Bitmap?) {
-        if(icons[appPackage.hashCode()] == null) {
-            icons.append(appPackage.hashCode(), bitmap)
-        }
+        if(icons[appPackage.hashCode()] == null) icons.append(appPackage.hashCode(), bitmap)
     }
     fun removeIconFromCache(appPackage: String) {
         icons.remove(appPackage.hashCode())
@@ -26,9 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return icons[appPackage.hashCode()]
     }
     fun addAppToList(app: App) {
-        if(!appList.contains(app)) {
-            appList.add(app)
-        }
+        if(!appList.contains(app)) appList.add(app)
     }
     fun removeAppFromList(app: App) {
         appList.remove(app)

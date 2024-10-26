@@ -16,6 +16,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.WindowCompat
@@ -83,6 +84,11 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         isDarkMode = resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
+        when(PREFS.appTheme) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
         handleDevMode()
         super.onCreate(savedInstanceState)
 
@@ -375,9 +381,7 @@ class Main : AppCompatActivity() {
             setOnClickListener { binding.pager.setCurrentItem(0, true) }
         }
         binding.navigationSearchBtn.setOnClickListener {
-            if (PREFS.isAllAppsEnabled) {
-                binding.pager.setCurrentItem(1, true)
-            }
+            if (PREFS.isAllAppsEnabled) binding.pager.setCurrentItem(1, true)
         }
     }
 
@@ -409,7 +413,6 @@ class Main : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 filterSearchText(s.toString(), mainViewModel.getAppList())
             }
-
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable) {}
         })
@@ -428,7 +431,6 @@ class Main : AppCompatActivity() {
     fun hideSearch() {
         hideSearchResults()
     }
-
     private fun hideSearchResults() {
         lifecycleScope.launch {
             searching = false

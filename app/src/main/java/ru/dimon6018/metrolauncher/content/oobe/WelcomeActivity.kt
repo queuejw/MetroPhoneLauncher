@@ -2,6 +2,7 @@ package ru.dimon6018.metrolauncher.content.oobe
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.commit
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
@@ -17,6 +18,11 @@ class WelcomeActivity: AppCompatActivity() {
     private lateinit var binding: OobeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        when(PREFS.appTheme) {
+            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
         super.onCreate(savedInstanceState)
         binding = OobeBinding.inflate(layoutInflater)
         setContentView(binding.root)

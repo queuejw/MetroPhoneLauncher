@@ -425,7 +425,7 @@ class UpdateActivity: AppCompatActivity() {
             } catch (e: IOException) {
                 saveError(e.toString(), db!!)
                 PREFS.updateState = 5
-                    refreshUi()
+                refreshUi()
                 withContext(mainDispatcher) {
                     WPDialog(this@UpdateActivity).setTopDialog(true)
                         .setTitle(getString(R.string.error))

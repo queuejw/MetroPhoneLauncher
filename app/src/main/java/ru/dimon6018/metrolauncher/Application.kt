@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.color.DynamicColors
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
@@ -30,7 +29,6 @@ class Application : Application() {
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             @SuppressLint("SourceLockedOrientationActivity")
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
-                setNightMode()
                 activity.setTheme(launcherAccentTheme())
                 when(PREFS.orientation) {
                     "p" -> {
@@ -50,13 +48,6 @@ class Application : Application() {
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
             override fun onActivityDestroyed(activity: Activity) {}
         })
-    }
-    private fun setNightMode() {
-        when(PREFS.appTheme) {
-            0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
     }
     companion object {
         lateinit var PREFS: Prefs
