@@ -17,8 +17,8 @@ android {
         applicationId "ru.dimon6018.metrolauncher"
         minSdk 21
         targetSdk 35
-        versionCode 54
-        versionName "Exp. 7743"
+        versionCode 55
+        versionName "1.0 Pre-Alpha 5.1.2.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled false
@@ -65,6 +65,7 @@ dependencies {
 
     implementation 'com.github.shadowalker77:wp7progressbar:1.1.0'
     implementation 'io.coil-kt.coil3:coil:3.0.0-rc01'
+    implementation 'io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
    // testImplementation 'junit:junit:4.13.2'

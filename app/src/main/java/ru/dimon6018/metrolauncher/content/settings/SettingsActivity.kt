@@ -63,6 +63,7 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.expSetting to 225
         )
     }
+    private var dialogActivated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         when(PREFS.appTheme) {
@@ -77,12 +78,12 @@ class SettingsActivity : AppCompatActivity() {
         confTouchAnim()
         setOnClickers()
         applyWindowInsets(binding.root)
+        checkHome()
         prepareMessage()
         prepareTip()
-        checkHome()
     }
     private fun checkHome() {
-        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2) {
+        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2 && !dialogActivated) {
             isDialogEnabled = false
             WPDialog(this).setTopDialog(false)
                 .setTitle(getString(R.string.tip))
@@ -94,7 +95,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun prepareMessage() {
-        if(!PREFS.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.08 && PREFS.prefs.getBoolean("messageEnabled", true)) {
+        if(!PREFS.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.05 && PREFS.prefs.getBoolean("messageEnabled", true)) {
+            dialogActivated = true
             WPDialog(this).apply {
                 setTopDialog(true)
                 setTitle(getString(R.string.developer))
@@ -107,6 +109,9 @@ class SettingsActivity : AppCompatActivity() {
                 setNeutralButton(getString(R.string.not_show_again)) {
                     PREFS.prefs.edit().putBoolean("messageEnabled", false).apply()
                     dismiss()
+                }
+                setDismissListener {
+                    dialogActivated = false
                 }
                 show()
             }
@@ -186,18 +191,9 @@ class SettingsActivity : AppCompatActivity() {
         animatorSet.start()
     }
     private fun confTouchAnim() {
-        setViewInteractAnimation(binding.settingsInclude.themeSetting)
-        setViewInteractAnimation(binding.settingsInclude.allAppsSetting)
-        setViewInteractAnimation(binding.settingsInclude.tilesSetting)
-        setViewInteractAnimation(binding.settingsInclude.iconsSetting)
-        setViewInteractAnimation(binding.settingsInclude.animSetting)
-        setViewInteractAnimation(binding.settingsInclude.feedbackSetting)
-        setViewInteractAnimation(binding.settingsInclude.weatherSetting)
-        setViewInteractAnimation(binding.settingsInclude.updatesSetting)
-        setViewInteractAnimation(binding.settingsInclude.navbarSetting)
-        setViewInteractAnimation(binding.settingsInclude.aboutSetting)
-        setViewInteractAnimation(binding.settingsInclude.leaks)
-        setViewInteractAnimation(binding.settingsInclude.expSetting)
+        viewList.forEach {
+            setViewInteractAnimation(it.first)
+        }
     }
     private suspend fun startAnim() {
         if (PREFS.isTransitionAnimEnabled) {

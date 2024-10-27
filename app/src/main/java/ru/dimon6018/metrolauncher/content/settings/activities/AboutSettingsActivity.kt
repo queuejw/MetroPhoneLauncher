@@ -29,7 +29,7 @@ import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
 
-    private val caracalLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/916px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
+    private val caracalLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/1288px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
 
     private lateinit var binding: LauncherSettingsAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {

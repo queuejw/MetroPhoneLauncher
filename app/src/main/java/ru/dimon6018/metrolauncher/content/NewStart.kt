@@ -52,7 +52,6 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
-import ru.dimon6018.metrolauncher.Main.Companion.isDarkMode
 import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
 import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
@@ -342,26 +341,27 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     private fun pinApp(packageName: String) {
         lifecycleScope.launch(ioDispatcher) {
-            var dataList = mainViewModel.getTileDao().getTilesList()
-            var pos = 0
-            for (i in 0..<dataList.size) {
-                if (dataList[i].tileType == -1) {
-                    pos = i
-                    break
+            if(mAdapter != null) {
+                var pos = 0
+                for (i in 0..<mAdapter!!.list.size) {
+                    if (mAdapter!!.list[i].tileType == -1) {
+                        pos = i
+                        break
+                    }
                 }
-            }
-            val id = Random.nextLong(1000, 2000000)
-            val item = Tile(
-                pos, id, -1, 0,
-                isSelected = false,
-                tileSize = Utils.generateRandomTileSize(true),
-                tileLabel = activity?.packageManager?.getApplicationInfo(packageName, 0)?.loadLabel(requireActivity().packageManager!!).toString(),
-                tilePackage = packageName
-            )
-            mainViewModel.getTileDao().addTile(item)
-            dataList = mainViewModel.getTileDao().getTilesList()
-            withContext(mainDispatcher) {
-                mAdapter?.setData(dataList)
+                val id = Random.nextLong(1000, 2000000)
+                val item = Tile(
+                    pos, id, -1, 0,
+                    isSelected = false,
+                    tileSize = Utils.generateRandomTileSize(true),
+                    tileLabel = activity?.packageManager?.getApplicationInfo(packageName, 0)?.loadLabel(requireActivity().packageManager!!).toString(),
+                    tilePackage = packageName
+                )
+                mainViewModel.getTileDao().addTile(item)
+                val newDataList = mainViewModel.getTileDao().getTilesList()
+                withContext(mainDispatcher) {
+                    mAdapter!!.setData(newDataList)
+                }
             }
         }
     }
@@ -412,7 +412,7 @@ class NewStart: Fragment(), OnStartDragListener {
             duration += 10L
             holder.itemView.animate().rotationY(-110f).translationX(-1000f).translationY(-100f).setInterpolator(interpolator).setDuration(duration).start()
         }
-        delay(100)
+        delay(250)
         duration = 150L
         for(i in last downTo first) {
             if(tiles!![i] != tiles!![position]) continue
@@ -468,10 +468,6 @@ class NewStart: Fragment(), OnStartDragListener {
         val defaultTileType: Int = 0
         val spaceType: Int = -1
 
-        private val surfaceColor: Int by lazy {
-            if(isDarkMode) ContextCompat.getColor(context, android.R.color.background_dark)
-            else ContextCompat.getColor(context, android.R.color.background_light)
-        }
         private val accentColor: Int by lazy { Utils.launcherAccentColor(requireActivity().theme) }
 
         var isEditMode = false
@@ -500,9 +496,6 @@ class NewStart: Fragment(), OnStartDragListener {
             (requireActivity() as Main).configureViewPagerScroll(false)
             addCallback()
             binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
-            if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
-                binding.startFrame.setBackgroundColor(surfaceColor)
-            }
             isEditMode = true
             animateEditMode()
         }
@@ -511,9 +504,6 @@ class NewStart: Fragment(), OnStartDragListener {
             removeCallback()
             (requireActivity() as Main).configureViewPagerScroll(true)
             binding.startAppsTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
-            if(PREFS.isParallaxEnabled || !PREFS.isWallpaperUsed) {
-                binding.startFrame.background = null
-            }
             isEditMode = false
             stopEditModeAnimation()
         }

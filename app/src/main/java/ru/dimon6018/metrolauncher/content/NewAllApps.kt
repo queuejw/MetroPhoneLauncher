@@ -102,16 +102,13 @@ class NewAllApps: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = AllAppsScreenBinding.inflate(inflater, container, false)
-        val view = binding.root
         Log.d("AllApps", "Init")
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        binding.settingsBtn.setOnClickListener {
-            activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
-        }
-        if(!PREFS.isSettingsBtnEnabled) {
-            binding.settingsBtn.visibility = View.GONE
-        } else {
-            binding.settingsBtn.visibility = View.VISIBLE
+        binding.settingsBtn.apply {
+            visibility = if(!PREFS.isSettingsBtnEnabled) View.GONE else View.VISIBLE
+            setOnClickListener {
+                activity?.let { it.startActivity(Intent(it, SettingsActivity::class.java)) }
+            }
         }
         binding.searchBtn.setOnClickListener {
             searchFunction()
@@ -119,7 +116,7 @@ class NewAllApps: Fragment() {
         binding.searchBackBtn.setOnClickListener {
             disableSearch()
         }
-        return view
+        return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -137,11 +134,7 @@ class NewAllApps: Fragment() {
             setAlphabetRecyclerView(requireContext())
             if (PREFS.prefs.getBoolean("tip2Enabled", true)) {
                 withContext(mainDispatcher) {
-                    WPDialog(requireContext()).setTopDialog(true)
-                        .setTitle(getString(R.string.tip))
-                        .setMessage(getString(R.string.tip2))
-                        .setPositiveButton(getString(android.R.string.ok), null)
-                        .show()
+                    tipDialog()
                 }
                 PREFS.prefs.edit().putBoolean("tip2Enabled", false).apply()
             }
@@ -151,6 +144,13 @@ class NewAllApps: Fragment() {
             cancel("done")
         }
         registerBroadcast()
+    }
+    private fun tipDialog() {
+        WPDialog(requireContext()).setTopDialog(true)
+            .setTitle(getString(R.string.tip))
+            .setMessage(getString(R.string.tip2))
+            .setPositiveButton(getString(android.R.string.ok), null)
+            .show()
     }
     override fun onDestroyView() {
         super.onDestroyView()

@@ -29,7 +29,6 @@ class Prefs(context: Context) {
     private val autoPinPref = "autoPinApp"
     private val settingsBtnPref = "allAppsSettingsBtnEnabled"
     private val alphabetPref = "alphabetEnabled"
-    private val parallaxTilesPref = "parallaxEnabled"
     private val tilesTransparencyPref = "tilesTransparency"
     private val searchBarPref = "searchBarEnabled"
     private val bottomBarIconPref = "bottomBarIcon"
@@ -58,10 +57,6 @@ class Prefs(context: Context) {
     var isWallpaperUsed: Boolean
         get() = prefs.getBoolean(wallpaperPref, false)
         set(value) = prefs.edit().putBoolean(wallpaperPref, value).apply()
-
-    var isParallaxEnabled: Boolean
-        get() =  prefs.getBoolean(parallaxTilesPref, false)
-        set(value) = prefs.edit().putBoolean(parallaxTilesPref, value).apply()
 
     var isMoreTilesEnabled: Boolean
         get() =  prefs.getBoolean(showMoreTilesPref, false)
