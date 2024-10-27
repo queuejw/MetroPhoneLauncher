@@ -59,13 +59,13 @@ import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.databinding.SpaceBinding
-import ru.dimon6018.metrolauncher.databinding.StartScreenBinding
+import ru.dimon6018.metrolauncher.databinding.LauncherStartScreenBinding
+import ru.dimon6018.metrolauncher.databinding.SpaceTileBinding
 import ru.dimon6018.metrolauncher.databinding.TileBinding
-import ru.dimon6018.metrolauncher.helpers.ItemTouchCallback
-import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperAdapter
-import ru.dimon6018.metrolauncher.helpers.ItemTouchHelperViewHolder
-import ru.dimon6018.metrolauncher.helpers.OnStartDragListener
+import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchCallback
+import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperAdapter
+import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperViewHolder
+import ru.dimon6018.metrolauncher.helpers.dragndrop.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
@@ -74,7 +74,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
 import kotlin.random.Random
 
-class NewStart: Fragment(), OnStartDragListener {
+class Start: Fragment(), OnStartDragListener {
 
     private lateinit var mItemTouchHelper: ItemTouchHelper
 
@@ -93,7 +93,7 @@ class NewStart: Fragment(), OnStartDragListener {
 
     private lateinit var mainViewModel: MainViewModel
 
-    private var _binding: StartScreenBinding? = null
+    private var _binding: LauncherStartScreenBinding? = null
     private val binding get() = _binding!!
 
     private var lastItemPos: Int? = null
@@ -104,7 +104,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = StartScreenBinding.inflate(inflater, container, false)
+        _binding = LauncherStartScreenBinding.inflate(inflater, container, false)
         val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.startFrame.setOnClickListener {
@@ -146,7 +146,7 @@ class NewStart: Fragment(), OnStartDragListener {
         backCallback.remove()
     }
     private fun configureRecyclerView() {
-        binding.startAppsTiles.apply {
+        binding.startTiles.apply {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
             mItemTouchHelper.attachToRecyclerView(this)
@@ -199,7 +199,7 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onConfigurationChanged(newConfig)
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
         setupRecyclerViewLayoutManager(context)
-        binding.startAppsTiles.apply {
+        binding.startTiles.apply {
             layoutManager = mSpannedLayoutManager
         }
     }
@@ -221,8 +221,8 @@ class NewStart: Fragment(), OnStartDragListener {
     }
     override fun onResume() {
         if(!screenIsOn) {
-            if(binding.startAppsTiles.visibility == View.INVISIBLE) {
-                binding.startAppsTiles.visibility = View.VISIBLE
+            if(binding.startTiles.visibility == View.INVISIBLE) {
+                binding.startTiles.visibility = View.VISIBLE
             }
         }
         if(isAppOpened) {
@@ -246,8 +246,8 @@ class NewStart: Fragment(), OnStartDragListener {
         super.onPause()
         screenIsOn = isScreenOn(context)
         if(!screenIsOn) {
-            if(binding.startAppsTiles.visibility == View.VISIBLE) {
-                binding.startAppsTiles.visibility = View.INVISIBLE
+            if(binding.startTiles.visibility == View.VISIBLE) {
+                binding.startTiles.visibility = View.INVISIBLE
             }
         }
         mAdapter?.apply {
@@ -399,14 +399,14 @@ class NewStart: Fragment(), OnStartDragListener {
         }
     }
     private suspend fun enterToAppAnim(position: Int, packageName: String) {
-        binding.startAppsTiles.isScrollEnabled = false
+        binding.startTiles.isScrollEnabled = false
         val first = mSpannedLayoutManager!!.firstVisiblePosition
         val last = mSpannedLayoutManager!!.lastVisiblePosition
         val interpolator = AccelerateInterpolator()
         var duration = 175L
         for(i in last downTo first) {
             if(tiles!![i] == tiles!![position]) continue
-            val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+            val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
             if(holder.itemViewType == mAdapter!!.spaceType) continue
             delay(5)
             duration += 10L
@@ -416,9 +416,9 @@ class NewStart: Fragment(), OnStartDragListener {
         duration = 150L
         for(i in last downTo first) {
             if(tiles!![i] != tiles!![position]) continue
-            val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+            val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
             holder.itemView.animate().rotationY(-90f).translationX(-1000f).translationY(-100f).setInterpolator(interpolator).setDuration(duration).withEndAction {
-                binding.startAppsTiles.isScrollEnabled = true
+                binding.startTiles.isScrollEnabled = true
                 startApp(packageName)
             }
         }
@@ -428,7 +428,7 @@ class NewStart: Fragment(), OnStartDragListener {
         val last = mSpannedLayoutManager!!.lastVisiblePosition
         var duration = 300L
         for(i in last downTo first) {
-            val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+            val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
             delay(5)
             duration += 5L
             holder.itemView.animate().rotationY(0f).translationX(0f).translationY(0f).setInterpolator(AccelerateInterpolator()).setDuration(duration).start()
@@ -495,7 +495,7 @@ class NewStart: Fragment(), OnStartDragListener {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
             addCallback()
-            binding.startAppsTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
+            binding.startTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
             isEditMode = true
             animateEditMode()
         }
@@ -503,7 +503,7 @@ class NewStart: Fragment(), OnStartDragListener {
             Log.d("EditMode", "exit edit mode")
             removeCallback()
             (requireActivity() as Main).configureViewPagerScroll(true)
-            binding.startAppsTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
+            binding.startTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
             isEditMode = false
             stopEditModeAnimation()
         }
@@ -511,11 +511,10 @@ class NewStart: Fragment(), OnStartDragListener {
             val inflater = LayoutInflater.from(parent.context)
             return when(viewType) {
                 defaultTileType -> TileViewHolder(TileBinding.inflate(inflater, parent, false))
-                spaceType -> SpaceViewHolder(SpaceBinding.inflate(inflater, parent, false))
-                else -> SpaceViewHolder(SpaceBinding.inflate(inflater, parent, false))
+                spaceType -> SpaceViewHolder(SpaceTileBinding.inflate(inflater, parent, false))
+                else -> SpaceViewHolder(SpaceTileBinding.inflate(inflater, parent, false))
             }
         }
-
         override fun getItemCount(): Int {
             return list.size
         }
@@ -649,10 +648,10 @@ class NewStart: Fragment(), OnStartDragListener {
                 }
             }
         }
-        private fun showPopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
+        private fun showTilePopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
             holder.itemView.clearAnimation()
             holder.itemView.animate().translationX(0f).translationY(0f).start()
-            binding.startAppsTiles.isScrollEnabled = false
+            binding.startTiles.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(if(item.tileSize == "small" && PREFS.isMoreTilesEnabled) R.layout.tile_window_small else R.layout.tile_window, holder.itemView as ViewGroup, false)
             val width = holder.itemView.width
@@ -664,7 +663,7 @@ class NewStart: Fragment(), OnStartDragListener {
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.setOnDismissListener {
-                binding.startAppsTiles.isScrollEnabled = true
+                binding.startTiles.isScrollEnabled = true
                 editModeAnimate(holder.itemView)
             }
             popupWindow.showAsDropDown(holder.itemView, 0, -height, Gravity.CENTER)
@@ -729,14 +728,14 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         fun showSettingsBottomSheet(item: Tile, position: Int) {
             val bottomsheet = BottomSheetDialog(context)
-            bottomsheet.setContentView(R.layout.tile_bottomsheet)
+            bottomsheet.setContentView(R.layout.tile_settings_bottomsheet)
             bottomsheet.dismissWithAnimation = true
             val bottomSheetInternal = bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = context.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
-            configureBottomSheet(bottomSheetInternal, bottomsheet, item, position)
+            configureTileBottomSheet(bottomSheetInternal, bottomsheet, item, position)
             bottomsheet.show()
         }
-        private fun configureBottomSheet(bottomSheetInternal: View, bottomsheet: BottomSheetDialog, item: Tile, position: Int) {
+        private fun configureTileBottomSheet(bottomSheetInternal: View, bottomsheet: BottomSheetDialog, item: Tile, position: Int) {
             val label = bottomSheetInternal.findViewById<MaterialTextView>(R.id.appLabelSheet)
             val colorSub = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorSub)
             val removeColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorRemove)
@@ -806,7 +805,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun animateEditMode() {
             for (i in 0..itemCount) {
-                val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+                val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
                 if(holder.itemViewType == spaceType) continue
                 editModeAnimate(holder.itemView)
             }
@@ -831,7 +830,7 @@ class NewStart: Fragment(), OnStartDragListener {
         }
         private fun stopEditModeAnimation() {
             for (i in 0..itemCount) {
-                val holder = binding.startAppsTiles.findViewHolderForAdapterPosition(i) ?: continue
+                val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
                 if(holder.itemViewType == spaceType) continue
                 holder.itemView.clearAnimation()
                 holder.itemView.animate().translationY(0f).translationX(0f).setDuration(300).start()
@@ -893,7 +892,7 @@ class NewStart: Fragment(), OnStartDragListener {
             private fun handleClick() {
                 val item = list[absoluteAdapterPosition]
                 if (isEditMode) {
-                    showPopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
+                    showTilePopupWindow(this@TileViewHolder, item, absoluteAdapterPosition)
                 } else {
                     if(PREFS.isTilesAnimEnabled) {
                         lifecycleScope.launch {
@@ -921,7 +920,7 @@ class NewStart: Fragment(), OnStartDragListener {
         override fun onItemSelected() {}
         override fun onItemClear() {}
         }**/
-        inner class SpaceViewHolder(binding: SpaceBinding) : RecyclerView.ViewHolder(binding.root) {
+        inner class SpaceViewHolder(binding: SpaceTileBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
                 itemView.setOnClickListener {
                     if (isEditMode) {

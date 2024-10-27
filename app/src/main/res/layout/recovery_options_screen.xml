@@ -8,7 +8,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/refresh"
+        android:id="@+id/launcher_refresh_card"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         app:cardBackgroundColor="@android:color/transparent"
@@ -54,7 +54,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/browser"
+        android:id="@+id/open_browser_card"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="24dp"
@@ -101,7 +101,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/settingsSys"
+        android:id="@+id/system_settings_card"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="24dp"
@@ -148,7 +148,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/settingsLnch"
+        android:id="@+id/launcher_settings_card"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="24dp"
@@ -193,4 +193,4 @@
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+</LinearLayout>

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers
+package ru.dimon6018.metrolauncher.helpers.dragndrop
 
 interface ItemTouchHelperViewHolder {
     /**

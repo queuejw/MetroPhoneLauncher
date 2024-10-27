@@ -11,7 +11,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.tile.TileData
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
-import ru.dimon6018.metrolauncher.databinding.ResetBinding
+import ru.dimon6018.metrolauncher.databinding.ResetScreenBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import kotlin.system.exitProcess
 
@@ -23,7 +23,7 @@ class Reset : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ResetBinding.inflate(layoutInflater)
+        val binding = ResetScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         dbApps = TileData.getTileData(this)
         dbBsod = BSOD.getData(this)

@@ -7,8 +7,8 @@ import android.app.Application
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import com.google.android.material.color.DynamicColors
+import ru.dimon6018.metrolauncher.content.bsod.BsodDetector
 import ru.dimon6018.metrolauncher.content.data.Prefs
-import ru.dimon6018.metrolauncher.helpers.bsod.BsodDetector
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class Application : Application() {

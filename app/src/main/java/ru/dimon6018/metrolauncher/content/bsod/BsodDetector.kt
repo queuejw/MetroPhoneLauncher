@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers.bsod
+package ru.dimon6018.metrolauncher.content.bsod
 
 import android.annotation.SuppressLint
 import android.content.Context

@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers.bsod.recovery
+package ru.dimon6018.metrolauncher.content.bsod.recovery
 
 import android.Manifest
 import android.app.NotificationManager
@@ -14,31 +14,31 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.google.android.material.card.MaterialCardView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
+import ru.dimon6018.metrolauncher.databinding.RecoveryOptionsScreenBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.downloadUpdate
 
 class RecoveryOptions: AppCompatActivity() {
+
+    private lateinit var binding: RecoveryOptionsScreenBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        binding = RecoveryOptionsScreenBinding.inflate(layoutInflater)
         setTheme(R.style.bsod)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.recovery_options)
-        val refresh: MaterialCardView = findViewById(R.id.refresh)
-        val browser: MaterialCardView = findViewById(R.id.browser)
-        val sysSett: MaterialCardView = findViewById(R.id.settingsSys)
-        val lnhSett: MaterialCardView = findViewById(R.id.settingsLnch)
-        lnhSett.setOnClickListener {
+        setContentView(binding.root)
+        binding.launcherSettingsCard.setOnClickListener {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
-        sysSett.setOnClickListener {
+        binding.systemSettingsCard.setOnClickListener {
             startActivity(Intent(Settings.ACTION_SETTINGS))
         }
-        browser.setOnClickListener {
+        binding.openBrowserCard.setOnClickListener {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com/")))
         }
-        refresh.setOnClickListener {
+        binding.launcherRefreshCard.setOnClickListener {
             if(checkStoragePermissions()) {
                 if(areNotificationsEnabled(NotificationManagerCompat.from(this))) {
                     PREFS.reset()

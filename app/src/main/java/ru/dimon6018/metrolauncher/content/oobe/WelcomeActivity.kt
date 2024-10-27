@@ -9,13 +9,13 @@ import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.fragments.ConfigureFragment
 import ru.dimon6018.metrolauncher.content.oobe.fragments.WelcomeFragment
-import ru.dimon6018.metrolauncher.databinding.OobeBinding
+import ru.dimon6018.metrolauncher.databinding.OobeMainScreenBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 
 class WelcomeActivity: AppCompatActivity() {
 
-    private lateinit var binding: OobeBinding
+    private lateinit var binding: OobeMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         when(PREFS.appTheme) {
@@ -24,7 +24,7 @@ class WelcomeActivity: AppCompatActivity() {
             2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
         super.onCreate(savedInstanceState)
-        binding = OobeBinding.inflate(layoutInflater)
+        binding = OobeMainScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         applyWindowInsets(binding.coordinator)
         if (PREFS.launcherState != 2) {

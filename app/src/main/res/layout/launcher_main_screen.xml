@@ -1,0 +1,27 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinator"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/main_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone"/>
+
+    <!-- Bottom bar search results -->
+    <include
+        android:id="@+id/main_search_results"
+        layout="@layout/main_screen_search_results"/>
+    <!-- Bottom bar -->
+    <include
+        android:id="@+id/main_bottom_bar"
+        layout="@layout/main_screen_bottom_bar"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

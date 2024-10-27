@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_bar_results_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:layout_marginBottom="@dimen/navbarHeight"
+    android:visibility="gone"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="?attr/colorOnSurface"
+    app:cardCornerRadius="0dp"
+    app:strokeColor="?attr/colorPrimary"
+    app:strokeWidth="2dp"
+    app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/search_bar_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="false"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp" />
+</com.google.android.material.card.MaterialCardView>

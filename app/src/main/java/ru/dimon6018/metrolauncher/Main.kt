@@ -35,14 +35,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
-import ru.dimon6018.metrolauncher.content.NewAllApps
-import ru.dimon6018.metrolauncher.content.NewStart
+import ru.dimon6018.metrolauncher.content.AllApps
+import ru.dimon6018.metrolauncher.content.Start
 import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
-import ru.dimon6018.metrolauncher.databinding.MainScreenLaucnherBinding
-import ru.dimon6018.metrolauncher.helpers.IconPackManager
+import ru.dimon6018.metrolauncher.databinding.LauncherMainScreenBinding
+import ru.dimon6018.metrolauncher.helpers.iconpack.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.closeDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.initDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.loadIconFromDiskCache
@@ -80,7 +80,7 @@ class Main : AppCompatActivity() {
     private var bottomViewReady = false
     private var searching = false
 
-    private lateinit var binding: MainScreenLaucnherBinding
+    private lateinit var binding: LauncherMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         isDarkMode = resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
@@ -97,7 +97,7 @@ class Main : AppCompatActivity() {
             return
         }
 
-        binding = MainScreenLaucnherBinding.inflate(layoutInflater)
+        binding = LauncherMainScreenBinding.inflate(layoutInflater)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(binding.root)
 
@@ -158,8 +158,8 @@ class Main : AppCompatActivity() {
     private fun setupBackPressedDispatcher() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (binding.pager.currentItem != 0) {
-                    binding.pager.currentItem -= 1
+                if (binding.mainPager.currentItem != 0) {
+                    binding.mainPager.currentItem -= 1
                 } else if (searching && PREFS.isSearchBarEnabled) {
                     hideSearch()
                 }
@@ -168,7 +168,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        binding.pager.apply {
+        binding.mainPager.apply {
             adapter = pagerAdapter
             registerOnPageChangeCallback(createPageChangeCallback())
         }
@@ -185,8 +185,8 @@ class Main : AppCompatActivity() {
                     position == 0 -> accentColor to onSurfaceColor
                     else -> onSurfaceColor to accentColor
                 }
-                binding.navigationStartBtn.setColorFilter(startColor)
-                binding.navigationSearchBtn.setColorFilter(searchColor)
+                binding.mainBottomBar.navigationStartBtn.setColorFilter(startColor)
+                binding.mainBottomBar.navigationSearchBtn.setColorFilter(searchColor)
             }
         }
     }
@@ -221,7 +221,7 @@ class Main : AppCompatActivity() {
     }
 
     fun configureViewPagerScroll(enabled: Boolean) {
-        binding.pager.isUserInputEnabled = enabled
+        binding.mainPager.isUserInputEnabled = enabled
     }
 
     private suspend fun setMainViewModel() {
@@ -349,7 +349,7 @@ class Main : AppCompatActivity() {
     private fun setupNavigationBar() {
         if (bottomViewReady) return
         bottomViewReady = true
-        binding.navigation.setBackgroundColor(getNavBarColor())
+        binding.mainBottomBar.navigationFrame.setBackgroundColor(getNavBarColor())
         configureBottomBar()
     }
 
@@ -359,7 +359,7 @@ class Main : AppCompatActivity() {
             1 -> ContextCompat.getColor(this, android.R.color.background_light)
             2 -> accentColorFromPrefs(this)
             3 -> {
-                binding.navigation.visibility = View.GONE
+                binding.mainBottomBar.navigationFrame.visibility = View.GONE
                 return ContextCompat.getColor(this, android.R.color.transparent)
             }
             else -> launcherSurfaceColor(theme)
@@ -375,13 +375,13 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupNavigationBarButtons() {
-        binding.navigationMain.visibility = View.VISIBLE
-        binding.navigationStartBtn.apply {
+        binding.mainBottomBar.navigationMain.visibility = View.VISIBLE
+        binding.mainBottomBar.navigationStartBtn.apply {
             setImageDrawable(getNavBarIconDrawable())
-            setOnClickListener { binding.pager.setCurrentItem(0, true) }
+            setOnClickListener { binding.mainPager.setCurrentItem(0, true) }
         }
-        binding.navigationSearchBtn.setOnClickListener {
-            if (PREFS.isAllAppsEnabled) binding.pager.setCurrentItem(1, true)
+        binding.mainBottomBar.navigationSearchBtn.setOnClickListener {
+            if (PREFS.isAllAppsEnabled) binding.mainPager.setCurrentItem(1, true)
         }
     }
 
@@ -398,9 +398,9 @@ class Main : AppCompatActivity() {
 
     private fun setupSearchBar() {
         filteredList = mutableListOf()
-        binding.navigationSearchBar.visibility = View.VISIBLE
+        binding.mainBottomBar.searchBarLayout.visibility = View.VISIBLE
         searchAdapter = SearchAdapter(filteredList)
-        binding.searchBarRecyclerView.apply {
+        binding.mainSearchResults.searchBarRecyclerview.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = searchAdapter
         }
@@ -408,7 +408,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupSearchEditText() {
-        val editText = binding.searchBar.editText as? AutoCompleteTextView
+        val editText = binding.mainBottomBar.searchBar.editText as? AutoCompleteTextView
         editText?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 filterSearchText(s.toString(), mainViewModel.getAppList())
@@ -434,7 +434,7 @@ class Main : AppCompatActivity() {
     private fun hideSearchResults() {
         lifecycleScope.launch {
             searching = false
-            binding.searchBarResults.apply {
+            binding.mainSearchResults.searchBarResultsLayout.apply {
                 if (PREFS.isTransitionAnimEnabled) {
                     ObjectAnimator.ofFloat(this, "alpha", 1f, 0f).start()
                 }
@@ -445,7 +445,7 @@ class Main : AppCompatActivity() {
 
     private fun showSearchResults() {
         searching = true
-        binding.searchBarResults.apply {
+        binding.mainSearchResults.searchBarResultsLayout.apply {
             if (PREFS.isTransitionAnimEnabled) {
                 ObjectAnimator.ofFloat(this, "alpha", 0f, 1f).setDuration(100).start()
             }
@@ -482,9 +482,9 @@ class Main : AppCompatActivity() {
 
         override fun createFragment(position: Int): Fragment {
             return when {
-                !PREFS.isAllAppsEnabled -> NewStart()
-                position == 1 -> NewAllApps()
-                else -> NewStart()
+                !PREFS.isAllAppsEnabled -> Start()
+                position == 1 -> AllApps()
+                else -> Start()
             }
         }
     }

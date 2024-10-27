@@ -60,8 +60,8 @@ import ru.dimon6018.metrolauncher.content.data.app.App
 import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.databinding.AbcBinding
-import ru.dimon6018.metrolauncher.databinding.AllAppsScreenBinding
 import ru.dimon6018.metrolauncher.databinding.AppBinding
+import ru.dimon6018.metrolauncher.databinding.LauncherAllAppsScreenBinding
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -77,7 +77,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
 import kotlin.random.Random
 
-class NewAllApps: Fragment() {
+class AllApps: Fragment() {
 
     private lateinit var recyclerViewLM: LinearLayoutManager
     private lateinit var decor: IOverScrollDecor
@@ -96,12 +96,12 @@ class NewAllApps: Fragment() {
 
     private lateinit var mainViewModel: MainViewModel
 
-    private var _binding: AllAppsScreenBinding? = null
+    private var _binding: LauncherAllAppsScreenBinding? = null
     private val binding get() = _binding!!
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = AllAppsScreenBinding.inflate(inflater, container, false)
+        _binding = LauncherAllAppsScreenBinding.inflate(inflater, container, false)
         Log.d("AllApps", "Init")
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.settingsBtn.apply {

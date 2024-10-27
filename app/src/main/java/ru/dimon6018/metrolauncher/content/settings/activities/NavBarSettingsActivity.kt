@@ -12,7 +12,7 @@ import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsNavbarBinding
-import ru.dimon6018.metrolauncher.databinding.NavbarIconChooseBinding
+import ru.dimon6018.metrolauncher.databinding.SettingsNavbarIconChooseBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 class NavBarSettingsActivity: AppCompatActivity() {
@@ -158,7 +158,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
 
     fun iconsBottomSheet() {
         val bottomSheet = BottomSheetDialog(this)
-        val bBidding = NavbarIconChooseBinding.inflate(LayoutInflater.from(this))
+        val bBidding = SettingsNavbarIconChooseBinding.inflate(LayoutInflater.from(this))
         bottomSheet.setContentView(bBidding.root)
         bottomSheet.dismissWithAnimation = true
         bBidding.icon0.setOnClickListener {

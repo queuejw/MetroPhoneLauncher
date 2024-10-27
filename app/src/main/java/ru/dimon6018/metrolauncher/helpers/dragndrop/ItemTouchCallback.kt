@@ -1,12 +1,12 @@
-package ru.dimon6018.metrolauncher.helpers
+package ru.dimon6018.metrolauncher.helpers.dragndrop
 
 import android.util.Log
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.content.NewStart
+import ru.dimon6018.metrolauncher.content.Start
 
-class ItemTouchCallback(private val mAdapter: NewStart.NewStartAdapter) : ItemTouchHelper.Callback() {
+class ItemTouchCallback(private val mAdapter: Start.NewStartAdapter) : ItemTouchHelper.Callback() {
     override fun getMovementFlags(recyclerView: RecyclerView,
                                   viewHolder: RecyclerView.ViewHolder): Int {
         val dragFlags = ItemTouchHelper.UP or ItemTouchHelper.DOWN or

@@ -83,15 +83,15 @@
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.helpers.bsod.BsodScreen"
+            android:name="ru.dimon6018.metrolauncher.content.bsod.BsodScreen"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery"
+            android:name="ru.dimon6018.metrolauncher.content.bsod.recovery.Recovery"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.helpers.bsod.recovery.RecoveryOptions"
+            android:name="ru.dimon6018.metrolauncher.content.bsod.recovery.RecoveryOptions"
             android:exported="true">
         </activity>
         <activity

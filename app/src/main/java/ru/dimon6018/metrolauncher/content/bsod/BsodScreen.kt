@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers.bsod
+package ru.dimon6018.metrolauncher.content.bsod
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,8 +16,8 @@ import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.content.bsod.recovery.Recovery
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
-import ru.dimon6018.metrolauncher.helpers.bsod.recovery.Recovery
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.ANDROID_VERSION
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MODEL
@@ -36,7 +36,7 @@ class BsodScreen : AppCompatActivity() {
         PREFS.prefs.edit().putInt("crashCounter", counter).apply()
         setTheme(R.style.bsod)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.bsod)
+        setContentView(R.layout.bsod_screen)
         CoroutineScope(Dispatchers.IO).launch {
             db = BSOD.getData(this@BsodScreen)
             val model = "Model: $MODEL\n"

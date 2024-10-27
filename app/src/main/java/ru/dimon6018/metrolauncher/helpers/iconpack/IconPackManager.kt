@@ -1,4 +1,4 @@
-package ru.dimon6018.metrolauncher.helpers
+package ru.dimon6018.metrolauncher.helpers.iconpack
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,9 +17,7 @@ import android.graphics.drawable.Drawable
 import androidx.collection.SparseArrayCompat
 import androidx.core.content.res.ResourcesCompat
 import org.xmlpull.v1.XmlPullParser
-import org.xmlpull.v1.XmlPullParserException
 import org.xmlpull.v1.XmlPullParserFactory
-import java.io.IOException
 import java.util.Locale
 import java.util.Random
 
@@ -42,7 +40,7 @@ class IconPackManager(context: Context) {
         private fun load() {
             // load appfilter.xml from the icon pack package
             val pm = mContext.packageManager
-            try {
+            runCatching {
                 var xpp: XmlPullParser? = null
                 iconPackRes = pm.getResourcesForApplication(packageName!!)
                 val appFilterId = iconPackRes!!.getIdentifier("appfilter", "xml", packageName)
@@ -50,13 +48,13 @@ class IconPackManager(context: Context) {
                     xpp = iconPackRes!!.getXml(appFilterId)
                 } else {
                     // no resource found, try to open it from assests folder
-                    try {
+                    runCatching {
                         val appFilterStream = iconPackRes!!.assets.open("appfilter.xml")
                         val factory = XmlPullParserFactory.newInstance()
                         factory.isNamespaceAware = true
                         xpp = factory.newPullParser()
                         xpp.setInput(appFilterStream, "utf-8")
-                    } catch (_: IOException) {
+                    }.getOrElse {
                         //Ln.d("No appfilter.xml file");
                     }
                 }
@@ -111,12 +109,8 @@ class IconPackManager(context: Context) {
                     }
                 }
                 mLoaded = true
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            } catch (e: XmlPullParserException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
+            }.getOrElse {
+                it.printStackTrace()
             }
         }
 
@@ -133,9 +127,7 @@ class IconPackManager(context: Context) {
         @SuppressLint("DiscouragedApi")
         fun loadDrawable(drawableName: String): Drawable? {
             val id = iconPackRes!!.getIdentifier(drawableName, "drawable", packageName)
-            return if (id > 0) {
-                ResourcesCompat.getDrawable(iconPackRes!!, id, null)
-            } else null
+            return if (id > 0) ResourcesCompat.getDrawable(iconPackRes!!, id, null) else null
         }
 
         @SuppressLint("DiscouragedApi")
@@ -218,38 +210,35 @@ class IconPackManager(context: Context) {
 
                 // paint the bitmap with mask into the result
                 val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-                paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.DST_OUT))
-                mCanvas.drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
-                mCanvas.drawBitmap(mutableMask, 0f, 0f, paint)
-                paint.setXfermode(null)
+                paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+                mCanvas.apply {
+                    drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
+                    drawBitmap(mutableMask, 0f, 0f, paint)
+                }
+                paint.xfermode = null
             } else  // draw the scaled bitmap with the back image as mask
             {
                 maskCanvas.drawBitmap(backImage, 0f, 0f, Paint())
 
                 // paint the bitmap with mask into the result
                 val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-                paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.DST_IN))
-                mCanvas.drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
-                mCanvas.drawBitmap(mutableMask, 0f, 0f, paint)
-                paint.setXfermode(null)
+                paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+                mCanvas.apply {
+                    drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
+                    drawBitmap(mutableMask, 0f, 0f, paint)
+                }
+                paint.xfermode = null
             }
-
             // paint the front
-            if (mFrontImage != null) {
-                mCanvas.drawBitmap(mFrontImage!!, 0f, 0f, null)
-            }
-
+            if (mFrontImage != null) mCanvas.drawBitmap(mFrontImage!!, 0f, 0f, null)
             // store the bitmap in cache
             //BitmapCache.getInstance(mContext).putBitmap(key, result);
-
             // return it
             return result
         }
 
         override fun equals(other: Any?): Boolean {
-            return if (other is IconPack) {
-                other.packageName == packageName
-            } else false
+            return if (other is IconPack) other.packageName == packageName else false
         }
 
         override fun hashCode(): Int {
@@ -283,13 +272,10 @@ class IconPackManager(context: Context) {
                 val ip = IconPack()
                 ip.packageName = ri.activityInfo.packageName
                 var ai: ApplicationInfo
-                try {
+                runCatching {
                     ai = pm.getApplicationInfo(ip.packageName!!, PackageManager.GET_META_DATA)
                     ip.name = mContext.packageManager.getApplicationLabel(ai).toString()
                     if (!iconPacks!!.contains(ip)) iconPacks!!.add(ip)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    // shouldn't happen
-                    e.printStackTrace()
                 }
             }
         }
@@ -305,12 +291,10 @@ class IconPackManager(context: Context) {
         }
         if (iconPacks!!.contains(targetPack)) {
             val ai: ApplicationInfo
-            try {
+            runCatching {
                 ai = pm.getApplicationInfo(targetPack.packageName!!, PackageManager.GET_META_DATA)
                 targetPack.name = mContext.packageManager.getApplicationLabel(ai).toString()
                 return targetPack
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
             }
         }
         return null
