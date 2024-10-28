@@ -10,6 +10,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.icu.text.AlphabeticIndex
 import android.icu.text.UnicodeSet
 import android.icu.util.ULocale
@@ -44,6 +45,7 @@ import ru.dimon6018.metrolauncher.content.data.tile.Tile
 import ru.dimon6018.metrolauncher.content.data.tile.TileDao
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
+import java.io.File
 import java.util.Calendar
 import java.util.Locale
 import java.util.regex.Pattern
@@ -278,6 +280,7 @@ class Utils {
                 list.addAll(englishApps[header] ?: emptyList())
             }
             list.addAll(otherApps)
+            list.sortBy { it.appLabel }
             return list
         }
 
@@ -469,6 +472,52 @@ class Utils {
                 val read =
                     ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
+            }
+        }
+        fun getCustomFont(): Typeface? {
+            val path = PREFS.customFontPath
+            if(!PREFS.customFontInstalled || path == null) return null
+            return path.let {
+                val fontFile = File(it)
+                if (fontFile.exists()) {
+                    val typeface = Typeface.createFromFile(fontFile)
+                    typeface
+                } else {
+                    PREFS.customFontPath = null
+                    PREFS.customFontInstalled = false
+                    PREFS.customFontName = null
+                    null
+                }
+            }
+        }
+        fun getCustomLightFont(): Typeface? {
+            val path = PREFS.customLightFontPath
+            if (!PREFS.customFontInstalled || path == null) return null
+            return path.let {
+                val fontFile = File(it)
+                if (fontFile.exists()) {
+                    val typeface = Typeface.createFromFile(fontFile)
+                    typeface
+                } else {
+                    PREFS.customLightFontPath = null
+                    PREFS.customLightFontName = null
+                    null
+                }
+            }
+        }
+        fun getCustomBoldFont(): Typeface? {
+            val path = PREFS.customBoldFontPath
+            if (!PREFS.customFontInstalled || path == null) return null
+            return path.let {
+                val fontFile = File(it)
+                if (fontFile.exists()) {
+                    val typeface = Typeface.createFromFile(fontFile)
+                    typeface
+                } else {
+                    PREFS.customBoldFontPath = null
+                    PREFS.customBoldFontName = null
+                    null
+                }
             }
         }
     }

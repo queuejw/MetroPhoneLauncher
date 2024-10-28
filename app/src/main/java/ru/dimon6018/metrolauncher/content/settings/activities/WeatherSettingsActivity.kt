@@ -5,6 +5,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsWeatherBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
@@ -17,11 +19,20 @@ class WeatherSettingsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         applyWindowInsets(binding.root)
+        setupFont()
+    }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.weather.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

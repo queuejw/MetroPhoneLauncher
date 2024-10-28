@@ -9,7 +9,7 @@ MPL is still in development, but it already includes a range of features you mig
 
     🎨 A design closely mimicking the original Windows Phone.
     
-    🌀 Animations that are as similar as possible to Windows Phone animations.
+    🌀 Animations that are as similar as possible to Windows Phone animations (almost :) ).
     
     🌈 20 different colors to make your device unique and stylish.
     

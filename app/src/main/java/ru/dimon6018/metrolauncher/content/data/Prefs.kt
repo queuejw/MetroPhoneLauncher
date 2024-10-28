@@ -46,6 +46,13 @@ class Prefs(context: Context) {
     private val keyboardAutoSearchPref = "showKeyboardWhenOpeningAllApps"
     private val orientationPref = "orientation"
     private val coloredStrokePref = "coloredStroke"
+    private val customFontPref = "isCustomFontChosen"
+    private val customFontNamePref = "customFontName"
+    private val customFontPathPref = "customFontPath"
+    private val customLightFontPathPref = "customLightFontPath"
+    private val customLightFontNamePref = "customLightFontName"
+    private val customBoldFontPathPref = "customBoldFontPath"
+    private val customBoldFontNamePref = "customBoldFontName"
 
     init {
         prefs = context.getSharedPreferences(fileName, 0)
@@ -248,4 +255,32 @@ class Prefs(context: Context) {
     var coloredStroke: Boolean
         get() = prefs.getBoolean(coloredStrokePref, false)
         set(value) = prefs.edit().putBoolean(coloredStrokePref, value).apply()
+
+    var customFontInstalled: Boolean
+        get() = prefs.getBoolean(customFontPref, false)
+        set(value) = prefs.edit().putBoolean(customFontPref, value).apply()
+
+    var customFontPath: String?
+        get() = prefs.getString(customFontPathPref, null)
+        set(value) = prefs.edit().putString(customFontPathPref, value).apply()
+
+    var customFontName: String?
+        get() = prefs.getString(customFontNamePref, null)
+        set(value) = prefs.edit().putString(customFontNamePref, value).apply()
+
+    var customLightFontPath: String?
+        get() = prefs.getString(customLightFontPathPref, null)
+        set(value) = prefs.edit().putString(customLightFontPathPref, value).apply()
+
+    var customLightFontName: String?
+        get() = prefs.getString(customLightFontNamePref, null)
+        set(value) = prefs.edit().putString(customLightFontNamePref, value).apply()
+
+    var customBoldFontPath: String?
+        get() = prefs.getString(customBoldFontPathPref, null)
+        set(value) = prefs.edit().putString(customBoldFontPathPref, value).apply()
+
+    var customBoldFontName: String?
+        get() = prefs.getString(customBoldFontNamePref, null)
+        set(value) = prefs.edit().putString(customBoldFontNamePref, value).apply()
 }

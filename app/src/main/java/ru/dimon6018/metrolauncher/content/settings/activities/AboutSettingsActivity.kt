@@ -10,6 +10,8 @@ import androidx.core.view.WindowCompat
 import coil3.load
 import coil3.request.placeholder
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.Reset
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAboutBinding
@@ -39,6 +41,29 @@ class AboutSettingsActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets(binding.root)
         setupLayout()
+        if(PREFS.customFontInstalled) {
+            customFont?.let {
+                binding.settingsSectionLabel.typeface = it
+                binding.settingsInclude.phoneinfoLabel.typeface = it
+                binding.settingsInclude.queuejw.typeface = it
+                binding.settingsInclude.phoneinfo.typeface = it
+                binding.settingsInclude.phoneinfoMore.typeface = it
+                binding.settingsInclude.moreInfobtn.typeface = it
+                binding.settingsInclude.resetLauncher.typeface = it
+                binding.settingsInclude.restartLauncher.typeface = it
+                binding.settingsInclude.helpContactsLabel.typeface = it
+                binding.settingsInclude.getHelpText.typeface = it
+                binding.settingsInclude.emailText.typeface = it
+                binding.settingsInclude.onlineContactsText.typeface = it
+                binding.settingsInclude.getHelpText.typeface = it
+                binding.settingsInclude.githubText.typeface = it
+                binding.settingsInclude.telegramText.typeface = it
+                binding.settingsInclude.supportText.typeface = it
+            }
+            customBoldFont?.let {
+                binding.settingsLabel.typeface = it
+            }
+        }
     }
 
     private fun setupLayout() {
@@ -80,9 +105,7 @@ class AboutSettingsActivity : AppCompatActivity() {
         startActivity(intent)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

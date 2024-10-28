@@ -5,6 +5,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAnimationsBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
@@ -24,7 +26,27 @@ class AnimationSettingsActivity: AppCompatActivity() {
         if(isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
             WPDialog(this).setTopDialog(true).setTitle(getString(R.string.tip)).setMessage(getString(R.string.animations_dev_mode)).setPositiveButton(getString(android.R.string.ok), null).show()
         }
+        setupFont()
     }
+
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.additionalOptions.typeface = it
+            binding.settingsInclude.animations.typeface = it
+            binding.settingsInclude.tilesAnimCheckbox.typeface = it
+            binding.settingsInclude.liveTilesAnimCheckbox.typeface = it
+            binding.settingsInclude.liveTilesAnimCheckbox.typeface = it
+            binding.settingsInclude.transitionAnimCheckbox.typeface = it
+            binding.settingsInclude.alphabetAnimCheckbox.typeface = it
+            binding.settingsInclude.autoShutdownAnimsCheckbox.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
+    }
+
     private fun setupLayout() {
         binding.settingsInclude.tilesAnimCheckbox.apply {
             isChecked = PREFS.isTilesAnimEnabled

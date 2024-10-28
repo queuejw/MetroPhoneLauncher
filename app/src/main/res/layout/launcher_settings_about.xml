@@ -12,6 +12,7 @@
         android:backgroundTint="?android:attr/colorBackground">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/settings_label"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             app:fontFamily="@font/manrope_bold"
@@ -20,6 +21,7 @@
             android:textStyle="bold" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/settings_section_label"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="4dp"

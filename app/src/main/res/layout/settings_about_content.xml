@@ -11,6 +11,7 @@
             android:layout_height="wrap_content">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/phoneinfo_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -38,7 +39,8 @@
                 android:id="@+id/moreinfoLayout"
                 android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:visibility="gone">
+                android:layout_height="wrap_content"
+            android:visibility="gone">
             <com.google.android.material.textview.MaterialTextView
                     android:text="@string/phone_moreinfo"
                     android:layout_width="match_parent"
@@ -47,12 +49,14 @@
                     android:textSize="17sp"/>
         </LinearLayout>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/help_contacts_label"
                 android:text="@string/help_contacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/get_help_text"
                 android:text="@string/get_help"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,32 +64,38 @@
                 android:fontFamily="@font/manrope_medium"
                 android:textSize="17sp"/>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/email_text"
                 android:text="Email: dimon6018t@gmail.com"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/manrope_medium"
-                android:textSize="17sp" android:autoLink="email"/>
+                android:textSize="17sp"
+                android:autoLink="email"/>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/online_contacts_text"
                 android:text="@string/online_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:textSize="24sp"/>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/github_text"
                 android:text="GitHub: github.com/queuejw/metrophonelauncher/"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/manrope_medium"
                 android:textSize="17sp"
-            android:autoLink="web"/>
+                android:autoLink="web"/>
         <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/telegram_text"
                 android:text="Telegram: t.me/mplauncher"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/manrope_medium"
                 android:textSize="17sp"
-            android:autoLink="web"/>
+                android:autoLink="web"/>
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/support_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/manrope_light"

@@ -245,4 +245,17 @@
     <string name="default_orientation">default</string>
     <string name="colored_switch">Enable colored stroke on tiles</string>
     <string name="allow_notifications_recovery_error">Allow MPL to send notifications to continue.</string>
+    <string name="fonts">fonts</string>
+    <string name="current_font">current font: %s</string>
+    <string name="choose_font">choose font</string>
+    <string name="remove_font">remove font</string>
+    <string name="fonts_tip">change the default font</string>
+    <string name="fonts_tip_message">Get a font in ttf or otf format, and then select it in explorer to use that font in MPL.</string>
+    <string name="choose_light_font">choose light font</string>
+    <string name="current_light_font">current light font: %s</string>
+    <string name="current_bold_font">current bold font: %s</string>
+    <string name="choose_bold_font">choose bold font</string>
+    <string name="additional_fonts_tip">Ниже вы можете выбрать дополнительные шрифты, если они у Вас есть. Если нет, то будет использован текущий шрифт.</string>
+    <string name="remove_light_font">remove light font</string>
+    <string name="remove_bold_font">remove bold font</string>
 </resources>

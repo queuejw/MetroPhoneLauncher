@@ -246,4 +246,17 @@
     <string name="default_orientation">стандартно</string>
     <string name="colored_switch">Включить цветную обводку у плиток</string>
     <string name="allow_notifications_recovery_error">Разрешите MPL отправлять уведомления, чтобы продолжить.</string>
+    <string name="fonts">шрифты</string>
+    <string name="current_font">Сейчас установлен шрифт: %s</string>
+    <string name="choose_font">выбрать шрифт</string>
+    <string name="remove_font">удалить шрифт</string>
+    <string name="fonts_tip">измените стандартный шрифт</string>
+    <string name="fonts_tip_message">Получите шрифт в формате ttf или otf, а затем выберите его в проводнике, чтобы использовать этот шрифт в MPL.</string>
+    <string name="choose_light_font">выбрать light шрифт</string>
+    <string name="current_light_font">Текущий light шрифт: %s</string>
+    <string name="current_bold_font">Текущий bold шрифт: %s</string>
+    <string name="choose_bold_font">выбрать bold шрифт</string>
+    <string name="additional_fonts_tip">Ниже вы можете выбрать дополнительные шрифты, если они у Вас есть. Если нет, то будет использован текущий шрифт.</string>
+    <string name="remove_light_font">убрать light шрифт</string>
+    <string name="remove_bold_font">убрать bold шрифт</string>
 </resources>

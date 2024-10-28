@@ -20,6 +20,8 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.snackbar.Snackbar
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsThemeBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
@@ -41,10 +43,50 @@ class ThemeSettingsActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets(binding.root)
         prepareTip()
+        setupFont()
     }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.backgroundLabel.typeface = it
+            binding.settingsInclude.chooseTheme.typeface = it
+            binding.settingsInclude.chooseLight.typeface = it
+            binding.settingsInclude.chooseDark.typeface = it
+            binding.settingsInclude.chooseAuto.typeface = it
+            binding.settingsInclude.accentColorLabel.typeface = it
+            binding.settingsInclude.chosenAccentName.typeface = it
+            binding.settingsInclude.coloredStrokeLabel.typeface = it
+            binding.settingsInclude.coloredStrokeSwitch.typeface = it
+            binding.settingsInclude.dynamicColorLabel.typeface = it
+            binding.settingsInclude.dynamicColorSub.typeface = it
+            binding.settingsInclude.dynamicColorSwtich.typeface = it
+            binding.settingsInclude.wallpaperLabel.typeface = it
+            binding.settingsInclude.wallpaperSub.typeface = it
+            binding.settingsInclude.wallpaperShowSwitch.typeface = it
+            binding.settingsInclude.autoPinLabel.typeface = it
+            binding.settingsInclude.autoPinSub.typeface = it
+            binding.settingsInclude.newAppsToStartSwitch.typeface = it
+            binding.settingsInclude.moreTilesLabel.typeface = it
+            binding.settingsInclude.moreTilesSub.typeface = it
+            binding.settingsInclude.moreTilesSwitch.typeface = it
+            binding.settingsInclude.advancedOptions.typeface = it
+            binding.settingsInclude.blockStartLabel.typeface = it
+            binding.settingsInclude.blockStartSub.typeface = it
+            binding.settingsInclude.blockStartSwitch.typeface = it
+            binding.settingsInclude.screenOrientation.typeface = it
+            binding.settingsInclude.portraitOrientation.typeface = it
+            binding.settingsInclude.landscapeOrientation.typeface = it
+            binding.settingsInclude.defaultOrientation.typeface = it
+            binding.settingsInclude.accentTip.typeface = it
 
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
+    }
     private fun configure() {
-        binding.settingsInclude.choosedAccentName.text = accentName(this)
+        binding.settingsInclude.chosenAccentName.text = accentName(this)
         binding.settingsInclude.chooseTheme.apply {
             text = when (PREFS.appTheme) {
                 0 -> getString(R.string.auto)
@@ -82,7 +124,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
         binding.settingsInclude.moreTilesSwitch.apply {
             isChecked = PREFS.isMoreTilesEnabled
-            text = if (PREFS.isMoreTilesEnabled) getString(R.string.on) else getString(R.string.off)
+            text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.apply {
                     isMoreTilesEnabled = isChecked
@@ -113,15 +155,11 @@ class ThemeSettingsActivity : AppCompatActivity() {
             if (!DynamicColors.isDynamicColorAvailable()) {
                 isEnabled = false
             }
-            setChecked(PREFS.accentColor == 20)
-            text = if (PREFS.accentColor == 20) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.accentColor == 20
+            text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 if (DynamicColors.isDynamicColorAvailable()) {
-                    if (isChecked) {
-                        PREFS.accentColor = 20
-                    } else {
-                        PREFS.accentColor = PREFS.prefs.getInt("previous_accent_color", 5)
-                    }
+                    PREFS.accentColor = if (isChecked) 20 else PREFS.prefs.getInt("previous_accent_color", 5)
                     recreate()
                 } else {
                     Snackbar.make(
@@ -134,7 +172,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
         binding.settingsInclude.blockStartSwitch.apply {
             isChecked = PREFS.isStartBlocked
-            text = if (PREFS.isStartBlocked) getString(R.string.on) else getString(R.string.off)
+            text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isStartBlocked = isChecked
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
@@ -142,7 +180,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         }
         binding.settingsInclude.coloredStrokeSwitch.apply {
             isChecked = PREFS.coloredStroke
-            text = if (PREFS.coloredStroke) getString(R.string.on) else getString(R.string.off)
+            text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.coloredStroke = isChecked
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
@@ -179,9 +217,8 @@ class ThemeSettingsActivity : AppCompatActivity() {
     }
 
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
+
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

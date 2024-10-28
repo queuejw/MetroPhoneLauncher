@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/update_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alpha="0.7"
@@ -13,7 +14,7 @@
         android:textSize="19sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/cheking_updates_sub"
+        android:id="@+id/checking_updates_sub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"

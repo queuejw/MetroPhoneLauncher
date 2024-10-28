@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsIconBinding
 import ru.dimon6018.metrolauncher.helpers.iconpack.IconPackManager
@@ -49,8 +51,23 @@ class IconSettingsActivity: AppCompatActivity() {
         initView()
         setIconPacks()
         applyWindowInsets(binding.root)
+        setupFont()
     }
-
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsLabel.typeface = it
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsInclude.currentIconPackText.typeface = it
+            binding.settingsInclude.currentIconPackError.typeface = it
+            binding.settingsInclude.removeIconPack.typeface = it
+            binding.settingsInclude.chooseIconPack.typeface = it
+            binding.settingsInclude.downloadIconPacks.typeface = it
+            binding.settingsInclude.lawniconsMpl.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
+    }
     private fun createDialog() {
         dialog = WPDialog(this).setTopDialog(true)
             .setTitle(getString(R.string.tip))
@@ -147,9 +164,7 @@ class IconSettingsActivity: AppCompatActivity() {
         binding.settingsInclude.chooseIconPack.text =  if(isListVisible) getString(android.R.string.cancel) else getString(R.string.choose_icon_pack)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

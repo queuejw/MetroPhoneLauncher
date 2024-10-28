@@ -4,7 +4,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/animations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -61,6 +62,7 @@
         android:textSize="20sp" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/additional_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"

@@ -50,6 +50,7 @@
         android:text="@string/download_recommended"
         android:textSize="20sp" />
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/lawnicons_mpl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"

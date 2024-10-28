@@ -6,6 +6,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsTilesBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
@@ -19,7 +21,20 @@ class TileSettingsActivity: AppCompatActivity() {
         setContentView(binding.root)
         initView()
         applyWindowInsets(binding.root)
+        setupFont()
     }
+
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.tileTransparencyText.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
+    }
+
     private fun initView() {
         binding.settingsInclude.alphaSlider.apply {
             value = PREFS.tilesTransparency
@@ -34,9 +49,7 @@ class TileSettingsActivity: AppCompatActivity() {
         enterAnimation(false)
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

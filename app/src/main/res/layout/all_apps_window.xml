@@ -10,22 +10,22 @@
         app:enableEdgeToEdge="true"
         android:orientation="vertical"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:id="@+id/pinApp"
+            android:id="@+id/pin_app"
             app:cardCornerRadius="0dp"
             app:strokeWidth="0dp"
             android:layout_height="55dp"
             app:cardBackgroundColor="?attr/colorOnSurface"
             android:layout_marginTop="8dp">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pin_to_start"
-                android:textColor="?attr/colorSurface"
-                android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/pin_app_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_to_start"
+            android:textColor="?attr/colorSurface"
+            android:layout_marginStart="12dp"
+            android:textSize="25sp"/>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -34,14 +34,14 @@
             app:strokeWidth="0dp"
             android:layout_height="55dp"
             app:cardBackgroundColor="?attr/colorOnSurface">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:text="@string/app_info"
-                android:textColor="?attr/colorSurface"
-                android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/app_info_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_info"
+            android:textColor="?attr/colorSurface"
+            android:layout_marginStart="12dp"
+            android:textSize="25sp"/>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -50,12 +50,13 @@
             app:strokeWidth="0dp"
             android:layout_height="55dp"
             app:cardBackgroundColor="?attr/colorOnSurface">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/uninstall"
-                android:textColor="?attr/colorSurface"
-                android:layout_marginStart="12dp"
-                android:textSize="25sp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/uninstall_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/uninstall"
+            android:textColor="?attr/colorSurface"
+            android:layout_marginStart="12dp"
+            android:textSize="25sp"/>
     </com.google.android.material.card.MaterialCardView>
 </LinearLayout>

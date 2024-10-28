@@ -19,6 +19,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.data.bsod.BSODEntity
@@ -51,11 +53,20 @@ class FeedbackBsodListActivity: AppCompatActivity() {
                 }
             }
         }
+        setupFont()
+    }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
+
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
@@ -87,7 +98,16 @@ class FeedbackBsodListActivity: AppCompatActivity() {
     ) :
         RecyclerView.Adapter<BSODadapter.ViewHolder>() {
 
-        inner class ViewHolder(val holderBinding: BsodItemBinding) : RecyclerView.ViewHolder(holderBinding.root)
+        inner class ViewHolder(val holderBinding: BsodItemBinding) : RecyclerView.ViewHolder(holderBinding.root) {
+            init {
+                if(PREFS.customFontInstalled) {
+                    customFont?.let {
+                        holderBinding.date.typeface = it
+                        holderBinding.log.typeface = it
+                    }
+                }
+            }
+        }
 
         @SuppressLint("NotifyDataSetChanged")
         private fun updateList() {

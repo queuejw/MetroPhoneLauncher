@@ -6,12 +6,11 @@ import android.content.DialogInterface
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
+import ru.dimon6018.metrolauncher.databinding.WpdialogLayoutBinding
 
 /*
 *	Peter开发
@@ -35,6 +34,7 @@ class WPDialog(private val mContext: Context) {
     private var cancelButtonListener: View.OnClickListener? = null
     private var neutralListener: View.OnClickListener? = null
     private var dismissListener: DialogInterface.OnDismissListener? = null
+
     //Show方法
     fun show(): WPDialog {
         if(!isDarkMode) {
@@ -57,18 +57,22 @@ class WPDialog(private val mContext: Context) {
     }
     //创建
     private inner class Builder {
+
+        private lateinit var binding: WpdialogLayoutBinding
+
         init {
             if (onTop) {
                 defStyle = R.style.CustomDialogTop
             }
             wp = Dialog(mContext, defStyle)
             wp?.apply {
+                binding = WpdialogLayoutBinding.inflate(this.layoutInflater)
                 if (this.window != null) {
                     this.window!!.setFlags(
                         WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
                         WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
                 }
-                this.setContentView(R.layout.wpdialog_layout)
+                this.setContentView(binding.root)
                 val dialogWindow = this.window
                 val d = mContext.resources.displayMetrics
                 val p = dialogWindow!!.attributes
@@ -89,80 +93,44 @@ class WPDialog(private val mContext: Context) {
         private fun setCustomView(dialog: Dialog) {
             //控件实例化
             dialog.apply {
-                val wpTitle = findViewById<TextView>(R.id.wp_title)
-                val wpMessage = findViewById<TextView>(R.id.wp_message)
-                val wpOk = findViewById<TextView>(R.id.wp_ok)
-                val wpNeutral = findViewById<TextView>(R.id.wp_neutral)
-                val wpCancel = findViewById<TextView>(R.id.wp_cancel)
-                //布局
-                val layout = findViewById<LinearLayout>(R.id.wp_bg)
-                val okLayout = findViewById<LinearLayout>(R.id.wp_ok_bg)
-                val neutralLayout = findViewById<LinearLayout>(R.id.wp_neutral_bg)
-                val cancleLayout = findViewById<LinearLayout>(R.id.wp_cancle_bg)
-                val frame = findViewById<FrameLayout>(R.id.wp_view)
                 if (light) {
                     val wpBg = ContextCompat.getColor(mContext, R.color.wp_bg)
-                    layout.setBackgroundResource(R.color.wp_light_bg)
-                    okLayout.setBackgroundResource(R.color.wp_bg)
-                    neutralLayout.setBackgroundResource(R.color.wp_bg)
-                    cancleLayout.setBackgroundResource(R.color.wp_bg)
-                    wpOk.setBackgroundResource(R.drawable.dialog_background_light)
-                    wpNeutral.setBackgroundResource(R.drawable.dialog_background_light)
-                    wpCancel.setBackgroundResource(R.drawable.dialog_background_light)
-                    wpTitle.setTextColor(wpBg)
-                    wpMessage.setTextColor(wpBg)
-                    wpOk.setTextColor(wpBg)
-                    wpNeutral.setTextColor(wpBg)
-                    wpCancel.setTextColor(wpBg)
+                    binding.wpBg.setBackgroundResource(R.color.wp_light_bg)
+                    binding.wpOkBg.setBackgroundResource(R.color.wp_bg)
+                    binding.wpNeutralBg.setBackgroundResource(R.color.wp_bg)
+                    binding.wpCancleBg.setBackgroundResource(R.color.wp_bg)
+                    binding.wpOk.setBackgroundResource(R.drawable.dialog_background_light)
+                    binding.wpNeutral.setBackgroundResource(R.drawable.dialog_background_light)
+                    binding.wpCancel.setBackgroundResource(R.drawable.dialog_background_light)
+                    binding.wpTitle.setTextColor(wpBg)
+                    binding.wpMessage.setTextColor(wpBg)
+                    binding.wpOk.setTextColor(wpBg)
+                    binding.wpNeutral.setTextColor(wpBg)
+                    binding.wpCancel.setTextColor(wpBg)
                 }
-                if (mView != null) {
-                    mView!!.setPadding(10, 0, 10, 20)
-                    frame.addView(mView)
+                mView?.let { view ->
+                    view.setPadding(10, 0, 10, 20)
+                    binding.wpView.addView(view)
                 }
-                if (title.isEmpty()) {
-                    wpTitle.visibility = View.GONE
-                } else {
-                    wpTitle.text = title
+                if (title.isEmpty()) binding.wpTitle.visibility = View.GONE else binding.wpTitle.text = title
+                if (messageText.isEmpty()) binding.wpMessage.visibility = View.GONE else binding.wpMessage.text = messageText
+                if (okText.isEmpty()) binding.wpOkBg.visibility = View.GONE else binding.wpOk.text = okText
+                if (cancleText.isEmpty()) binding.wpCancleBg.visibility = View.GONE else binding.wpCancel.text = cancleText
+                if (neutral.isEmpty()) binding.wpNeutralBg.visibility = View.GONE else binding.wpNeutral.text = neutral
+                binding.wpOk.setOnClickListener(if (okButtonListener != null) okButtonListener else OnDialogButtonClickListener())
+                binding.wpCancel.setOnClickListener(if (cancelButtonListener != null) cancelButtonListener else OnDialogButtonClickListener())
+                binding.wpNeutral.setOnClickListener(if (neutralListener != null) neutralListener else OnDialogButtonClickListener())
+                if(dismissListener != null) setOnDismissListener(dismissListener)
+                if(PREFS.customFontInstalled) {
+                    customFont?.let { font ->
+                        binding.wpTitle.typeface = font
+                        binding.wpMessage.typeface = font
+                        binding.wpOk.typeface = font
+                        binding.wpNeutral.typeface = font
+                        binding.wpCancel.typeface = font
+                    }
                 }
-                if (messageText.isEmpty()) {
-                    wpMessage.visibility = View.GONE
-                } else {
-                    wpMessage.text = messageText
-                }
-                if (okText.isEmpty()) {
-                    okLayout.visibility = View.GONE
-                } else {
-                    wpOk.text = okText
-                }
-                if (cancleText.isEmpty()) {
-                    cancleLayout.visibility = View.GONE
-                } else {
-                    wpCancel.text = cancleText
-                }
-                if (neutral.isEmpty()) {
-                    neutralLayout.visibility = View.GONE
-                } else {
-                    wpNeutral.text = neutral
-                }
-                if (okButtonListener != null) {
-                    wpOk.setOnClickListener(okButtonListener)
-                } else {
-                    wpOk.setOnClickListener(OnDialogButtonClickListener())
-                }
-                if (cancelButtonListener != null) {
-                    wpCancel.setOnClickListener(cancelButtonListener)
-                } else {
-                    wpCancel.setOnClickListener(OnDialogButtonClickListener())
-                }
-                //
-                if (neutralListener != null) {
-                    wpNeutral.setOnClickListener(neutralListener)
-                } else {
-                    wpNeutral.setOnClickListener(OnDialogButtonClickListener())
-                }
-                if(dismissListener != null) {
-                    setOnDismissListener(dismissListener)
-                }
+
             }
         }
     }

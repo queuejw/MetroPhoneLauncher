@@ -12,6 +12,8 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.Prefs
 import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
@@ -33,8 +35,32 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         updateMaxLogsSize(binding.settingsInclude.save10bsod,2)
         updateMaxLogsSize(binding.settingsInclude.saveallbsods,3)
         applyWindowInsets(binding.root)
+        setupFont()
     }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.save1bsod.typeface = it
+            binding.settingsInclude.save5bsod.typeface = it
+            binding.settingsInclude.save10bsod.typeface = it
+            binding.settingsInclude.saveallbsods.typeface = it
+            binding.settingsInclude.showBsodInfo.typeface = it
+            binding.settingsInclude.deleteBsodInfo.typeface = it
+            binding.settingsInclude.sendFeedbackSwitch.typeface = it
+            binding.settingsInclude.showErrorDetailsOnBsodSwitch.typeface = it
+            binding.settingsInclude.feedbackLabel.typeface = it
+            binding.settingsInclude.sendFeedbackLabel.typeface = it
+            binding.settingsInclude.bsodDetailsLabel.typeface = it
+            binding.settingsInclude.text.typeface = it
+            binding.settingsInclude.numOfIssuesLabel.typeface = it
+            binding.settingsInclude.setCrashLogLimitBtn.typeface = it
 
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
+    }
     private fun initViews() {
         binding.settingsInclude.showBsodInfo.setOnClickListener {
             startActivity(Intent(this, FeedbackBsodListActivity::class.java))
@@ -87,9 +113,8 @@ class FeedbackSettingsActivity: AppCompatActivity()  {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
+
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

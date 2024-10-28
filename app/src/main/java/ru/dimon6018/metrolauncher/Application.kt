@@ -5,10 +5,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.pm.ActivityInfo
+import android.graphics.Typeface
 import android.os.Bundle
 import com.google.android.material.color.DynamicColors
 import ru.dimon6018.metrolauncher.content.bsod.BsodDetector
 import ru.dimon6018.metrolauncher.content.data.Prefs
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getCustomBoldFont
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getCustomFont
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getCustomLightFont
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTheme
 
 class Application : Application() {
@@ -25,6 +29,9 @@ class Application : Application() {
         if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this)
         }
+        setupCustomFont()
+        setupCustomLightFont()
+        setupCustomBoldFont()
         super.onCreate()
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             @SuppressLint("SourceLockedOrientationActivity")
@@ -51,9 +58,23 @@ class Application : Application() {
     }
     companion object {
         lateinit var PREFS: Prefs
-        //var EXP_PREFS: ExperimentPrefs? = null
+       // var EXP_PREFS: ExperimentPrefs? = null
         var isUpdateDownloading = false
         var isAppOpened = false
         var isStartMenuOpened = false
+
+        var customFont: Typeface? = null
+        var customLightFont: Typeface? = null
+        var customBoldFont: Typeface? = null
+
+        fun setupCustomFont() {
+            customFont = getCustomFont()
+        }
+        fun setupCustomLightFont() {
+            customLightFont = getCustomLightFont()
+        }
+        fun setupCustomBoldFont() {
+            customBoldFont = getCustomBoldFont()
+        }
     }
 }

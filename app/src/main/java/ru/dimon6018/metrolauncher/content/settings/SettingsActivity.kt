@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,12 +20,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import leakcanary.LeakCanary
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
+import ru.dimon6018.metrolauncher.Application.Companion.customLightFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.AnimationSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity
+import ru.dimon6018.metrolauncher.content.settings.activities.FontsSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity
@@ -53,7 +58,8 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.allAppsSetting to 205,
             binding.settingsInclude.tilesSetting to 210,
             binding.settingsInclude.iconsSetting to 215,
-            binding.settingsInclude.animSetting to 220,
+            binding.settingsInclude.fontSetting to 215,
+            binding.settingsInclude.animSetting to 225,
             binding.settingsInclude.feedbackSetting to 225,
             binding.settingsInclude.weatherSetting to 225,
             binding.settingsInclude.updatesSetting to 225,
@@ -61,6 +67,42 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.aboutSetting to 225,
             binding.settingsInclude.leaks to 225,
             binding.settingsInclude.expSetting to 225
+        )
+    }
+    private val regularTextViewList: List<MaterialTextView> by lazy {
+        listOf(
+            binding.settingsLabel,
+            binding.settingsInclude.startThemeLabel,
+            binding.settingsInclude.allAppsListLabel,
+            binding.settingsInclude.tilesLabel,
+            binding.settingsInclude.iconPacksLabel,
+            binding.settingsInclude.fontsLabel,
+            binding.settingsInclude.animationsLabel,
+            binding.settingsInclude.feedbackLabel,
+            binding.settingsInclude.weatherLabel,
+            binding.settingsInclude.updatesLabel,
+            binding.settingsInclude.navigationLabel,
+            binding.settingsInclude.aboutLabel,
+            binding.settingsInclude.leackcanaryLabel,
+            binding.settingsInclude.expLabel
+        )
+    }
+    private val lightTextViewList: List<MaterialTextView> by lazy {
+        listOf(
+            binding.settings,
+            binding.settingsInclude.themeSub,
+            binding.settingsInclude.allAppsSub,
+            binding.settingsInclude.tilesSettingSub,
+            binding.settingsInclude.iconsSub,
+            binding.settingsInclude.fontsSub,
+            binding.settingsInclude.animationsSub,
+            binding.settingsInclude.feedbackSub,
+            binding.settingsInclude.weatherSub,
+            binding.settingsInclude.updatesSub,
+            binding.settingsInclude.navbarSub,
+            binding.settingsInclude.aboutSub,
+            binding.settingsInclude.leakcanarySub,
+            binding.settingsInclude.expSub
         )
     }
     private var dialogActivated = false
@@ -81,6 +123,28 @@ class SettingsActivity : AppCompatActivity() {
         checkHome()
         prepareMessage()
         prepareTip()
+        setupFont()
+    }
+    private fun setupFont() {
+        regularTextViewList.forEach {
+            customFont?.let { font ->
+                it.typeface = font
+            }
+        }
+        lightTextViewList.forEach {
+            if(PREFS.customLightFontPath != null) {
+                customLightFont?.let { font ->
+                    it.typeface = font
+                }
+            } else {
+                customFont?.let { font ->
+                    it.typeface = font
+                }
+            }
+        }
+        customBoldFont?.let {
+            binding.settings.typeface = it
+        }
     }
     private fun checkHome() {
         if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2 && !dialogActivated) {
@@ -156,6 +220,7 @@ class SettingsActivity : AppCompatActivity() {
         setClickListener(binding.settingsInclude.expSetting, Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
         setClickListener(binding.settingsInclude.leaks, LeakCanary.newLeakDisplayActivityIntent())
         setClickListener(binding.settingsInclude.animSetting, Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
+        setClickListener(binding.settingsInclude.fontSetting, Intent(this@SettingsActivity, FontsSettingsActivity::class.java))
     }
     private fun setClickListener(view: View, intent: Intent) {
         view.setOnClickListener {
@@ -241,6 +306,11 @@ class SettingsActivity : AppCompatActivity() {
             3 -> getString(R.string.hide_navbar)
             4 -> getString(R.string.auto)
             else -> getString(R.string.navigation_bar_2)
+        }
+        binding.settingsInclude.fontsSub.text = runCatching {
+            if(!PREFS.customFontInstalled) getString(R.string.fonts_tip) else PREFS.customFontName
+        }.getOrElse {
+            getString(R.string.fonts_tip)
         }
         binding.settingsInclude.iconsSub.text = runCatching {
             if (PREFS.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub)

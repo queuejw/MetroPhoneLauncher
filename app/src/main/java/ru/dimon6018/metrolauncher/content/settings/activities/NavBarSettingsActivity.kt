@@ -10,6 +10,8 @@ import androidx.core.view.WindowCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.slider.Slider
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsNavbarBinding
 import ru.dimon6018.metrolauncher.databinding.SettingsNavbarIconChooseBinding
@@ -49,6 +51,29 @@ class NavBarSettingsActivity: AppCompatActivity() {
             addOnChangeListener(Slider.OnChangeListener { _: Slider?, value: Float, _: Boolean ->
                 PREFS.maxResultsSearchBar = value.toInt()
             })
+        }
+        setupFont()
+    }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.navigationBar.typeface = it
+            binding.settingsInclude.auto.typeface = it
+            binding.settingsInclude.alwaysDark.typeface = it
+            binding.settingsInclude.alwaysLight.typeface = it
+            binding.settingsInclude.byTheme.typeface = it
+            binding.settingsInclude.hidden.typeface = it
+            binding.settingsInclude.additionalOptions.typeface = it
+            binding.settingsInclude.currentIconText.typeface = it
+            binding.settingsInclude.chooseStartIconBtn.typeface = it
+            binding.settingsInclude.searchBarLabel.typeface = it
+            binding.settingsInclude.useSearchBarLabel.typeface = it
+            binding.settingsInclude.searchBarSwitch.typeface = it
+            binding.settingsInclude.maxResultsLabel.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
         }
     }
     private fun setNavBarColorRadioGroup() {
@@ -107,9 +132,8 @@ class NavBarSettingsActivity: AppCompatActivity() {
         })
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
+
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

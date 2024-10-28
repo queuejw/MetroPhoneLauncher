@@ -25,6 +25,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.Application.Companion.isUpdateDownloading
 import ru.dimon6018.metrolauncher.BuildConfig
 import ru.dimon6018.metrolauncher.R
@@ -64,6 +66,25 @@ class UpdateActivity: AppCompatActivity() {
         setOnClickers()
         applyWindowInsets(binding.root)
         prepareTip()
+        setupFont()
+    }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.updateStatus.typeface = it
+            binding.settingsInclude.checkingUpdatesSub.typeface = it
+            binding.settingsInclude.progessText.typeface = it
+            binding.settingsInclude.updateInfo.typeface = it
+            binding.settingsInclude.cancelButton.typeface = it
+            binding.settingsInclude.checkForUpdatesBtn.typeface = it
+            binding.settingsInclude.UpdateNotifyCheckBox.typeface = it
+            binding.settingsInclude.AutoUpdateCheckBox.typeface = it
+
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
     }
     private fun init() {
         db = BSOD.getData(this)
@@ -75,11 +96,7 @@ class UpdateActivity: AppCompatActivity() {
         }
         binding.settingsInclude.UpdateNotifyCheckBox.setOnCheckedChangeListener { _, isChecked ->
             PREFS.isUpdateNotificationEnabled = isChecked
-            if (isChecked) {
-                UpdateWorker.scheduleWork(this)
-            } else {
-                UpdateWorker.stopWork(this)
-            }
+            if (isChecked) UpdateWorker.scheduleWork(this) else UpdateWorker.stopWork(this)
             refreshUi()
         }
         binding.settingsInclude.updateInfo.setOnClickListener {
@@ -139,9 +156,7 @@ class UpdateActivity: AppCompatActivity() {
             deleteUpdateFile(this)
             refreshUi()
         }
-        if(PREFS.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions(this)) {
-            showPermsDialog()
-        }
+        if(PREFS.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions(this)) showPermsDialog()
     }
     private fun prepareTip() {
         if(PREFS.prefs.getBoolean("tipSettingsUpdatesEnabled", true)) {
@@ -154,9 +169,7 @@ class UpdateActivity: AppCompatActivity() {
         }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
@@ -239,7 +252,7 @@ class UpdateActivity: AppCompatActivity() {
             1 -> {
                 //checking for updates state
                 binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.checking_for_updates)
                 }
@@ -249,7 +262,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             2 -> {
                 // dowloading state
-                binding.settingsInclude.chekingUpdatesSub.visibility = View.GONE
+                binding.settingsInclude.checkingUpdatesSub.visibility = View.GONE
                 binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
                 binding.settingsInclude.updateIndicator.visibility = View.VISIBLE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
@@ -264,7 +277,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             3 -> {
                 // up to date
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.up_to_date)
                 }
@@ -278,7 +291,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             4 -> {
                 // ready to install
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.ready_to_install)
                 }
@@ -292,7 +305,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             5 -> {
                 // error
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.update_failed)
                 }
@@ -306,7 +319,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             6 -> {
                 // ready for download
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.ready_to_download)
                 }
@@ -320,7 +333,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             7 -> {
                 // BETA is ready for download
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.ready_to_download_beta)
                 }
@@ -334,7 +347,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             8 -> {
                 // current version is newer
-                binding.settingsInclude.chekingUpdatesSub.apply {
+                binding.settingsInclude.checkingUpdatesSub.apply {
                     visibility = View.VISIBLE
                     text = getString(R.string.update_failed_version_bigger_than_server)
                 }
@@ -352,7 +365,7 @@ class UpdateActivity: AppCompatActivity() {
                     visibility = View.VISIBLE
                     text = getString(R.string.check_for_updates)
                 }
-                binding.settingsInclude.chekingUpdatesSub.visibility = View.GONE
+                binding.settingsInclude.checkingUpdatesSub.visibility = View.GONE
                 binding.settingsInclude.updateIndicator.visibility = View.GONE
                 binding.settingsInclude.updateInfo.visibility = View.GONE
                 binding.settingsInclude.cancelButton.visibility = View.GONE
@@ -360,7 +373,7 @@ class UpdateActivity: AppCompatActivity() {
         }
         if(!BuildConfig.UPDATES_ACITVE) {
             binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
-            binding.settingsInclude.chekingUpdatesSub.apply {
+            binding.settingsInclude.checkingUpdatesSub.apply {
                 visibility = View.VISIBLE
                 text = getString(R.string.updates_disabled)
             }

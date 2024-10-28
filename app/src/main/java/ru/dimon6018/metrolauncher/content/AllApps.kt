@@ -51,6 +51,8 @@ import kotlinx.coroutines.withContext
 import me.everything.android.ui.overscroll.IOverScrollDecor
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
+import ru.dimon6018.metrolauncher.Application.Companion.customLightFont
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
@@ -115,6 +117,10 @@ class AllApps: Fragment() {
         }
         binding.searchBackBtn.setOnClickListener {
             disableSearch()
+        }
+        if(PREFS.customFontInstalled) customFont?.let {
+            binding.searchTextview.typeface = it
+            binding.noResults.typeface = it
         }
         return binding.root
     }
@@ -541,6 +547,7 @@ class AllApps: Fragment() {
                 itemView.setOnClickListener {
                     showAlphabet()
                 }
+                if(PREFS.customFontInstalled) customFont?.let { binding.abcLabel.typeface = it }
             }
         }
         inner class AppHolder(val binding: AppBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -560,6 +567,7 @@ class AllApps: Fragment() {
                     showPopupWindow(itemView, list[absoluteAdapterPosition])
                     true
                 }
+                if(PREFS.customFontInstalled) customFont?.let { binding.appLabel.typeface = it }
             }
             private fun visualFeedback(view: View?) {
                 if(view != null) {
@@ -629,6 +637,16 @@ class AllApps: Fragment() {
             popupWindow?.animationStyle = R.style.enterStyle
             popupView.pivotY = 1f
 
+            val pinLabel = popupView.findViewById<MaterialTextView>(R.id.pin_app_label)
+            val infoLabel = popupView.findViewById<MaterialTextView>(R.id.app_info_label)
+            val uninstallLabel = popupView.findViewById<MaterialTextView>(R.id.uninstall_label)
+
+            (if(PREFS.customLightFontPath != null) customLightFont else customFont).let {
+                pinLabel.typeface = it
+                infoLabel.typeface = it
+                uninstallLabel.typeface = it
+            }
+
             val anim = ObjectAnimator.ofFloat(popupView, "scaleY", 0f, 0.01f)
             val anim2 = ObjectAnimator.ofFloat(popupView, "scaleX", 0f, 1f)
             val anim3 = ObjectAnimator.ofFloat(popupView, "scaleY", 0.01f, 1f)
@@ -647,9 +665,9 @@ class AllApps: Fragment() {
             PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.CENTER)
             isWindowVisible = true
 
-            val pin = popupView.findViewById<MaterialCardView>(R.id.pinApp)
-            val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
+            val pin = popupView.findViewById<MaterialCardView>(R.id.pin_app)
             val info = popupView.findViewById<MaterialCardView>(R.id.infoApp)
+            val uninstall = popupView.findViewById<MaterialCardView>(R.id.uninstallApp)
 
             var isAppAlreadyPinned = false
             lifecycleScope.launch(defaultDispatcher) {
@@ -923,6 +941,7 @@ class AllApps: Fragment() {
 
         init {
             itemView.layoutParams = params
+            if(PREFS.customFontInstalled) customFont?.let { textView.typeface = it }
         }
     }
 }

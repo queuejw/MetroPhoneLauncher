@@ -17,7 +17,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="10dp"
         android:textColor="?attr/colorSurface"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/editTileColor"
@@ -105,7 +104,8 @@
                             app:tint="?attr/colorSurface" />
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
-            </LinearLayout></LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
@@ -123,6 +123,7 @@
             android:orientation="vertical">
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/choose_tile_color"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -164,7 +165,7 @@
         android:id="@+id/appInfo"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="50dp"
         app:cardBackgroundColor="?attr/colorOnSurface"
         app:cardCornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -173,6 +174,7 @@
         app:strokeWidth="0dp">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/app_info_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -195,6 +197,7 @@
         app:strokeWidth="0dp">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/uninstall_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"

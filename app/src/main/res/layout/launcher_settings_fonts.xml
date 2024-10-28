@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:singleLine="true"
             android:ellipsize="none"
-            android:text="@string/all_apps_list"
+            android:text="@string/fonts"
             android:textSize="52sp"
             android:layout_marginStart="4dp" />
 
@@ -40,7 +40,7 @@
 
         <include
             android:id="@+id/settings_include"
-            layout="@layout/settings_allapps_content"/>
+            layout="@layout/settings_fonts_content"/>
 
     </androidx.core.widget.NestedScrollView>
 

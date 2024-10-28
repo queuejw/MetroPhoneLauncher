@@ -4,22 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/settingsBtnInAllApps"
+        android:id="@+id/settings_button_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="12dp"
-        android:textSize="20sp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/settingsBtnInAllApps"
+        android:textSize="20sp" />
+
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/settingsBtnInAllApps_sub"
+        android:id="@+id/settings_button_label_switch"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:text="@string/settingsBtnInAllApps_sub"
+        android:textSize="18sp" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/settingsBtnSwitch"
@@ -28,22 +32,26 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="4dp"
         android:textSize="24sp" />
+
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/alphabetSetting"
+        android:id="@+id/alphabet_setting_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="32dp"
-        android:textSize="20sp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"/>
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/alphabetSetting"
+        android:textSize="20sp" />
+
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/alphabetSetting_sub"
+        android:id="@+id/alphabet_setting_label_switch"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:text="@string/alphabetSetting_sub"
+        android:textSize="18sp" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/alphabetSwitch"
@@ -54,12 +62,13 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/keyboard_when_searching"
+        android:id="@+id/alphabet_setting_keyboard_label"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:text="@string/keyboard_when_searching"
+        android:textSize="18sp" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/keyboardWhenSearchingSwitch"
@@ -70,20 +79,22 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/additional_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
         android:layout_marginTop="16dp"
         android:alpha="0.7"
-        android:text="@string/navigation_bar_3"/>
+        android:text="@string/navigation_bar_3"
+        android:textSize="18sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/disable_all_apps"
+        android:id="@+id/show_screen_all_apps_label"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:text="@string/disable_all_apps"
+        android:textSize="18sp" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/disableAllAppsSwitch"
@@ -94,12 +105,13 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:text="@string/auto_show_keyboard_allapps"
+        android:id="@+id/auto_search_label"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
+        android:text="@string/auto_show_keyboard_allapps"
+        android:textSize="18sp" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
         android:id="@+id/keyboardWhenAllAppsOpened"

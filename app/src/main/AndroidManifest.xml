@@ -118,6 +118,10 @@
             android:name="ru.dimon6018.metrolauncher.content.settings.activities.AnimationSettingsActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FontsSettingsActivity"
+            android:exported="true">
+        </activity>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"

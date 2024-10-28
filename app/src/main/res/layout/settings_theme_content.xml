@@ -22,6 +22,7 @@
                                 android:textSize="20sp" />
                 </LinearLayout>
                 <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/background_label"
                         android:text="@string/background"
                         android:layout_marginTop="24dp"
                         android:layout_width="match_parent"
@@ -79,12 +80,14 @@
                             android:textSize="22sp"
                             android:id="@+id/chooseAuto"/>
                 </com.google.android.material.card.MaterialCardView>
+
                 <com.google.android.material.textview.MaterialTextView
-                        android:text="@string/accent_color"
-                        android:layout_marginTop="42dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="20sp"/>
+                    android:id="@+id/accent_color_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="42dp"
+                    android:text="@string/accent_color"
+                    android:textSize="20sp" />
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/chooseAccent"
                     android:layout_width="match_parent"
@@ -107,7 +110,7 @@
                                     android:layout_gravity="center"/>
 
                                 <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/choosedAccentName"
+                                    android:id="@+id/chosenAccentName"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
@@ -121,6 +124,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/colored_stroke_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -138,16 +142,18 @@
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/dynamicColor_setting"
+                    android:id="@+id/dynamic_color_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="24dp"
-                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/dynamicColor_setting"
+                    android:textSize="20sp" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/dynamic_color_sub"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -165,22 +171,24 @@
                     android:textSize="24sp"/>
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/wallpaper_setting"
+                    android:id="@+id/wallpaper_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="54dp"
-                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="54dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/wallpaper_setting"
+                    android:textSize="20sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/wallpaper_switch"
+                    android:id="@+id/wallpaper_sub"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
+                    android:text="@string/wallpaper_switch"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/wallpaperShowSwitch"
@@ -191,21 +199,24 @@
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/newAppsToStart"
+                    android:id="@+id/auto_pin_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="54dp"
-                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="54dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/newAppsToStart"
+                    android:textSize="20sp" />
+
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/newAppsToStart_sub"
+                    android:id="@+id/auto_pin_sub"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
+                    android:text="@string/newAppsToStart_sub"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/newAppsToStartSwitch"
@@ -216,21 +227,24 @@
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/more_tiles_desc"
+                    android:id="@+id/more_tiles_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="32dp"
-                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/more_tiles_desc"
+                    android:textSize="20sp" />
+
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/show_more_tiles"
+                    android:id="@+id/more_tiles_sub"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
+                    android:text="@string/show_more_tiles"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/moreTilesSwitch"
@@ -245,30 +259,33 @@
                     android:layout_height="@dimen/themeSettingsImgSize" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/advanced_options"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
                     android:layout_marginTop="16dp"
                     android:alpha="0.7"
-                    android:text="@string/navigation_bar_3"/>
+                    android:text="@string/navigation_bar_3"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/block_start_tip"
+                    android:id="@+id/block_start_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="16dp"
-                    android:textSize="20sp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/block_start_tip"
+                    android:textSize="20sp" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:text="@string/block_start"
+                    android:id="@+id/block_start_sub"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="14dp"
-                    android:textSize="18sp"
-                    android:layout_height="wrap_content"/>
+                    android:text="@string/block_start"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/blockStartSwitch"
@@ -279,6 +296,7 @@
                     android:textSize="24sp" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/screen_orientation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"

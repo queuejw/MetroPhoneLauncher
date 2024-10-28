@@ -5,6 +5,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAllappsBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
@@ -61,11 +63,32 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             }
         }
         applyWindowInsets(binding.root)
+        setupFont()
+    }
+    private fun setupFont() {
+        customFont?.let {
+            binding.settingsSectionLabel.typeface = it
+            binding.settingsLabel.typeface = it
+            binding.settingsInclude.settingsBtnSwitch.typeface = it
+            binding.settingsInclude.alphabetSwitch.typeface = it
+            binding.settingsInclude.disableAllAppsSwitch.typeface = it
+            binding.settingsInclude.keyboardWhenSearchingSwitch.typeface = it
+            binding.settingsInclude.keyboardWhenAllAppsOpened.typeface = it
+            binding.settingsInclude.settingsButtonLabel.typeface = it
+            binding.settingsInclude.settingsButtonLabelSwitch.typeface = it
+            binding.settingsInclude.alphabetSettingLabel.typeface = it
+            binding.settingsInclude.alphabetSettingLabelSwitch.typeface = it
+            binding.settingsInclude.alphabetSettingKeyboardLabel.typeface = it
+            binding.settingsInclude.additionalOptions.typeface = it
+            binding.settingsInclude.showScreenAllAppsLabel.typeface = it
+            binding.settingsInclude.autoSearchLabel.typeface = it
+        }
+        customBoldFont?.let {
+            binding.settingsLabel.typeface = it
+        }
     }
     private fun enterAnimation(exit: Boolean) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(

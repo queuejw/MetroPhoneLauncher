@@ -42,12 +42,12 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.databinding.LauncherMainScreenBinding
-import ru.dimon6018.metrolauncher.helpers.iconpack.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.closeDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.initDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.loadIconFromDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.CacheUtils.Companion.saveIconToDiskCache
 import ru.dimon6018.metrolauncher.helpers.disklru.DiskLruCache
+import ru.dimon6018.metrolauncher.helpers.iconpack.IconPackManager
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE

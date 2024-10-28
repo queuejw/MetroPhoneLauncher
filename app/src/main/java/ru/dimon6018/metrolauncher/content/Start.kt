@@ -40,6 +40,7 @@ import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +50,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
+import ru.dimon6018.metrolauncher.Application.Companion.customFont
+import ru.dimon6018.metrolauncher.Application.Companion.customLightFont
 import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
 import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
@@ -728,7 +731,7 @@ class Start: Fragment(), OnStartDragListener {
         }
         fun showSettingsBottomSheet(item: Tile, position: Int) {
             val bottomsheet = BottomSheetDialog(context)
-            bottomsheet.setContentView(R.layout.tile_settings_bottomsheet)
+            bottomsheet.setContentView(R.layout.start_tile_settings_bottomsheet)
             bottomsheet.dismissWithAnimation = true
             val bottomSheetInternal = bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = context.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
@@ -740,13 +743,29 @@ class Start: Fragment(), OnStartDragListener {
             val colorSub = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorSub)
             val removeColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorRemove)
             val uninstall = bottomSheetInternal.findViewById<MaterialCardView>(R.id.uninstallApp)
+            val uninstallLabel = bottomSheetInternal.findViewById<MaterialTextView>(R.id.uninstall_label)
             val changeLabel = bottomSheetInternal.findViewById<MaterialCardView>(R.id.editAppLabel)
             val changeColor = bottomSheetInternal.findViewById<MaterialCardView>(R.id.editTileColor)
             val editor = bottomSheetInternal.findViewById<EditText>(R.id.textEdit)
+            val textFiled = bottomSheetInternal.findViewById<TextInputLayout>(R.id.textField)
             val labelLayout = bottomSheetInternal.findViewById<LinearLayout>(R.id.changeLabelLayout)
             val labelChangeBtn = bottomSheetInternal.findViewById<MaterialCardView>(R.id.labelChange)
             val editLabelText = bottomSheetInternal.findViewById<MaterialTextView>(R.id.editAppLabelText)
             val appInfo = bottomSheetInternal.findViewById<MaterialCardView>(R.id.appInfo)
+            val chooseTileColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.choose_tile_color)
+            val appInfoLabel = bottomSheetInternal.findViewById<MaterialTextView>(R.id.app_info_label)
+
+            (if(PREFS.customLightFontPath != null) customLightFont else customFont).let {
+                label.typeface = it
+                colorSub.typeface = it
+                removeColor.typeface = it
+                uninstallLabel.typeface = it
+                editor.typeface = it
+                editLabelText.typeface = it
+                chooseTileColor.typeface = it
+                appInfoLabel.typeface = it
+                textFiled.typeface = it
+            }
             editLabelText.setOnClickListener {
                 labelLayout.visibility = View.VISIBLE
             }
@@ -888,6 +907,7 @@ class Start: Fragment(), OnStartDragListener {
                         return@setOnTouchListener gestureDetector.onTouchEvent(event)
                     }
                 }
+                if(PREFS.customFontInstalled) customFont?.let { binding.tileLabel.typeface = it }
             }
             private fun handleClick() {
                 val item = list[absoluteAdapterPosition]
