@@ -22,6 +22,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
@@ -390,6 +391,7 @@ class AllApps: Fragment() {
     }
     private fun searchFunction() {
         if(isSearching) return
+        appAdapter ?: return
         isSearching = true
         decor.detach()
         binding.apply {
@@ -411,6 +413,21 @@ class AllApps: Fragment() {
         }
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
             removeHeaders()
+            if(PREFS.allAppsKeyboardActionEnabled) {
+                (binding.search.editText as? AutoCompleteTextView)?.setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_GO && appAdapter!!.list.isNotEmpty()) {
+                        runApp(
+                            appAdapter!!.list.first().appPackage!!,
+                            requireActivity().packageManager
+                        )
+                        (binding.search.editText as? AutoCompleteTextView)?.text!!.clear()
+                        disableSearch()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
             (binding.search.editText as? AutoCompleteTextView)?.addTextChangedListener(object :
                 TextWatcher {
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
@@ -533,6 +550,13 @@ class AllApps: Fragment() {
             list.addAll(otherApps)
         }
         return list
+    }
+    private fun runApp(app: String, pm: PackageManager) {
+        isAppOpened = true
+        when (app) {
+            "ru.dimon6018.metrolauncher" -> activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
+            else -> startActivity(Intent(pm.getLaunchIntentForPackage(app)))
+        }
     }
     open inner class AppAdapter(var list: MutableList<App>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -788,19 +812,6 @@ class AllApps: Fragment() {
                 cancel()
             }
         }
-        private fun runApp(app: String, pm: PackageManager) {
-            isAppOpened = true
-            when (app) {
-                "ru.dimon6018.metrolauncher" -> {
-                    activity?.apply { startActivity(Intent(this, SettingsActivity::class.java)) }
-                }
-
-                else -> {
-                    startActivity(Intent(pm.getLaunchIntentForPackage(app)))
-                }
-            }
-        }
-
         private fun insertNewApp(app: App) {
             lifecycleScope.launch(defaultDispatcher) {
                 val dataList = mainViewModel.getTileDao().getTilesList()

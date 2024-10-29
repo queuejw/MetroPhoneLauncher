@@ -79,6 +79,23 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/allAppsKeyboardActionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/all_apps_keyboard_action_label"
+        android:textSize="18sp" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/allAppsKeyboardActionSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="24sp" />
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/additional_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

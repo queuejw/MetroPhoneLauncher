@@ -62,6 +62,14 @@ class AllAppsSettingsActivity: AppCompatActivity() {
                 text = if(PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
             }
         }
+        binding.settingsInclude.allAppsKeyboardActionSwitch.apply {
+            isChecked = PREFS.allAppsKeyboardActionEnabled
+            text = if(PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
+            setOnCheckedChangeListener { _, isChecked ->
+                PREFS.allAppsKeyboardActionEnabled = isChecked
+                text = if(PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
+            }
+        }
         applyWindowInsets(binding.root)
         setupFont()
     }
@@ -82,6 +90,8 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             binding.settingsInclude.additionalOptions.typeface = it
             binding.settingsInclude.showScreenAllAppsLabel.typeface = it
             binding.settingsInclude.autoSearchLabel.typeface = it
+            binding.settingsInclude.allAppsKeyboardActionLabel.typeface = it
+            binding.settingsInclude.allAppsKeyboardActionSwitch.typeface = it
         }
         customBoldFont?.let {
             binding.settingsLabel.typeface = it

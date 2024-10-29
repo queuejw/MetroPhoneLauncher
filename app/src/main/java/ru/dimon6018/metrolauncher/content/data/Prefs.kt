@@ -53,6 +53,7 @@ class Prefs(context: Context) {
     private val customLightFontNamePref = "customLightFontName"
     private val customBoldFontPathPref = "customBoldFontPath"
     private val customBoldFontNamePref = "customBoldFontName"
+    private val allAppsKeyboardGoActionPref = "allAppsKeyboardActionEnabled"
 
     init {
         prefs = context.getSharedPreferences(fileName, 0)
@@ -283,4 +284,8 @@ class Prefs(context: Context) {
     var customBoldFontName: String?
         get() = prefs.getString(customBoldFontNamePref, null)
         set(value) = prefs.edit().putString(customBoldFontNamePref, value).apply()
+
+    var allAppsKeyboardActionEnabled: Boolean
+        get() = prefs.getBoolean(allAppsKeyboardGoActionPref, false)
+        set(value) = prefs.edit().putBoolean(allAppsKeyboardGoActionPref, value).apply()
 }

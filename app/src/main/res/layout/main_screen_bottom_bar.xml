@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/navigation_frame"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/navbarHeight"
+    android:layout_height="wrap_content"
     android:layout_gravity="bottom"
     android:clickable="true"
     android:focusable="true"
@@ -35,7 +35,7 @@
     <LinearLayout
         android:id="@+id/search_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="48dp"
         android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputLayout

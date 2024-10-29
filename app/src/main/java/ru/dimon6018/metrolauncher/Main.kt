@@ -135,7 +135,7 @@ class Main : AppCompatActivity() {
     private fun setupUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomBar.navigationFrame) { view, insets ->
-            val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
                 bottom = systemBarInsets.bottom,
                 left = systemBarInsets.left,

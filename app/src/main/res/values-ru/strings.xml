@@ -259,4 +259,5 @@
     <string name="additional_fonts_tip">Ниже вы можете выбрать дополнительные шрифты, если они у Вас есть. Если нет, то будет использован текущий шрифт.</string>
     <string name="remove_light_font">убрать light шрифт</string>
     <string name="remove_bold_font">убрать bold шрифт</string>
+    <string name="all_apps_keyboard_action_label">Открывать первое приложение при нажатии кнопки действия на клавиатуре</string>
 </resources>
