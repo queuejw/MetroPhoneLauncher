@@ -13,5 +13,8 @@
         android:background="@android:color/transparent"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:padding="4dp"/>
+        android:visibility="visible"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"/>
+
 </FrameLayout>

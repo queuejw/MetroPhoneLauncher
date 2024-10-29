@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import kotlinx.coroutines.CoroutineScope
@@ -70,10 +71,14 @@ class Utils {
 
         fun applyWindowInsets(target: View) {
             ViewCompat.setOnApplyWindowInsetsListener(target) { view, insets ->
-                val paddingBottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-                val paddingTop = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-                view.setPadding(0, paddingTop, 0, paddingBottom)
-                WindowInsetsCompat.CONSUMED
+                val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.updatePadding(
+                    bottom = systemBarInsets.bottom,
+                    left = systemBarInsets.left,
+                    right = systemBarInsets.right,
+                    top = systemBarInsets.top
+                )
+                insets
             }
         }
 

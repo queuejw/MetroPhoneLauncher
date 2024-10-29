@@ -25,7 +25,7 @@
     android:layout_gravity="center"
     app:cardBackgroundColor="@color/transparent"
     app:cardCornerRadius="0dp"
-    app:strokeColor="?android:attr/colorBackground">
+    app:strokeWidth="0dp">
 
     <FrameLayout
         android:id="@+id/container"

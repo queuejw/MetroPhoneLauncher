@@ -19,7 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -91,16 +94,13 @@ class Main : AppCompatActivity() {
         }
         handleDevMode()
         super.onCreate(savedInstanceState)
-
         if (PREFS.launcherState == 0) {
             runOOBE()
             return
         }
-
         binding = LauncherMainScreenBinding.inflate(layoutInflater)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(binding.root)
-
         setupUI()
         lifecycleScope.launch(Dispatchers.Default) {
             initializeData()
@@ -134,16 +134,23 @@ class Main : AppCompatActivity() {
 
     private fun setupUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomBar.navigationFrame) { view, insets ->
+            val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(
+                bottom = systemBarInsets.bottom,
+                left = systemBarInsets.left,
+                right = systemBarInsets.right,
+            )
+            insets
+        }
+        if(PREFS.isSearchBarEnabled) applyWindowInsets(binding.mainSearchResults.searchBarResultsLayout)
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        applyWindowInsets(binding.root)
         registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
 
     private fun checkUpdate() {
-        if (PREFS.prefs.getBoolean("updateInstalled", false) && PREFS.versionCode == VERSION_CODE) {
-            PREFS.updateState = 3
-        }
+        if (PREFS.prefs.getBoolean("updateInstalled", false) && PREFS.versionCode == VERSION_CODE) PREFS.updateState = 3
     }
     private fun disableAnims() {
         PREFS.apply {
@@ -192,9 +199,7 @@ class Main : AppCompatActivity() {
     }
 
     override fun onResume() {
-        if (PREFS.isPrefsChanged) {
-            restart()
-        }
+        if (PREFS.isPrefsChanged) restart()
         super.onResume()
     }
     private fun restart() {
@@ -454,12 +459,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun filterSearchText(text: String, appList: List<App>) {
-        if (text.isEmpty()) {
-            hideSearchResults()
-        } else {
-            showSearchResults()
-        }
-
+        if (text.isEmpty()) hideSearchResults() else showSearchResults()
         val max = PREFS.maxResultsSearchBar
         val defaultLocale = getDefaultLocale()
         filteredList.clear()

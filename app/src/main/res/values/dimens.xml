@@ -12,7 +12,7 @@
     <dimen name="tile_medium_moreTiles_on">64dp</dimen>
     <dimen name="tile_big_moreTiles_off">84dp</dimen>
     <dimen name="tile_big_moreTiles_on">70dp</dimen>
-    <dimen name="navbarHeight">48dp</dimen>
+    <dimen name="navbarHeight">58dp</dimen>
     <dimen name="themeSettingsImgSize">242dp</dimen>
     <dimen name="alphabetHolderSize">72dp</dimen>
     <dimen name="tileStrokeWidth">4dp</dimen>

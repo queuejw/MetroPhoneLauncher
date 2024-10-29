@@ -27,6 +27,9 @@ import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -35,6 +38,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
 import com.arasthel.spannedgridlayoutmanager.SpanSize
 import com.arasthel.spannedgridlayoutmanager.SpannedGridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -75,6 +80,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromP
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.MarginItemDecoration
 import kotlin.random.Random
 
 class Start: Fragment(), OnStartDragListener {
@@ -108,12 +114,21 @@ class Start: Fragment(), OnStartDragListener {
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = LauncherStartScreenBinding.inflate(inflater, container, false)
-        val view = binding.root
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.startFrame.setOnClickListener {
             mAdapter?.let { if(it.isEditMode) it.disableEditMode() }
         }
-        return view
+        ViewCompat.setOnApplyWindowInsetsListener(binding.startTiles) { view, insets ->
+            val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(
+                bottom = systemBarInsets.bottom,
+                left = systemBarInsets.left + view.paddingLeft,
+                right = systemBarInsets.right + view.paddingEnd,
+                top = systemBarInsets.top
+            )
+            insets
+        }
+        return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -153,13 +168,12 @@ class Start: Fragment(), OnStartDragListener {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
             mItemTouchHelper.attachToRecyclerView(this)
+            addItemDecoration(MarginItemDecoration(14))
             addOnScrollListener(ScrollListener())
         }
     }
     private fun setupRecyclerViewLayoutManager(context: Context?) {
-        if(mSpannedLayoutManager != null) {
-            mSpannedLayoutManager = null
-        }
+        if(mSpannedLayoutManager != null) mSpannedLayoutManager = null
         if (!isLandscape) {
             // phone
             mSpannedLayoutManager = SpannedGridLayoutManager(
@@ -208,9 +222,7 @@ class Start: Fragment(), OnStartDragListener {
     }
     private fun observe() {
         Log.d("Start", "start observer")
-        if(!startScreenReady) {
-            return
-        }
+        if(!startScreenReady) return
         if(!mainViewModel.getTileDao().getTilesLiveData().hasObservers()) {
             mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
                 if (mAdapter != null) {
@@ -264,9 +276,7 @@ class Start: Fragment(), OnStartDragListener {
     }
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
         if (viewHolder != null && !PREFS.isStartBlocked && mAdapter != null) {
-            if(!mAdapter!!.isEditMode) {
-                mAdapter!!.enableEditMode()
-            }
+            if(!mAdapter!!.isEditMode) mAdapter!!.enableEditMode()
             mItemTouchHelper.startDrag(viewHolder)
         }
     }
@@ -318,7 +328,7 @@ class Start: Fragment(), OnStartDragListener {
                     requireActivity().registerReceiver(packageBroadcastReceiver, it)
                 }
             }
-        }  else {
+        } else {
             Log.d("Start", "broadcaster already registered")
         }
     }
@@ -537,13 +547,12 @@ class Start: Fragment(), OnStartDragListener {
             setTileIcon(holder.binding.tileIcon, item)
         }
         private fun setTileIcon(imageView: ImageView, item: Tile) {
-            try {
-                imageView.load(mainViewModel.getIconFromCache(item.tilePackage))
-            } catch (e: Exception) {
-                Log.e("Adapter", e.toString())
-                lifecycleScope.launch(ioDispatcher) {
-                    destroyTile(item)
-                }
+            imageView.load(mainViewModel.getIconFromCache(item.tilePackage)) {
+                listener(onError = { request: ImageRequest, error: ErrorResult ->
+                    lifecycleScope.launch(ioDispatcher) {
+                        destroyTile(item)
+                    }
+                })
             }
         }
         private fun setTileIconSize(imageView: ImageView, tileSize: String, res: Resources) {
@@ -625,16 +634,12 @@ class Start: Fragment(), OnStartDragListener {
             notifyItemMoved(fromPosition, toPosition)
         }
         override fun onItemDismiss(position: Int) {
-            if(!isEditMode) {
-                return
-            }
+            if(!isEditMode) return
             notifyItemChanged(position)
         }
 
         override fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?) {
-            if (!isEditMode) {
-                return
-            }
+            if (!isEditMode) return
             lifecycleScope.launch(defaultDispatcher) {
                 for (i in 0 until list.size) {
                     val item = list[i]
@@ -660,7 +665,6 @@ class Start: Fragment(), OnStartDragListener {
             val width = holder.itemView.width
             val height = holder.itemView.height
             val popupWindow = PopupWindow(popupView, width, height, true)
-            popupWindow.animationStyle = R.style.enterStyle
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
             val resizeIcon = popupView.findViewById<ImageView>(R.id.resizeIco)
             val settings = popupView.findViewById<MaterialCardView>(R.id.settings)
@@ -684,9 +688,7 @@ class Start: Fragment(), OnStartDragListener {
                         rotation = 45f
                         setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_up))
                     }
-                    else -> {
-                        setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right))
-                    }
+                    else -> setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_right))
                 }
             }
             resize.setOnClickListener {
@@ -704,9 +706,7 @@ class Start: Fragment(), OnStartDragListener {
                                 holder.binding.tileLabel.text = item.tileLabel
                             }
                         }
-                        "big" -> {
-                            item.tileSize = "small"
-                        }
+                        "big" -> item.tileSize = "small"
                     }
                     mainViewModel.getTileDao().updateTile(item)
                     withContext(mainDispatcher) {
@@ -755,7 +755,7 @@ class Start: Fragment(), OnStartDragListener {
             val chooseTileColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.choose_tile_color)
             val appInfoLabel = bottomSheetInternal.findViewById<MaterialTextView>(R.id.app_info_label)
 
-            (if(PREFS.customLightFontPath != null) customLightFont else customFont).let {
+            (if(PREFS.customLightFontPath != null) customLightFont else customFont)?.let {
                 label.typeface = it
                 colorSub.typeface = it
                 removeColor.typeface = it
@@ -857,9 +857,7 @@ class Start: Fragment(), OnStartDragListener {
         }
         override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
             super.onViewAttachedToWindow(holder)
-            if (isEditMode) {
-                editModeAnimate(holder.itemView)
-            }
+            if (isEditMode) editModeAnimate(holder.itemView)
         }
         override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
             super.onViewDetachedFromWindow(holder)
@@ -880,7 +878,6 @@ class Start: Fragment(), OnStartDragListener {
             init {
                 binding.cardContainer.apply {
                     if (PREFS.coloredStroke) strokeColor = accentColor
-                    strokeWidth = context?.resources?.getDimensionPixelSize(R.dimen.tileStrokeWidth)!!
                 }
                 binding.container.apply {
                     alpha = PREFS.tilesTransparency
@@ -943,9 +940,7 @@ class Start: Fragment(), OnStartDragListener {
         inner class SpaceViewHolder(binding: SpaceTileBinding) : RecyclerView.ViewHolder(binding.root) {
             init {
                 itemView.setOnClickListener {
-                    if (isEditMode) {
-                        disableEditMode()
-                    }
+                    if (isEditMode) disableEditMode()
                 }
             }
         }

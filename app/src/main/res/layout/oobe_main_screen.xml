@@ -11,16 +11,13 @@
         android:id="@+id/appbarlayout"
         android:backgroundTint="?android:attr/colorBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/appbarTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_marginTop="16dp"
-            android:text="Welcome"
             android:textSize="36sp" />
 
     </com.google.android.material.appbar.AppBarLayout>

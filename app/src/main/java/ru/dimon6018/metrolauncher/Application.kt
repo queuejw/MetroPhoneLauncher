@@ -26,9 +26,7 @@ class Application : Application() {
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         PREFS = Prefs(applicationContext)
         //EXP_PREFS = ExperimentPrefs(applicationContext)
-        if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) {
-            DynamicColors.applyToActivitiesIfAvailable(this)
-        }
+        if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) DynamicColors.applyToActivitiesIfAvailable(this)
         setupCustomFont()
         setupCustomLightFont()
         setupCustomBoldFont()
@@ -38,12 +36,8 @@ class Application : Application() {
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 activity.setTheme(launcherAccentTheme())
                 when(PREFS.orientation) {
-                    "p" -> {
-                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                    }
-                    "l" -> {
-                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                    }
+                    "p" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                    "l" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
                 super.onActivityPreCreated(activity, savedInstanceState)
             }

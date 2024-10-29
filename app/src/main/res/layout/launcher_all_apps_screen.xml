@@ -90,11 +90,13 @@
         android:visibility="gone"/>
 
     <LinearLayout
+        android:id="@+id/buttonPanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:layout_marginStart="12dp"
         android:orientation="vertical">
+
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/searchBtn"
             android:layout_width="42dp"
@@ -106,7 +108,7 @@
 
             <ImageView
                 android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:scaleX="-1"
                 android:src="@drawable/ic_search"
@@ -144,7 +146,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp" />
+            android:padding="4dp"/>
     </LinearLayout>
 </FrameLayout>

@@ -67,6 +67,7 @@ import ru.dimon6018.metrolauncher.databinding.LauncherAllAppsScreenBinding
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabet
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabetCompat
@@ -122,6 +123,7 @@ class AllApps: Fragment() {
             binding.searchTextview.typeface = it
             binding.noResults.typeface = it
         }
+        applyWindowInsets(binding.root)
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -363,7 +365,7 @@ class AllApps: Fragment() {
                 text.clear()
                 clearFocus()
             }
-            searchLayout.animate().translationY(-128f).setDuration(200).withEndAction {
+            searchLayout.animate().translationY(-300f).setDuration(200).withEndAction {
                 searchLayout.visibility = View.GONE
                 searchBtn.apply {
                     visibility = View.VISIBLE
@@ -382,6 +384,7 @@ class AllApps: Fragment() {
             withContext(mainDispatcher) {
                 appAdapter?.setData(list)
                 binding.appList.alpha = 1f
+                binding.appList.smoothScrollToPosition(0)
             }
         }
     }
@@ -622,47 +625,50 @@ class AllApps: Fragment() {
             holder.binding.appIcon.load(mainViewModel.getIconFromCache(app.appPackage!!))
             holder.binding.appLabel.text = app.appLabel
         }
-
+        fun isPopupInTop(anchorView: View, popupHeight: Int): Boolean {
+            val location = IntArray(2)
+            anchorView.getLocationOnScreen(location)
+            val anchorY = location[1]
+            val displayMetrics = anchorView.context.resources.displayMetrics
+            val screenHeight = displayMetrics.heightPixels
+            val popupY = anchorY - popupHeight
+            return popupY < screenHeight / 2
+        }
+        fun getPopupHeight(popupWindow: PopupWindow): Int {
+            val contentView = popupWindow.contentView
+            contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            return contentView.measuredHeight
+        }
         private fun showPopupWindow(view: View, app: App) {
             binding.appList.isScrollEnabled = false
             (requireActivity() as Main).configureViewPagerScroll(false)
-
-            val inflater =
-                view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            val inflater = view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = inflater.inflate(R.layout.all_apps_window, binding.appList, false)
-            val width = LinearLayout.LayoutParams.MATCH_PARENT
-            val height = LinearLayout.LayoutParams.WRAP_CONTENT
-            popupWindow = PopupWindow(popupView, width, height, true)
-            popupWindow?.isFocusable = true
-            popupWindow?.animationStyle = R.style.enterStyle
-            popupView.pivotY = 1f
-
+            popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
+            popupWindow!!.isFocusable = true
+            val popupHeight = getPopupHeight(popupWindow!!)
+            val top = isPopupInTop(view, popupHeight)
+            popupView.pivotY = if(top) 0f else popupHeight.toFloat()
             val pinLabel = popupView.findViewById<MaterialTextView>(R.id.pin_app_label)
             val infoLabel = popupView.findViewById<MaterialTextView>(R.id.app_info_label)
             val uninstallLabel = popupView.findViewById<MaterialTextView>(R.id.uninstall_label)
-
             (if(PREFS.customLightFontPath != null) customLightFont else customFont).let {
                 pinLabel.typeface = it
                 infoLabel.typeface = it
                 uninstallLabel.typeface = it
             }
-
-            val anim = ObjectAnimator.ofFloat(popupView, "scaleY", 0f, 0.01f)
-            val anim2 = ObjectAnimator.ofFloat(popupView, "scaleX", 0f, 1f)
-            val anim3 = ObjectAnimator.ofFloat(popupView, "scaleY", 0.01f, 1f)
-            anim.duration = 1
+            val anim = ObjectAnimator.ofFloat(popupView, "scaleY", 0f, 0.01f).setDuration(1)
+            val anim2 = ObjectAnimator.ofFloat(popupView, "scaleX", 0f, 1f).setDuration(200)
+            val anim3 = ObjectAnimator.ofFloat(popupView, "scaleY", 0.01f, 1f).setDuration(400)
             anim.doOnEnd {
-                anim2.duration = 200
                 anim2.doOnEnd {
-                    anim3.duration = 400
                     anim3.start()
                 }
                 anim2.start()
             }
             anim.start()
-
             fadeList(app, false)
-            PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, 0, Gravity.CENTER)
+            PopupWindowCompat.showAsDropDown(popupWindow!!, view, 0, if(top) 0 else (-popupHeight + -view.height), Gravity.CENTER)
             isWindowVisible = true
 
             val pin = popupView.findViewById<MaterialCardView>(R.id.pin_app)
