@@ -228,9 +228,7 @@ class SettingsActivity : AppCompatActivity() {
                 isEnter = true
                 job?.cancel()
                 job = lifecycleScope.launch {
-                    if (PREFS.isTransitionAnimEnabled) {
-                        startAnim()
-                    }
+                    if (PREFS.isTransitionAnimEnabled) startAnim()
                     startActivity(intent)
                 }
             }
@@ -242,13 +240,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
     private fun setupAnimForViews(view: View, dur: Long) {
-        if (!PREFS.isTransitionAnimEnabled) {
-            return
-        }
+        if (!PREFS.isTransitionAnimEnabled) return
         val animatorSet = AnimatorSet().apply {
             playTogether(
                 ObjectAnimator.ofFloat(view, "alpha", if (isEnter) 1f else 0f, if (isEnter) 0f else 1f),
-                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -400f, if (isEnter) -400f else 0f),
+                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -400f, if (isEnter) -500f else 0f),
                 ObjectAnimator.ofFloat(view, "rotationY", if (isEnter) 0f else -90f, if (isEnter) -90f else 0f)
             )
             duration = dur

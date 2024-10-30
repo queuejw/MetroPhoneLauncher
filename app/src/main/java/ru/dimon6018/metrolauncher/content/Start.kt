@@ -97,15 +97,14 @@ class Start: Fragment(), OnStartDragListener {
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
     private var isBroadcasterRegistered = false
-    private var startScreenReady = false
     private var screenIsOn = false
 
-    private lateinit var mainViewModel: MainViewModel
 
     private var _binding: LauncherStartScreenBinding? = null
     private val binding get() = _binding!!
+    private lateinit var mainViewModel: MainViewModel
 
-    private var lastItemPos: Int? = null
+    private var screenLoaded = false
 
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -135,21 +134,33 @@ class Start: Fragment(), OnStartDragListener {
         if(context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
                 tiles = mainViewModel.getTileDao().getTilesList()
-                val userTiles = mainViewModel.getTileDao().getUserTiles()
-                lastItemPos = if(userTiles.isNotEmpty()) userTiles.last().tilePosition!! + 6 else tiles!!.size
                 setupRecyclerViewLayoutManager(requireContext())
                 setupAdapter()
                 withContext(mainDispatcher) {
                     configureRecyclerView()
-                    observe()
                     registerBroadcast()
-                    startScreenReady = true
+                    screenLoaded = true
+                    observe()
                 }
                 cancel("done")
             }
         }
     }
+    private fun observe() {
+        if(!screenLoaded || mainViewModel.getTileDao().getTilesLiveData().hasActiveObservers()) return
+        mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
+            mAdapter ?: return@observe
+            if(mAdapter!!.list != it) {
+                Log.w("obs", "set new data")
+                mAdapter!!.setData(it)
+            }
+        }
+    }
+    private fun stopObserver() {
+        mainViewModel.getTileDao().getTilesLiveData().removeObservers(viewLifecycleOwner)
+    }
     override fun onDestroyView() {
+        stopObserver()
         super.onDestroyView()
         _binding = null
     }
@@ -169,7 +180,6 @@ class Start: Fragment(), OnStartDragListener {
             adapter = mAdapter
             mItemTouchHelper.attachToRecyclerView(this)
             addItemDecoration(MarginItemDecoration(14))
-            addOnScrollListener(ScrollListener())
         }
     }
     private fun setupRecyclerViewLayoutManager(context: Context?) {
@@ -220,25 +230,10 @@ class Start: Fragment(), OnStartDragListener {
             layoutManager = mSpannedLayoutManager
         }
     }
-    private fun observe() {
-        Log.d("Start", "start observer")
-        if(!startScreenReady) return
-        if(!mainViewModel.getTileDao().getTilesLiveData().hasObservers()) {
-            mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
-                if (mAdapter != null) {
-                    if (!mAdapter!!.isEditMode && mAdapter!!.list != it) {
-                        Log.d("observer", "update list")
-                        mAdapter!!.setData(it)
-                    }
-                }
-            }
-        }
-    }
     override fun onResume() {
+        if(screenLoaded) observe()
         if(!screenIsOn) {
-            if(binding.startTiles.visibility == View.INVISIBLE) {
-                binding.startTiles.visibility = View.VISIBLE
-            }
+            if(binding.startTiles.visibility == View.INVISIBLE) binding.startTiles.visibility = View.VISIBLE
         }
         if(isAppOpened) {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -255,7 +250,6 @@ class Start: Fragment(), OnStartDragListener {
             isTopRight = false
             isTopLeft = false
         }
-        observe()
     }
     override fun onPause() {
         super.onPause()
@@ -371,10 +365,6 @@ class Start: Fragment(), OnStartDragListener {
                     tilePackage = packageName
                 )
                 mainViewModel.getTileDao().addTile(item)
-                val newDataList = mainViewModel.getTileDao().getTilesList()
-                withContext(mainDispatcher) {
-                    mAdapter!!.setData(newDataList)
-                }
             }
         }
     }
@@ -459,23 +449,6 @@ class Start: Fragment(), OnStartDragListener {
             intent?.let { startActivity(it) }
         }
     }
-    inner class ScrollListener(): RecyclerView.OnScrollListener() {
-
-        var lastDy = 0
-
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-            if (lastItemPos != null && mSpannedLayoutManager != null && mAdapter != null) {
-                if (!mAdapter!!.isEditMode) {
-                    if (mSpannedLayoutManager!!.lastVisiblePosition >= lastItemPos!! && dy > 0) {
-                        recyclerView.scrollBy(0, -dy)
-                    } else {
-                        lastDy = dy
-                    }
-                }
-            }
-        }
-    }
     inner class NewStartAdapter(val context: Context, var list: MutableList<Tile>): RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
         val defaultTileType: Int = 0
@@ -499,18 +472,13 @@ class Start: Fragment(), OnStartDragListener {
             list = newData
             tiles = newData
         }
-        private fun refreshData(newData: MutableList<Tile>) {
-            val diffUtilCallback = DiffUtilCallback(list, newData)
-            val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
-            diffResult.dispatchUpdatesTo(this)
-        }
+
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
             addCallback()
             binding.startTiles.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
             isEditMode = true
-            animateEditMode()
         }
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
@@ -518,7 +486,6 @@ class Start: Fragment(), OnStartDragListener {
             (requireActivity() as Main).configureViewPagerScroll(true)
             binding.startTiles.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
             isEditMode = false
-            stopEditModeAnimation()
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
@@ -545,6 +512,11 @@ class Start: Fragment(), OnStartDragListener {
             setTileIconSize(holder.binding.tileIcon, item.tileSize, context.resources)
             setTileColor(holder, item)
             setTileIcon(holder.binding.tileIcon, item)
+            setTileText(holder.binding.tileLabel, item)
+        }
+
+        private fun setTileText(textView: MaterialTextView, item: Tile) {
+            textView.text = item.tileLabel
         }
         private fun setTileIcon(imageView: ImageView, item: Tile) {
             imageView.load(mainViewModel.getIconFromCache(item.tilePackage)) {
@@ -599,19 +571,11 @@ class Start: Fragment(), OnStartDragListener {
             }
         }
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
-            when (item.tileSize) {
-                "small" -> {
-                    mTextView.text = null
-                }
-                "medium" -> {
-                    if (PREFS.isMoreTilesEnabled) {
-                        mTextView.text = null
-                    } else {
-                        mTextView.text = item.tileLabel
-                    }
-                }
-                "big" -> {
-                    mTextView.text = item.tileLabel
+            mTextView.apply {
+                when (item.tileSize) {
+                    "small" -> visibility = View.GONE
+                    "medium" -> visibility = if (!PREFS.isMoreTilesEnabled) View.VISIBLE else View.GONE
+                    "big" -> visibility = View.VISIBLE
                 }
             }
         }
@@ -641,29 +605,27 @@ class Start: Fragment(), OnStartDragListener {
         override fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?) {
             if (!isEditMode) return
             lifecycleScope.launch(defaultDispatcher) {
+                val newData = ArrayList<Tile>()
                 for (i in 0 until list.size) {
                     val item = list[i]
                     item.tilePosition = i
-                    mainViewModel.getTileDao().updateTile(item)
+                    newData.add(item)
                 }
-                val updatedList = mainViewModel.getTileDao().getTilesList()
-                val userTiles = mainViewModel.getTileDao().getUserTiles()
-                lastItemPos = if(userTiles.isNotEmpty()) userTiles.last().tilePosition!! + 6 else updatedList.size
-                withContext(mainDispatcher) {
-                    if (isEditMode) {
-                        refreshData(updatedList)
-                    }
-                }
+                mainViewModel.getTileDao().updateAllTiles(newData)
             }
         }
         private fun showTilePopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
             holder.itemView.clearAnimation()
-            holder.itemView.animate().translationX(0f).translationY(0f).start()
+            holder.itemView.animate().translationX(0f).translationY(0f).setDuration(200).start()
             binding.startTiles.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(if(item.tileSize == "small" && PREFS.isMoreTilesEnabled) R.layout.tile_window_small else R.layout.tile_window, holder.itemView as ViewGroup, false)
-            val width = holder.itemView.width
-            val height = holder.itemView.height
+            var width = holder.itemView.width
+            var height = holder.itemView.height
+            if(item.tileSize == "small") {
+                width += if(PREFS.isMoreTilesEnabled) 75 else 50
+                height += 50
+            }
             val popupWindow = PopupWindow(popupView, width, height, true)
             val resize = popupView.findViewById<MaterialCardView>(R.id.resize)
             val resizeIcon = popupView.findViewById<ImageView>(R.id.resizeIco)
@@ -671,9 +633,8 @@ class Start: Fragment(), OnStartDragListener {
             val remove = popupView.findViewById<MaterialCardView>(R.id.remove)
             popupWindow.setOnDismissListener {
                 binding.startTiles.isScrollEnabled = true
-                editModeAnimate(holder.itemView)
             }
-            popupWindow.showAsDropDown(holder.itemView, 0, -height, Gravity.CENTER)
+            popupWindow.showAsDropDown(holder.itemView, if(PREFS.isMoreTilesEnabled && item.tileSize == "small") -width / 5 else 0, -height, Gravity.CENTER)
             resizeIcon.apply {
                 when(item.tileSize) {
                     "small" -> {
@@ -694,51 +655,41 @@ class Start: Fragment(), OnStartDragListener {
             resize.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     when (item.tileSize) {
-                        "small" -> {
-                            item.tileSize = "medium"
-                            withContext(mainDispatcher) {
-                                holder.binding.tileLabel.text = item.tileLabel
-                            }
-                        }
-                        "medium" -> {
-                            item.tileSize = "big"
-                            withContext(mainDispatcher) {
-                                holder.binding.tileLabel.text = item.tileLabel
-                            }
-                        }
+                        "small" -> item.tileSize = "medium"
+                        "medium" -> item.tileSize = "big"
                         "big" -> item.tileSize = "small"
                     }
                     mainViewModel.getTileDao().updateTile(item)
                     withContext(mainDispatcher) {
-                        popupWindow.dismiss()
                         notifyItemChanged(position)
                     }
                 }
+                popupWindow.dismiss()
             }
             remove.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     destroyTile(item)
                     withContext(mainDispatcher) {
-                        refreshData(list)
+                        notifyItemChanged(position)
                     }
                 }
                 popupWindow.dismiss()
             }
             settings.setOnClickListener {
-                showSettingsBottomSheet(item, position)
+                showSettingsBottomSheet(item)
                 popupWindow.dismiss()
             }
         }
-        fun showSettingsBottomSheet(item: Tile, position: Int) {
+        fun showSettingsBottomSheet(item: Tile) {
             val bottomsheet = BottomSheetDialog(context)
             bottomsheet.setContentView(R.layout.start_tile_settings_bottomsheet)
             bottomsheet.dismissWithAnimation = true
             val bottomSheetInternal = bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight = context.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
-            configureTileBottomSheet(bottomSheetInternal, bottomsheet, item, position)
+            configureTileBottomSheet(bottomSheetInternal, bottomsheet, item)
             bottomsheet.show()
         }
-        private fun configureTileBottomSheet(bottomSheetInternal: View, bottomsheet: BottomSheetDialog, item: Tile, position: Int) {
+        private fun configureTileBottomSheet(bottomSheetInternal: View, bottomsheet: BottomSheetDialog, item: Tile) {
             val label = bottomSheetInternal.findViewById<MaterialTextView>(R.id.appLabelSheet)
             val colorSub = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorSub)
             val removeColor = bottomSheetInternal.findViewById<MaterialTextView>(R.id.chooseColorRemove)
@@ -785,25 +736,15 @@ class Start: Fragment(), OnStartDragListener {
             }
             labelChangeBtn.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
-                    if(editor.text.toString() == "") {
-                        item.tileLabel = originalLabel
-                    } else {
-                        item.tileLabel = editor.text.toString()
-                    }
+                    item.tileLabel =if(editor.text.toString() == "") originalLabel else editor.text.toString()
                     mainViewModel.getTileDao().updateTile(item)
-                    withContext(mainDispatcher) {
-                        bottomsheet.dismiss()
-                        notifyItemRemoved(position)
-                    }
                 }
+                bottomsheet.dismiss()
             }
             removeColor.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = -1
                     mainViewModel.getTileDao().updateTile(item)
-                    withContext(mainDispatcher) {
-                        notifyItemRemoved(position)
-                    }
                 }
                 bottomsheet.dismiss()
             }
@@ -821,46 +762,6 @@ class Start: Fragment(), OnStartDragListener {
                 startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).setData(Uri.parse("package:" + item.tilePackage)))
                 bottomsheet.dismiss()
             }
-        }
-        private fun animateEditMode() {
-            for (i in 0..itemCount) {
-                val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
-                if(holder.itemViewType == spaceType) continue
-                editModeAnimate(holder.itemView)
-            }
-        }
-        private fun editModeAnimate(view: View) {
-            if (!isEditMode) {
-                view.clearAnimation()
-                return
-            }
-            val randomX = { Random.nextInt(-10, 10).toFloat() }
-            val randomY = { Random.nextInt(-10, 10).toFloat() }
-            val randomDuration = { Random.nextLong(500, 1000) }
-            fun animateView() {
-                view.animate()
-                    .translationX(randomX())
-                    .translationY(randomY())
-                    .setDuration(randomDuration())
-                    .withEndAction { animateView() }
-                    .start()
-            }
-            animateView()
-        }
-        private fun stopEditModeAnimation() {
-            for (i in 0..itemCount) {
-                val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
-                if(holder.itemViewType == spaceType) continue
-                holder.itemView.clearAnimation()
-                holder.itemView.animate().translationY(0f).translationX(0f).setDuration(300).start()
-            }
-        }
-        override fun onViewAttachedToWindow(holder: RecyclerView.ViewHolder) {
-            super.onViewAttachedToWindow(holder)
-            if (isEditMode) editModeAnimate(holder.itemView)
-        }
-        override fun onViewDetachedFromWindow(holder: RecyclerView.ViewHolder) {
-            super.onViewDetachedFromWindow(holder)
         }
         @SuppressLint("ClickableViewAccessibility")
         inner class TileViewHolder(val binding: TileBinding) : RecyclerView.ViewHolder(binding.root), ItemTouchHelperViewHolder {
@@ -953,14 +854,10 @@ class Start: Fragment(), OnStartDragListener {
             return new.size
         }
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = old[oldItemPosition]
-            val newItem = new[newItemPosition]
-            return oldItem == newItem
+            return old[oldItemPosition] == new[newItemPosition]
         }
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            val oldItem = old[oldItemPosition]
-            val newItem = new[newItemPosition]
-            return oldItem.tilePackage == newItem.tilePackage
+            return old[oldItemPosition].tilePackage == new[newItemPosition].tilePackage
         }
     }
     class AccentDialog : DialogFragment() {
@@ -1023,7 +920,7 @@ class Start: Fragment(), OnStartDragListener {
         }
         override fun dismiss() {
             mAdapter.notifyItemChanged(item.tilePosition!!)
-            mAdapter.showSettingsBottomSheet(item, item.tilePosition!!)
+            mAdapter.showSettingsBottomSheet(item)
             super.dismiss()
         }
     }

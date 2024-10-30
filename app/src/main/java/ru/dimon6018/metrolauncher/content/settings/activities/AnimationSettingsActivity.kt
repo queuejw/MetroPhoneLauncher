@@ -37,7 +37,7 @@ class AnimationSettingsActivity: AppCompatActivity() {
             binding.settingsInclude.animations.typeface = it
             binding.settingsInclude.tilesAnimCheckbox.typeface = it
             binding.settingsInclude.liveTilesAnimCheckbox.typeface = it
-            binding.settingsInclude.liveTilesAnimCheckbox.typeface = it
+            binding.settingsInclude.allAppsAnimCheckbox.typeface = it
             binding.settingsInclude.transitionAnimCheckbox.typeface = it
             binding.settingsInclude.alphabetAnimCheckbox.typeface = it
             binding.settingsInclude.autoShutdownAnimsCheckbox.typeface = it

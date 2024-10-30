@@ -71,6 +71,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
             binding.settingsInclude.useSearchBarLabel.typeface = it
             binding.settingsInclude.searchBarSwitch.typeface = it
             binding.settingsInclude.maxResultsLabel.typeface = it
+            binding.settingsInclude.iconChangeLabel.typeface = it
         }
         customBoldFont?.let {
             binding.settingsLabel.typeface = it
