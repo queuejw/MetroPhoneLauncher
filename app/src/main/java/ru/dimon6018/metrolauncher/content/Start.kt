@@ -514,7 +514,6 @@ class Start: Fragment(), OnStartDragListener {
             setTileIcon(holder.binding.tileIcon, item)
             setTileText(holder.binding.tileLabel, item)
         }
-
         private fun setTileText(textView: MaterialTextView, item: Tile) {
             textView.text = item.tileLabel
         }
@@ -615,8 +614,6 @@ class Start: Fragment(), OnStartDragListener {
             }
         }
         private fun showTilePopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
-            holder.itemView.clearAnimation()
-            holder.itemView.animate().translationX(0f).translationY(0f).setDuration(200).start()
             binding.startTiles.isScrollEnabled = false
             val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(if(item.tileSize == "small" && PREFS.isMoreTilesEnabled) R.layout.tile_window_small else R.layout.tile_window, holder.itemView as ViewGroup, false)
