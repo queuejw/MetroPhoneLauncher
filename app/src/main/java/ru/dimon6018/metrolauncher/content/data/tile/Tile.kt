@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity( tableName = "tiles" )
-data class Tile (
+@Entity(tableName = "tiles")
+data class Tile(
     @PrimaryKey
     var tilePosition: Int? = null,
     var id: Long? = null,

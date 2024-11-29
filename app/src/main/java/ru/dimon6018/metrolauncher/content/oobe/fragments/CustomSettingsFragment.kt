@@ -15,13 +15,15 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity
 import ru.dimon6018.metrolauncher.databinding.OobeFragmentCustomPrefsBinding
 
-class CustomSettingsFragment: Fragment() {
+class CustomSettingsFragment : Fragment() {
 
     private var _binding: OobeFragmentCustomPrefsBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = OobeFragmentCustomPrefsBinding.inflate(inflater, container, false)
         (requireActivity() as WelcomeActivity).setText(getString(R.string.configureCustomPhone))
         binding.back.setOnClickListener {
@@ -44,14 +46,16 @@ class CustomSettingsFragment: Fragment() {
         }
         return binding.root
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     private fun enterAnimation(exit: Boolean) {
         val main = binding.root
         val animatorSet = AnimatorSet()
-        if(exit) {
+        if (exit) {
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
                 ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),

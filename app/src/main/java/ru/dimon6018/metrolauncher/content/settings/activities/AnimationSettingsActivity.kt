@@ -13,7 +13,7 @@ import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isDevMode
 
-class AnimationSettingsActivity: AppCompatActivity() {
+class AnimationSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsAnimationsBinding
 
@@ -23,8 +23,10 @@ class AnimationSettingsActivity: AppCompatActivity() {
         setContentView(binding.root)
         applyWindowInsets(binding.root)
         setupLayout()
-        if(isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
-            WPDialog(this).setTopDialog(true).setTitle(getString(R.string.tip)).setMessage(getString(R.string.animations_dev_mode)).setPositiveButton(getString(android.R.string.ok), null).show()
+        if (isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
+            WPDialog(this).setTopDialog(true).setTitle(getString(R.string.tip))
+                .setMessage(getString(R.string.animations_dev_mode))
+                .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         setupFont()
     }
@@ -86,6 +88,7 @@ class AnimationSettingsActivity: AppCompatActivity() {
             }
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) {
             return
@@ -93,19 +96,41 @@ class AnimationSettingsActivity: AppCompatActivity() {
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onResume() {
         enterAnimation(false)
         super.onResume()

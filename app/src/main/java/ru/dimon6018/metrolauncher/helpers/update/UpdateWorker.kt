@@ -43,60 +43,80 @@ import java.util.concurrent.TimeUnit
 
 private const val CHAN_ID = "MPL-updates"
 
-class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
+class UpdateWorker(context: Context, workerParams: WorkerParameters) :
+    Worker(context, workerParams) {
     private fun buildNotificationN(context: Context): NotificationCompat.Builder {
         val icon = IconCompat.createWithResource(context, R.drawable.ic_download)
         val intent = Intent(Intent.ACTION_MAIN)
-                .setClass(context, UpdateActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            .setClass(context, UpdateActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             NotificationCompat.Builder(context, CHAN_ID)
-                    .setSmallIcon(icon)
-                    .setContentTitle(context.getString(R.string.app_name))
-                    .setShowWhen(true)
-                    .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                    .setContentText(context.getString(R.string.update_is_available))
-                    .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
-                    .setAutoCancel(true)
-        } else {
-            NotificationCompat.Builder(context, CHAN_ID)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setShowWhen(true)
-                .setCategory(Notification.CATEGORY_RECOMMENDATION)
-                .setContentText(context.getString(R.string.update_is_available))
-                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
-                .setAutoCancel(true)
-        }
-    }
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun buildNotificationO(context: Context): Notification.Builder {
-        val icon = Icon.createWithResource(context, R.drawable.ic_download)
-        val intent = Intent(Intent.ACTION_MAIN)
-                .setClass(context, UpdateActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        return Notification.Builder(context, CHAN_ID)
                 .setSmallIcon(icon)
                 .setContentTitle(context.getString(R.string.app_name))
                 .setShowWhen(true)
                 .setCategory(Notification.CATEGORY_RECOMMENDATION)
                 .setContentText(context.getString(R.string.update_is_available))
                 .setContentIntent(
-                        PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE))
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
                 .setAutoCancel(true)
+        } else {
+            NotificationCompat.Builder(context, CHAN_ID)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setShowWhen(true)
+                .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                .setContentText(context.getString(R.string.update_is_available))
+                .setContentIntent(
+                    PendingIntent.getActivity(
+                        context,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                )
+                .setAutoCancel(true)
+        }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun buildNotificationO(context: Context): Notification.Builder {
+        val icon = Icon.createWithResource(context, R.drawable.ic_download)
+        val intent = Intent(Intent.ACTION_MAIN)
+            .setClass(context, UpdateActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        return Notification.Builder(context, CHAN_ID)
+            .setSmallIcon(icon)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setShowWhen(true)
+            .setCategory(Notification.CATEGORY_RECOMMENDATION)
+            .setContentText(context.getString(R.string.update_is_available))
+            .setContentIntent(
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            )
+            .setAutoCancel(true)
+    }
+
     override fun doWork(): Result {
         val context = applicationContext
         val prefs = Prefs(context)
         val state: Result = try {
             downloadXml(URL)
-            if(isUpdateAvailable()) {
-                if(PREFS.isAutoUpdateEnabled) {
-                    val name = if(UpdateDataParser.isBeta == true) "MPL BETA" else "MPL"
-                    val link = if(UpdateDataParser.isBeta == true) URL_BETA_FILE else URL_RELEASE_FILE
+            if (isUpdateAvailable()) {
+                if (PREFS.isAutoUpdateEnabled) {
+                    val name = if (UpdateDataParser.isBeta == true) "MPL BETA" else "MPL"
+                    val link =
+                        if (UpdateDataParser.isBeta == true) URL_BETA_FILE else URL_RELEASE_FILE
                     downloadFile(name, link, context)
                 } else {
                     prefs.updateState = 6
-                    val noman = ContextCompat.getSystemService(context, NotificationManager::class.java)
+                    val noman =
+                        ContextCompat.getSystemService(context, NotificationManager::class.java)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         val builder = buildNotificationO(context)
                         noman?.notify(1, builder.build())
@@ -115,6 +135,7 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         scheduleWork(context)
         return state
     }
+
     @SuppressLint("Range")
     private fun downloadFile(fileName: String, url: String, context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -131,7 +152,10 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 request.setDescription(context.getString(R.string.update_notification))
                 request.setTitle(fileName)
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MPL_update.apk")
+                request.setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "MPL_update.apk"
+                )
                 val manager = context.getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 val downloadId = manager.enqueue(request)
                 isUpdateDownloading = true
@@ -143,8 +167,10 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 while (isUpdateDownloading) {
                     cursor = manager.query(q)
                     if (cursor != null && cursor.moveToFirst()) {
-                        val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                        val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                        val downloaded =
+                            cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                        val total =
+                            cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
                         val progress: Int = ((downloaded * 100L / total)).toInt()
                         PREFS.updateProgressLevel = progress
                         if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
@@ -169,27 +195,33 @@ class UpdateWorker(context: Context, workerParams: WorkerParameters) : Worker(co
             }
         }
     }
+
     companion object {
         fun setupNotificationChannels(context: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val noman = context.getSystemService(NotificationManager::class.java)
-                val channel = NotificationChannel(CHAN_ID,
-                        context.getString(R.string.notification_channel_name),
-                        NotificationManager.IMPORTANCE_DEFAULT)
+                val channel = NotificationChannel(
+                    CHAN_ID,
+                    context.getString(R.string.notification_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
                 channel.setSound(Uri.EMPTY, Notification.AUDIO_ATTRIBUTES_DEFAULT)
                 channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
                 noman.createNotificationChannel(channel)
             }
         }
+
         fun scheduleWork(context: Context) {
             Log.i("backgroundWork", "scheduleWork")
             val time = 390L
-            val workFoodRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(UpdateWorker::class.java)
+            val workFoodRequest: OneTimeWorkRequest =
+                OneTimeWorkRequest.Builder(UpdateWorker::class.java)
                     .addTag("UPDATE_WORK")
                     .setInitialDelay(time, TimeUnit.MINUTES)
                     .build()
             WorkManager.getInstance(context).enqueue(workFoodRequest)
         }
+
         fun stopWork(context: Context) {
             Log.i("backgroundWork", "stopWork")
             WorkManager.getInstance(context).cancelAllWorkByTag("UPDATE_WORK")

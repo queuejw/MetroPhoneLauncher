@@ -23,10 +23,10 @@ open class PackageChangesReceiver : BroadcastReceiver() {
                 Intent.ACTION_PACKAGE_ADDED -> PACKAGE_INSTALLED
                 Intent.ACTION_PACKAGE_REMOVED, Intent.ACTION_PACKAGE_FULLY_REMOVED -> PACKAGE_REMOVED
                 Intent.ACTION_PACKAGE_CHANGED -> PACKAGE_MISC
-                else -> - 1
+                else -> -1
             }
             // Receive intent from broadcast.
-            if (packageAction != -1 && ! packageName.contains(context.packageName)) {
+            if (packageAction != -1 && !packageName.contains(context.packageName)) {
                 Log.d("Broadcaster", "send broadcast")
                 Intent().apply {
                     putExtra("action", packageAction)
@@ -38,6 +38,7 @@ open class PackageChangesReceiver : BroadcastReceiver() {
             }
         }
     }
+
     companion object {
         const val PACKAGE_REMOVED = 0
         const val PACKAGE_INSTALLED = 1

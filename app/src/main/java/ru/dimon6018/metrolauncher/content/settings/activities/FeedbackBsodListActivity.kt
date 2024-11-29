@@ -29,7 +29,7 @@ import ru.dimon6018.metrolauncher.databinding.LauncherSettingsFeedbackBsodsBindi
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 
-class FeedbackBsodListActivity: AppCompatActivity() {
+class FeedbackBsodListActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsFeedbackBsodsBinding
 
@@ -55,6 +55,7 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         }
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsSectionLabel.typeface = it
@@ -64,25 +65,48 @@ class FeedbackBsodListActivity: AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
 
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onResume() {
         enterAnimation(false)
         super.onResume()
@@ -92,15 +116,17 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         enterAnimation(true)
         super.onPause()
     }
+
     inner class BSODadapter(
         private var data: List<BSODEntity>,
         private val db: BSOD
     ) :
         RecyclerView.Adapter<BSODadapter.ViewHolder>() {
 
-        inner class ViewHolder(val holderBinding: BsodItemBinding) : RecyclerView.ViewHolder(holderBinding.root) {
+        inner class ViewHolder(val holderBinding: BsodItemBinding) :
+            RecyclerView.ViewHolder(holderBinding.root) {
             init {
-                if(PREFS.customFontInstalled) {
+                if (PREFS.customFontInstalled) {
                     customFont?.let {
                         holderBinding.date.typeface = it
                         holderBinding.log.typeface = it
@@ -121,7 +147,13 @@ class FeedbackBsodListActivity: AppCompatActivity() {
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(BsodItemBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false))
+            return ViewHolder(
+                BsodItemBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
+            )
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -143,6 +175,7 @@ class FeedbackBsodListActivity: AppCompatActivity() {
                 sendCrash(item.log, this@FeedbackBsodListActivity)
             }
         }
+
         private fun showDialog(text: String) {
             MaterialAlertDialogBuilder(this@FeedbackBsodListActivity)
                 .setMessage(text)

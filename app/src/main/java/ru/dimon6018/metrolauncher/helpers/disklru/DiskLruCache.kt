@@ -792,6 +792,7 @@ class DiskLruCache private constructor(
             }
         }
     }
+
     inner class Entry(val key: String) {
         /** Lengths of this entry's files.  */
         val lengths: LongArray = LongArray(valueCount)

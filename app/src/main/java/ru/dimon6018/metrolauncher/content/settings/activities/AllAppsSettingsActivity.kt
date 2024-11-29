@@ -11,7 +11,7 @@ import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsAllappsBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
-class AllAppsSettingsActivity: AppCompatActivity() {
+class AllAppsSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsAllappsBinding
 
@@ -21,58 +21,71 @@ class AllAppsSettingsActivity: AppCompatActivity() {
         setContentView(binding.root)
         binding.settingsInclude.settingsBtnSwitch.apply {
             isChecked = PREFS.isSettingsBtnEnabled
-            text = if(PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
+            text =
+                if (PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isSettingsBtnEnabled = isChecked
                 PREFS.isPrefsChanged = true
-                text = if(PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.alphabetSwitch.apply {
             isChecked = PREFS.isAlphabetEnabled
-            text = if(PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
+            text = if (PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isAlphabetEnabled = isChecked
                 PREFS.isPrefsChanged = true
-                text = if(PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.disableAllAppsSwitch.apply {
             isChecked = PREFS.isAllAppsEnabled
-            text = if(PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+            text = if (PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isAllAppsEnabled = isChecked
                 PREFS.isPrefsChanged = true
-                text = if(PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.keyboardWhenSearchingSwitch.apply {
             isChecked = PREFS.showKeyboardWhenSearching
-            text = if(PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+            text =
+                if (PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.showKeyboardWhenSearching = isChecked
-                text = if(PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.showKeyboardWhenSearching) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.keyboardWhenAllAppsOpened.apply {
             isChecked = PREFS.showKeyboardWhenOpeningAllApps
-            text = if(PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
+            text =
+                if (PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.showKeyboardWhenOpeningAllApps = isChecked
-                text = if(PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.showKeyboardWhenOpeningAllApps) getString(R.string.on) else getString(
+                        R.string.off
+                    )
             }
         }
         binding.settingsInclude.allAppsKeyboardActionSwitch.apply {
             isChecked = PREFS.allAppsKeyboardActionEnabled
-            text = if(PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
+            text =
+                if (PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.allAppsKeyboardActionEnabled = isChecked
-                text = if(PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
+                text =
+                    if (PREFS.allAppsKeyboardActionEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
         applyWindowInsets(binding.root)
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsSectionLabel.typeface = it
@@ -97,24 +110,47 @@ class AllAppsSettingsActivity: AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onResume() {
         enterAnimation(false)
         super.onResume()

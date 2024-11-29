@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [Tile::class], version = 2)
-abstract class TileData: RoomDatabase() {
+abstract class TileData : RoomDatabase() {
 
     abstract fun getTileDao(): TileDao
 

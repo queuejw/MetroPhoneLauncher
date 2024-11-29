@@ -9,11 +9,13 @@ import androidx.room.RoomDatabase
 abstract class BSOD : RoomDatabase() {
 
     abstract fun getDao(): BSODDao
+
     companion object {
         private const val DB_BSOD: String = "bsodList.db"
 
         fun getData(context: Context): BSOD {
-            return Room.databaseBuilder(context, BSOD::class.java, DB_BSOD).fallbackToDestructiveMigration().build()
+            return Room.databaseBuilder(context, BSOD::class.java, DB_BSOD)
+                .fallbackToDestructiveMigration().build()
         }
     }
 }

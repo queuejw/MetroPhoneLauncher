@@ -24,7 +24,7 @@ import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 
-class IconSettingsActivity: AppCompatActivity() {
+class IconSettingsActivity : AppCompatActivity() {
 
     private val iconPackManager: IconPackManager by lazy {
         IconPackManager(this)
@@ -53,6 +53,7 @@ class IconSettingsActivity: AppCompatActivity() {
         applyWindowInsets(binding.root)
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsLabel.typeface = it
@@ -68,6 +69,7 @@ class IconSettingsActivity: AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun createDialog() {
         dialog = WPDialog(this).setTopDialog(true)
             .setTitle(getString(R.string.tip))
@@ -78,8 +80,8 @@ class IconSettingsActivity: AppCompatActivity() {
     private fun initView() {
         binding.settingsInclude.chooseIconPack.setOnClickListener {
             setIconPacks()
-            if(!isIconPackListEmpty) {
-                if(!isListVisible) {
+            if (!isIconPackListEmpty) {
+                if (!isListVisible) {
                     isListVisible = true
                     binding.settingsInclude.iconPackList.visibility = View.VISIBLE
                 } else {
@@ -100,16 +102,22 @@ class IconSettingsActivity: AppCompatActivity() {
             setUi()
         }
         binding.settingsInclude.downloadIconPacks.setOnClickListener {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/queuejw/mpl_updates/releases/download/release/Lawnicons.apk")))
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/queuejw/mpl_updates/releases/download/release/Lawnicons.apk")
+                )
+            )
         }
     }
+
     private fun setIconPacks() {
         isError = false
         iconPackArrayList = iconPackManager.getAvailableIconPacks(true)
         isIconPackListEmpty = iconPackArrayList.isEmpty()
         setUi()
         appList.clear()
-        if(iconPackArrayList.isNotEmpty()) {
+        if (iconPackArrayList.isNotEmpty()) {
             for (i in iconPackArrayList) {
                 val app = IconPackItem()
                 app.appPackage = i.packageName!!
@@ -117,7 +125,7 @@ class IconSettingsActivity: AppCompatActivity() {
                 appList.add(app)
             }
         }
-        if(mAdapter != null) {
+        if (mAdapter != null) {
             mAdapter = null
         }
         mAdapter = IconPackAdapterList(appList)
@@ -132,11 +140,12 @@ class IconSettingsActivity: AppCompatActivity() {
             binding.settingsInclude.currentIconPackText.visibility = View.GONE
             binding.settingsInclude.currentIconPackError.apply {
                 visibility = View.VISIBLE
-                text = if(isError) getString(R.string.error) else getString(R.string.iconpack_error)
+                text =
+                    if (isError) getString(R.string.error) else getString(R.string.iconpack_error)
             }
             binding.settingsInclude.removeIconPack.visibility = View.GONE
         } else {
-            val label = if(PREFS.iconPackPackage == "null") {
+            val label = if (PREFS.iconPackPackage == "null") {
                 binding.settingsInclude.currentIconPackText.visibility = View.GONE
                 binding.settingsInclude.removeIconPack.visibility = View.GONE
                 binding.settingsInclude.currentIconPackError.apply {
@@ -149,7 +158,12 @@ class IconSettingsActivity: AppCompatActivity() {
                     binding.settingsInclude.currentIconPackText.visibility = View.VISIBLE
                     binding.settingsInclude.currentIconPackError.visibility = View.GONE
                     binding.settingsInclude.removeIconPack.visibility = View.VISIBLE
-                    packageManager!!.getApplicationLabel(packageManager.getApplicationInfo(PREFS.iconPackPackage!!, 0)).toString()
+                    packageManager!!.getApplicationLabel(
+                        packageManager.getApplicationInfo(
+                            PREFS.iconPackPackage!!,
+                            0
+                        )
+                    ).toString()
                 }.getOrElse {
                     binding.settingsInclude.currentIconPackText.visibility = View.GONE
                     binding.settingsInclude.currentIconPackError.apply {
@@ -159,26 +173,50 @@ class IconSettingsActivity: AppCompatActivity() {
                     "null"
                 }
             }
-            binding.settingsInclude.currentIconPackText.text = getString(R.string.current_iconpack, label)
+            binding.settingsInclude.currentIconPackText.text =
+                getString(R.string.current_iconpack, label)
         }
-        binding.settingsInclude.chooseIconPack.text =  if(isListVisible) getString(android.R.string.cancel) else getString(R.string.choose_icon_pack)
+        binding.settingsInclude.chooseIconPack.text =
+            if (isListVisible) getString(android.R.string.cancel) else getString(R.string.choose_icon_pack)
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
 
@@ -191,12 +229,16 @@ class IconSettingsActivity: AppCompatActivity() {
         enterAnimation(true)
         super.onPause()
     }
-    inner class IconPackAdapterList(private var list: MutableList<IconPackItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    inner class IconPackAdapterList(private var list: MutableList<IconPackItem>) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         private var iconSize = resources.getDimensionPixelSize(R.dimen.iconAppsListSize)
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return IconPackHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
+            return IconPackHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false)
+            )
         }
 
         override fun getItemCount(): Int {
@@ -207,7 +249,9 @@ class IconSettingsActivity: AppCompatActivity() {
             holder as IconPackHolder
             val item = list[position]
             holder.label.text = item.name
-            holder.icon.setImageBitmap(packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize))
+            holder.icon.setImageBitmap(
+                packageManager.getApplicationIcon(item.appPackage).toBitmap(iconSize, iconSize)
+            )
             holder.itemView.setOnClickListener {
                 PREFS.apply {
                     iconPackPackage = item.appPackage
@@ -220,10 +264,12 @@ class IconSettingsActivity: AppCompatActivity() {
             }
         }
     }
+
     class IconPackHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.app_icon)
         val label: MaterialTextView = itemView.findViewById(R.id.app_label)
     }
+
     class IconPackItem {
         var name: String = ""
         var appPackage: String = ""

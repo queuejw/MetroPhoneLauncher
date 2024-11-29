@@ -11,15 +11,17 @@ class BsodDetector : Thread.UncaughtExceptionHandler {
         Log.e("BSOD", "Detected critical error. See: ${e.stackTraceToString()}")
         openErrorActivity(e)
     }
+
     private fun openErrorActivity(e: Throwable) {
         val intent = Intent(cntxt, BsodScreen::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        intent.putExtra("stacktrace",e.stackTraceToString())
+        intent.putExtra("stacktrace", e.stackTraceToString())
         intent.putExtra("errorCode", e.toString())
         cntxt!!.startActivity(intent)
         exitProcess(1)
     }
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         var cntxt: Context? = null

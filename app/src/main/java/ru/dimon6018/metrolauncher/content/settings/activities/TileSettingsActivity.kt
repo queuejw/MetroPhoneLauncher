@@ -11,7 +11,7 @@ import ru.dimon6018.metrolauncher.Application.Companion.customFont
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsTilesBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
-class TileSettingsActivity: AppCompatActivity() {
+class TileSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsTilesBinding
 
@@ -44,28 +44,52 @@ class TileSettingsActivity: AppCompatActivity() {
             })
         }
     }
+
     override fun onResume() {
         super.onResume()
         enterAnimation(false)
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onPause() {
         enterAnimation(true)
         super.onPause()

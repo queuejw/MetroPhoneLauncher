@@ -33,7 +33,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTi
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import kotlin.random.Random
 
-class AppsFragment: Fragment() {
+class AppsFragment : Fragment() {
 
     private val hashCache = SparseArrayCompat<Drawable?>()
 
@@ -49,10 +49,12 @@ class AppsFragment: Fragment() {
         binding.oobeAppsLoadingBar.showProgressBar()
         return binding.root
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val call = TileData.getTileData(requireContext()).getTileDao()
@@ -74,8 +76,8 @@ class AppsFragment: Fragment() {
                     val bmp = if (!isCustomIconsInstalled)
                         pm.getApplicationIcon(it.appPackage!!)
                     else
-                            iconManager?.getIconPackWithName(PREFS.iconPackPackage)
-                                ?.getDrawableIconForPackage(it.appPackage!!, null)
+                        iconManager?.getIconPackWithName(PREFS.iconPackPackage)
+                            ?.getDrawableIconForPackage(it.appPackage!!, null)
                     hashCache.append(it.id, bmp)
                 }
             }
@@ -94,7 +96,7 @@ class AppsFragment: Fragment() {
                     }
                 }
                 binding.next.setOnClickListener {
-                    if(selectedItems!!.isEmpty()) {
+                    if (selectedItems!!.isEmpty()) {
                         WPDialog(requireContext()).apply {
                             setTopDialog(true)
                             setTitle(getString(R.string.reset_warning_title))
@@ -127,6 +129,7 @@ class AppsFragment: Fragment() {
             }
         }
     }
+
     private fun addApps(call: TileDao) {
         lifecycleScope.launch(Dispatchers.Default) {
             var pos = 0
@@ -149,10 +152,11 @@ class AppsFragment: Fragment() {
             }
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         val main = binding.root
         val animatorSet = AnimatorSet()
-        if(exit) {
+        if (exit) {
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
                 ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
@@ -171,6 +175,7 @@ class AppsFragment: Fragment() {
         enterAnimation(false)
         super.onResume()
     }
+
     companion object {
         var selectedItems: MutableList<App>? = null
         var latestItem: Int? = null
@@ -180,12 +185,19 @@ class AppsFragment: Fragment() {
         RecyclerView.Adapter<RecyclerView.ViewHolder?>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return OOBEAppHolder(OobeAppItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+            return OOBEAppHolder(
+                OobeAppItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
 
         override fun getItemCount(): Int {
             return adapterApps.size
         }
+
         @SuppressLint("NotifyDataSetChanged")
         fun selectAll() {
             adapterApps.forEach {
@@ -196,6 +208,7 @@ class AppsFragment: Fragment() {
             }
             notifyDataSetChanged()
         }
+
         @SuppressLint("NotifyDataSetChanged")
         fun removeAll() {
             adapterApps.forEach {
@@ -206,6 +219,7 @@ class AppsFragment: Fragment() {
             }
             notifyDataSetChanged()
         }
+
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val item = adapterApps[position]
             holder as OOBEAppHolder
@@ -228,5 +242,7 @@ class AppsFragment: Fragment() {
             holder.binding.appCheckbox.isChecked = adapterApps[position].selected
         }
     }
-    inner class OOBEAppHolder(val binding: OobeAppItemBinding) : RecyclerView.ViewHolder(binding.root)
+
+    inner class OOBEAppHolder(val binding: OobeAppItemBinding) :
+        RecyclerView.ViewHolder(binding.root)
 }

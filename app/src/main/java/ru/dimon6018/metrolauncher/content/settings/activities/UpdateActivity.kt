@@ -44,7 +44,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 
-class UpdateActivity: AppCompatActivity() {
+class UpdateActivity : AppCompatActivity() {
 
     private var db: BSOD? = null
     private var manager: DownloadManager? = null
@@ -68,6 +68,7 @@ class UpdateActivity: AppCompatActivity() {
         prepareTip()
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsSectionLabel.typeface = it
@@ -86,9 +87,11 @@ class UpdateActivity: AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun init() {
         db = BSOD.getData(this)
     }
+
     private fun setOnClickers() {
         binding.settingsInclude.AutoUpdateCheckBox.setOnCheckedChangeListener { _, isChecked ->
             PREFS.isAutoUpdateEnabled = isChecked
@@ -106,17 +109,24 @@ class UpdateActivity: AppCompatActivity() {
                 .setPositiveButton(getString(android.R.string.ok), null).show()
         }
         binding.settingsInclude.checkForUpdatesBtn.setOnClickListener {
-            if(!checkStoragePermissions(this)) {
+            if (!checkStoragePermissions(this)) {
                 PREFS.updateState = 5
                 refreshUi()
                 showPermsDialog()
                 return@setOnClickListener
             }
-            when(PREFS.updateState) {
+            when (PREFS.updateState) {
                 4 -> {
                     try {
-                        val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-                        val uri = FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
+                        val file = File(
+                            Environment.getExternalStorageDirectory().toString() + "/Download/",
+                            "MPL_update.apk"
+                        )
+                        val uri = FileProvider.getUriForFile(
+                            this,
+                            applicationContext.packageName + ".provider",
+                            file
+                        )
                         PREFS.prefs.edit().putBoolean("updateInstalled", true).apply()
                         openFile(uri, this)
                     } catch (e: Exception) {
@@ -127,9 +137,11 @@ class UpdateActivity: AppCompatActivity() {
                     }
                     return@setOnClickListener
                 }
+
                 6, 7 -> {
                     checkDownload()
                 }
+
                 else -> {
                     PREFS.updateState = 1
                     refreshUi()
@@ -156,10 +168,15 @@ class UpdateActivity: AppCompatActivity() {
             deleteUpdateFile(this)
             refreshUi()
         }
-        if(PREFS.prefs.getBoolean("permsDialogUpdateScreenEnabled", true) && !checkStoragePermissions(this)) showPermsDialog()
+        if (PREFS.prefs.getBoolean(
+                "permsDialogUpdateScreenEnabled",
+                true
+            ) && !checkStoragePermissions(this)
+        ) showPermsDialog()
     }
+
     private fun prepareTip() {
-        if(PREFS.prefs.getBoolean("tipSettingsUpdatesEnabled", true)) {
+        if (PREFS.prefs.getBoolean("tipSettingsUpdatesEnabled", true)) {
             WPDialog(this).setTopDialog(true)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.tipSettingsUpdates))
@@ -168,24 +185,47 @@ class UpdateActivity: AppCompatActivity() {
             PREFS.prefs.edit().putBoolean("tipSettingsUpdatesEnabled", false).apply()
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onResume() {
         enterAnimation(false)
         super.onResume()
@@ -195,6 +235,7 @@ class UpdateActivity: AppCompatActivity() {
         enterAnimation(true)
         super.onPause()
     }
+
     private fun showPermsDialog() {
         val dialog = WPDialog(this).setTopDialog(true)
             .setTitle(getString(R.string.perms_req))
@@ -209,28 +250,35 @@ class UpdateActivity: AppCompatActivity() {
                 hideDialogForever()
                 dialog.dismiss()
             }
-            .setPositiveButton(getString(R.string.no)){ dialog.dismiss()
+            .setPositiveButton(getString(R.string.no)) {
+                dialog.dismiss()
             }
         dialog.show()
     }
+
     private fun getUpdateMessage(): String {
-        return if(UpdateDataParser.updateMsg == null) {
+        return if (UpdateDataParser.updateMsg == null) {
             PREFS.updateMessage
         } else {
             UpdateDataParser.updateMsg!!
         }
     }
+
     override fun onDestroy() {
         coroutineXmlScope.cancel()
         coroutineErrorScope.cancel()
         super.onDestroy()
     }
+
     private fun hideDialogForever() {
         PREFS.prefs.edit().putBoolean("permsDialogUpdateScreenEnabled", false).apply()
     }
+
     private fun getPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", packageName)))
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(
+                Uri.parse(String.format("package:%s", packageName))
+            )
             startActivity(intent)
         } else {
             ActivityCompat.requestPermissions(
@@ -242,6 +290,7 @@ class UpdateActivity: AppCompatActivity() {
             )
         }
     }
+
     private fun refreshUi() {
         binding.settingsInclude.AutoUpdateCheckBox.apply {
             isChecked = PREFS.isAutoUpdateEnabled
@@ -260,13 +309,14 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.GONE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
+
             2 -> {
                 // dowloading state
                 binding.settingsInclude.checkingUpdatesSub.visibility = View.GONE
                 binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
                 binding.settingsInclude.updateIndicator.visibility = View.VISIBLE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
-                val progressString = if(isUpdateDownloading) {
+                val progressString = if (isUpdateDownloading) {
                     binding.settingsInclude.progress.progress = PREFS.updateProgressLevel
                     getString(R.string.preparing_to_install, PREFS.updateProgressLevel) + "%"
                 } else {
@@ -275,6 +325,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.progessText.text = progressString
                 binding.settingsInclude.updateInfo.visibility = View.GONE
             }
+
             3 -> {
                 // up to date
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -289,6 +340,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.GONE
                 binding.settingsInclude.cancelButton.visibility = View.GONE
             }
+
             4 -> {
                 // ready to install
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -303,6 +355,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.VISIBLE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
+
             5 -> {
                 // error
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -317,6 +370,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.GONE
                 binding.settingsInclude.cancelButton.visibility = View.GONE
             }
+
             6 -> {
                 // ready for download
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -331,6 +385,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.VISIBLE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
+
             7 -> {
                 // BETA is ready for download
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -345,6 +400,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.VISIBLE
                 binding.settingsInclude.cancelButton.visibility = View.VISIBLE
             }
+
             8 -> {
                 // current version is newer
                 binding.settingsInclude.checkingUpdatesSub.apply {
@@ -359,6 +415,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.updateInfo.visibility = View.GONE
                 binding.settingsInclude.cancelButton.visibility = View.GONE
             }
+
             0 -> {
                 // default
                 binding.settingsInclude.checkForUpdatesBtn.apply {
@@ -371,7 +428,7 @@ class UpdateActivity: AppCompatActivity() {
                 binding.settingsInclude.cancelButton.visibility = View.GONE
             }
         }
-        if(!BuildConfig.UPDATES_ACITVE) {
+        if (!BuildConfig.UPDATES_ACITVE) {
             binding.settingsInclude.checkForUpdatesBtn.visibility = View.GONE
             binding.settingsInclude.checkingUpdatesSub.apply {
                 visibility = View.VISIBLE
@@ -379,6 +436,7 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
     }
+
     private fun checkForUpdates() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -397,6 +455,7 @@ class UpdateActivity: AppCompatActivity() {
             cancel()
         }
     }
+
     private fun checkUpdateInfo() {
         coroutineXmlScope.launch {
             if (UpdateDataParser.verCode == null) {
@@ -407,7 +466,7 @@ class UpdateActivity: AppCompatActivity() {
                 PREFS.updateState = 3
             } else if (VERSION_CODE > UpdateDataParser.verCode!!) {
                 PREFS.updateState = 8
-            } else if(UpdateDataParser.verCode!! > VERSION_CODE) {
+            } else if (UpdateDataParser.verCode!! > VERSION_CODE) {
                 if (UpdateDataParser.isBeta == true) {
                     PREFS.updateState = 7
                 } else {
@@ -421,6 +480,7 @@ class UpdateActivity: AppCompatActivity() {
             cancel()
         }
     }
+
     private fun checkDownload() {
         if (UpdateDataParser.isBeta == true) {
             Log.i("CheckForUpdates", "download beta")
@@ -430,6 +490,7 @@ class UpdateActivity: AppCompatActivity() {
             downloadFile("MPL", URL_RELEASE_FILE)
         }
     }
+
     @SuppressLint("Range")
     private fun downloadFile(fileName: String, url: String) {
         coroutineDownloadingScope.launch {
@@ -453,7 +514,10 @@ class UpdateActivity: AppCompatActivity() {
                 request.setDescription(getString(R.string.update_notification))
                 request.setTitle(fileName)
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN)
-                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "MPL_update.apk")
+                request.setDestinationInExternalPublicDir(
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "MPL_update.apk"
+                )
                 manager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
                 downloadId = manager?.enqueue(request)
                 isUpdateDownloading = true
@@ -468,10 +532,13 @@ class UpdateActivity: AppCompatActivity() {
                 while (isUpdateDownloading) {
                     cursor = manager!!.query(q)
                     if (cursor != null && cursor.moveToFirst()) {
-                        val downloaded = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                        val total = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                        val downloaded =
+                            cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                        val total =
+                            cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
                         val progress: Int = ((downloaded * 100L / total)).toInt()
-                        val progressString = getString(R.string.preparing_to_install, progress) + "%"
+                        val progressString =
+                            getString(R.string.preparing_to_install, progress) + "%"
                         PREFS.updateProgressLevel = progress
                         withContext(mainDispatcher) {
                             binding.settingsInclude.progessText.text = progressString
@@ -507,7 +574,7 @@ class UpdateActivity: AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 saveError(e.toString(), db!!)
-                if(downloadId != null) {
+                if (downloadId != null) {
                     manager?.remove(downloadId!!)
                 }
                 isUpdateDownloading = false
@@ -523,6 +590,7 @@ class UpdateActivity: AppCompatActivity() {
             cancel()
         }
     }
+
     private suspend fun downloadXmlActivity() {
         Log.i("CheckForUpdates", "download xml")
         val url = URL(URL)
@@ -545,10 +613,14 @@ class UpdateActivity: AppCompatActivity() {
             }
         }
     }
+
     companion object {
-        const val URL: String = "https://github.com/queuejw/mpl_updates/releases/download/release/update.xml"
-        const val URL_BETA_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-beta.apk"
-        const val URL_RELEASE_FILE: String = "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
+        const val URL: String =
+            "https://github.com/queuejw/mpl_updates/releases/download/release/update.xml"
+        const val URL_BETA_FILE: String =
+            "https://github.com/queuejw/mpl_updates/releases/download/release/MPL-beta.apk"
+        const val URL_RELEASE_FILE: String =
+            "https://github.com/queuejw/mpl_updates/releases/download/release/MPL.apk"
 
         fun downloadXml(link: String) {
             Log.i("CheckForUpdates", "download xml")
@@ -564,8 +636,9 @@ class UpdateActivity: AppCompatActivity() {
                 Log.e("CheckForUpdates", "something went wrong: $e")
             }
         }
+
         fun isUpdateAvailable(): Boolean {
-            if(UpdateDataParser.verCode == null || VERSION_CODE > UpdateDataParser.verCode!! || !BuildConfig.UPDATES_ACITVE) {
+            if (UpdateDataParser.verCode == null || VERSION_CODE > UpdateDataParser.verCode!! || !BuildConfig.UPDATES_ACITVE) {
                 return false
             }
             val boolean: Boolean = if (UpdateDataParser.verCode == VERSION_CODE) {
@@ -577,6 +650,7 @@ class UpdateActivity: AppCompatActivity() {
             }
             return boolean
         }
+
         fun openFile(fileUri: Uri, activity: Activity) {
             try {
                 val intent = Intent(Intent.ACTION_VIEW)
@@ -588,10 +662,15 @@ class UpdateActivity: AppCompatActivity() {
                 Log.e("installAPK", e.toString())
             }
         }
+
         fun deleteUpdateFile(context: Context) {
             try {
-                val file = File(Environment.getExternalStorageDirectory().toString() + "/Download/", "MPL_update.apk")
-                val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", file)
+                val file = File(
+                    Environment.getExternalStorageDirectory().toString() + "/Download/",
+                    "MPL_update.apk"
+                )
+                val uri =
+                    FileProvider.getUriForFile(context, context.packageName + ".provider", file)
                 context.contentResolver.delete(uri, null, null)
             } catch (e: IOException) {
                 Log.e("Update", e.toString())

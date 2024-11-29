@@ -45,6 +45,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         prepareTip()
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsSectionLabel.typeface = it
@@ -85,6 +86,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun configure() {
         binding.settingsInclude.chosenAccentName.text = accentName(this)
         binding.settingsInclude.chooseTheme.apply {
@@ -143,10 +145,10 @@ class ThemeSettingsActivity : AppCompatActivity() {
             }
         }
         binding.settingsInclude.wallpaperShowSwitch.apply {
-            isChecked = PREFS.isWallpaperUsed
-            text = if (PREFS.isWallpaperUsed) getString(R.string.on) else getString(R.string.off)
+            isChecked = PREFS.isWallpaperEnabled
+            text = if (PREFS.isWallpaperEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, check ->
-                PREFS.isWallpaperUsed = check
+                PREFS.isWallpaperEnabled = check
                 PREFS.isPrefsChanged = true
                 text = if (check) getString(R.string.on) else getString(R.string.off)
             }
@@ -159,7 +161,8 @@ class ThemeSettingsActivity : AppCompatActivity() {
             text = if (isChecked) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 if (DynamicColors.isDynamicColorAvailable()) {
-                    PREFS.accentColor = if (isChecked) 20 else PREFS.prefs.getInt("previous_accent_color", 5)
+                    PREFS.accentColor =
+                        if (isChecked) 20 else PREFS.prefs.getInt("previous_accent_color", 5)
                     recreate()
                 } else {
                     Snackbar.make(
@@ -346,6 +349,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 requireActivity().recreate()
             }
         }
+
         companion object {
             private const val TAG = "accentD"
             fun display(fragmentManager: FragmentManager?): AccentDialog {
@@ -355,6 +359,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
             }
         }
     }
+
     fun setOrientationButtons() {
         val orientations = mapOf(
             "p" to Triple(true, false, false),

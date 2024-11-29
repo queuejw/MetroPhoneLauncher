@@ -46,10 +46,13 @@ class BsodScreen : AppCompatActivity() {
             val code = intent.extras?.getString("errorCode")
             val errCode = "\nIf vou call a support person. aive them this info:\n" +
                     "Stop code: $code"
-            val error = "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString("stacktrace") + errCode
+            val error =
+                "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString(
+                    "stacktrace"
+                ) + errCode
             Log.e("BSOD", error)
             saveError(error, db!!)
-            if(PREFS.bsodOutputEnabled) {
+            if (PREFS.bsodOutputEnabled) {
                 withContext(Dispatchers.Main) {
                     val errorTextView = findViewById<MaterialTextView>(R.id.bsodDetailsText)
                     errorTextView.text = error
@@ -69,10 +72,12 @@ class BsodScreen : AppCompatActivity() {
         applyWindowInsets(layout)
 
     }
+
     override fun onStart() {
         super.onStart()
         Handler(Looper.getMainLooper()).postDelayed({ restartApplication() }, 3000)
     }
+
     private fun restartApplication() {
         val intent = Intent(this, Main::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

@@ -29,8 +29,10 @@ class WelcomeFragment : Fragment() {
     private var _binding: OobeFragmentWelcomeBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = OobeFragmentWelcomeBinding.inflate(inflater, container, false)
         (requireActivity() as WelcomeActivity).setText(getString(R.string.welcomePhone))
         binding.next.setOnClickListener {
@@ -42,20 +44,23 @@ class WelcomeFragment : Fragment() {
                 }
             }
         }
-        if(!Application.PREFS.prefs.getBoolean("channelConfigured", false)) {
+        if (!Application.PREFS.prefs.getBoolean("channelConfigured", false)) {
             UpdateWorker.setupNotificationChannels(requireActivity())
             Application.PREFS.prefs.edit().putBoolean("channelConfigured", true).apply()
         }
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         generatePlaceholders()
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
     private fun generatePlaceholders() {
         placeholderCoroutine.launch {
             Application.PREFS.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
@@ -63,10 +68,11 @@ class WelcomeFragment : Fragment() {
             cancel()
         }
     }
+
     private fun enterAnimation(exit: Boolean) {
         val animatorSet = AnimatorSet()
         val main = binding.root
-        if(exit) {
+        if (exit) {
             animatorSet.playTogether(
                 ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
                 ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),

@@ -119,12 +119,12 @@ class Utils {
             R.style.AppTheme_Magenta, R.style.AppTheme_Crimson, R.style.AppTheme_Red,
             R.style.AppTheme_Orange, R.style.AppTheme_Amber, R.style.AppTheme_Yellow,
             R.style.AppTheme_Brown, R.style.AppTheme_Olive, R.style.AppTheme_Steel,
-            R.style.AppTheme_Mauve, R.style.AppTheme_Taupe,  R.style.AppTheme_Dynamic
+            R.style.AppTheme_Mauve, R.style.AppTheme_Taupe, R.style.AppTheme_Dynamic
         )
 
         fun accentColorFromPrefs(context: Context): Int {
             val selectedColor = Prefs(context).accentColor
-            if(selectedColor == 20) {
+            if (selectedColor == 20) {
                 return launcherAccentColor(context.theme)
             }
             return if (selectedColor >= 0 && selectedColor < accentColors.size) {
@@ -158,6 +158,7 @@ class Utils {
                 R.style.AppTheme_Cobalt
             }
         }
+
         fun launcherAccentColor(theme: Resources.Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
@@ -167,6 +168,17 @@ class Utils {
             )
             return typedValue.data
         }
+
+        fun launcherBackgroundColor(theme: Resources.Theme): Int {
+            val typedValue = TypedValue()
+            theme.resolveAttribute(
+                android.R.attr.colorBackground,
+                typedValue,
+                true
+            )
+            return typedValue.data
+        }
+
         fun launcherSurfaceColor(theme: Resources.Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
@@ -176,6 +188,7 @@ class Utils {
             )
             return typedValue.data
         }
+
         fun launcherOnSurfaceColor(theme: Resources.Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
@@ -185,6 +198,7 @@ class Utils {
             )
             return typedValue.data
         }
+
         fun accentName(context: Context): String {
             val selectedColor = PREFS.accentColor
             return if (selectedColor >= 0 && selectedColor < accentNames.size) {
@@ -264,6 +278,7 @@ class Utils {
                         }
                         userLanguageApps[header]?.add(app)
                     }
+
                     label.matches(Regex("^[a-zA-Z].*")) -> {
                         val header = label[0].lowercase(defaultLocale)
                         englishHeaders.add(header)
@@ -272,7 +287,10 @@ class Utils {
                         }
                         englishApps[header]?.add(app)
                     }
-                    else -> { otherApps.add(app) }
+
+                    else -> {
+                        otherApps.add(app)
+                    }
                 }
             }
             val list = mutableListOf<App>()
@@ -303,18 +321,21 @@ class Utils {
                             db.clearAllTables()
                             pos = 0
                         }
+
                         1 -> {
                             if (dao.getBsodList().size >= 5) {
                                 dao.removeLog(dao.getBsodList().first())
                             }
                             pos = db.getDao().getBsodList().size
                         }
+
                         2 -> {
                             if (dao.getBsodList().size >= 10) {
                                 dao.removeLog(dao.getBsodList().first())
                             }
                             pos = dao.getBsodList().size
                         }
+
                         else -> {
                             pos = dao.getBsodList().size
                         }
@@ -324,8 +345,9 @@ class Utils {
                 }
             }
         }
+
         fun generateRandomTileSize(genBigTiles: Boolean): String {
-            val int = if(!genBigTiles) Random.nextInt(0, 2) else Random.nextInt(0, 3)
+            val int = if (!genBigTiles) Random.nextInt(0, 2) else Random.nextInt(0, 3)
             return when (int) {
                 0 -> "small"
                 1 -> "medium"
@@ -333,6 +355,7 @@ class Utils {
                 else -> "medium"
             }
         }
+
         fun sendCrash(text: String, activity: Activity) {
             val intent = Intent(Intent.ACTION_SENDTO)
             intent.setData(Uri.parse("mailto:dimon6018t@gmail.com"))
@@ -342,6 +365,7 @@ class Utils {
                 activity.startActivity(intent)
             }
         }
+
         @SuppressLint("InlinedApi", "UnspecifiedRegisterReceiverFlag")
         fun registerPackageReceiver(
             activity: AppCompatActivity,
@@ -361,6 +385,7 @@ class Utils {
                 }
             }
         }
+
         fun unregisterPackageReceiver(
             activity: AppCompatActivity,
             packageReceiver: PackageChangesReceiver?
@@ -371,6 +396,7 @@ class Utils {
                 Log.w("Utils", "unregisterPackageReceiver error: $w")
             }
         }
+
         fun isScreenOn(context: Context?): Boolean {
             if (context != null) {
                 val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
@@ -379,10 +405,14 @@ class Utils {
                 return false
             }
         }
+
         fun isDevMode(context: Context): Boolean {
-            return Settings.Secure.getInt(context.contentResolver,
-                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) != 0
+            return Settings.Secure.getInt(
+                context.contentResolver,
+                Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0
+            ) != 0
         }
+
         @SuppressLint("ClickableViewAccessibility")
         fun setViewInteractAnimation(view: View) {
             view.setOnTouchListener { _, event ->
@@ -392,13 +422,17 @@ class Utils {
                     MotionEvent.ACTION_DOWN -> {
                         val rotationX = (event.y - centerY) / centerY * 5
                         val rotationY = (centerX - event.x) / centerX * 5
-                        ObjectAnimator.ofFloat(view, "rotationX", -rotationX).setDuration(200).start()
-                        ObjectAnimator.ofFloat(view, "rotationY", -rotationY).setDuration(200).start()
+                        ObjectAnimator.ofFloat(view, "rotationX", -rotationX).setDuration(200)
+                            .start()
+                        ObjectAnimator.ofFloat(view, "rotationY", -rotationY).setDuration(200)
+                            .start()
                     }
+
                     MotionEvent.ACTION_UP -> {
                         ObjectAnimator.ofFloat(view, "rotationX", 0f).setDuration(200).start()
                         ObjectAnimator.ofFloat(view, "rotationY", 0f).setDuration(200).start()
                     }
+
                     MotionEvent.ACTION_CANCEL -> {
                         ObjectAnimator.ofFloat(view, "rotationX", 0f).setDuration(200).start()
                         ObjectAnimator.ofFloat(view, "rotationY", 0f).setDuration(200).start()
@@ -407,6 +441,7 @@ class Utils {
                 false
             }
         }
+
         fun getUserLanguageRegexCompat(locale: Locale): Regex {
             return when (locale.language) {
                 "ru" -> Regex("[а-яА-ЯёЁ]")
@@ -414,6 +449,7 @@ class Utils {
                 else -> Regex("[a-zA-Z]")
             }
         }
+
         @RequiresApi(Build.VERSION_CODES.N)
         fun getUserLanguageRegex(locale: Locale): Pattern {
             val uLocale = ULocale.forLocale(locale)
@@ -427,6 +463,7 @@ class Utils {
             val regexPattern = "[${lowercaseLetters.toPattern(false)}]"
             return Pattern.compile(regexPattern)
         }
+
         fun getAlphabetCompat(languageCode: String): List<String>? {
             val alphabets = mapOf(
                 "en" to ('A'..'Z').map { it.toString() },
@@ -435,6 +472,7 @@ class Utils {
             val alphabet = alphabets[languageCode] ?: alphabets["en"]
             return alphabet
         }
+
         @RequiresApi(Build.VERSION_CODES.N)
         fun getAlphabet(languageCode: String): List<String> {
             val index = AlphabeticIndex<String>(ULocale(languageCode))
@@ -448,12 +486,14 @@ class Utils {
             alphabet.removeAt(alphabet.size - 1)
             return alphabet
         }
+
         suspend fun generatePlaceholder(call: TileDao, value: Int) {
-            val size = if(PREFS.isMoreTilesEnabled) value * 2 else value
+            val size = if (PREFS.isMoreTilesEnabled) value * 2 else value
             val startFrom = call.getTilesList().size
             val end = startFrom + size
             for (i in startFrom..end) {
-                val placeholder = Tile(i, (i + 1).toLong(), -1, -1,
+                val placeholder = Tile(
+                    i, (i + 1).toLong(), -1, -1,
                     isSelected = false,
                     tileSize = "small",
                     tileLabel = "",
@@ -462,26 +502,36 @@ class Utils {
                 call.addTile(placeholder)
             }
         }
+
         fun getDefaultLocale(): Locale {
             return Locale.getDefault()
         }
+
         fun getEnglishLanguage(): String {
             return Locale.ENGLISH.language
         }
+
         fun checkStoragePermissions(context: Context): Boolean {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 Environment.isExternalStorageManager()
             } else {
                 val write =
-                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
                 val read =
-                    ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    )
                 read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
             }
         }
+
         fun getCustomFont(): Typeface? {
             val path = PREFS.customFontPath
-            if(!PREFS.customFontInstalled || path == null) return null
+            if (!PREFS.customFontInstalled || path == null) return null
             return path.let {
                 val fontFile = File(it)
                 if (fontFile.exists()) {
@@ -495,6 +545,7 @@ class Utils {
                 }
             }
         }
+
         fun getCustomLightFont(): Typeface? {
             val path = PREFS.customLightFontPath
             if (!PREFS.customFontInstalled || path == null) return null
@@ -510,6 +561,7 @@ class Utils {
                 }
             }
         }
+
         fun getCustomBoldFont(): Typeface? {
             val path = PREFS.customBoldFontPath
             if (!PREFS.customFontInstalled || path == null) return null
@@ -526,6 +578,7 @@ class Utils {
             }
         }
     }
+
     class MarginItemDecoration(private val spaceSize: Int) : ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect, view: View,
@@ -540,6 +593,7 @@ class Utils {
             }
         }
     }
+
     class BottomOffsetDecoration(private val bottomOffset: Int) : ItemDecoration() {
         override fun getItemOffsets(
             outRect: Rect,

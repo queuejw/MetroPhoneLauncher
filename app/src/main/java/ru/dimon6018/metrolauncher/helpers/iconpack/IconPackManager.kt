@@ -36,6 +36,7 @@ class IconPackManager(context: Context) {
         private var mFactor = 1.0f
 
         private var iconPackRes: Resources? = null
+
         @SuppressLint("DiscouragedApi")
         private fun load() {
             // load appfilter.xml from the icon pack package
@@ -62,33 +63,40 @@ class IconPackManager(context: Context) {
                     var eventType = xpp.eventType
                     while (eventType != XmlPullParser.END_DOCUMENT) {
                         if (eventType == XmlPullParser.START_TAG) {
-                            when(xpp.name) {
+                            when (xpp.name) {
                                 "iconback" -> {
                                     for (i in 0 until xpp.attributeCount) {
                                         if (xpp.getAttributeName(i).startsWith("img")) {
                                             val drawableName = xpp.getAttributeValue(i)
                                             val iconback = loadBitmap(drawableName)
-                                            if (iconback != null) mBackImages.append(iconback.hashCode(),iconback)
+                                            if (iconback != null) mBackImages.append(
+                                                iconback.hashCode(),
+                                                iconback
+                                            )
                                         }
                                     }
                                 }
+
                                 "iconmask" -> {
                                     if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
                                         val drawableName = xpp.getAttributeValue(0)
                                         mMaskImage = loadBitmap(drawableName)
                                     }
                                 }
+
                                 "iconupon" -> {
                                     if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "img1") {
                                         val drawableName = xpp.getAttributeValue(0)
                                         mFrontImage = loadBitmap(drawableName)
                                     }
                                 }
+
                                 "scale" -> {
                                     if (xpp.attributeCount > 0 && xpp.getAttributeName(0) == "factor") {
                                         mFactor = xpp.getAttributeValue(0).toFloat()
                                     }
                                 }
+
                                 "item" -> {
                                     var componentName: String? = null
                                     var drawableName: String? = null
@@ -131,12 +139,16 @@ class IconPackManager(context: Context) {
         }
 
         @SuppressLint("DiscouragedApi")
-        fun getDrawableIconForPackage(appPackageName: String?, defaultDrawable: Drawable?): Drawable? {
+        fun getDrawableIconForPackage(
+            appPackageName: String?,
+            defaultDrawable: Drawable?
+        ): Drawable? {
             if (!mLoaded) load()
             val pm = mContext.packageManager
             val launchIntent = pm.getLaunchIntentForPackage(appPackageName!!)
             var componentName: String? = null
-            if (launchIntent != null) componentName = pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
+            if (launchIntent != null) componentName =
+                pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
             var drawable = mPackagesDrawables[componentName]
             if (drawable != null) {
                 return loadDrawable(drawable)
@@ -146,8 +158,15 @@ class IconPackManager(context: Context) {
                     val start = componentName.indexOf("{") + 1
                     val end = componentName.indexOf("}", start)
                     if (end > start) {
-                        drawable = componentName.substring(start, end).lowercase(Locale.getDefault()).replace(".", "_").replace("/", "_")
-                        if (iconPackRes!!.getIdentifier(drawable, "drawable", packageName) > 0) return loadDrawable(drawable)
+                        drawable =
+                            componentName.substring(start, end).lowercase(Locale.getDefault())
+                                .replace(".", "_").replace("/", "_")
+                        if (iconPackRes!!.getIdentifier(
+                                drawable,
+                                "drawable",
+                                packageName
+                            ) > 0
+                        ) return loadDrawable(drawable)
                     }
                 }
             }
@@ -161,7 +180,8 @@ class IconPackManager(context: Context) {
             val pm = mContext.packageManager
             val launchIntent = pm.getLaunchIntentForPackage(appPackageName!!)
             var componentName: String? = null
-            if (launchIntent != null) componentName = pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
+            if (launchIntent != null) componentName =
+                pm.getLaunchIntentForPackage(appPackageName)!!.component.toString()
             var drawable = mPackagesDrawables[componentName]
             if (drawable != null) {
                 val bmp = loadBitmap(drawable)
@@ -172,8 +192,15 @@ class IconPackManager(context: Context) {
                     val start = componentName.indexOf("{") + 1
                     val end = componentName.indexOf("}", start)
                     if (end > start) {
-                        drawable = componentName.substring(start, end).lowercase(Locale.getDefault()).replace(".", "_").replace("/", "_")
-                        if (iconPackRes!!.getIdentifier(drawable, "drawable", packageName) > 0) return loadBitmap(drawable)
+                        drawable =
+                            componentName.substring(start, end).lowercase(Locale.getDefault())
+                                .replace(".", "_").replace("/", "_")
+                        if (iconPackRes!!.getIdentifier(
+                                drawable,
+                                "drawable",
+                                packageName
+                            ) > 0
+                        ) return loadBitmap(drawable)
                     }
                 }
             }
@@ -197,11 +224,17 @@ class IconPackManager(context: Context) {
             mCanvas.drawBitmap(backImage, 0f, 0f, null)
 
             // create a mutable mask bitmap with the same mask
-            val scaledBitmap: Bitmap = if (defaultBitmap.getWidth() > w || defaultBitmap.getHeight() > h) {
-                Bitmap.createScaledBitmap(defaultBitmap, (w * mFactor).toInt(), (h * mFactor).toInt(), false)
-            } else {
-                Bitmap.createBitmap(defaultBitmap)
-            }
+            val scaledBitmap: Bitmap =
+                if (defaultBitmap.getWidth() > w || defaultBitmap.getHeight() > h) {
+                    Bitmap.createScaledBitmap(
+                        defaultBitmap,
+                        (w * mFactor).toInt(),
+                        (h * mFactor).toInt(),
+                        false
+                    )
+                } else {
+                    Bitmap.createBitmap(defaultBitmap)
+                }
             val mutableMask = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
             val maskCanvas = Canvas(mutableMask)
             if (mMaskImage != null) {
@@ -212,7 +245,12 @@ class IconPackManager(context: Context) {
                 val paint = Paint(Paint.ANTI_ALIAS_FLAG)
                 paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
                 mCanvas.apply {
-                    drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
+                    drawBitmap(
+                        scaledBitmap,
+                        (w - scaledBitmap.getWidth()).toFloat() / 2,
+                        (h - scaledBitmap.getHeight()).toFloat() / 2,
+                        null
+                    )
                     drawBitmap(mutableMask, 0f, 0f, paint)
                 }
                 paint.xfermode = null
@@ -224,7 +262,12 @@ class IconPackManager(context: Context) {
                 val paint = Paint(Paint.ANTI_ALIAS_FLAG)
                 paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
                 mCanvas.apply {
-                    drawBitmap(scaledBitmap, (w - scaledBitmap.getWidth()).toFloat() / 2, (h - scaledBitmap.getHeight()).toFloat() / 2, null)
+                    drawBitmap(
+                        scaledBitmap,
+                        (w - scaledBitmap.getWidth()).toFloat() / 2,
+                        (h - scaledBitmap.getHeight()).toFloat() / 2,
+                        null
+                    )
                     drawBitmap(mutableMask, 0f, 0f, paint)
                 }
                 paint.xfermode = null
@@ -254,6 +297,7 @@ class IconPackManager(context: Context) {
             return result
         }
     }
+
     private var iconPacks: ArrayList<IconPack>? = null
 
     fun getAvailableIconPacks(forceReload: Boolean): ArrayList<IconPack> {
@@ -262,8 +306,14 @@ class IconPackManager(context: Context) {
 
             // find apps with intent-filter "com.gau.go.launcherex.theme" and return build the HashMap
             val pm = mContext.packageManager
-            val adwLauncherThemes = pm.queryIntentActivities(Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA)
-            val goLauncherThemes = pm.queryIntentActivities(Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA)
+            val adwLauncherThemes = pm.queryIntentActivities(
+                Intent("org.adw.launcher.THEMES"),
+                PackageManager.GET_META_DATA
+            )
+            val goLauncherThemes = pm.queryIntentActivities(
+                Intent("com.gau.go.launcherex.theme"),
+                PackageManager.GET_META_DATA
+            )
 
             // merge those lists
             val resolveInfo: MutableList<ResolveInfo> = ArrayList(adwLauncherThemes)
@@ -286,7 +336,7 @@ class IconPackManager(context: Context) {
         val pm = mContext.packageManager
         val targetPack = IconPack()
         targetPack.packageName = packageName
-        if(iconPacks == null) {
+        if (iconPacks == null) {
             iconPacks = getAvailableIconPacks(true)
         }
         if (iconPacks!!.contains(targetPack)) {

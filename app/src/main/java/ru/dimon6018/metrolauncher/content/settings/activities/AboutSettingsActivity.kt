@@ -31,7 +31,8 @@ import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
 
-    private val caracalLink = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/1288px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
+    private val caracalLink =
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/1288px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
 
     private lateinit var binding: LauncherSettingsAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,7 @@ class AboutSettingsActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets(binding.root)
         setupLayout()
-        if(PREFS.customFontInstalled) {
+        if (PREFS.customFontInstalled) {
             customFont?.let {
                 binding.settingsSectionLabel.typeface = it
                 binding.settingsInclude.phoneinfoLabel.typeface = it
@@ -67,9 +68,21 @@ class AboutSettingsActivity : AppCompatActivity() {
     }
 
     private fun setupLayout() {
-        binding.settingsInclude.phoneinfo.text = getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
+        binding.settingsInclude.phoneinfo.text =
+            getString(R.string.phone_info, "$MANUFACTURER $PRODUCT", MODEL, VERSION_NAME)
         binding.settingsInclude.moreInfobtn.setOnClickListener {
-            binding.settingsInclude.phoneinfoMore.text = getString(R.string.phone_moreinfo, VERSION_NAME, VERSION_CODE, DEVICE, BRAND, MODEL, PRODUCT, HARDWARE, BUILD, TIME)
+            binding.settingsInclude.phoneinfoMore.text = getString(
+                R.string.phone_moreinfo,
+                VERSION_NAME,
+                VERSION_CODE,
+                DEVICE,
+                BRAND,
+                MODEL,
+                PRODUCT,
+                HARDWARE,
+                BUILD,
+                TIME
+            )
             binding.settingsInclude.moreInfobtn.visibility = View.GONE
             binding.settingsInclude.moreinfoLayout.visibility = View.VISIBLE
         }
@@ -94,7 +107,8 @@ class AboutSettingsActivity : AppCompatActivity() {
             return@setOnLongClickListener true
         }
         binding.settingsInclude.queuejwImg.setOnClickListener {
-            WPDialog(this).setTopDialog(true).setTitle("Meow meow").setMessage("Meow meow, meow?").setPositiveButton("meow", null).show()
+            WPDialog(this).setTopDialog(true).setTitle("Meow meow").setMessage("Meow meow, meow?")
+                .setPositiveButton("meow", null).show()
         }
     }
 
@@ -104,22 +118,44 @@ class AboutSettingsActivity : AppCompatActivity() {
         finishAffinity()
         startActivity(intent)
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
 

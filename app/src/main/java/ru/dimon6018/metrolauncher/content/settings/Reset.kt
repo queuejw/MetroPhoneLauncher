@@ -31,6 +31,7 @@ class Reset : AppCompatActivity() {
         intent = Intent(this, WelcomeActivity::class.java)
         resetPart2()
     }
+
     private fun resetPart2() {
         lifecycleScope.launch(Dispatchers.IO) {
             dbApps!!.clearAllTables()

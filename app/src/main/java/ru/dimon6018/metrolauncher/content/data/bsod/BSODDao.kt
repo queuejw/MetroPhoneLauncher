@@ -9,10 +9,13 @@ import androidx.room.Query
 interface BSODDao {
     @Insert
     fun insertLog(bsod: BSODEntity)
+
     @Delete
     fun removeLog(bsod: BSODEntity)
+
     @Query("SELECT * FROM bsod_list")
     fun getBsodList(): List<BSODEntity>
+
     @Query("SELECT * FROM bsod_list WHERE pos = :pos")
     fun getBSOD(pos: Int): BSODEntity
 }

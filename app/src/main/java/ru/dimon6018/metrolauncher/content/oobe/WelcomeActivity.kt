@@ -13,12 +13,12 @@ import ru.dimon6018.metrolauncher.databinding.OobeMainScreenBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
 
-class WelcomeActivity: AppCompatActivity() {
+class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var binding: OobeMainScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        when(PREFS.appTheme) {
+        when (PREFS.appTheme) {
             0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -38,6 +38,7 @@ class WelcomeActivity: AppCompatActivity() {
         }
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
+
     fun setText(newText: String) {
         binding.appbarTextView.text = newText
     }

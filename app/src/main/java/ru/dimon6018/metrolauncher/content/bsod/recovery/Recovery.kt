@@ -7,7 +7,7 @@ import ru.dimon6018.metrolauncher.Main
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.databinding.RecoveryMainScreenBinding
 
-class Recovery: AppCompatActivity() {
+class Recovery : AppCompatActivity() {
 
     private lateinit var binding: RecoveryMainScreenBinding
 

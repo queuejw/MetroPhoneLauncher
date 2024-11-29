@@ -11,6 +11,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
@@ -66,6 +67,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 
+// Main application screen (tiles, apps)
 class Main : AppCompatActivity() {
 
     private lateinit var pagerAdapter: FragmentStateAdapter
@@ -87,17 +89,20 @@ class Main : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         isDarkMode = resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
-        when(PREFS.appTheme) {
+        when (PREFS.appTheme) {
             0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
         handleDevMode()
         super.onCreate(savedInstanceState)
+
+        // If MPL has never run before, open OOBE
         if (PREFS.launcherState == 0) {
             runOOBE()
             return
         }
+
         binding = LauncherMainScreenBinding.inflate(layoutInflater)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(binding.root)
@@ -112,6 +117,7 @@ class Main : AppCompatActivity() {
         }
     }
 
+    // Turn off animations if developer mode is enabled to prevent some animation issues
     private fun handleDevMode() {
         if (isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
             disableAnims()
@@ -134,6 +140,13 @@ class Main : AppCompatActivity() {
 
     private fun setupUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (PREFS.isWallpaperEnabled) {
+            window?.setFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
+                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER
+            )
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomBar.navigationFrame) { view, insets ->
             val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
@@ -143,15 +156,20 @@ class Main : AppCompatActivity() {
             )
             insets
         }
-        if(PREFS.isSearchBarEnabled) applyWindowInsets(binding.mainSearchResults.searchBarResultsLayout)
+        if (PREFS.isSearchBarEnabled) applyWindowInsets(binding.mainSearchResults.searchBarResultsLayout)
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         registerPackageReceiver(this, packageReceiver)
         otherTasks()
     }
 
     private fun checkUpdate() {
-        if (PREFS.prefs.getBoolean("updateInstalled", false) && PREFS.versionCode == VERSION_CODE) PREFS.updateState = 3
+        if (PREFS.prefs.getBoolean(
+                "updateInstalled",
+                false
+            ) && PREFS.versionCode == VERSION_CODE
+        ) PREFS.updateState = 3
     }
+
     private fun disableAnims() {
         PREFS.apply {
             isAAllAppsAnimEnabled = false
@@ -186,6 +204,7 @@ class Main : AppCompatActivity() {
             super.onPageSelected(position)
             updateNavigationBarColors(position)
         }
+
         private fun updateNavigationBarColors(position: Int) {
             if (!PREFS.isSearchBarEnabled && PREFS.navBarColor != 2) {
                 val (startColor, searchColor) = when {
@@ -196,12 +215,23 @@ class Main : AppCompatActivity() {
                 binding.mainBottomBar.navigationSearchBtn.setColorFilter(searchColor)
             }
         }
+
+        override fun onPageScrollStateChanged(state: Int) {
+            when (state) {
+                ViewPager2.SCROLL_STATE_DRAGGING -> isViewPagerScrolling = true
+                ViewPager2.SCROLL_STATE_SETTLING -> isViewPagerScrolling = true
+                ViewPager2.SCROLL_STATE_IDLE -> isViewPagerScrolling = false
+            }
+        }
     }
 
     override fun onResume() {
+        // restart MPL if some settings have been changed
         if (PREFS.isPrefsChanged) restart()
+
         super.onResume()
     }
+
     private fun restart() {
         PREFS.isPrefsChanged = false
         val componentName = Intent(this, this::class.java).component
@@ -209,6 +239,7 @@ class Main : AppCompatActivity() {
         startActivity(intent)
         Runtime.getRuntime().exit(0)
     }
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterPackageReceiver(this, packageReceiver)
@@ -237,7 +268,7 @@ class Main : AppCompatActivity() {
     private suspend fun regenerateIcons() {
         val isCustomIconsInstalled = PREFS.iconPackPackage != "null"
         var diskCache = initDiskCache(this)
-        if(isCustomIconsInstalled) {
+        if (isCustomIconsInstalled) {
             checkIconPack(diskCache)
         }
         if (PREFS.iconPackChanged) {
@@ -282,6 +313,7 @@ class Main : AppCompatActivity() {
         }
     }
 
+    // Icon generation for cache
     fun generateIcon(appPackage: String, isCustomIconsInstalled: Boolean) {
         val icon = if (!isCustomIconsInstalled) {
             packageManager.getApplicationIcon(appPackage)
@@ -316,6 +348,7 @@ class Main : AppCompatActivity() {
         }
     }
 
+    // If 5 seconds after the crash is successful, display an error message
     private fun crashCheck() {
         if (PREFS.prefs.getBoolean("app_crashed", false)) {
             lifecycleScope.launch(Dispatchers.Default) {
@@ -367,6 +400,7 @@ class Main : AppCompatActivity() {
                 binding.mainBottomBar.navigationFrame.visibility = View.GONE
                 return ContextCompat.getColor(this, android.R.color.transparent)
             }
+
             else -> launcherSurfaceColor(theme)
         }
     }
@@ -418,6 +452,7 @@ class Main : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 filterSearchText(s.toString(), mainViewModel.getAppList())
             }
+
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable) {}
         })
@@ -436,6 +471,7 @@ class Main : AppCompatActivity() {
     fun hideSearch() {
         hideSearchResults()
     }
+
     private fun hideSearchResults() {
         lifecycleScope.launch {
             searching = false
@@ -464,16 +500,20 @@ class Main : AppCompatActivity() {
         val defaultLocale = getDefaultLocale()
         filteredList.clear()
 
-        appList.filter { it.appLabel!!.lowercase(defaultLocale).contains(text.lowercase(defaultLocale)) }
+        appList.filter {
+            it.appLabel!!.lowercase(defaultLocale).contains(text.lowercase(defaultLocale))
+        }
             .take(max)
             .let { filteredList.addAll(it) }
 
         filteredList.sortWith(compareBy { it.appLabel })
         searchAdapter?.setData(filteredList)
     }
+
     companion object {
         var isLandscape: Boolean = false
         var isDarkMode: Boolean = false
+        var isViewPagerScrolling: Boolean = false
     }
 
     inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
@@ -489,10 +529,13 @@ class Main : AppCompatActivity() {
         }
     }
 
-    inner class SearchAdapter(private var dataList: MutableList<App>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class SearchAdapter(private var dataList: MutableList<App>) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            return AppSearchHolder(LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false))
+            return AppSearchHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.app, parent, false)
+            )
         }
 
         override fun getItemCount(): Int = dataList.size

@@ -15,6 +15,7 @@ class CacheUtils {
             val cachePath = context.cacheDir.path
             return File(cachePath + File.separator + "icons")
         }
+
         fun initDiskCache(context: Context): DiskLruCache? {
             try {
                 val cacheDir = getDiskCacheDir(context)
@@ -25,8 +26,9 @@ class CacheUtils {
                 return null
             }
         }
+
         fun saveIconToDiskCache(diskLruCache: DiskLruCache?, key: String, bitmap: Bitmap?) {
-            if(diskLruCache != null && bitmap != null) {
+            if (diskLruCache != null && bitmap != null) {
                 val editor = diskLruCache.edit(key.toMd5())
                 if (editor != null) {
                     try {
@@ -42,16 +44,19 @@ class CacheUtils {
                 Log.d("saveIconToDiskCache", "diskLruCache or bitmap is null")
             }
         }
+
         private fun String.toMd5(): String {
             val md = MessageDigest.getInstance("MD5")
             return md.digest(toByteArray())
                 .joinToString("") { "%02x".format(it) }
         }
+
         fun loadIconFromDiskCache(diskLruCache: DiskLruCache, key: String): Bitmap? {
             val snapshot = diskLruCache.get(key.toMd5()) ?: return null
             val inputStream = snapshot.getInputStream(0)
             return BitmapFactory.decodeStream(inputStream)
         }
+
         fun closeDiskCache(diskLruCache: DiskLruCache): Boolean {
             try {
                 diskLruCache.close()

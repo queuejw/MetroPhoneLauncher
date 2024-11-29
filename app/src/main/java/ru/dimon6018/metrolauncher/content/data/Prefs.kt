@@ -58,16 +58,17 @@ class Prefs(context: Context) {
     init {
         prefs = context.getSharedPreferences(fileName, 0)
     }
+
     fun reset() {
         prefs.edit().clear().apply()
     }
 
-    var isWallpaperUsed: Boolean
+    var isWallpaperEnabled: Boolean
         get() = prefs.getBoolean(wallpaperPref, false)
         set(value) = prefs.edit().putBoolean(wallpaperPref, value).apply()
 
     var isMoreTilesEnabled: Boolean
-        get() =  prefs.getBoolean(showMoreTilesPref, false)
+        get() = prefs.getBoolean(showMoreTilesPref, false)
         set(value) = prefs.edit().putBoolean(showMoreTilesPref, value).apply()
 
     var maxCrashLogs: Int
@@ -83,7 +84,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putBoolean(feedbackPref, value).apply()
 
     var updateState: Int
-        get() =  prefs.getInt(updateStatePref, 0)
+        get() = prefs.getInt(updateStatePref, 0)
         // 0 - nothing
         // 1 - checking
         // 2 - downloading
@@ -95,7 +96,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putInt(updateStatePref, value).apply()
 
     var updateProgressLevel: Int
-        get() =  prefs.getInt(updatePercentagePref, 0)
+        get() = prefs.getInt(updatePercentagePref, 0)
         set(value) = prefs.edit().putInt(updatePercentagePref, value).apply()
 
     var isAutoUpdateEnabled: Boolean
@@ -103,7 +104,7 @@ class Prefs(context: Context) {
         set(value) = prefs.edit().putBoolean(autoUpdatePref, value).apply()
 
     var isUpdateNotificationEnabled: Boolean
-        get() =  prefs.getBoolean(updateNotificationPref, false)
+        get() = prefs.getBoolean(updateNotificationPref, false)
         set(value) = prefs.edit().putBoolean(updateNotificationPref, value).apply()
 
     // is only used to save update data
@@ -145,11 +146,11 @@ class Prefs(context: Context) {
                 .putInt("previous_accent_color", prefs.getInt(accentColorPref, 5))
                 .apply()
             prefs.edit()
-                    .putInt(accentColorPref, color)
-                    .apply()
+                .putInt(accentColorPref, color)
+                .apply()
         }
     var launcherState: Int
-        get() =  prefs.getInt(launcherStatePref, 0)
+        get() = prefs.getInt(launcherStatePref, 0)
         // 0 - OOBE
         // 1 - nothing
         // 2 - OOBE - selecting the type of settings (recommended or customize)
@@ -190,7 +191,7 @@ class Prefs(context: Context) {
         // 0 - windows (default)
         // 1 - windows old
         // 2 - android
-        set(value) =  prefs.edit().putInt(bottomBarIconPref, value).apply()
+        set(value) = prefs.edit().putInt(bottomBarIconPref, value).apply()
 
     var isSearchBarEnabled: Boolean
         get() = prefs.getBoolean(searchBarPref, false)

@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity( tableName = "bsod_list" )
-data class BSODEntity (
+@Entity(tableName = "bsod_list")
+data class BSODEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     @ColumnInfo

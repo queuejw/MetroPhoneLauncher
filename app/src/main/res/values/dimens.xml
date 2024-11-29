@@ -20,4 +20,5 @@
     <dimen name="tile_default_size">64dp</dimen>
     <dimen name="recyclerViewBottomPadding">156dp</dimen>
     <dimen name="tileMargin">4dp</dimen>
+    <dimen name="edit_mode_padding">16dp</dimen>
 </resources>

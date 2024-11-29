@@ -30,7 +30,9 @@ class UpdateDataParser {
     private fun readPreferences(parser: XmlPullParser) {
         parser.require(XmlPullParser.START_TAG, ns, "map")
         while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.eventType != XmlPullParser.START_TAG) { continue }
+            if (parser.eventType != XmlPullParser.START_TAG) {
+                continue
+            }
             val node = parser.name
             when (node) {
                 "string" -> readName(parser)
@@ -47,25 +49,26 @@ class UpdateDataParser {
             val valueKey = parser.getAttributeValue(null, "name")
             val name = readTextName(parser)
             parser.require(XmlPullParser.END_TAG, ns, "string")
-            if(valueKey == "versionName") {
+            if (valueKey == "versionName") {
                 verName = name
             }
-            when(getDefaultLocale().language) {
+            when (getDefaultLocale().language) {
                 "ru" -> {
-                    if(valueKey == "message_ru") {
+                    if (valueKey == "message_ru") {
                         updateMsg = name
                         PREFS.updateMessage = name
                     }
                 }
+
                 else -> {
-                    if(valueKey == "message") {
+                    if (valueKey == "message") {
                         updateMsg = name
                         PREFS.updateMessage = name
                     }
                 }
 
             }
-            if(valueKey == "tag") {
+            if (valueKey == "tag") {
                 tag = name
             }
             Log.i("parserText", "key: $valueKey value: $name")
@@ -83,12 +86,13 @@ class UpdateDataParser {
         }
         return result
     }
+
     private fun readBool(parser: XmlPullParser) {
         try {
             parser.require(XmlPullParser.START_TAG, ns, "boolean")
             val valueData = parser.getAttributeValue(null, "value")
             val valueKey = parser.getAttributeValue(null, "name")
-            if(valueKey == "beta") {
+            if (valueKey == "beta") {
                 isBeta = valueData.toBoolean()
             }
             parser.nextTag()
@@ -97,12 +101,13 @@ class UpdateDataParser {
             Log.e("update_parser", exception.toString())
         }
     }
+
     private fun readValueInt(parser: XmlPullParser) {
         try {
             parser.require(XmlPullParser.START_TAG, ns, "int")
             val valueData = parser.getAttributeValue(null, "value")
             val valueKey = parser.getAttributeValue(null, "name")
-            if(valueKey == "versionCode") {
+            if (valueKey == "versionCode") {
                 verCode = valueData.toInt()
                 PREFS.versionCode = valueData.toInt()
             }
@@ -124,6 +129,7 @@ class UpdateDataParser {
             }
         }
     }
+
     companion object {
         private val ns: String? = null
         var verCode: Int? = null

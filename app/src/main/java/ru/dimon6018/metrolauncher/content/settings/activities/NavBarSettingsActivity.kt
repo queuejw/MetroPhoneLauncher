@@ -17,7 +17,7 @@ import ru.dimon6018.metrolauncher.databinding.LauncherSettingsNavbarBinding
 import ru.dimon6018.metrolauncher.databinding.SettingsNavbarIconChooseBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 
-class NavBarSettingsActivity: AppCompatActivity() {
+class NavBarSettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: LauncherSettingsNavbarBinding
 
@@ -39,10 +39,10 @@ class NavBarSettingsActivity: AppCompatActivity() {
         }
         binding.settingsInclude.searchBarSwitch.apply {
             isChecked = PREFS.isSearchBarEnabled
-            text = if(PREFS.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
+            text = if (PREFS.isSearchBarEnabled) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isSearchBarEnabled = isChecked
-                text = if(isChecked) getString(R.string.on) else getString(R.string.off)
+                text = if (isChecked) getString(R.string.on) else getString(R.string.off)
                 PREFS.isPrefsChanged = true
             }
         }
@@ -54,6 +54,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
         }
         setupFont()
     }
+
     private fun setupFont() {
         customFont?.let {
             binding.settingsSectionLabel.typeface = it
@@ -77,8 +78,9 @@ class NavBarSettingsActivity: AppCompatActivity() {
             binding.settingsLabel.typeface = it
         }
     }
+
     private fun setNavBarColorRadioGroup() {
-        when(PREFS.navBarColor) {
+        when (PREFS.navBarColor) {
             0 -> {
                 binding.settingsInclude.alwaysDark.isChecked = true
                 binding.settingsInclude.alwaysLight.isChecked = false
@@ -86,6 +88,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 binding.settingsInclude.hidden.isChecked = false
                 binding.settingsInclude.auto.isChecked = false
             }
+
             1 -> {
                 binding.settingsInclude.alwaysDark.isChecked = false
                 binding.settingsInclude.alwaysLight.isChecked = true
@@ -93,6 +96,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 binding.settingsInclude.hidden.isChecked = false
                 binding.settingsInclude.auto.isChecked = false
             }
+
             2 -> {
                 binding.settingsInclude.alwaysDark.isChecked = false
                 binding.settingsInclude.alwaysLight.isChecked = false
@@ -100,6 +104,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 binding.settingsInclude.hidden.isChecked = false
                 binding.settingsInclude.auto.isChecked = false
             }
+
             3 -> {
                 binding.settingsInclude.alwaysDark.isChecked = false
                 binding.settingsInclude.alwaysLight.isChecked = false
@@ -107,6 +112,7 @@ class NavBarSettingsActivity: AppCompatActivity() {
                 binding.settingsInclude.hidden.isChecked = true
                 binding.settingsInclude.auto.isChecked = false
             }
+
             4 -> {
                 binding.settingsInclude.alwaysDark.isChecked = false
                 binding.settingsInclude.alwaysLight.isChecked = false
@@ -116,41 +122,70 @@ class NavBarSettingsActivity: AppCompatActivity() {
             }
         }
     }
+
     private fun updateCurrentIcon() {
-        binding.settingsInclude.currentStartIcon.setImageDrawable(when(PREFS.navBarIconValue) {
-            0 -> {
-                ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
+        binding.settingsInclude.currentStartIcon.setImageDrawable(
+            when (PREFS.navBarIconValue) {
+                0 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
+                }
+
+                1 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows)
+                }
+
+                2 -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_android)
+                }
+
+                else -> {
+                    ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
+                }
             }
-            1 -> {
-                ContextCompat.getDrawable(this, R.drawable.ic_os_windows)
-            }
-            2 -> {
-                ContextCompat.getDrawable(this, R.drawable.ic_os_android)
-            }
-            else -> {
-                ContextCompat.getDrawable(this, R.drawable.ic_os_windows_8)
-            }
-        })
+        )
     }
+
     private fun enterAnimation(exit: Boolean) {
         if (!PREFS.isTransitionAnimEnabled) return
 
         val main = binding.root
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                createObjectAnimator(main, "translationX", if (exit) 0f else -300f, if (exit) -300f else 0f),
-                createObjectAnimator(main, "rotationY", if (exit) 0f else 90f, if (exit) 90f else 0f),
+                createObjectAnimator(
+                    main,
+                    "translationX",
+                    if (exit) 0f else -300f,
+                    if (exit) -300f else 0f
+                ),
+                createObjectAnimator(
+                    main,
+                    "rotationY",
+                    if (exit) 0f else 90f,
+                    if (exit) 90f else 0f
+                ),
                 createObjectAnimator(main, "alpha", if (exit) 1f else 0f, if (exit) 0f else 1f),
-                createObjectAnimator(main, "scaleX", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f),
+                createObjectAnimator(
+                    main,
+                    "scaleX",
+                    if (exit) 1f else 0.5f,
+                    if (exit) 0.5f else 1f
+                ),
                 createObjectAnimator(main, "scaleY", if (exit) 1f else 0.5f, if (exit) 0.5f else 1f)
             )
             duration = 400
         }
         animatorSet.start()
     }
-    private fun createObjectAnimator(target: Any, property: String, startValue: Float, endValue: Float): ObjectAnimator {
+
+    private fun createObjectAnimator(
+        target: Any,
+        property: String,
+        startValue: Float,
+        endValue: Float
+    ): ObjectAnimator {
         return ObjectAnimator.ofFloat(target, property, startValue, endValue)
     }
+
     override fun onResume() {
         enterAnimation(false)
         super.onResume()
@@ -162,19 +197,23 @@ class NavBarSettingsActivity: AppCompatActivity() {
     }
 
     fun changeNavBarColor(checkedId: Int) {
-        when(checkedId) {
+        when (checkedId) {
             binding.settingsInclude.alwaysDark.id -> {
                 PREFS.navBarColor = 0
             }
+
             binding.settingsInclude.alwaysLight.id -> {
                 PREFS.navBarColor = 1
             }
+
             binding.settingsInclude.byTheme.id -> {
                 PREFS.navBarColor = 2
             }
+
             binding.settingsInclude.hidden.id -> {
                 PREFS.navBarColor = 3
             }
+
             binding.settingsInclude.auto.id -> {
                 PREFS.navBarColor = 4
             }

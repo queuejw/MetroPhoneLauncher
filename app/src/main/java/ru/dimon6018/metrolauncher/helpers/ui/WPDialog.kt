@@ -29,6 +29,7 @@ class WPDialog(private val mContext: Context) {
     private var onTop = false
     private var light = false
     private var mView: View? = null
+
     //监听器
     private var okButtonListener: View.OnClickListener? = null
     private var cancelButtonListener: View.OnClickListener? = null
@@ -37,7 +38,7 @@ class WPDialog(private val mContext: Context) {
 
     //Show方法
     fun show(): WPDialog {
-        if(!isDarkMode) {
+        if (!isDarkMode) {
             setLightTheme()
         }
         Builder()
@@ -47,14 +48,17 @@ class WPDialog(private val mContext: Context) {
         }
         return this
     }
+
     //SnackBar消失方法
     fun dismiss(): WPDialog {
         wp?.dismiss()
         return this
     }
+
     init {
         defStyle = R.style.CustomDialog
     }
+
     //创建
     private inner class Builder {
 
@@ -70,7 +74,8 @@ class WPDialog(private val mContext: Context) {
                 if (this.window != null) {
                     this.window!!.setFlags(
                         WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
-                        WindowManager.LayoutParams.FLAG_BLUR_BEHIND)
+                        WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                    )
                 }
                 this.setContentView(binding.root)
                 val dialogWindow = this.window
@@ -89,6 +94,7 @@ class WPDialog(private val mContext: Context) {
                 this.setCancelable(cancelable)
             }
         }
+
         //设置布局
         private fun setCustomView(dialog: Dialog) {
             //控件实例化
@@ -112,16 +118,21 @@ class WPDialog(private val mContext: Context) {
                     view.setPadding(10, 0, 10, 20)
                     binding.wpView.addView(view)
                 }
-                if (title.isEmpty()) binding.wpTitle.visibility = View.GONE else binding.wpTitle.text = title
-                if (messageText.isEmpty()) binding.wpMessage.visibility = View.GONE else binding.wpMessage.text = messageText
-                if (okText.isEmpty()) binding.wpOkBg.visibility = View.GONE else binding.wpOk.text = okText
-                if (cancleText.isEmpty()) binding.wpCancleBg.visibility = View.GONE else binding.wpCancel.text = cancleText
-                if (neutral.isEmpty()) binding.wpNeutralBg.visibility = View.GONE else binding.wpNeutral.text = neutral
+                if (title.isEmpty()) binding.wpTitle.visibility =
+                    View.GONE else binding.wpTitle.text = title
+                if (messageText.isEmpty()) binding.wpMessage.visibility =
+                    View.GONE else binding.wpMessage.text = messageText
+                if (okText.isEmpty()) binding.wpOkBg.visibility = View.GONE else binding.wpOk.text =
+                    okText
+                if (cancleText.isEmpty()) binding.wpCancleBg.visibility =
+                    View.GONE else binding.wpCancel.text = cancleText
+                if (neutral.isEmpty()) binding.wpNeutralBg.visibility =
+                    View.GONE else binding.wpNeutral.text = neutral
                 binding.wpOk.setOnClickListener(if (okButtonListener != null) okButtonListener else OnDialogButtonClickListener())
                 binding.wpCancel.setOnClickListener(if (cancelButtonListener != null) cancelButtonListener else OnDialogButtonClickListener())
                 binding.wpNeutral.setOnClickListener(if (neutralListener != null) neutralListener else OnDialogButtonClickListener())
-                if(dismissListener != null) setOnDismissListener(dismissListener)
-                if(PREFS.customFontInstalled) {
+                if (dismissListener != null) setOnDismissListener(dismissListener)
+                if (PREFS.customFontInstalled) {
                     customFont?.let { font ->
                         binding.wpTitle.typeface = font
                         binding.wpMessage.typeface = font
@@ -134,22 +145,26 @@ class WPDialog(private val mContext: Context) {
             }
         }
     }
+
     fun setTitle(text: String): WPDialog {
         title = text
         return this
     }
+
     fun setMessage(text: String): WPDialog {
         messageText = text
         return this
     }
+
     /**fun setView(view: View?): WPDialog {
-        mView = view
-        return this
+    mView = view
+    return this
     } **/
     fun setDismissListener(listener: DialogInterface.OnDismissListener?): WPDialog {
         dismissListener = listener
         return this
     }
+
     fun setPositiveButton(text: String, listener: View.OnClickListener?): WPDialog {
         okText = text
         okButtonListener = listener

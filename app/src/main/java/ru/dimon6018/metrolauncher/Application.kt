@@ -18,7 +18,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentTh
 class Application : Application() {
 
     override fun onCreate() {
-        if(applicationContext == null) {
+        if (applicationContext == null) {
             super.onCreate()
             return
         }
@@ -26,7 +26,9 @@ class Application : Application() {
         Thread.setDefaultUncaughtExceptionHandler(BsodDetector())
         PREFS = Prefs(applicationContext)
         //EXP_PREFS = ExperimentPrefs(applicationContext)
-        if(PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) DynamicColors.applyToActivitiesIfAvailable(this)
+        if (PREFS.accentColor == 21 && DynamicColors.isDynamicColorAvailable()) DynamicColors.applyToActivitiesIfAvailable(
+            this
+        )
         setupCustomFont()
         setupCustomLightFont()
         setupCustomBoldFont()
@@ -35,12 +37,16 @@ class Application : Application() {
             @SuppressLint("SourceLockedOrientationActivity")
             override fun onActivityPreCreated(activity: Activity, savedInstanceState: Bundle?) {
                 activity.setTheme(launcherAccentTheme())
-                when(PREFS.orientation) {
-                    "p" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                    "l" -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                when (PREFS.orientation) {
+                    "p" -> activity.requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+
+                    "l" -> activity.requestedOrientation =
+                        ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
                 }
                 super.onActivityPreCreated(activity, savedInstanceState)
             }
+
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
             override fun onActivityStarted(activity: Activity) {}
             override fun onActivityResumed(activity: Activity) {}
@@ -50,9 +56,11 @@ class Application : Application() {
             override fun onActivityDestroyed(activity: Activity) {}
         })
     }
+
     companion object {
         lateinit var PREFS: Prefs
-       // var EXP_PREFS: ExperimentPrefs? = null
+
+        // var EXP_PREFS: ExperimentPrefs? = null
         var isUpdateDownloading = false
         var isAppOpened = false
         var isStartMenuOpened = false
@@ -64,9 +72,11 @@ class Application : Application() {
         fun setupCustomFont() {
             customFont = getCustomFont()
         }
+
         fun setupCustomLightFont() {
             customLightFont = getCustomLightFont()
         }
+
         fun setupCustomBoldFont() {
             customBoldFont = getCustomBoldFont()
         }

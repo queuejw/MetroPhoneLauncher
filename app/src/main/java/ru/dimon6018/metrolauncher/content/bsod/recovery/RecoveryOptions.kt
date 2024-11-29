@@ -20,7 +20,7 @@ import ru.dimon6018.metrolauncher.content.settings.SettingsActivity
 import ru.dimon6018.metrolauncher.databinding.RecoveryOptionsScreenBinding
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.downloadUpdate
 
-class RecoveryOptions: AppCompatActivity() {
+class RecoveryOptions : AppCompatActivity() {
 
     private lateinit var binding: RecoveryOptionsScreenBinding
 
@@ -39,12 +39,16 @@ class RecoveryOptions: AppCompatActivity() {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com/")))
         }
         binding.launcherRefreshCard.setOnClickListener {
-            if(checkStoragePermissions()) {
-                if(areNotificationsEnabled(NotificationManagerCompat.from(this))) {
+            if (checkStoragePermissions()) {
+                if (areNotificationsEnabled(NotificationManagerCompat.from(this))) {
                     PREFS.reset()
                     downloadUpdate(this)
                 } else {
-                    Toast.makeText(this, getString(R.string.allow_notifications_recovery_error), Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.allow_notifications_recovery_error),
+                        Toast.LENGTH_LONG
+                    ).show()
                     openSettings()
                 }
             } else {
@@ -52,12 +56,14 @@ class RecoveryOptions: AppCompatActivity() {
             }
         }
     }
+
     private fun openSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri = Uri.fromParts("package", packageName, null)
         intent.setData(uri)
         startActivity(intent)
     }
+
     private fun areNotificationsEnabled(noman: NotificationManagerCompat) = when {
         noman.areNotificationsEnabled().not() -> false
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
@@ -65,8 +71,10 @@ class RecoveryOptions: AppCompatActivity() {
                 channel.importance == NotificationManager.IMPORTANCE_NONE
             } == null
         }
+
         else -> true
     }
+
     private fun checkStoragePermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             Environment.isExternalStorageManager()
@@ -78,9 +86,12 @@ class RecoveryOptions: AppCompatActivity() {
             read == PackageManager.PERMISSION_GRANTED && write == PackageManager.PERMISSION_GRANTED
         }
     }
+
     private fun getPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(Uri.parse(String.format("package:%s", packageName)))
+            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).setData(
+                Uri.parse(String.format("package:%s", packageName))
+            )
             startActivity(intent)
         } else {
             ActivityCompat.requestPermissions(

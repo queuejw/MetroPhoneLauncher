@@ -108,7 +108,7 @@ class SettingsActivity : AppCompatActivity() {
     private var dialogActivated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        when(PREFS.appTheme) {
+        when (PREFS.appTheme) {
             0 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
             1 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             2 -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -125,6 +125,7 @@ class SettingsActivity : AppCompatActivity() {
         prepareTip()
         setupFont()
     }
+
     private fun setupFont() {
         regularTextViewList.forEach {
             customFont?.let { font ->
@@ -132,7 +133,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         lightTextViewList.forEach {
-            if(PREFS.customLightFontPath != null) {
+            if (PREFS.customLightFontPath != null) {
                 customLightFont?.let { font ->
                     it.typeface = font
                 }
@@ -146,8 +147,9 @@ class SettingsActivity : AppCompatActivity() {
             binding.settings.typeface = it
         }
     }
+
     private fun checkHome() {
-        if(!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2 && !dialogActivated) {
+        if (!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2 && !dialogActivated) {
             isDialogEnabled = false
             WPDialog(this).setTopDialog(false)
                 .setTitle(getString(R.string.tip))
@@ -158,8 +160,13 @@ class SettingsActivity : AppCompatActivity() {
                 }.show()
         }
     }
+
     private fun prepareMessage() {
-        if(!PREFS.prefs.getBoolean("tipSettingsEnabled", true) && Random.nextFloat() < 0.05 && PREFS.prefs.getBoolean("messageEnabled", true)) {
+        if (!PREFS.prefs.getBoolean(
+                "tipSettingsEnabled",
+                true
+            ) && Random.nextFloat() < 0.05 && PREFS.prefs.getBoolean("messageEnabled", true)
+        ) {
             dialogActivated = true
             WPDialog(this).apply {
                 setTopDialog(true)
@@ -181,6 +188,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun donateDialog() {
         WPDialog(this).apply {
             setTopDialog(true)
@@ -191,14 +199,20 @@ class SettingsActivity : AppCompatActivity() {
                 dismiss()
             }
             setNegativeButton(getString(R.string.support)) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://donationalerts.com/r/queuejw")))
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://donationalerts.com/r/queuejw")
+                    )
+                )
                 dismiss()
             }
             show()
         }
     }
+
     private fun prepareTip() {
-        if(PREFS.prefs.getBoolean("tipSettingsEnabled", true)) {
+        if (PREFS.prefs.getBoolean("tipSettingsEnabled", true)) {
             WPDialog(this).setTopDialog(true)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.tipSettings))
@@ -207,21 +221,59 @@ class SettingsActivity : AppCompatActivity() {
             PREFS.prefs.edit().putBoolean("tipSettingsEnabled", false).apply()
         }
     }
+
     private fun setOnClickers() {
-        setClickListener(binding.settingsInclude.themeSetting, Intent(this@SettingsActivity, ThemeSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.allAppsSetting, Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.tilesSetting, Intent(this@SettingsActivity, TileSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.aboutSetting, Intent(this@SettingsActivity, AboutSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.feedbackSetting, Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.updatesSetting, Intent(this@SettingsActivity, UpdateActivity::class.java))
-        setClickListener(binding.settingsInclude.navbarSetting, Intent(this@SettingsActivity, NavBarSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.weatherSetting, Intent(this@SettingsActivity, WeatherSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.iconsSetting, Intent(this@SettingsActivity, IconSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.expSetting, Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java))
+        setClickListener(
+            binding.settingsInclude.themeSetting,
+            Intent(this@SettingsActivity, ThemeSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.allAppsSetting,
+            Intent(this@SettingsActivity, AllAppsSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.tilesSetting,
+            Intent(this@SettingsActivity, TileSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.aboutSetting,
+            Intent(this@SettingsActivity, AboutSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.feedbackSetting,
+            Intent(this@SettingsActivity, FeedbackSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.updatesSetting,
+            Intent(this@SettingsActivity, UpdateActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.navbarSetting,
+            Intent(this@SettingsActivity, NavBarSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.weatherSetting,
+            Intent(this@SettingsActivity, WeatherSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.iconsSetting,
+            Intent(this@SettingsActivity, IconSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.expSetting,
+            Intent(this@SettingsActivity, ExperimentsSettingsActivity::class.java)
+        )
         setClickListener(binding.settingsInclude.leaks, LeakCanary.newLeakDisplayActivityIntent())
-        setClickListener(binding.settingsInclude.animSetting, Intent(this@SettingsActivity, AnimationSettingsActivity::class.java))
-        setClickListener(binding.settingsInclude.fontSetting, Intent(this@SettingsActivity, FontsSettingsActivity::class.java))
+        setClickListener(
+            binding.settingsInclude.animSetting,
+            Intent(this@SettingsActivity, AnimationSettingsActivity::class.java)
+        )
+        setClickListener(
+            binding.settingsInclude.fontSetting,
+            Intent(this@SettingsActivity, FontsSettingsActivity::class.java)
+        )
     }
+
     private fun setClickListener(view: View, intent: Intent) {
         view.setOnClickListener {
             if (!isEnter) {
@@ -234,28 +286,47 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun setupAnimations() {
         viewList.forEach { (view, duration) ->
             setupAnimForViews(view, duration)
         }
     }
+
     private fun setupAnimForViews(view: View, dur: Long) {
         if (!PREFS.isTransitionAnimEnabled) return
         val animatorSet = AnimatorSet().apply {
             playTogether(
-                ObjectAnimator.ofFloat(view, "alpha", if (isEnter) 1f else 0f, if (isEnter) 0f else 1f),
-                ObjectAnimator.ofFloat(view, "translationX", if (isEnter) 0f else -400f, if (isEnter) -500f else 0f),
-                ObjectAnimator.ofFloat(view, "rotationY", if (isEnter) 0f else -90f, if (isEnter) -90f else 0f)
+                ObjectAnimator.ofFloat(
+                    view,
+                    "alpha",
+                    if (isEnter) 1f else 0f,
+                    if (isEnter) 0f else 1f
+                ),
+                ObjectAnimator.ofFloat(
+                    view,
+                    "translationX",
+                    if (isEnter) 0f else -400f,
+                    if (isEnter) -500f else 0f
+                ),
+                ObjectAnimator.ofFloat(
+                    view,
+                    "rotationY",
+                    if (isEnter) 0f else -90f,
+                    if (isEnter) -90f else 0f
+                )
             )
             duration = dur
         }
         animatorSet.start()
     }
+
     private fun confTouchAnim() {
         viewList.forEach {
             setViewInteractAnimation(it.first)
         }
     }
+
     private suspend fun startAnim() {
         if (PREFS.isTransitionAnimEnabled) {
             setupAnimations()
@@ -272,6 +343,7 @@ class SettingsActivity : AppCompatActivity() {
             isEnter = false
         }
     }
+
     private fun hideViews() {
         if (PREFS.isTransitionAnimEnabled) {
             viewList.forEach { (view, _) ->
@@ -279,12 +351,14 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun hideAnim(view: View?) {
-        if(view == null || !PREFS.isTransitionAnimEnabled) {
+        if (view == null || !PREFS.isTransitionAnimEnabled) {
             return
         }
         ObjectAnimator.ofFloat(view, "alpha", 1f, 0f).start()
     }
+
     private fun isHomeApp(): Boolean {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_HOME)
@@ -292,6 +366,7 @@ class SettingsActivity : AppCompatActivity() {
         return res!!.activityInfo != null && (packageName
                 == res.activityInfo.packageName)
     }
+
     override fun onResume() {
         super.onResume()
         binding.settingsInclude.themeSub.text = accentName(this)
@@ -304,16 +379,21 @@ class SettingsActivity : AppCompatActivity() {
             else -> getString(R.string.navigation_bar_2)
         }
         binding.settingsInclude.fontsSub.text = runCatching {
-            if(!PREFS.customFontInstalled) getString(R.string.fonts_tip) else PREFS.customFontName
+            if (!PREFS.customFontInstalled) getString(R.string.fonts_tip) else PREFS.customFontName
         }.getOrElse {
             getString(R.string.fonts_tip)
         }
         binding.settingsInclude.iconsSub.text = runCatching {
             if (PREFS.iconPackPackage == "null") getString(R.string.iconPackNotSelectedSub)
-            else packageManager.getApplicationLabel(packageManager.getApplicationInfo(PREFS.iconPackPackage!!, 0))
+            else packageManager.getApplicationLabel(
+                packageManager.getApplicationInfo(
+                    PREFS.iconPackPackage!!,
+                    0
+                )
+            )
         }.getOrElse { getString(R.string.iconPackNotSelectedSub) }
 
-        if(PREFS.isPrefsChanged) {
+        if (PREFS.isPrefsChanged) {
             job?.cancel()
             restartDialog()
         } else {
@@ -339,11 +419,13 @@ class SettingsActivity : AppCompatActivity() {
             show()
         }
     }
+
     private fun startAnimWithLifecycle() {
         lifecycleScope.launch {
             startAnim()
         }
     }
+
     private fun restartApp() {
         finishAffinity()
         val componentName = Intent(this, this::class.java).component
