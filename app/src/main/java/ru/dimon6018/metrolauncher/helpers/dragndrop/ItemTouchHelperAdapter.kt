@@ -9,7 +9,7 @@ interface ItemTouchHelperAdapter {
      *
      * @param fromPosition The start position of the moved item.
      * @param toPosition   Then end position of the moved item.
-     * @see RecyclerView.getAdapterPositionFor
+     * @see RecyclerView.findViewHolderForAdapterPosition
      * @see RecyclerView.ViewHolder.getAdapterPosition
      */
     fun onItemMove(fromPosition: Int, toPosition: Int)
@@ -18,10 +18,16 @@ interface ItemTouchHelperAdapter {
      * Called when an item has been dismissed by a swipe.
      *
      * @param position The position of the item dismissed.
-     * @see RecyclerView.getAdapterPositionFor
+     * @see RecyclerView.findViewHolderForAdapterPosition
      * @see RecyclerView.ViewHolder.getAdapterPosition
      */
     fun onItemDismiss(position: Int)
 
-    fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?)
+    /**
+     * Called when Drag and Drop is completed.
+     *
+     * @see RecyclerView.findViewHolderForAdapterPosition
+     * @see RecyclerView.ViewHolder.getAdapterPosition
+     */
+    fun onDragAndDropCompleted()
 }

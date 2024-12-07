@@ -22,7 +22,6 @@ class ItemTouchCallback(private val mAdapter: Start.NewStartAdapter) : ItemTouch
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        Log.d("moved", "move")
         return if (!PREFS.isStartBlocked && mAdapter.isEditMode && viewHolder.itemViewType != mAdapter.spaceType) {
             mAdapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
             true
@@ -42,6 +41,6 @@ class ItemTouchCallback(private val mAdapter: Start.NewStartAdapter) : ItemTouch
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, i: Int) {}
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        mAdapter.onDragAndDropCompleted(viewHolder)
+        mAdapter.onDragAndDropCompleted()
     }
 }

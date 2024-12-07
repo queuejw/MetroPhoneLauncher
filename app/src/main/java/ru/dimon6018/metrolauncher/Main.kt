@@ -67,7 +67,12 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.sendCrash
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackageReceiver
 
-// Main application screen (tiles, apps)
+/**
+ * Main application screen (tiles, apps)
+ * @see Application
+ * @see Start
+ * @see AllApps
+ */
 class Main : AppCompatActivity() {
 
     private lateinit var pagerAdapter: FragmentStateAdapter
@@ -117,7 +122,11 @@ class Main : AppCompatActivity() {
         }
     }
 
-    // Turn off animations if developer mode is enabled to prevent some animation issues
+    /**
+     * Turn off animations if developer mode is enabled to prevent some animation issues
+     * @see onCreate
+     * @see disableAnims
+     */
     private fun handleDevMode() {
         if (isDevMode(this) && PREFS.isAutoShutdownAnimEnabled) {
             disableAnims()
@@ -132,12 +141,20 @@ class Main : AppCompatActivity() {
         startActivity(intent)
     }
 
+    /**
+     * Called when the application is started.
+     * Updates the icon cache, application list and checks the application version
+     * @see onCreate
+     */
     private suspend fun initializeData() {
         pagerAdapter = WinAdapter(this@Main)
         setMainViewModel()
         checkUpdate()
     }
 
+    /**
+     * Configures the user interface according to the settings
+     */
     private fun setupUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         if (PREFS.isWallpaperEnabled) {
@@ -180,6 +197,10 @@ class Main : AppCompatActivity() {
         }
     }
 
+    /**
+     * Creates OnBackPressedCallback, which is needed to move to the previous ViewPager screen by pressing/gesturing backwards.
+     * Or disables the search
+     */
     private fun setupBackPressedDispatcher() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -199,6 +220,9 @@ class Main : AppCompatActivity() {
         }
     }
 
+    /**
+     * Creates OnPageChangeCallback for some required actions
+     */
     private fun createPageChangeCallback() = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
@@ -264,6 +288,7 @@ class Main : AppCompatActivity() {
         mainViewModel.setAppList(setUpApps(packageManager, this))
         regenerateIcons()
     }
+
 
     private suspend fun regenerateIcons() {
         val isCustomIconsInstalled = PREFS.iconPackPackage != "null"

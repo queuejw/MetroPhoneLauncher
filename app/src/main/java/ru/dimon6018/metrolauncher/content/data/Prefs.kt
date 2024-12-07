@@ -3,6 +3,10 @@ package ru.dimon6018.metrolauncher.content.data
 import android.content.Context
 import android.content.SharedPreferences
 
+/**
+ * Needed to store/modify MPL settings
+ * @param context Context
+ */
 class Prefs(context: Context) {
 
     val prefs: SharedPreferences

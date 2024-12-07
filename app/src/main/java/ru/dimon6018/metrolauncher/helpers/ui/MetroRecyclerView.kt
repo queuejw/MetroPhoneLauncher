@@ -5,8 +5,9 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 
-// RecyclerView that can block scrolling
-
+/**
+ * RecyclerView that can block scrolling
+ */
 open class MetroRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

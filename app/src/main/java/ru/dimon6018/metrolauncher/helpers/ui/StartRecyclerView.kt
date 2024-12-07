@@ -12,7 +12,9 @@ import android.view.View
 import android.view.ViewParent
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
 
-// RecyclerView which is used by tiles on the start screen
+/**
+ * MetroRecyclerView which is used by tiles on the start screen
+ */
 class StartRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

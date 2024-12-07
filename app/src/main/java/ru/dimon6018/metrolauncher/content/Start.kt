@@ -20,7 +20,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -75,7 +74,6 @@ import ru.dimon6018.metrolauncher.databinding.TileBinding
 import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperViewHolder
-import ru.dimon6018.metrolauncher.helpers.dragndrop.OnStartDragListener
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import ru.dimon6018.metrolauncher.helpers.ui.StartRecyclerView
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
@@ -87,7 +85,7 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.MarginItemDecoration
 import kotlin.random.Random
 
 // Start screen
-class Start : Fragment(), OnStartDragListener {
+class Start : Fragment() {
 
     private lateinit var mItemTouchHelper: ItemTouchHelper
 
@@ -122,7 +120,7 @@ class Start : Fragment(), OnStartDragListener {
     ): View {
         _binding = LauncherStartScreenBinding.inflate(inflater, container, false)
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        binding.startFrame.setOnClickListener {
+        binding.startTiles.setOnClickListener {
             mAdapter?.let { if (it.isEditMode) it.disableEditMode() }
         }
         ViewCompat.setOnApplyWindowInsetsListener(binding.startTiles) { view, insets ->
@@ -135,9 +133,7 @@ class Start : Fragment(), OnStartDragListener {
             )
             insets
         }
-        if (PREFS.isWallpaperEnabled) {
-            binding.startTiles.isUpdateEnabled = true
-        }
+        if (PREFS.isWallpaperEnabled) binding.startTiles.isUpdateEnabled = true
         return binding.root
     }
 
@@ -159,6 +155,10 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Sets up a data observer
+     * @see onViewCreated
+     */
     private fun observe() {
         if (!screenLoaded || mainViewModel.getTileDao().getTilesLiveData()
                 .hasActiveObservers()
@@ -171,7 +171,9 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
     }
-
+    /**
+     * Stops the data observer
+     */
     private fun stopObserver() {
         mainViewModel.getTileDao().getTilesLiveData().removeObservers(viewLifecycleOwner)
     }
@@ -182,19 +184,34 @@ class Start : Fragment(), OnStartDragListener {
         _binding = null
     }
 
+    /**
+     * Sets up the adapter and ItemTouchHelper
+     * @see onViewCreated
+     */
     private fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)
         mItemTouchHelper = ItemTouchHelper(ItemTouchCallback(mAdapter!!))
     }
 
+    /**
+     * Adds a Callback for Activity, which is needed to exit desktop edit mode using the back button/gesture gesture
+     * @see NewStartAdapter.enableEditMode
+     */
     private fun addCallback() {
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, backCallback)
     }
 
+    /**
+     * Removes Callback for Activity after exiting desktop edit mode
+     * @see NewStartAdapter.disableEditMode
+     */
     private fun removeCallback() {
         backCallback.remove()
     }
 
+    /**
+     * Configures RecyclerView, sets Adapter and LayoutManager
+     */
     private fun configureRecyclerView() {
         binding.startTiles.apply {
             layoutManager = mSpannedLayoutManager
@@ -204,6 +221,11 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Configures the SpannedLayoutManager using the current settings and screen orientation
+     *
+     * @param context Context
+     */
     private fun setupRecyclerViewLayoutManager(context: Context?) {
         if (mSpannedLayoutManager != null) mSpannedLayoutManager = null
         if (!isLandscape) {
@@ -296,13 +318,9 @@ class Start : Fragment(), OnStartDragListener {
         isStartMenuOpened = false
     }
 
-    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder?) {
-        if (viewHolder != null && !PREFS.isStartBlocked && mAdapter != null) {
-            if (!mAdapter!!.isEditMode) mAdapter!!.enableEditMode()
-            mItemTouchHelper.startDrag(viewHolder)
-        }
-    }
-
+    /**
+     * Sets BroadcastReceiver, which is needed to update the tile list when uninstalling / installing applications
+     */
     @SuppressLint("InlinedApi", "UnspecifiedRegisterReceiverFlag")
     private fun registerBroadcast() {
         Log.d("Start", "reg broadcaster")
@@ -362,6 +380,12 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Called from BroadcastReceiver, updates the tile list
+     * @param packageName Application package name
+     * @param isDelete if True, removes the application tile with [packageName] package name
+     * @see registerBroadcast
+     */
     private fun broadcastListUpdater(packageName: String, isDelete: Boolean) {
         packageName.apply {
             Log.d("Start", "update list by broadcaster")
@@ -383,6 +407,10 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Adds an application tile to the desktop
+     * @param packageName Application package name
+     */
     private fun pinApp(packageName: String) {
         lifecycleScope.launch(ioDispatcher) {
             if (mAdapter != null) {
@@ -407,6 +435,9 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Removes BroadcastReceiver
+     */
     private fun unregisterBroadcast() {
         isBroadcasterRegistered = false
         packageBroadcastReceiver?.apply {
@@ -422,6 +453,10 @@ class Start : Fragment(), OnStartDragListener {
         unregisterBroadcast()
     }
 
+    /**
+     * “Removes” a tile (replaces it with a Placeholder)
+     * @param tile Tile object
+     */
     private suspend fun destroyTile(tile: Tile) {
         tile.apply {
             tileType = -1
@@ -485,6 +520,10 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Launches the application or activity of MPL settings
+     * @param packageName Application package name
+     */
     private fun startApp(packageName: String) {
         isAppOpened = true
         if (activity != null) {
@@ -503,6 +542,12 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * Tile Screen Adapter
+     * @param context Context
+     * @param list Current tile list
+     * @see setupAdapter
+     */
     inner class NewStartAdapter(val context: Context, var list: MutableList<Tile>) :
         RecyclerView.Adapter<RecyclerView.ViewHolder>(), ItemTouchHelperAdapter {
 
@@ -523,6 +568,11 @@ class Start : Fragment(), OnStartDragListener {
             setHasStableIds(true)
         }
 
+        /**
+         * Called to update the data
+         * @param newData New tile list
+         * @see observe
+         */
         fun setData(newData: MutableList<Tile>) {
             val diffUtilCallback = DiffUtilCallback(list, newData)
             val diffResult = DiffUtil.calculateDiff(diffUtilCallback, false)
@@ -531,6 +581,9 @@ class Start : Fragment(), OnStartDragListener {
             tiles = newData
         }
 
+        /**
+         * Called to activate the desktop editing mode
+         */
         fun enableEditMode() {
             Log.d("EditMode", "enter edit mode")
             (requireActivity() as Main).configureViewPagerScroll(false)
@@ -552,6 +605,9 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * Called to disable the desktop editing mode
+         */
         fun disableEditMode() {
             Log.d("EditMode", "exit edit mode")
             removeCallback()
@@ -569,14 +625,12 @@ class Start : Fragment(), OnStartDragListener {
 
         // tile animation in edit mode
         fun animateItemEditMode(view: View, position: Int) {
-            if (!isEditMode || list[position] == selectedItem) return
+            if (!PREFS.isTilesAnimEnabled || !isEditMode || list[position] == selectedItem) return
             val rad = 5
             val randomX = Random.nextFloat() * 2 * rad - rad
             val randomY = Random.nextFloat() * 2 * rad - rad
-            view.animate().setDuration(1000).translationX(randomX).translationY(randomY)
-                .setInterpolator(
-                    LinearInterpolator()
-                ).withEndAction {
+            if (view.scaleX != 0.9f) view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
+            view.animate().setDuration(1000).translationX(randomX).translationY(randomY).withEndAction {
                 animateItemEditMode(view, position)
             }.start()
         }
@@ -608,6 +662,13 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * This function is needed for tile configuration
+         * @param holder TileViewHolder
+         * @param item Tile object
+         * @param position Holder position
+         * @see onBindViewHolder
+         */
         private fun bindDefaultTile(holder: TileViewHolder, item: Tile, position: Int) {
             setTileSize(item, holder.binding.tileLabel)
             setTileIconSize(holder.binding.tileIcon, item.tileSize, context.resources)
@@ -617,14 +678,39 @@ class Start : Fragment(), OnStartDragListener {
             setTileAnimation(holder.itemView, position)
         }
 
+        /**
+         * Creates an animation in edit mode or restores the default scale and translation settings
+         * @param view ItemView
+         * @param pos View position
+         * @see bindDefaultTile
+         */
         private fun setTileAnimation(view: View, pos: Int) {
-            animateItemEditMode(view, pos)
+            if (isEditMode) {
+                animateItemEditMode(view, pos)
+            } else {
+                if (view.scaleX != 1f) view.scaleX = 1f
+                if (view.scaleY != 1f) view.scaleY = 1f
+                if (view.translationY != 0f) view.translationY = 0f
+                if (view.translationX != 0f) view.translationX = 0f
+            }
         }
 
+        /**
+         * Sets the text of the tile
+         * @param textView MaterialTextView of a tile
+         * @param item Tile object
+         * @see bindDefaultTile
+         */
         private fun setTileText(textView: MaterialTextView, item: Tile) {
             textView.text = item.tileLabel
         }
 
+        /**
+         * Sets the application icon to the tile from the “cache”. Removes tiles in case of a problem.
+         * @param imageView ImageView
+         * @param item Tile object
+         * @see bindDefaultTile
+         */
         private fun setTileIcon(imageView: ImageView, item: Tile) {
             imageView.load(mainViewModel.getIconFromCache(item.tilePackage)) {
                 listener(onError = { request: ImageRequest, error: ErrorResult ->
@@ -635,6 +721,13 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * Sets the size of the application icon on the tile
+         * @param imageView ImageView
+         * @param tileSize tileSize value, which is stored in the Tile object
+         * @param res Context.resources
+         * @see bindDefaultTile
+         */
         private fun setTileIconSize(imageView: ImageView, tileSize: String, res: Resources) {
             imageView.layoutParams.apply {
                 when (tileSize) {
@@ -673,6 +766,12 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * Sets the color of the tile. If the desktop wallpaper is on, makes the tiles transparent
+         * @param holder TileViewHolder
+         * @param item Tile object
+         * @see bindDefaultTile
+         */
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
             if (!PREFS.isWallpaperEnabled) {
                 if (item.tileColor != -1) {
@@ -687,7 +786,12 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
         }
-
+        /**
+         * Sets the size of the application icon on the tile
+         * @param item Tile object
+         * @param mTextView MaterialTextView of a tile
+         * @see bindDefaultTile
+         */
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
             mTextView.apply {
                 when (item.tileSize) {
@@ -708,6 +812,9 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * Called when moving tiles
+         */
         override fun onItemMove(fromPosition: Int, toPosition: Int) {
             if (!isEditMode) {
                 enableEditMode()
@@ -725,7 +832,7 @@ class Start : Fragment(), OnStartDragListener {
             notifyItemChanged(position)
         }
 
-        override fun onDragAndDropCompleted(viewHolder: RecyclerView.ViewHolder?) {
+        override fun onDragAndDropCompleted() {
             if (!isEditMode) return
             lifecycleScope.launch(defaultDispatcher) {
                 val newData = ArrayList<Tile>()
@@ -741,7 +848,12 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
-        // A popup window that shows the tile buttons (resize, unpin, customize)
+        /**
+         * A popup window that shows the tile buttons (resize, unpin, customize)
+         * @param holder TileViewHolder
+         * @param item Tile object
+         * @param position Tile position
+         */
         private fun showTilePopupWindow(holder: TileViewHolder, item: Tile, position: Int) {
             binding.startTiles.isScrollEnabled = false
             holder.itemView.clearAnimation()
@@ -815,6 +927,7 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
             resize.setOnClickListener {
+
                 lifecycleScope.launch(ioDispatcher) {
                     when (item.tileSize) {
                         "small" -> item.tileSize = "medium"
@@ -843,23 +956,31 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
-        // The bottom panel with tile settings, which rises from the bottom
+        /**
+         * The bottom panel with tile settings, which rises from the bottom
+         * @param item Tile object
+         */
         fun showSettingsBottomSheet(item: Tile) {
-            val bottomsheet = BottomSheetDialog(context)
-            bottomsheet.setContentView(R.layout.start_tile_settings_bottomsheet)
-            bottomsheet.dismissWithAnimation = true
+            val bottomSheet = BottomSheetDialog(context)
+            bottomSheet.setContentView(R.layout.start_tile_settings_bottomsheet)
+            bottomSheet.dismissWithAnimation = true
             val bottomSheetInternal =
-                bottomsheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+                bottomSheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
             BottomSheetBehavior.from<View?>(bottomSheetInternal!!).peekHeight =
                 context.resources.getDimensionPixelSize(R.dimen.bottom_sheet_size)
-            configureTileBottomSheet(bottomSheetInternal, bottomsheet, item)
-            bottomsheet.show()
+            configureTileBottomSheet(bottomSheetInternal, bottomSheet, item)
+            bottomSheet.show()
         }
 
-        // creating the interface of the bottom panel is done here
+        /**
+         * Creating the interface of the bottom panel is done here
+         * @param bottomSheetInternal bottomSheet view
+         * @param bottomSheet BottomSheetDialog object
+         * @param item Tile object
+         */
         private fun configureTileBottomSheet(
             bottomSheetInternal: View,
-            bottomsheet: BottomSheetDialog,
+            bottomSheet: BottomSheetDialog,
             item: Tile
         ) {
             val label = bottomSheetInternal.findViewById<MaterialTextView>(R.id.appLabelSheet)
@@ -926,24 +1047,24 @@ class Start : Fragment(), OnStartDragListener {
                         if (editor.text.toString() == "") originalLabel else editor.text.toString()
                     mainViewModel.getTileDao().updateTile(item)
                 }
-                bottomsheet.dismiss()
+                bottomSheet.dismiss()
             }
             removeColor.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = -1
                     mainViewModel.getTileDao().updateTile(item)
                 }
-                bottomsheet.dismiss()
+                bottomSheet.dismiss()
             }
             changeColor.setOnClickListener {
                 val dialog = AccentDialog()
                 dialog.configure(item, this@NewStartAdapter, mainViewModel.getTileDao())
                 dialog.show(childFragmentManager, "accentDialog")
-                bottomsheet.dismiss()
+                bottomSheet.dismiss()
             }
             uninstall.setOnClickListener {
                 startActivity(Intent(Intent.ACTION_DELETE).setData(Uri.parse("package:" + item.tilePackage)))
-                bottomsheet.dismiss()
+                bottomSheet.dismiss()
             }
             appInfo.setOnClickListener {
                 startActivity(
@@ -953,11 +1074,14 @@ class Start : Fragment(), OnStartDragListener {
                         )
                     )
                 )
-                bottomsheet.dismiss()
+                bottomSheet.dismiss()
             }
         }
 
-        // Default tile
+        /**
+         * Default TileViewHolder (user apps)
+         * @param binding TileBinding
+         */
         @SuppressLint("ClickableViewAccessibility")
         inner class TileViewHolder(val binding: TileBinding) :
             RecyclerView.ViewHolder(binding.root), ItemTouchHelperViewHolder {
@@ -1012,6 +1136,9 @@ class Start : Fragment(), OnStartDragListener {
                 if (PREFS.customFontInstalled) customFont?.let { binding.tileLabel.typeface = it }
             }
 
+            /**
+             * Called by clicking on a tile
+             */
             private fun handleClick() {
                 val item = list[absoluteAdapterPosition]
                 if (isEditMode) {
@@ -1028,6 +1155,9 @@ class Start : Fragment(), OnStartDragListener {
                 }
             }
 
+            /**
+             * Called by long pressing on a tile
+             */
             private fun handleLongClick() {
                 if (!isEditMode && !PREFS.isStartBlocked) enableEditMode()
             }
@@ -1047,6 +1177,11 @@ class Start : Fragment(), OnStartDragListener {
         override fun onItemSelected() {}
         override fun onItemClear() {}
         }**/
+
+        /**
+         * Placeholder tile
+         * @param binding SpaceTileBinding
+         */
         inner class SpaceViewHolder(binding: SpaceTileBinding) :
             RecyclerView.ViewHolder(binding.root) {
             init {
@@ -1057,6 +1192,9 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
+    /**
+     * DiffUtilCallback is needed to efficiently update the tile list
+     */
     class DiffUtilCallback(private val old: List<Tile>, private val new: List<Tile>) :
         DiffUtil.Callback() {
         override fun getOldListSize(): Int {
@@ -1076,7 +1214,9 @@ class Start : Fragment(), OnStartDragListener {
         }
     }
 
-    // Responsible for tile color selection
+    /**
+     * Dialog in which the user can select a color for the tile
+     */
     class AccentDialog : DialogFragment() {
 
         private lateinit var item: Tile
@@ -1140,6 +1280,11 @@ class Start : Fragment(), OnStartDragListener {
             }
         }
 
+        /**
+         * Changes the color of the tile and saves it
+         * @param color Color value
+         * @see setOnClick
+         */
         private fun updateTileColor(color: Int) {
             lifecycleScope.launch(Dispatchers.IO) {
                 item.tileColor = color
