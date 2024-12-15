@@ -75,6 +75,8 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.unregisterPackag
  */
 class Main : AppCompatActivity() {
 
+    //8.1
+
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var mainViewModel: MainViewModel
 
