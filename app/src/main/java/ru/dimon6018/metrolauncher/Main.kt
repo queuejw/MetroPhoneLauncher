@@ -77,6 +77,7 @@ class Main : AppCompatActivity() {
 
     private lateinit var pagerAdapter: FragmentStateAdapter
     private lateinit var mainViewModel: MainViewModel
+
     private val iconPackManager: IconPackManager by lazy { IconPackManager(this) }
     private val packageReceiver: PackageChangesReceiver by lazy { PackageChangesReceiver() }
     private val defaultIconSize: Int by lazy { resources.getDimensionPixelSize(R.dimen.tile_default_size) }
