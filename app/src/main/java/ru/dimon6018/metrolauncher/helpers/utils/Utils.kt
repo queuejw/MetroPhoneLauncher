@@ -23,7 +23,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -262,11 +261,7 @@ class Utils {
             val englishApps = mutableMapOf<String, MutableList<App>>()
             val otherApps = mutableListOf<App>()
             val defaultLocale = getDefaultLocale()
-            val regex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                getUserLanguageRegex(userLanguage).toRegex()
-            } else {
-                getUserLanguageRegexCompat(userLanguage)
-            }
+            val regex = getUserLanguageRegex(userLanguage).toRegex()
             appListTemp.forEach { app ->
                 val label = app.appLabel ?: ""
                 when {
@@ -442,15 +437,6 @@ class Utils {
             }
         }
 
-        fun getUserLanguageRegexCompat(locale: Locale): Regex {
-            return when (locale.language) {
-                "ru" -> Regex("[а-яА-ЯёЁ]")
-                "en" -> Regex("[a-zA-Z]")
-                else -> Regex("[a-zA-Z]")
-            }
-        }
-
-        @RequiresApi(Build.VERSION_CODES.N)
         fun getUserLanguageRegex(locale: Locale): Pattern {
             val uLocale = ULocale.forLocale(locale)
             val lowercaseLetters = UnicodeSet().addAll(getAlphabet(uLocale.language))
@@ -464,16 +450,6 @@ class Utils {
             return Pattern.compile(regexPattern)
         }
 
-        fun getAlphabetCompat(languageCode: String): List<String>? {
-            val alphabets = mapOf(
-                "en" to ('A'..'Z').map { it.toString() },
-                "ru" to ('А'..'Я').map { it.toString() },
-            )
-            val alphabet = alphabets[languageCode] ?: alphabets["en"]
-            return alphabet
-        }
-
-        @RequiresApi(Build.VERSION_CODES.N)
         fun getAlphabet(languageCode: String): List<String> {
             val index = AlphabeticIndex<String>(ULocale(languageCode))
             val alphabet: MutableList<String> = ArrayList()

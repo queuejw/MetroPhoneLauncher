@@ -302,9 +302,10 @@ class Main : AppCompatActivity() {
                 delete()
                 close()
             }
+            diskCache = null
         }
         withContext(Dispatchers.IO) {
-            diskCache = initDiskCache(this@Main)
+            if (diskCache == null) diskCache = initDiskCache(this@Main)
             mainViewModel.getAppList().forEach { app ->
                 if (app.type != 1) {
                     val icon = diskCache?.let { loadIconFromDiskCache(it, app.appPackage!!) }

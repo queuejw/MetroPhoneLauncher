@@ -17,7 +17,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -70,11 +69,9 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.generateRandomTileSize
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabet
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getAlphabetCompat
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getDefaultLocale
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getEnglishLanguage
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getUserLanguageRegex
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getUserLanguageRegexCompat
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.launcherAccentColor
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setUpApps
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.setViewInteractAnimation
@@ -83,7 +80,6 @@ import kotlin.random.Random
 class AllApps : Fragment() {
 
     private lateinit var recyclerViewLM: LinearLayoutManager
-    private lateinit var decor: IOverScrollDecor
 
     private var appAdapter: AppAdapter? = null
 
@@ -102,6 +98,20 @@ class AllApps : Fragment() {
     private var _binding: LauncherAllAppsScreenBinding? = null
     private val binding get() = _binding!!
 
+    private val bottomDecor by lazy {
+        Utils.BottomOffsetDecoration(
+            requireContext().resources.getDimensionPixelSize(
+                R.dimen.recyclerViewPadding
+            )
+        )
+    }
+    private val scrollDecor: IOverScrollDecor by lazy {
+        OverScrollDecoratorHelper.setUpOverScroll(
+            binding.appList,
+            OverScrollDecoratorHelper.ORIENTATION_VERTICAL
+        )
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -109,8 +119,11 @@ class AllApps : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = LauncherAllAppsScreenBinding.inflate(inflater, container, false)
-        Log.d("AllApps", "Init")
         mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        setUi()
+        return binding.root
+    }
+    private fun setUi() {
         binding.settingsBtn.apply {
             visibility = if (!PREFS.isSettingsBtnEnabled) View.GONE else View.VISIBLE
             setOnClickListener {
@@ -123,12 +136,17 @@ class AllApps : Fragment() {
         binding.searchBackBtn.setOnClickListener {
             disableSearch()
         }
-        if (PREFS.customFontInstalled) customFont?.let {
-            binding.searchTextview.typeface = it
-            binding.noResults.typeface = it
-        }
+        prepareRecyclerView()
         applyWindowInsets(binding.root)
-        return binding.root
+    }
+
+    private fun prepareRecyclerView() {
+        recyclerViewLM = LinearLayoutManager(requireActivity())
+        binding.appList.apply {
+            layoutManager = recyclerViewLM
+            addItemDecoration(bottomDecor)
+            scrollDecor.attach()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -137,6 +155,17 @@ class AllApps : Fragment() {
             activity?.recreate()
             return
         }
+        prepareScreen()
+        if (PREFS.customFontInstalled) customFont?.let {
+            binding.searchTextview.typeface = it
+            binding.noResults.typeface = it
+        }
+        if (PREFS.prefs.getBoolean("tip2Enabled", true)) {
+            tipDialog()
+            PREFS.prefs.edit().putBoolean("tip2Enabled", false).apply()
+        }
+    }
+    private fun prepareScreen() {
         viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
             var data = getHeaderListLatter(mainViewModel.getAppList())
             if (data.isEmpty()) {
@@ -147,21 +176,12 @@ class AllApps : Fragment() {
                     )
                 )
             }
-            appAdapter = AppAdapter(data)
-            recyclerViewLM = LinearLayoutManager(requireActivity())
             setAlphabetRecyclerView(requireContext())
-            if (PREFS.prefs.getBoolean("tip2Enabled", true)) {
-                withContext(mainDispatcher) {
-                    tipDialog()
-                }
-                PREFS.prefs.edit().putBoolean("tip2Enabled", false).apply()
-            }
+            appAdapter = AppAdapter(data)
             withContext(mainDispatcher) {
                 configureRecyclerView()
             }
-            cancel("done")
         }
-        registerBroadcast()
     }
 
     private fun tipDialog() {
@@ -181,18 +201,6 @@ class AllApps : Fragment() {
         binding.appList.apply {
             layoutManager = recyclerViewLM
             adapter = appAdapter
-            addItemDecoration(
-                Utils.BottomOffsetDecoration(
-                    requireContext().resources.getDimensionPixelSize(
-                        R.dimen.recyclerViewPadding
-                    )
-                )
-            )
-            decor = OverScrollDecoratorHelper.setUpOverScroll(
-                this,
-                OverScrollDecoratorHelper.ORIENTATION_VERTICAL
-            )
-            visibility = View.VISIBLE
         }
     }
 
@@ -263,14 +271,12 @@ class AllApps : Fragment() {
         unregisterBroadcast()
     }
 
-    private suspend fun setAlphabetRecyclerView(context: Context) {
+    private fun setAlphabetRecyclerView(context: Context) {
         adapterAlphabet = AlphabetAdapter(getAlphabetList(), context)
         val lm = GridLayoutManager(context, 4)
-        withContext(mainDispatcher) {
-            configureAlphabetRecyclerView(lm)
-            binding.alphabetLayout.setOnClickListener {
-                hideAlphabet()
-            }
+        configureAlphabetRecyclerView(lm)
+        binding.alphabetLayout.setOnClickListener {
+            hideAlphabet()
         }
     }
 
@@ -317,15 +323,10 @@ class AllApps : Fragment() {
         val resultList: MutableList<AlphabetLetter> = ArrayList()
         val alphabetList: MutableList<String> = ArrayList()
         val list = removeApps(getHeaderListLatter(mainViewModel.getAppList()))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            alphabetList.addAll(getAlphabet(getDefaultLocale().language))
-            alphabetList.add("#")
-            alphabetList.addAll(getAlphabet(getEnglishLanguage()))
-        } else {
-            alphabetList.addAll(getAlphabetCompat(getDefaultLocale().language)!!)
-            alphabetList.add("#")
-            alphabetList.addAll(getAlphabetCompat(getEnglishLanguage())!!)
-        }
+        val defaultLanguage = getDefaultLocale()
+        alphabetList.addAll(getAlphabet(defaultLanguage.language))
+        alphabetList.add("#")
+        alphabetList.addAll(getAlphabet(getEnglishLanguage()))
         var pos = 0
         alphabetList.forEach {
             if (it.length < 2) {
@@ -361,14 +362,11 @@ class AllApps : Fragment() {
     }
 
     override fun onResume() {
-        if (isAppOpened && !isStartMenuOpened) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
-        }
+        if (isAppOpened && !isStartMenuOpened) activity?.onBackPressedDispatcher?.onBackPressed()
         registerBroadcast()
         super.onResume()
-        if (binding.appList.visibility != View.VISIBLE) {
-            binding.appList.visibility = View.VISIBLE
-        }
+        if (binding.appList.visibility != View.VISIBLE) binding.appList.visibility = View.VISIBLE
+        if (PREFS.showKeyboardWhenOpeningAllApps) searchFunction()
         if (binding.appList.alpha != 1f) {
             if (PREFS.isAAllAppsAnimEnabled) {
                 binding.appList.apply {
@@ -383,16 +381,13 @@ class AllApps : Fragment() {
                 binding.appList.alpha = 1f
             }
         }
-        if (PREFS.showKeyboardWhenOpeningAllApps) {
-            searchFunction()
-        }
     }
 
     private fun disableSearch() {
         if (!isSearching) return
         isSearching = false
         binding.noResults.visibility = View.GONE
-        decor.attach()
+        scrollDecor.attach()
         binding.apply {
             hideKeyboard(search.editText as? AutoCompleteTextView)
             (search.editText as? AutoCompleteTextView)?.apply {
@@ -427,7 +422,7 @@ class AllApps : Fragment() {
         if (isSearching) return
         appAdapter ?: return
         isSearching = true
-        decor.detach()
+        scrollDecor.detach()
         binding.apply {
             searchLayout.apply {
                 visibility = View.VISIBLE
@@ -553,30 +548,21 @@ class AllApps : Fragment() {
         val englishHeaders = mutableSetOf<String>()
         val englishApps = mutableMapOf<String, MutableList<App>>()
         val otherApps = mutableListOf<App>()
-        val defaultLocale = getDefaultLocale()
-        val regex = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            getUserLanguageRegex(userLanguage).toRegex()
-        } else {
-            getUserLanguageRegexCompat(userLanguage)
-        }
+        val regex = getUserLanguageRegex(userLanguage).toRegex()
         newApps.forEach { app ->
             val label = app.appLabel ?: ""
             when {
                 label.first().toString().matches(regex) -> {
-                    val header = label[0].toString().lowercase(defaultLocale)
+                    val header = label[0].toString().lowercase(userLanguage)
                     userLanguageHeaders.add(header)
-                    if (userLanguageApps[header] == null) {
-                        userLanguageApps[header] = mutableListOf()
-                    }
+                    if (userLanguageApps[header] == null) userLanguageApps[header] = mutableListOf()
                     userLanguageApps[header]?.add(app)
                 }
 
                 label.matches(Regex("^[a-zA-Z].*")) -> {
-                    val header = label[0].lowercase(defaultLocale)
+                    val header = label[0].lowercase(userLanguage)
                     englishHeaders.add(header)
-                    if (englishApps[header] == null) {
-                        englishApps[header] = mutableListOf()
-                    }
+                    if (englishApps[header] == null) englishApps[header] = mutableListOf()
                     englishApps[header]?.add(app)
                 }
 
@@ -693,8 +679,7 @@ class AllApps : Fragment() {
         fun setData(new: MutableList<App>) {
             val diffCallback = AppDiffCallback(list, new)
             val diffResult = DiffUtil.calculateDiff(diffCallback)
-            list.clear()
-            list.addAll(new)
+            list = new
             diffResult.dispatchUpdatesTo(this)
         }
 

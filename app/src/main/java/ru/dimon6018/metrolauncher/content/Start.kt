@@ -12,11 +12,8 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
-import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
@@ -87,7 +84,6 @@ import kotlin.random.Random
 // Start screen
 class Start : Fragment() {
 
-    private lateinit var mItemTouchHelper: ItemTouchHelper
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
@@ -110,6 +106,14 @@ class Start : Fragment() {
     private val backCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             mAdapter?.let { if (it.isEditMode) it.disableEditMode() }
+        }
+    }
+    private val marginDecor by lazy {
+        MarginItemDecoration(14)
+    }
+    private val mItemTouchHelper: ItemTouchHelper? by lazy {
+        mAdapter?.let {
+            ItemTouchHelper(ItemTouchCallback(it))
         }
     }
 
@@ -147,9 +151,9 @@ class Start : Fragment() {
                 withContext(mainDispatcher) {
                     configureRecyclerView()
                     registerBroadcast()
-                    screenLoaded = true
                     observe()
                 }
+                screenLoaded = true
                 cancel("done")
             }
         }
@@ -160,9 +164,7 @@ class Start : Fragment() {
      * @see onViewCreated
      */
     private fun observe() {
-        if (!screenLoaded || mainViewModel.getTileDao().getTilesLiveData()
-                .hasActiveObservers()
-        ) return
+        if (!screenLoaded || mainViewModel.getTileDao().getTilesLiveData().hasActiveObservers()) return
         mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
             mAdapter ?: return@observe
             if (mAdapter!!.list != it) {
@@ -190,7 +192,6 @@ class Start : Fragment() {
      */
     private fun setupAdapter() {
         mAdapter = NewStartAdapter(requireContext(), tiles!!)
-        mItemTouchHelper = ItemTouchHelper(ItemTouchCallback(mAdapter!!))
     }
 
     /**
@@ -216,8 +217,8 @@ class Start : Fragment() {
         binding.startTiles.apply {
             layoutManager = mSpannedLayoutManager
             adapter = mAdapter
-            mItemTouchHelper.attachToRecyclerView(this)
-            addItemDecoration(MarginItemDecoration(14))
+            mItemTouchHelper?.attachToRecyclerView(this)
+            addItemDecoration(marginDecor)
         }
     }
 
@@ -291,12 +292,6 @@ class Start : Fragment() {
         isStartMenuOpened = true
         super.onResume()
         screenIsOn = isScreenOn(context)
-        mAdapter?.apply {
-            isBottomRight = false
-            isBottomLeft = false
-            isTopRight = false
-            isTopLeft = false
-        }
     }
 
     override fun onPause() {
@@ -559,10 +554,6 @@ class Start : Fragment() {
         private val accentColor: Int by lazy { Utils.launcherAccentColor(requireActivity().theme) }
 
         var isEditMode = false
-        var isTopLeft = false
-        var isTopRight = false
-        var isBottomLeft = false
-        var isBottomRight = false
 
         init {
             setHasStableIds(true)
@@ -1086,18 +1077,6 @@ class Start : Fragment() {
         inner class TileViewHolder(val binding: TileBinding) :
             RecyclerView.ViewHolder(binding.root), ItemTouchHelperViewHolder {
 
-            private val gestureDetector: GestureDetector =
-                GestureDetector(context, object : SimpleOnGestureListener() {
-                    override fun onLongPress(e: MotionEvent) {
-                        handleLongClick()
-                    }
-
-                    override fun onSingleTapUp(e: MotionEvent): Boolean {
-                        handleClick()
-                        return true
-                    }
-                })
-
             init {
                 if (PREFS.isWallpaperEnabled) {
                     itemView.viewTreeObserver.addOnPreDrawListener {
@@ -1110,27 +1089,12 @@ class Start : Fragment() {
                 }
                 binding.container.apply {
                     alpha = PREFS.tilesTransparency
-                    setOnTouchListener { view, event ->
-                        val x = event.x
-                        val y = event.y
-                        val left = view.left
-                        val top = view.top
-                        val right = view.right
-                        val bottom = view.bottom
-
-                        isTopLeft =
-                            x >= left && x <= left + view.width / 2 && y >= top && y <= top + view.height / 2
-
-                        isTopRight =
-                            x >= (left + view.width / 2) && x <= right && y >= top && y <= top + view.height / 2
-
-                        isBottomLeft =
-                            x >= left && x <= left + view.width / 2 && y >= top + view.height / 2 && y <= bottom
-
-                        isBottomRight =
-                            x >= (left + view.width / 2) && x <= right && y >= top + view.height / 2 && y <= bottom
-
-                        return@setOnTouchListener gestureDetector.onTouchEvent(event)
+                    setOnClickListener {
+                        handleClick()
+                    }
+                    setOnLongClickListener {
+                        handleLongClick()
+                        true
                     }
                 }
                 if (PREFS.customFontInstalled) customFont?.let { binding.tileLabel.typeface = it }

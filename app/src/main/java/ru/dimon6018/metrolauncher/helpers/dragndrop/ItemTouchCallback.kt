@@ -1,6 +1,5 @@
 package ru.dimon6018.metrolauncher.helpers.dragndrop
 
-import android.util.Log
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
