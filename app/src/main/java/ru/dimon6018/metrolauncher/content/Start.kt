@@ -51,14 +51,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import ru.dimon6018.metrolauncher.Application
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
-import ru.dimon6018.metrolauncher.Application.Companion.customFont
-import ru.dimon6018.metrolauncher.Application.Companion.customLightFont
-import ru.dimon6018.metrolauncher.Application.Companion.isAppOpened
-import ru.dimon6018.metrolauncher.Application.Companion.isStartMenuOpened
 import ru.dimon6018.metrolauncher.Main
-import ru.dimon6018.metrolauncher.Main.Companion.isLandscape
-import ru.dimon6018.metrolauncher.Main.Companion.isViewPagerScrolling
 import ru.dimon6018.metrolauncher.MainViewModel
 import ru.dimon6018.metrolauncher.R
 import ru.dimon6018.metrolauncher.content.data.app.App
@@ -72,18 +67,11 @@ import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchCallback
 import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperAdapter
 import ru.dimon6018.metrolauncher.helpers.dragndrop.ItemTouchHelperViewHolder
 import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
-import ru.dimon6018.metrolauncher.helpers.ui.StartRecyclerView
 import ru.dimon6018.metrolauncher.helpers.utils.Utils
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentColorFromPrefs
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorFromPrefs
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.getTileColorName
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.isScreenOn
-import ru.dimon6018.metrolauncher.helpers.utils.Utils.MarginItemDecoration
 import kotlin.random.Random
 
 // Start screen
 class Start : Fragment() {
-
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
     private val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
@@ -109,7 +97,7 @@ class Start : Fragment() {
         }
     }
     private val marginDecor by lazy {
-        MarginItemDecoration(14)
+        Utils.MarginItemDecoration(14)
     }
     private val mItemTouchHelper: ItemTouchHelper? by lazy {
         mAdapter?.let {
@@ -137,7 +125,6 @@ class Start : Fragment() {
             )
             insets
         }
-        if (PREFS.isWallpaperEnabled) binding.startTiles.isUpdateEnabled = true
         return binding.root
     }
 
@@ -229,12 +216,12 @@ class Start : Fragment() {
      */
     private fun setupRecyclerViewLayoutManager(context: Context?) {
         if (mSpannedLayoutManager != null) mSpannedLayoutManager = null
-        if (!isLandscape) {
+        if (!Main.isLandscape) {
             // phone
             mSpannedLayoutManager = SpannedGridLayoutManager(
                 orientation = RecyclerView.VERTICAL,
-                rowCount = if (!PREFS.isMoreTilesEnabled) 8 else 12,
-                columnCount = if (!PREFS.isMoreTilesEnabled) 4 else 6
+                rowCount = 8,
+                columnCount = 4
             )
         } else {
             // Landscape orientation
@@ -243,15 +230,15 @@ class Start : Fragment() {
                 // tablet
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
-                    rowCount = if (!PREFS.isMoreTilesEnabled) 2 else 3,
-                    columnCount = if (!PREFS.isMoreTilesEnabled) 4 else 6
+                    rowCount = 2,
+                    columnCount = 4
                 )
             } else {
                 // phone but landscape
                 SpannedGridLayoutManager(
                     orientation = RecyclerView.VERTICAL,
                     rowCount = 3,
-                    columnCount = if (!PREFS.isMoreTilesEnabled) 4 else 6
+                    columnCount = 4
                 )
             }
         }
@@ -270,7 +257,7 @@ class Start : Fragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+        Main.isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
         setupRecyclerViewLayoutManager(context)
         binding.startTiles.apply {
             layoutManager = mSpannedLayoutManager
@@ -283,20 +270,20 @@ class Start : Fragment() {
             if (binding.startTiles.visibility == View.INVISIBLE) binding.startTiles.visibility =
                 View.VISIBLE
         }
-        if (isAppOpened) {
+        if (Application.isAppOpened) {
             viewLifecycleOwner.lifecycleScope.launch {
                 animateTiles(false, null, null)
             }
-            isAppOpened = false
+            Application.isAppOpened = false
         }
-        isStartMenuOpened = true
+        Application.isStartMenuOpened = true
         super.onResume()
-        screenIsOn = isScreenOn(context)
+        screenIsOn = Utils.isScreenOn(context)
     }
 
     override fun onPause() {
         super.onPause()
-        screenIsOn = isScreenOn(context)
+        screenIsOn = Utils.isScreenOn(context)
         if (!screenIsOn) {
             if (binding.startTiles.visibility == View.VISIBLE) {
                 binding.startTiles.visibility = View.INVISIBLE
@@ -305,12 +292,12 @@ class Start : Fragment() {
         mAdapter?.apply {
             if (isEditMode) disableEditMode()
         }
-        isStartMenuOpened = false
+        Application.isStartMenuOpened = false
     }
 
     override fun onStop() {
         super.onStop()
-        isStartMenuOpened = false
+        Application.isStartMenuOpened = false
     }
 
     /**
@@ -520,7 +507,7 @@ class Start : Fragment() {
      * @param packageName Application package name
      */
     private fun startApp(packageName: String) {
-        isAppOpened = true
+        Application.isAppOpened = true
         if (activity != null) {
             val intent = when (packageName) {
                 "ru.dimon6018.metrolauncher" -> Intent(
@@ -723,8 +710,7 @@ class Start : Fragment() {
             imageView.layoutParams.apply {
                 when (tileSize) {
                     "small" -> {
-                        val size =
-                            if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_small_moreTiles_on) else res.getDimensionPixelSize(
+                        val size = res.getDimensionPixelSize(
                                 R.dimen.tile_small_moreTiles_off
                             )
                         width = size
@@ -732,8 +718,7 @@ class Start : Fragment() {
                     }
 
                     "medium" -> {
-                        val size =
-                            if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_on) else res.getDimensionPixelSize(
+                        val size = res.getDimensionPixelSize(
                                 R.dimen.tile_medium_moreTiles_off
                             )
                         width = size
@@ -741,8 +726,7 @@ class Start : Fragment() {
                     }
 
                     "big" -> {
-                        val size =
-                            if (PREFS.isMoreTilesEnabled) res.getDimensionPixelSize(R.dimen.tile_big_moreTiles_on) else res.getDimensionPixelSize(
+                        val size = res.getDimensionPixelSize(
                                 R.dimen.tile_big_moreTiles_off
                             )
                         width = size
@@ -764,17 +748,15 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
-            if (!PREFS.isWallpaperEnabled) {
-                if (item.tileColor != -1) {
-                    holder.binding.container.setBackgroundColor(
-                        getTileColorFromPrefs(
-                            item.tileColor!!,
-                            context
-                        )
+            if (item.tileColor != -1) {
+                holder.binding.container.setBackgroundColor(
+                    Utils.getTileColorFromPrefs(
+                        item.tileColor!!,
+                        context
                     )
-                } else {
-                    holder.binding.container.setBackgroundColor(accentColorFromPrefs(context))
-                }
+                )
+            } else {
+                holder.binding.container.setBackgroundColor(Utils.accentColorFromPrefs(context))
             }
         }
         /**
@@ -787,9 +769,7 @@ class Start : Fragment() {
             mTextView.apply {
                 when (item.tileSize) {
                     "small" -> visibility = View.GONE
-                    "medium" -> visibility =
-                        if (!PREFS.isMoreTilesEnabled) View.VISIBLE else View.GONE
-
+                    "medium" -> visibility = View.VISIBLE
                     "big" -> visibility = View.VISIBLE
                 }
             }
@@ -851,14 +831,14 @@ class Start : Fragment() {
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView: View = inflater.inflate(
-                if (item.tileSize == "small" && PREFS.isMoreTilesEnabled) R.layout.tile_window_small else R.layout.tile_window,
+                if (item.tileSize == "small") R.layout.tile_window_small else R.layout.tile_window,
                 holder.itemView as ViewGroup,
                 false
             )
             var width = holder.itemView.width
             var height = holder.itemView.height
             if (item.tileSize == "small") {
-                width += if (PREFS.isMoreTilesEnabled) 75 else 50
+                width += 50
                 height += 50
             }
             val popupWindow = PopupWindow(popupView, width, height, true)
@@ -873,7 +853,7 @@ class Start : Fragment() {
             }
             popupWindow.showAsDropDown(
                 holder.itemView,
-                if (PREFS.isMoreTilesEnabled && item.tileSize == "small") -width / 5 else 0,
+                0,
                 -height,
                 Gravity.CENTER
             )
@@ -996,7 +976,7 @@ class Start : Fragment() {
             val appInfoLabel =
                 bottomSheetInternal.findViewById<MaterialTextView>(R.id.app_info_label)
 
-            (if (PREFS.customLightFontPath != null) customLightFont else customFont)?.let {
+            (if (PREFS.customLightFontPath != null) Application.customLightFont else Application.customFont)?.let {
                 label.typeface = it
                 colorSub.typeface = it
                 removeColor.typeface = it
@@ -1023,10 +1003,10 @@ class Start : Fragment() {
                 colorSub.visibility = View.GONE
                 removeColor.visibility = View.GONE
             } else {
-                colorSub.setTextColor(getTileColorFromPrefs(item.tileColor!!, context))
+                colorSub.setTextColor(Utils.getTileColorFromPrefs(item.tileColor!!, context))
                 colorSub.text = getString(
                     R.string.tileSettings_color_sub,
-                    getTileColorName(item.tileColor!!, context)
+                    Utils.getTileColorName(item.tileColor!!, context)
                 )
             }
             changeLabel.setOnClickListener {
@@ -1078,12 +1058,6 @@ class Start : Fragment() {
             RecyclerView.ViewHolder(binding.root), ItemTouchHelperViewHolder {
 
             init {
-                if (PREFS.isWallpaperEnabled) {
-                    itemView.viewTreeObserver.addOnPreDrawListener {
-                        if (!isViewPagerScrolling) (itemView.parent as? StartRecyclerView)?.invalidate()
-                        true
-                    }
-                }
                 binding.cardContainer.apply {
                     if (PREFS.coloredStroke) strokeColor = accentColor
                 }
@@ -1097,7 +1071,7 @@ class Start : Fragment() {
                         true
                     }
                 }
-                if (PREFS.customFontInstalled) customFont?.let { binding.tileLabel.typeface = it }
+                if (PREFS.customFontInstalled) Application.customFont?.let { binding.tileLabel.typeface = it }
             }
 
             /**

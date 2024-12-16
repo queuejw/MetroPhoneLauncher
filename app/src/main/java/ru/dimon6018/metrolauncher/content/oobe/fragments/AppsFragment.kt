@@ -57,6 +57,7 @@ class AppsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if(context == null) activity?.recreate()
         val call = TileData.getTileData(requireContext()).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList()

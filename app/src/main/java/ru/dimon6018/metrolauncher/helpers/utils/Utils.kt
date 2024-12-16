@@ -11,9 +11,6 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.icu.text.AlphabeticIndex
-import android.icu.text.UnicodeSet
-import android.icu.util.ULocale
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -48,7 +45,6 @@ import ru.dimon6018.metrolauncher.helpers.receivers.PackageChangesReceiver
 import java.io.File
 import java.util.Calendar
 import java.util.Locale
-import java.util.regex.Pattern
 import kotlin.random.Random
 
 
@@ -235,7 +231,7 @@ class Utils {
         }
 
         fun setUpApps(pManager: PackageManager, context: Context): MutableList<App> {
-            val appListTemp = ArrayList<App>()
+            val appList = ArrayList<App>()
             val i = Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER)
             val allApps = pManager.queryIntentActivities(i, 0)
             var pos = 0
@@ -251,55 +247,11 @@ class Utils {
                     continue
                 }
                 item.type = 0
-                appListTemp.add(item)
+                appList.add(item)
                 pos += 1
             }
-            val userLanguage = getDefaultLocale()
-            val userLanguageHeaders = mutableSetOf<String>()
-            val userLanguageApps = mutableMapOf<String, MutableList<App>>()
-            val englishHeaders = mutableSetOf<String>()
-            val englishApps = mutableMapOf<String, MutableList<App>>()
-            val otherApps = mutableListOf<App>()
-            val defaultLocale = getDefaultLocale()
-            val regex = getUserLanguageRegex(userLanguage).toRegex()
-            appListTemp.forEach { app ->
-                val label = app.appLabel ?: ""
-                when {
-                    label.first().toString().matches(regex) -> {
-                        val header = label[0].toString().lowercase(defaultLocale)
-                        userLanguageHeaders.add(header)
-                        if (userLanguageApps[header] == null) {
-                            userLanguageApps[header] = mutableListOf()
-                        }
-                        userLanguageApps[header]?.add(app)
-                    }
-
-                    label.matches(Regex("^[a-zA-Z].*")) -> {
-                        val header = label[0].lowercase(defaultLocale)
-                        englishHeaders.add(header)
-                        if (englishApps[header] == null) {
-                            englishApps[header] = mutableListOf()
-                        }
-                        englishApps[header]?.add(app)
-                    }
-
-                    else -> {
-                        otherApps.add(app)
-                    }
-                }
-            }
-            val list = mutableListOf<App>()
-            val sortedUserLanguageHeaders = userLanguageHeaders.sorted()
-            sortedUserLanguageHeaders.forEach { header ->
-                list.addAll(userLanguageApps[header] ?: emptyList())
-            }
-            val sortedEnglishHeaders = englishHeaders.sorted()
-            sortedEnglishHeaders.forEach { header ->
-                list.addAll(englishApps[header] ?: emptyList())
-            }
-            list.addAll(otherApps)
-            list.sortBy { it.appLabel }
-            return list
+            appList.sortBy { it.appLabel }
+            return appList
         }
 
         fun saveError(e: String, db: BSOD) {
@@ -436,35 +388,8 @@ class Utils {
                 false
             }
         }
-
-        fun getUserLanguageRegex(locale: Locale): Pattern {
-            val uLocale = ULocale.forLocale(locale)
-            val lowercaseLetters = UnicodeSet().addAll(getAlphabet(uLocale.language))
-            val uppercaseLetters = UnicodeSet(lowercaseLetters).apply {
-                for (char in this) {
-                    this.add(char.uppercase(Locale.ROOT))
-                }
-            }
-            lowercaseLetters.addAll(uppercaseLetters)
-            val regexPattern = "[${lowercaseLetters.toPattern(false)}]"
-            return Pattern.compile(regexPattern)
-        }
-
-        fun getAlphabet(languageCode: String): List<String> {
-            val index = AlphabeticIndex<String>(ULocale(languageCode))
-            val alphabet: MutableList<String> = ArrayList()
-            for (bucket in index) {
-                if (bucket.label.isNotEmpty()) {
-                    alphabet.add(bucket.label.lowercase(Locale.ROOT))
-                }
-            }
-            alphabet.removeAt(0)
-            alphabet.removeAt(alphabet.size - 1)
-            return alphabet
-        }
-
         suspend fun generatePlaceholder(call: TileDao, value: Int) {
-            val size = if (PREFS.isMoreTilesEnabled) value * 2 else value
+            val size = value
             val startFrom = call.getTilesList().size
             val end = startFrom + size
             for (i in startFrom..end) {
@@ -478,15 +403,6 @@ class Utils {
                 call.addTile(placeholder)
             }
         }
-
-        fun getDefaultLocale(): Locale {
-            return Locale.getDefault()
-        }
-
-        fun getEnglishLanguage(): String {
-            return Locale.ENGLISH.language
-        }
-
         fun checkStoragePermissions(context: Context): Boolean {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 Environment.isExternalStorageManager()
@@ -552,6 +468,10 @@ class Utils {
                     null
                 }
             }
+        }
+
+        fun getDefaultLocale(): Locale {
+            return Locale.getDefault()
         }
     }
 

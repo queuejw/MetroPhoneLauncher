@@ -27,12 +27,9 @@ class Prefs(context: Context) {
     private val launcherStatePref = "launcherState"
     private val lightThemePref = "launcherTheme"
     private val navbarColorPref = "navBarColor"
-    private val showMoreTilesPref = "isMoreTilesEnabled"
-    private val wallpaperPref = "wallpaperUsing"
     private val iconPackPref = "iconPack"
     private val autoPinPref = "autoPinApp"
     private val settingsBtnPref = "allAppsSettingsBtnEnabled"
-    private val alphabetPref = "alphabetEnabled"
     private val tilesTransparencyPref = "tilesTransparency"
     private val searchBarPref = "searchBarEnabled"
     private val bottomBarIconPref = "bottomBarIcon"
@@ -43,7 +40,6 @@ class Prefs(context: Context) {
     private val liveTilesAnimPref = "liveTileAnim"
     private val searchBarMaxResultsPref = "maxResultsSearchBar"
     private val allAppsScreenPref = "allAppsEnabled"
-    private val alphabetAnimPrefs = "alphabetAnim"
     private val autoShutdownAnimPref = "autoStdwnAnimations"
     private val bsodOutputPref = "bsodOutputEnabled"
     private val keyboardSearchPref = "showKeyboardWhenSearching"
@@ -66,14 +62,6 @@ class Prefs(context: Context) {
     fun reset() {
         prefs.edit().clear().apply()
     }
-
-    var isWallpaperEnabled: Boolean
-        get() = prefs.getBoolean(wallpaperPref, false)
-        set(value) = prefs.edit().putBoolean(wallpaperPref, value).apply()
-
-    var isMoreTilesEnabled: Boolean
-        get() = prefs.getBoolean(showMoreTilesPref, false)
-        set(value) = prefs.edit().putBoolean(showMoreTilesPref, value).apply()
 
     var maxCrashLogs: Int
         get() = prefs.getInt(maxCrashLogsPref, 1)
@@ -182,10 +170,6 @@ class Prefs(context: Context) {
         get() = prefs.getBoolean(settingsBtnPref, false)
         set(value) = prefs.edit().putBoolean(settingsBtnPref, value).apply()
 
-    var isAlphabetEnabled: Boolean
-        get() = prefs.getBoolean(alphabetPref, true)
-        set(value) = prefs.edit().putBoolean(alphabetPref, value).apply()
-
     var tilesTransparency: Float
         get() = prefs.getFloat(tilesTransparencyPref, 1.0f)
         set(value) = prefs.edit().putFloat(tilesTransparencyPref, value).apply()
@@ -228,10 +212,6 @@ class Prefs(context: Context) {
     var isAllAppsEnabled: Boolean
         get() = prefs.getBoolean(allAppsScreenPref, true)
         set(value) = prefs.edit().putBoolean(allAppsScreenPref, value).apply()
-
-    var isAlphabetAnimEnabled: Boolean
-        get() = prefs.getBoolean(alphabetAnimPrefs, true)
-        set(value) = prefs.edit().putBoolean(alphabetAnimPrefs, value).apply()
 
     //disabling animations if developer mode is enabled (to avoid problems)
     var isAutoShutdownAnimEnabled: Boolean

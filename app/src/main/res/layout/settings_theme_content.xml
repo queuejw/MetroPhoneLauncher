@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    android:layout_height="wrap_content">
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -171,34 +171,6 @@
                     android:textSize="24sp"/>
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/wallpaper_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="54dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/wallpaper_setting"
-                    android:textSize="20sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/wallpaper_sub"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/wallpaper_switch"
-                    android:textSize="18sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/wallpaperShowSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="24sp" />
-
-                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/auto_pin_label"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -225,38 +197,6 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
                     android:textSize="24sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/more_tiles_label"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/more_tiles_desc"
-                    android:textSize="20sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/more_tiles_sub"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/show_more_tiles"
-                    android:textSize="18sp" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/moreTilesSwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:textSize="24sp" />
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/moreTilesImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/themeSettingsImgSize" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/advanced_options"

@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import coil3.load
-import coil3.request.placeholder
 import ru.dimon6018.metrolauncher.Application.Companion.PREFS
 import ru.dimon6018.metrolauncher.Application.Companion.customBoldFont
 import ru.dimon6018.metrolauncher.Application.Companion.customFont
@@ -30,9 +28,6 @@ import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInset
 import kotlin.system.exitProcess
 
 class AboutSettingsActivity : AppCompatActivity() {
-
-    private val caracalLink =
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg/1288px-Caracl_%2801%29%2C_Paris%2C_d%C3%A9cembre_2013.jpg"
 
     private lateinit var binding: LauncherSettingsAboutBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,17 +93,6 @@ class AboutSettingsActivity : AppCompatActivity() {
         }
         binding.settingsInclude.restartLauncher.setOnClickListener {
             exitProcess(0)
-        }
-        binding.settingsInclude.queuejw.setOnLongClickListener {
-            binding.settingsInclude.queuejwImg.visibility = View.VISIBLE
-            binding.settingsInclude.queuejwImg.load(caracalLink) {
-                placeholder(R.drawable.ic_clock)
-            }
-            return@setOnLongClickListener true
-        }
-        binding.settingsInclude.queuejwImg.setOnClickListener {
-            WPDialog(this).setTopDialog(true).setTitle("Meow meow").setMessage("Meow meow, meow?")
-                .setPositiveButton("meow", null).show()
         }
     }
 

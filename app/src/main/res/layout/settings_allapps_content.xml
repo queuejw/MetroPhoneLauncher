@@ -34,34 +34,6 @@
         android:textSize="24sp" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/alphabet_setting_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/alphabetSetting"
-        android:textSize="20sp" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/alphabet_setting_label_switch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
-        android:text="@string/alphabetSetting_sub"
-        android:textSize="18sp" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/alphabetSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="4dp"
-        android:textSize="24sp" />
-
-    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/alphabet_setting_keyboard_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

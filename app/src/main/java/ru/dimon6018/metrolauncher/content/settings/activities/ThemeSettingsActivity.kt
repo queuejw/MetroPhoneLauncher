@@ -39,7 +39,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         setThemeText()
         configure()
-        setImg()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         applyWindowInsets(binding.root)
         prepareTip()
@@ -62,15 +61,9 @@ class ThemeSettingsActivity : AppCompatActivity() {
             binding.settingsInclude.dynamicColorLabel.typeface = it
             binding.settingsInclude.dynamicColorSub.typeface = it
             binding.settingsInclude.dynamicColorSwtich.typeface = it
-            binding.settingsInclude.wallpaperLabel.typeface = it
-            binding.settingsInclude.wallpaperSub.typeface = it
-            binding.settingsInclude.wallpaperShowSwitch.typeface = it
             binding.settingsInclude.autoPinLabel.typeface = it
             binding.settingsInclude.autoPinSub.typeface = it
             binding.settingsInclude.newAppsToStartSwitch.typeface = it
-            binding.settingsInclude.moreTilesLabel.typeface = it
-            binding.settingsInclude.moreTilesSub.typeface = it
-            binding.settingsInclude.moreTilesSwitch.typeface = it
             binding.settingsInclude.advancedOptions.typeface = it
             binding.settingsInclude.blockStartLabel.typeface = it
             binding.settingsInclude.blockStartSub.typeface = it
@@ -124,33 +117,12 @@ class ThemeSettingsActivity : AppCompatActivity() {
                 supportFragmentManager
             )
         }
-        binding.settingsInclude.moreTilesSwitch.apply {
-            isChecked = PREFS.isMoreTilesEnabled
-            text = if (isChecked) getString(R.string.on) else getString(R.string.off)
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS.apply {
-                    isMoreTilesEnabled = isChecked
-                    isPrefsChanged = true
-                }
-                text = if (isChecked) getString(R.string.on) else getString(R.string.off)
-                setImg()
-            }
-        }
         binding.settingsInclude.newAppsToStartSwitch.apply {
             isChecked = PREFS.pinNewApps
             text = if (PREFS.pinNewApps) getString(R.string.on) else getString(R.string.off)
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.pinNewApps = isChecked
                 text = if (isChecked) getString(R.string.on) else getString(R.string.off)
-            }
-        }
-        binding.settingsInclude.wallpaperShowSwitch.apply {
-            isChecked = PREFS.isWallpaperEnabled
-            text = if (PREFS.isWallpaperEnabled) getString(R.string.on) else getString(R.string.off)
-            setOnCheckedChangeListener { _, check ->
-                PREFS.isWallpaperEnabled = check
-                PREFS.isPrefsChanged = true
-                text = if (check) getString(R.string.on) else getString(R.string.off)
             }
         }
         binding.settingsInclude.dynamicColorSwtich.apply {
@@ -269,12 +241,6 @@ class ThemeSettingsActivity : AppCompatActivity() {
         super.onResume()
         enterAnimation(false)
     }
-
-    private fun setImg() {
-        val img = if (PREFS.isMoreTilesEnabled) R.mipmap.tiles_small else R.mipmap.tiles_default
-        binding.settingsInclude.moreTilesImage.setImageResource(img)
-    }
-
     private fun applyTheme() {
         binding.settingsInclude.chooseTheme.apply {
             text = when (PREFS.appTheme) {

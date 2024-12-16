@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ru.dimon6018.metrolauncher.helpers.ui.StartRecyclerView
+    <ru.dimon6018.metrolauncher.helpers.ui.MetroRecyclerView
         android:id="@+id/start_tiles"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

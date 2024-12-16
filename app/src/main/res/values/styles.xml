@@ -31,10 +31,6 @@
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">0dp</item>
     </style>
-    <style name="AppListBottomSheetEnterAnim" parent="Animation.AppCompat.Dialog">
-        <item name="android:windowEnterAnimation">@anim/applist_bs_enter</item>
-        <item name="android:windowExitAnimation">@anim/applist_bs_exit</item>
-    </style>
     <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.Material3">
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
         <item name="shapeAppearanceOverlay">@null</item>
@@ -60,10 +56,6 @@
         <item name="android:windowBackground">?android:attr/colorBackground</item>
     </style>
     <style name="AppTheme.Tile.Transparent" parent="@android:style/Theme.Wallpaper">
-    </style>
-    <style name="enterStyle">
-        <item name="android:windowEnterAnimation">@anim/enter</item>
-        <item name="android:windowExitAnimation">@anim/dismiss</item>
     </style>
     <style name="Metro.Button" parent="Widget.Material3.Button.OutlinedButton">
         <item name="strokeWidth">2dp</item>

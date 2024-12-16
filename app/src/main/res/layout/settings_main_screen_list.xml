@@ -240,39 +240,6 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/weatherSetting"
-            style="@style/Settings.Card"
-            android:layout_width="match_parent"
-            android:layout_marginEnd="24dp"
-            android:layout_height="64dp"
-            android:layout_marginTop="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/weather_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="weather"
-                    android:textSize="24sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/weather_sub"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:alpha="0.75"
-                    android:text="weather tile"
-                    android:textSize="16sp"
-                    app:fontFamily="@font/manrope_light" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
             android:id="@+id/updatesSetting"
             style="@style/Settings.Card"
             android:layout_width="match_parent"

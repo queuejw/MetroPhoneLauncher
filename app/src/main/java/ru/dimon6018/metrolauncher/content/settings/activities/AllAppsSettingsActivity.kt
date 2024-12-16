@@ -30,16 +30,6 @@ class AllAppsSettingsActivity : AppCompatActivity() {
                     if (PREFS.isSettingsBtnEnabled) getString(R.string.on) else getString(R.string.off)
             }
         }
-        binding.settingsInclude.alphabetSwitch.apply {
-            isChecked = PREFS.isAlphabetEnabled
-            text = if (PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS.isAlphabetEnabled = isChecked
-                PREFS.isPrefsChanged = true
-                text =
-                    if (PREFS.isAlphabetEnabled) getString(R.string.on) else getString(R.string.off)
-            }
-        }
         binding.settingsInclude.disableAllAppsSwitch.apply {
             isChecked = PREFS.isAllAppsEnabled
             text = if (PREFS.isAllAppsEnabled) getString(R.string.on) else getString(R.string.off)
@@ -91,14 +81,11 @@ class AllAppsSettingsActivity : AppCompatActivity() {
             binding.settingsSectionLabel.typeface = it
             binding.settingsLabel.typeface = it
             binding.settingsInclude.settingsBtnSwitch.typeface = it
-            binding.settingsInclude.alphabetSwitch.typeface = it
             binding.settingsInclude.disableAllAppsSwitch.typeface = it
             binding.settingsInclude.keyboardWhenSearchingSwitch.typeface = it
             binding.settingsInclude.keyboardWhenAllAppsOpened.typeface = it
             binding.settingsInclude.settingsButtonLabel.typeface = it
             binding.settingsInclude.settingsButtonLabelSwitch.typeface = it
-            binding.settingsInclude.alphabetSettingLabel.typeface = it
-            binding.settingsInclude.alphabetSettingLabelSwitch.typeface = it
             binding.settingsInclude.alphabetSettingKeyboardLabel.typeface = it
             binding.settingsInclude.additionalOptions.typeface = it
             binding.settingsInclude.showScreenAllAppsLabel.typeface = it

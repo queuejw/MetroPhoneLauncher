@@ -41,7 +41,6 @@ class AnimationSettingsActivity : AppCompatActivity() {
             binding.settingsInclude.liveTilesAnimCheckbox.typeface = it
             binding.settingsInclude.allAppsAnimCheckbox.typeface = it
             binding.settingsInclude.transitionAnimCheckbox.typeface = it
-            binding.settingsInclude.alphabetAnimCheckbox.typeface = it
             binding.settingsInclude.autoShutdownAnimsCheckbox.typeface = it
         }
         customBoldFont?.let {
@@ -73,12 +72,6 @@ class AnimationSettingsActivity : AppCompatActivity() {
             setOnCheckedChangeListener { _, isChecked ->
                 PREFS.isTransitionAnimEnabled = isChecked
                 PREFS.isPrefsChanged = true
-            }
-        }
-        binding.settingsInclude.alphabetAnimCheckbox.apply {
-            isChecked = PREFS.isAlphabetAnimEnabled
-            setOnCheckedChangeListener { _, isChecked ->
-                PREFS.isAlphabetAnimEnabled = isChecked
             }
         }
         binding.settingsInclude.autoShutdownAnimsCheckbox.apply {

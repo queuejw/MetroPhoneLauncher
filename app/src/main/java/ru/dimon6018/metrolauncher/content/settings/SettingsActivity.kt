@@ -35,7 +35,6 @@ import ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActi
 import ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity
 import ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity
-import ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity
 import ru.dimon6018.metrolauncher.databinding.LauncherSettingsMainBinding
 import ru.dimon6018.metrolauncher.helpers.ui.WPDialog
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.accentName
@@ -61,7 +60,6 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.fontSetting to 215,
             binding.settingsInclude.animSetting to 225,
             binding.settingsInclude.feedbackSetting to 225,
-            binding.settingsInclude.weatherSetting to 225,
             binding.settingsInclude.updatesSetting to 225,
             binding.settingsInclude.navbarSetting to 225,
             binding.settingsInclude.aboutSetting to 225,
@@ -79,7 +77,6 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.fontsLabel,
             binding.settingsInclude.animationsLabel,
             binding.settingsInclude.feedbackLabel,
-            binding.settingsInclude.weatherLabel,
             binding.settingsInclude.updatesLabel,
             binding.settingsInclude.navigationLabel,
             binding.settingsInclude.aboutLabel,
@@ -97,7 +94,6 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.fontsSub,
             binding.settingsInclude.animationsSub,
             binding.settingsInclude.feedbackSub,
-            binding.settingsInclude.weatherSub,
             binding.settingsInclude.updatesSub,
             binding.settingsInclude.navbarSub,
             binding.settingsInclude.aboutSub,
@@ -250,10 +246,6 @@ class SettingsActivity : AppCompatActivity() {
         setClickListener(
             binding.settingsInclude.navbarSetting,
             Intent(this@SettingsActivity, NavBarSettingsActivity::class.java)
-        )
-        setClickListener(
-            binding.settingsInclude.weatherSetting,
-            Intent(this@SettingsActivity, WeatherSettingsActivity::class.java)
         )
         setClickListener(
             binding.settingsInclude.iconsSetting,

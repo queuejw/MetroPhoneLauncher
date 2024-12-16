@@ -59,8 +59,6 @@
     <string name="update_info"><u>Details</u></string>
     <string name="notification_channel_name">MPL Updates</string>
     <string name="loading">Loading…</string>
-    <string name="show_more_tiles">Show more tiles</string>
-    <string name="more_tiles_desc">You can change the size and number of tiles available on your start screen</string>
     <string name="start_background">Start background</string>
     <string name="choose_photo">choose photo</string>
     <string name="accent_color">Accent color</string>
@@ -117,8 +115,6 @@
     <string name="oobe_part1_tip">Selecting Launcher Settings</string>
     <string name="oobe_part2_tip">Selecting applications</string>
     <string name="oobe_part3_tip">Completion</string>
-    <string name="advertisement">Advertisement</string>
-    <string name="neko11_ad">Neko11 is a simple, funny and interesting game about cats. You will have to collect the largest collection of cats in the world. Feed, pet, bathe, play and dress them up in different costumes. If interested, click on the button below. Enjoy the game =)</string>
     <string name="edit_app_label">edit app label</string>
     <string name="enter_label_here">enter label here</string>
     <string name="choose_tile_color">choose tile color</string>
@@ -126,8 +122,6 @@
     <string name="uninstall">uninstall</string>
     <string name="update_failed_version_bigger_than_server">We found that your version is newer than the one on the server. You may be using a test version or a modification of the.</string>
     <string name="downloading_error">Unable to continue the upgrade process due to an error. The error information has been saved.</string>
-    <string name="wallpaper_setting">You can use your desktop wallpaper for the background of the tiles</string>
-    <string name="wallpaper_switch">Use my desktop wallpaper</string>
     <string name="color_lime">lime</string>
     <string name="color_green">green</string>
     <string name="color_emerald">emerald</string>
@@ -148,7 +142,6 @@
     <string name="color_taupe">taupe</string>
     <string name="color_yellow">yellow</string>
     <string name="color_brown">brown</string>
-    <string name="wallpaper_error">Interacting with the wallpaper requires access to the device\'s memory.</string>
     <string name="update_err_saving_error">Feedback are disabled. No information has been saved</string>
     <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
     <string name="tip">Tips</string>
@@ -173,17 +166,11 @@
     <string name="tipIconPackError">We could not find the icon packs on your device.</string>
     <string name="settingsBtnInAllApps">You can get quick access to MPL settings by enabling the display of the settings button.</string>
     <string name="settingsBtnInAllApps_sub">Enable the settings button</string>
-    <string name="alphabetSetting">You can disable the alphabet in the app list if it gets in the way.</string>
-    <string name="alphabetSetting_sub">Show the alphabet in the app list</string>
-    <string name="transparent_background_allapps_switch">Enable transparent background</string>
-    <string name="transparent_background_allapps_settings">You can enable transparent background if you want to see the desktop wallpaper in the apps list</string>
     <string name="all_apps_list">all apps list</string>
     <string name="change_your_app_list">change your app list</string>
     <string name="tiles">tiles</string>
     <string name="customize_tiles">customize tiles</string>
     <string name="tile_transparency">Tile transparency</string>
-    <string name="wallpaperTransparentTiles">Enable wallpaper parallax effect on your start screen</string>
-    <string name="permissionsError">Some MPL functions require permissions to operate</string>
     <string name="setAsDefaultLauncher">Want to install MPL as your default launcher?</string>
     <string name="tip2">To pin the app, hold it down</string>
     <string name="dynamicColor_setting">You can use the color of your wallpaper for an accent color</string>
@@ -215,7 +202,6 @@
     <string name="select_all">select all</string>
     <string name="remove_all">remove all</string>
     <string name="disable_all_apps">Show screen All apps</string>
-    <string name="alphabet_animation_settings_label">Allow alphabet animations (not working yet)</string>
     <string name="tiles_phone_start_animation_settings_label">Animate tiles when you turn on the screen</string>
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
@@ -235,8 +221,6 @@
     <string name="auto_show_keyboard_allapps">Automatically enable search when you open the All Apps screen.</string>
     <string name="tile_icon">Tile icon</string>
     <string name="no_results_for">No results for </string>
-    <string name="parallax_warn">For wallpaper parallax to work, you\'ll need to enable the desktop wallpaper. Turn it on?</string>
-    <string name="wallpaper">Wallpaper</string>
     <string name="deny">Deny</string>
     <string name="allow">Allow</string>
     <string name="screen_orientation">Screen orientation</string>

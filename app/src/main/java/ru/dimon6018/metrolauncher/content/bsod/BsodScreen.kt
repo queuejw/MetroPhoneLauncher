@@ -21,6 +21,7 @@ import ru.dimon6018.metrolauncher.content.data.bsod.BSOD
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.ANDROID_VERSION
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.BRAND
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.MODEL
+import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_CODE
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.VERSION_NAME
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.applyWindowInsets
 import ru.dimon6018.metrolauncher.helpers.utils.Utils.Companion.saveError
@@ -41,13 +42,14 @@ class BsodScreen : AppCompatActivity() {
             db = BSOD.getData(this@BsodScreen)
             val model = "Model: $MODEL\n"
             val brand = "Brand: $BRAND\n"
-            val name = "MPL Ver: $VERSION_NAME\n"
+            val mplVerCode = "MPL Ver Code: $VERSION_CODE\n"
+            val mplVerName = "MPL Ver: $VERSION_NAME\n"
             val android = "Android Version: $ANDROID_VERSION\n"
             val code = intent.extras?.getString("errorCode")
             val errCode = "\nIf vou call a support person. aive them this info:\n" +
                     "Stop code: $code"
             val error =
-                "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n " + model + brand + android + name + intent.extras?.getString(
+                "Your launcher ran into a problem and needs to restart. We're just collecting some error info, and then we'll restart for you.\n $model$brand$android$mplVerCode$mplVerName" + intent.extras?.getString(
                     "stacktrace"
                 ) + errCode
             Log.e("BSOD", error)

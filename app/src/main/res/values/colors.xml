@@ -13,24 +13,24 @@
     <color name="textColor">@android:color/black</color>
 
     <!-- tiles -->
-    <color name="tile_magenta">#d80073</color>
-    <color name="tile_crimson">#a20024</color>
-    <color name="tile_red">#e51300</color>
-    <color name="tile_orange">#fa6801</color>
-    <color name="tile_amber">#f0a30a</color>
-    <color name="tile_yellow">#e2c700</color>
-    <color name="tile_brown">#815a2c</color>
-    <color name="tile_olive">#6b8662</color>
-    <color name="tile_steel">#627585</color>
-    <color name="tile_mauve">#755f89</color>
-    <color name="tile_taupe">#87784e</color>
-    <color name="tile_lime">#a3c300</color>
-    <color name="tile_green">#60a915</color>
-    <color name="tile_emerald">#008900</color>
-    <color name="tile_cyan">#00aaa7</color>
-    <color name="tile_teal">#1aa1e2</color>
-    <color name="tile_cobalt">#3e64ff</color>
-    <color name="tile_indigo">#6800ff</color>
-    <color name="tile_violet">#a900ff</color>
-    <color name="tile_pink">#f371cf</color>
+    <color name="tile_magenta">#FFD80073</color>
+    <color name="tile_crimson">#FFA20025</color>
+    <color name="tile_red">#FFE51400</color>
+    <color name="tile_orange">#FFFA6800</color>
+    <color name="tile_amber">#FFF0A30A</color>
+    <color name="tile_yellow">#FFE3C800</color>
+    <color name="tile_brown">#FF825A2C</color>
+    <color name="tile_olive">#FF6D8764</color>
+    <color name="tile_steel">#FF647687</color>
+    <color name="tile_mauve">#FF76608A</color>
+    <color name="tile_taupe">#FF87794E</color>
+    <color name="tile_lime">#FFA4C400</color>
+    <color name="tile_green">#FF60A917</color>
+    <color name="tile_emerald">#FF008A00</color>
+    <color name="tile_cyan">#FF1BA1E2</color>
+    <color name="tile_teal">#FF00ABA9</color>
+    <color name="tile_cobalt">#FF0050EF</color>
+    <color name="tile_indigo">#FF6A00FF</color>
+    <color name="tile_violet">#FFAA00FF</color>
+    <color name="tile_pink">#FFF472D0</color>
 </resources>

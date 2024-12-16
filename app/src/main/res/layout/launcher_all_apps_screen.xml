@@ -134,20 +134,4 @@
                 app:tint="?attr/colorOnSurface" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/alphabetLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/alphabet_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="4dp"/>
-    </LinearLayout>
 </FrameLayout>

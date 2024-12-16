@@ -11,7 +11,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
@@ -159,13 +158,6 @@ class Main : AppCompatActivity() {
      */
     private fun setupUI() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        if (PREFS.isWallpaperEnabled) {
-            window?.setFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER,
-                WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER
-            )
-            window?.setBackgroundDrawableResource(android.R.color.transparent)
-        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainBottomBar.navigationFrame) { view, insets ->
             val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
@@ -192,7 +184,6 @@ class Main : AppCompatActivity() {
     private fun disableAnims() {
         PREFS.apply {
             isAAllAppsAnimEnabled = false
-            isAlphabetAnimEnabled = false
             isTransitionAnimEnabled = false
             isLiveTilesAnimEnabled = false
             isTilesAnimEnabled = false
@@ -239,14 +230,6 @@ class Main : AppCompatActivity() {
                 }
                 binding.mainBottomBar.navigationStartBtn.setColorFilter(startColor)
                 binding.mainBottomBar.navigationSearchBtn.setColorFilter(searchColor)
-            }
-        }
-
-        override fun onPageScrollStateChanged(state: Int) {
-            when (state) {
-                ViewPager2.SCROLL_STATE_DRAGGING -> isViewPagerScrolling = true
-                ViewPager2.SCROLL_STATE_SETTLING -> isViewPagerScrolling = true
-                ViewPager2.SCROLL_STATE_IDLE -> isViewPagerScrolling = false
             }
         }
     }
@@ -541,7 +524,6 @@ class Main : AppCompatActivity() {
     companion object {
         var isLandscape: Boolean = false
         var isDarkMode: Boolean = false
-        var isViewPagerScrolling: Boolean = false
     }
 
     inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {

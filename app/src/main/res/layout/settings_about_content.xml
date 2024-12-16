@@ -112,13 +112,6 @@
             android:text="2023-2024 queuejw"
             android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/queuejwImg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:srcCompat="@drawable/ic_clock" />
-
         <com.google.android.material.button.MaterialButton
                 android:text="@string/reset_your_launcher"
                 android:layout_gravity="center"
