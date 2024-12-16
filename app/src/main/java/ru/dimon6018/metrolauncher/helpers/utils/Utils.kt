@@ -164,16 +164,6 @@ class Utils {
             return typedValue.data
         }
 
-        fun launcherBackgroundColor(theme: Resources.Theme): Int {
-            val typedValue = TypedValue()
-            theme.resolveAttribute(
-                android.R.attr.colorBackground,
-                typedValue,
-                true
-            )
-            return typedValue.data
-        }
-
         fun launcherSurfaceColor(theme: Resources.Theme): Int {
             val typedValue = TypedValue()
             theme.resolveAttribute(
