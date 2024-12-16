@@ -14,7 +14,6 @@ import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -331,15 +330,6 @@ class Utils {
                 activity.unregisterReceiver(packageReceiver)
             } catch (w: IllegalArgumentException) {
                 Log.w("Utils", "unregisterPackageReceiver error: $w")
-            }
-        }
-
-        fun isScreenOn(context: Context?): Boolean {
-            if (context != null) {
-                val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                return powerManager?.isInteractive == true
-            } else {
-                return false
             }
         }
 

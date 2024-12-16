@@ -107,6 +107,7 @@ class AllApps : Fragment() {
         setUi()
         return binding.root
     }
+
     private fun setUi() {
         binding.settingsBtn.apply {
             visibility = if (!PREFS.isSettingsBtnEnabled) View.GONE else View.VISIBLE
@@ -139,7 +140,9 @@ class AllApps : Fragment() {
             activity?.recreate()
             return
         }
-        prepareScreen()
+        lifecycleScope.launch(defaultDispatcher) {
+            prepareScreen()
+        }
         if (PREFS.customFontInstalled) customFont?.let {
             binding.searchTextview.typeface = it
             binding.noResults.typeface = it
@@ -149,19 +152,18 @@ class AllApps : Fragment() {
             PREFS.prefs.edit().putBoolean("tip2Enabled", false).apply()
         }
     }
-    private fun prepareScreen() {
-        viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-            var data = mainViewModel.getAppList()
-            if (data.isEmpty()) {
-                data = Utils.setUpApps(
-                        requireActivity().packageManager,
-                        requireActivity()
-                )
-            }
-            appAdapter = AppAdapter(data)
-            withContext(mainDispatcher) {
-                configureRecyclerView()
-            }
+
+    private suspend fun prepareScreen() {
+        var data = mainViewModel.getAppList()
+        if (data.isEmpty()) {
+            data = Utils.setUpApps(
+                requireActivity().packageManager,
+                requireActivity()
+            )
+        }
+        appAdapter = AppAdapter(data)
+        withContext(mainDispatcher) {
+            configureRecyclerView()
         }
     }
 

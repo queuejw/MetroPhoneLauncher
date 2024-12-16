@@ -83,7 +83,6 @@ class Start : Fragment() {
     private var packageBroadcastReceiver: BroadcastReceiver? = null
 
     private var isBroadcasterRegistered = false
-    private var screenIsOn = false
 
     private var _binding: LauncherStartScreenBinding? = null
     private val binding get() = _binding!!
@@ -266,10 +265,6 @@ class Start : Fragment() {
 
     override fun onResume() {
         if (screenLoaded) observe()
-        if (!screenIsOn) {
-            if (binding.startTiles.visibility == View.INVISIBLE) binding.startTiles.visibility =
-                View.VISIBLE
-        }
         if (Application.isAppOpened) {
             viewLifecycleOwner.lifecycleScope.launch {
                 animateTiles(false, null, null)
@@ -278,17 +273,10 @@ class Start : Fragment() {
         }
         Application.isStartMenuOpened = true
         super.onResume()
-        screenIsOn = Utils.isScreenOn(context)
     }
 
     override fun onPause() {
         super.onPause()
-        screenIsOn = Utils.isScreenOn(context)
-        if (!screenIsOn) {
-            if (binding.startTiles.visibility == View.VISIBLE) {
-                binding.startTiles.visibility = View.INVISIBLE
-            }
-        }
         mAdapter?.apply {
             if (isEditMode) disableEditMode()
         }
