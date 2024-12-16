@@ -243,5 +243,5 @@
     <string name="remove_light_font">remove light font</string>
     <string name="remove_bold_font">remove bold font</string>
     <string name="all_apps_keyboard_action_label">Open first app when pressing action button on keyboard</string>
-    <string name="image">image</string>
+    <string name="image" translatable="false">image</string>
 </resources>
