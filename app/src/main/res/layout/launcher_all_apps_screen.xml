@@ -65,8 +65,7 @@
                 android:textColor="@android:color/black"
                 android:textCursorDrawable="@drawable/cursor"
                 android:textSize="16sp"
-                android:labelFor="@id/search"
-                android:hint="@string/search_for_apps"/>
+                android:labelFor="@id/search"/>
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
