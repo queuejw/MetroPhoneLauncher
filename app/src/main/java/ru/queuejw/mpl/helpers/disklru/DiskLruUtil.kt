@@ -51,7 +51,7 @@ internal object DiskLruUtil {
                 closeable.close()
             } catch (rethrown: RuntimeException) {
                 throw rethrown
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
             }
         }
     }

@@ -189,7 +189,7 @@ class DiskLruCache private constructor(
                 try {
                     readJournalLine(reader.readLine())
                     lineCount++
-                } catch (endOfJournal: EOFException) {
+                } catch (_: EOFException) {
                     break
                 }
             }
@@ -349,7 +349,7 @@ class DiskLruCache private constructor(
             for (i in 0 until valueCount) {
                 ins[i] = FileInputStream(entry.getCleanFile(i))
             }
-        } catch (e: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             // A file must have been deleted manually!
             var i = 0
             while (i < valueCount) {
@@ -660,7 +660,7 @@ class DiskLruCache private constructor(
                 }
                 return try {
                     FileInputStream(entry.getCleanFile(index))
-                } catch (e: FileNotFoundException) {
+                } catch (_: FileNotFoundException) {
                     null
                 }
             }
@@ -698,12 +698,12 @@ class DiskLruCache private constructor(
                 val dirtyFile = entry.getDirtyFile(index)
                 val outputStream = try {
                     FileOutputStream(dirtyFile)
-                } catch (e: FileNotFoundException) {
+                } catch (_: FileNotFoundException) {
                     // Attempt to recreate the cache directory.
                     directory.mkdirs()
                     try {
                         FileOutputStream(dirtyFile)
-                    } catch (e2: FileNotFoundException) {
+                    } catch (_: FileNotFoundException) {
                         // We are unable to recover. Silently eat the writes.
                         return NULL_OUTPUT_STREAM
                     }
@@ -752,8 +752,7 @@ class DiskLruCache private constructor(
             if (!committed) {
                 try {
                     abort()
-                } catch (ignored: IOException) {
-                }
+                } catch (_: IOException) { }
             }
         }
 
@@ -761,7 +760,7 @@ class DiskLruCache private constructor(
             override fun write(oneByte: Int) {
                 try {
                     out.write(oneByte)
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     hasErrors = true
                 }
             }
@@ -769,7 +768,7 @@ class DiskLruCache private constructor(
             override fun write(buffer: ByteArray, offset: Int, length: Int) {
                 try {
                     out.write(buffer, offset, length)
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     hasErrors = true
                 }
             }
@@ -777,7 +776,7 @@ class DiskLruCache private constructor(
             override fun close() {
                 try {
                     out.close()
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     hasErrors = true
                 }
             }
@@ -785,7 +784,7 @@ class DiskLruCache private constructor(
             override fun flush() {
                 try {
                     out.flush()
-                } catch (e: IOException) {
+                } catch (_: IOException) {
                     hasErrors = true
                 }
             }
@@ -825,7 +824,7 @@ class DiskLruCache private constructor(
                 for (i in strings.indices) {
                     lengths[i] = strings[i].toLong()
                 }
-            } catch (e: NumberFormatException) {
+            } catch (_: NumberFormatException) {
                 throw invalidLengths(strings)
             }
         }
