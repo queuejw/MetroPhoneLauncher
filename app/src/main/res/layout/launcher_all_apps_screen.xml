@@ -69,7 +69,7 @@
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
-    <ru.dimon6018.metrolauncher.helpers.ui.MetroRecyclerView
+    <ru.queuejw.mpl.helpers.ui.MetroRecyclerView
         android:id="@+id/app_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -127,6 +127,7 @@
             android:layout_width="42dp"
             android:layout_height="42dp"
             android:layout_marginTop="12dp"
+            android:visibility="gone"
             app:cardBackgroundColor="?android:attr/colorBackground"
             app:cardCornerRadius="24dp"
             app:strokeColor="?attr/colorOnSurface"

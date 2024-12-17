@@ -38,13 +38,14 @@
         <item name="android:textColor">?android:attr/colorBackground</item>
         <item name="buttonStyle">@style/Metro.Button</item>
     </style>
+    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">@color/textColor</item>
+    </style>
     <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">0dp</item>
     </style>
-    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
-        <item name="android:textColor">@color/textColor</item>
-    </style>
+
     <style name="AppTheme.FullScreenDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="colorPrimaryDark">?attr/colorPrimary</item>
         <item name="colorAccent">?attr/colorPrimary</item>
@@ -55,8 +56,7 @@
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowBackground">?android:attr/colorBackground</item>
     </style>
-    <style name="AppTheme.Tile.Transparent" parent="@android:style/Theme.Wallpaper">
-    </style>
+
     <style name="Metro.Button" parent="Widget.Material3.Button.OutlinedButton">
         <item name="strokeWidth">2dp</item>
         <item name="strokeColor">?attr/colorOnBackground</item>
@@ -73,13 +73,5 @@
         <item name="track">@drawable/switch_track</item>
         <item name="android:thumb">@drawable/switch_thumb</item>
         <item name="android:showText">true</item>
-    </style>
-    <style name="Metro.SearchBar" parent="Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">0dp</item>
-        <item name="boxCornerRadiusTopEnd">0dp</item>
-        <item name="boxCornerRadiusBottomStart">0dp</item>
-        <item name="boxCornerRadiusBottomEnd">0dp</item>
-        <item name="boxStrokeWidth">3dp</item>
-        <item name="endIconMode">none</item>
     </style>
 </resources>

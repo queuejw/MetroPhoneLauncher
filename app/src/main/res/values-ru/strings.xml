@@ -59,9 +59,6 @@
     <string name="notify_update">Сообщить, когда будут доступны обновления для моего телефона</string>
     <string name="update_info"><u>Подробности</u></string>
     <string name="notification_channel_name">MPL Updates</string>
-    <string name="loading">Загрузка…</string>
-    <string name="start_background">Фон рабочего стола</string>
-    <string name="choose_photo">выбрать фото</string>
     <string name="accent_color">Цвет элементов</string>
     <string name="background">Фон</string>
     <string name="launcher">лаунчер</string>
@@ -143,13 +140,10 @@
     <string name="color_taupe">темно-серый</string>
     <string name="color_yellow">желтый</string>
     <string name="color_brown">коричневый</string>
-    <string name="update_err_saving_error">Отключены отчеты об ошибках. Информация не сохранена.</string>
     <string name="oobe_apps_tip">Выберите приложения, которые хотите закрепить на начальном экране</string>
     <string name="tip">Подсказки</string>
     <string name="tip1">Зажмите палец на плитке, чтобы открыть открыть режим редактирования рабочего стола</string>
     <string name="goodbye">до свидания</string>
-    <string name="screenshots">Скриншоты</string>
-    <string name="app_opening_error">Нам не удалось открыть это приложение</string>
     <string name="current_iconpack">Текущий набор значков: %s</string>
     <string name="iconpack_error">Ничего не выбрано</string>
     <string name="update_is_available">Доступные новые обновления. Рекомендуем установить их</string>
@@ -158,7 +152,6 @@
     <string name="lawnicons_mpl">Основан на Lawnicons. Рекомендую установить, поскольку он был изменён для корректной работы в MPL.</string>
     <string name="icon_packs">наборы значков</string>
     <string name="iconPackNotSelectedSub">сделайте значки ещё лучше</string>
-    <string name="feature_isnt_implemented">Извините, эта функция ещё не реализована. Следите за новостями: t.me/mplauncher</string>
     <string name="updates_disabled">Обновления недоступны для вас. Подробнее: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
     <string name="app_info">о приложении</string>
     <string name="pin_to_start">на рабочий стол</string>
@@ -181,8 +174,6 @@
     <string name="change_navbar_icon_tip">Вы можете изменить иконку меню Пуск</string>
     <string name="current_icon">Текущая иконка:</string>
     <string name="choose_icon">выбрать иконку</string>
-    <string name="search_bar_tip">Вы можете использовать строку поиска, вместо кнопок навигации</string>
-    <string name="use_search_bar">Использовать строку поиска</string>
     <string name="block_start_tip">Вы можете отключить редактирование рабочего стола, чтобы защитить его от изменений</string>
     <string name="block_start">Заблокировать рабочий стол</string>
     <string name="navigation_bar_3">Дополнительные параметры</string>
@@ -198,12 +189,9 @@
     <string name="live_tiles_animation_settings_label">Разрешить анимацию живых плиток</string>
     <string name="experiments_unavailable">В текущий момент эксперименты недоступны. Попробуйте позже</string>
     <string name="restart_required">Для применения настроек необходимо перезапустить MPL</string>
-    <string name="search_for_apps">поиск приложений</string>
-    <string name="max_results">Максимальное количество результатов</string>
     <string name="select_all">выбрать все</string>
     <string name="remove_all">убрать все</string>
     <string name="disable_all_apps">Показывать экран Все приложения</string>
-    <string name="tiles_phone_start_animation_settings_label">Анимировать плитки при включении экрана</string>
     <string name="auto_shutdown_anims">Автоматически выключать анимации, если включен режим разработчика</string>
     <string name="animations_dev_mode">Анимации могут не работать, если вы выключили их в опциях для разработчиков.</string>
     <string name="show_details_on_bsod">Показывать подробности на экране ошибки</string>
@@ -222,8 +210,6 @@
     <string name="auto_show_keyboard_allapps">Автоматически открывать поиск при открытии экрана Все приложения.</string>
     <string name="tile_icon">Иконка приложения</string>
     <string name="no_results_for">Нет результатов: </string>
-    <string name="deny">Запретить</string>
-    <string name="allow">Разрешить</string>
     <string name="screen_orientation">Ориентация экрана</string>
     <string name="portrait_orientation">портретная</string>
     <string name="landscape_orientation">альбомная</string>

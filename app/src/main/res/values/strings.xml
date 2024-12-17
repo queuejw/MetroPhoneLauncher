@@ -58,9 +58,6 @@
     <string name="notify_update">Tell me when updates are available for my phone</string>
     <string name="update_info"><u>Details</u></string>
     <string name="notification_channel_name">MPL Updates</string>
-    <string name="loading">Loading…</string>
-    <string name="start_background">Start background</string>
-    <string name="choose_photo">choose photo</string>
     <string name="accent_color">Accent color</string>
     <string name="background">Background</string>
     <string name="launcher">launcher</string>
@@ -142,13 +139,10 @@
     <string name="color_taupe">taupe</string>
     <string name="color_yellow">yellow</string>
     <string name="color_brown">brown</string>
-    <string name="update_err_saving_error">Feedback are disabled. No information has been saved</string>
     <string name="oobe_apps_tip">Select the apps you want to pin to the Start screen</string>
     <string name="tip">Tips</string>
     <string name="tip1">Press your finger on a tile to open the desktop edit mode</string>
     <string name="goodbye">goodbye</string>
-    <string name="screenshots">Screenshots</string>
-    <string name="app_opening_error">We were unable to open this app</string>
     <string name="current_iconpack">Current icon pack: %s</string>
     <string name="iconpack_error">Nothing is selected</string>
     <string name="update_is_available">A new update is available. We recommend installing it</string>
@@ -157,7 +151,6 @@
     <string name="lawnicons_mpl">Based on Lawnicons. I recommend installing it as it has been modified to work correctly in MPL.</string>
     <string name="icon_packs">icon packs</string>
     <string name="iconPackNotSelectedSub">make the icons even better.</string>
-    <string name="feature_isnt_implemented">Sorry, this feature has not been implemented yet. Follow the news: t.me/mplauncher</string>
     <string name="updates_disabled">Updates are not available to you. Read more: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
     <string name="app_info">app info</string>
     <string name="pin_to_start">pin to start</string>
@@ -180,8 +173,6 @@
     <string name="change_navbar_icon_tip">You can change the Start menu icon</string>
     <string name="current_icon">Current icon:</string>
     <string name="choose_icon">choose an icon</string>
-    <string name="search_bar_tip">You can use the search bar instead of the navigation buttons</string>
-    <string name="use_search_bar">Use the search bar</string>
     <string name="block_start_tip">You can lock desktop editing to protect it from being modified</string>
     <string name="block_start">Lock the Start screen</string>
     <string name="navigation_bar_3">Additional options</string>
@@ -197,12 +188,9 @@
     <string name="live_tiles_animation_settings_label">Allow animation of live tiles</string>
     <string name="experiments_unavailable">No experiments are available at this time. Try again later</string>
     <string name="restart_required">MPL must be restarted to apply the settings</string>
-    <string name="search_for_apps">search for apps</string>
-    <string name="max_results">Max number of results</string>
     <string name="select_all">select all</string>
     <string name="remove_all">remove all</string>
     <string name="disable_all_apps">Show screen All apps</string>
-    <string name="tiles_phone_start_animation_settings_label">Animate tiles when you turn on the screen</string>
     <string name="auto_shutdown_anims">Automatically turn off animations if developer mode is enabled</string>
     <string name="animations_dev_mode">Animations may not work if you have turned them off in the developer options.</string>
     <string name="show_details_on_bsod">Show details on the error screen</string>
@@ -221,8 +209,6 @@
     <string name="auto_show_keyboard_allapps">Automatically enable search when you open the All Apps screen.</string>
     <string name="tile_icon">Tile icon</string>
     <string name="no_results_for">No results for </string>
-    <string name="deny">Deny</string>
-    <string name="allow">Allow</string>
     <string name="screen_orientation">Screen orientation</string>
     <string name="portrait_orientation">portrait</string>
     <string name="landscape_orientation">landscape</string>

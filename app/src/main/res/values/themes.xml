@@ -162,20 +162,7 @@
     <style name="MPL.BottomSheet.AllAppsStyle" parent="ThemeOverlay.MPL.BottomSheet">
         <item name="backgroundTint">@android:color/black</item>
     </style>
-    <style name="ThemeOverlay.App.AlertDialog" parent="android:Theme.NoTitleBar.Fullscreen">
-        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-    </style>
-    <style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.App.Title.Text</item>
-    </style>
+
     <style name="bsod" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">@color/bsod</item>
         <item name="colorOnPrimary">@android:color/white</item>

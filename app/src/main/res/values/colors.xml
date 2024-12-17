@@ -8,8 +8,6 @@
     <color name="wp_light_bg">#FFFFFF</color>
     <color name="wp_light_bg_pressed">#B6B6B6</color>
 
-    <color name="darkGray">#1f1f1f</color>
-
     <color name="textColor">@android:color/black</color>
 
     <!-- tiles -->

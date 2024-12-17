@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name="ru.dimon6018.metrolauncher.Application"
+        android:name="ru.queuejw.mpl.Application"
         android:icon="@mipmap/icon"
         android:roundIcon="@mipmap/icon"
         android:theme="@style/AppTheme.Cobalt"
@@ -26,7 +26,7 @@
         android:supportsRtl="true">
         <activity
             android:icon="@mipmap/launcher_icon"
-            android:name="ru.dimon6018.metrolauncher.Main"
+            android:name="ru.queuejw.mpl.Main"
             android:exported="true"
             android:configChanges="screenSize|orientation|screenLayout|navigation"
             android:launchMode="singleInstance"
@@ -42,7 +42,7 @@
         </activity>
         <activity
             android:icon="@mipmap/launcher_settings_icon"
-            android:name="ru.dimon6018.metrolauncher.content.settings.SettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.SettingsActivity"
             android:exported="true"
             android:label="@string/settings_app_title">
             <intent-filter>
@@ -51,75 +51,71 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="ru.dimon6018.metrolauncher.content.settings.activities.ThemeSettingsActivity"
+                android:name="ru.queuejw.mpl.content.settings.activities.ThemeSettingsActivity"
                 android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.FeedbackSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FeedbackBsodListActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.FeedbackBsodListActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.UpdateActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.UpdateActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.NavBarSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.NavBarSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.IconSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.IconSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.WeatherSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.Reset"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.Reset"
+            android:name="ru.queuejw.mpl.content.bsod.BsodScreen"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.bsod.BsodScreen"
+            android:name="ru.queuejw.mpl.content.bsod.recovery.Recovery"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.bsod.recovery.Recovery"
+            android:name="ru.queuejw.mpl.content.bsod.recovery.RecoveryOptions"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.bsod.recovery.RecoveryOptions"
+            android:name="ru.queuejw.mpl.content.oobe.WelcomeActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.oobe.WelcomeActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.AllAppsSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AllAppsSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.TileSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.TileSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.AboutSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AboutSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.ExperimentsSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.ExperimentsSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.AnimationSettingsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.AnimationSettingsActivity"
-            android:exported="true">
-        </activity>
-        <activity
-            android:name="ru.dimon6018.metrolauncher.content.settings.activities.FontsSettingsActivity"
+            android:name="ru.queuejw.mpl.content.settings.activities.FontsSettingsActivity"
             android:exported="true">
         </activity>
         <provider
@@ -132,7 +128,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <receiver
-            android:name=".helpers.receivers.PackageChangesReceiver"
+            android:name="ru.queuejw.mpl.helpers.receivers.PackageChangesReceiver"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.QUERY_ALL_PACKAGES">

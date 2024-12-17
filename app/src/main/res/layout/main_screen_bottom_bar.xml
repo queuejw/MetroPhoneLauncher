@@ -31,30 +31,4 @@
             android:scaleX="-1"
             android:src="@drawable/ic_search" />
     </LinearLayout>
-    <!-- Search bar -->
-    <LinearLayout
-        android:id="@+id/search_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:visibility="gone">
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Metro.SearchBar"
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp">
-
-            <AutoCompleteTextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:imeOptions="actionGo"
-                android:inputType="text"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textSize="14sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
 </FrameLayout>

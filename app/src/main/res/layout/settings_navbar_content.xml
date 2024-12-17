@@ -87,42 +87,4 @@
         android:textSize="20sp"
         android:layout_marginStart="8dp"/>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/search_bar_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_marginTop="32dp"
-        android:layout_marginStart="8dp"
-        android:text="@string/search_bar_tip"/>
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/use_search_bar_label"
-        android:text="@string/use_search_bar"
-        android:layout_width="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"/>
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/searchBarSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="4dp"
-        android:textSize="24sp" />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/max_results_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="14dp"
-        android:textSize="20sp"
-        android:text="@string/max_results"/>
-    <com.google.android.material.slider.Slider
-        android:id="@+id/maxResultsSlider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stepSize="1.0"
-        android:valueFrom="1.0"
-        android:valueTo="14.0"/>
 </LinearLayout>

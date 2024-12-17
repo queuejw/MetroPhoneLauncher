@@ -8,13 +8,13 @@ android {
     viewBinding {
         enabled = true
     }
-    namespace 'ru.dimon6018.metrolauncher'
+    namespace 'ru.queuejw.mpl'
     compileSdk 35
     buildFeatures {
         buildConfig = true
     }
     defaultConfig {
-        applicationId "ru.dimon6018.metrolauncher"
+        applicationId "ru.queuejw.mpl"
         minSdk 24
         targetSdk 35
         // 80xxxx ; 81xxxx ; 100xxxx

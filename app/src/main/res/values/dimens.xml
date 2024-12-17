@@ -1,24 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="app_icon_size">50dp</dimen>
-    <dimen name="navbar_app_icon_size">32dp</dimen>
     <dimen name="recyclerViewPadding">64dp</dimen>
     <dimen name="recyclerViewSearchPadding">48dp</dimen>
     <dimen name="iconAppsListSize">42dp</dimen>
     <dimen name="bottom_sheet_size">400dp</dimen>
     <dimen name="tile_small_moreTiles_off">62dp</dimen>
-    <dimen name="tile_small_moreTiles_on">38dp</dimen>
     <dimen name="tile_medium_moreTiles_off">84dp</dimen>
-    <dimen name="tile_medium_moreTiles_on">64dp</dimen>
     <dimen name="tile_big_moreTiles_off">84dp</dimen>
-    <dimen name="tile_big_moreTiles_on">70dp</dimen>
-    <dimen name="navbarHeight">58dp</dimen>
-    <dimen name="themeSettingsImgSize">242dp</dimen>
-    <dimen name="alphabetHolderSize">72dp</dimen>
-    <dimen name="tileStrokeWidth">4dp</dimen>
-    <dimen name="tileStrokeWidthDisabled">0dp</dimen>
     <dimen name="tile_default_size">64dp</dimen>
-    <dimen name="recyclerViewBottomPadding">156dp</dimen>
-    <dimen name="tileMargin">4dp</dimen>
-    <dimen name="edit_mode_padding">16dp</dimen>
 </resources>
