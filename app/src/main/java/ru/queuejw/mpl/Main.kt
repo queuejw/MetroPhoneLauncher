@@ -52,12 +52,10 @@ class Main : AppCompatActivity() {
 
     private val iconPackManager: IconPackManager by lazy { IconPackManager(this) }
     private val packageReceiver: PackageChangesReceiver by lazy { PackageChangesReceiver() }
-    private val defaultIconSize: Int by lazy { resources.getDimensionPixelSize(R.dimen.tile_default_size) }
+    private val defaultIconSize: Int by lazy { resources.getDimensionPixelSize(R.dimen.tile_small) }
 
     private val accentColor: Int by lazy { Utils.launcherAccentColor(this@Main.theme) }
     private val onSurfaceColor: Int by lazy { Utils.launcherOnSurfaceColor(this@Main.theme) }
-
-    private var bottomViewReady = false
 
     private lateinit var binding: LauncherMainScreenBinding
 
@@ -78,10 +76,10 @@ class Main : AppCompatActivity() {
         }
 
         binding = LauncherMainScreenBinding.inflate(layoutInflater)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         setContentView(binding.root)
         setupUI()
         lifecycleScope.launch(Dispatchers.Default) {
+            otherTasks()
             initializeData()
             withContext(Dispatchers.Main) {
                 setupNavigationBar()
@@ -137,7 +135,6 @@ class Main : AppCompatActivity() {
         }
         isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         Utils.registerPackageReceiver(this, packageReceiver)
-        otherTasks()
     }
 
     private fun checkUpdate() {
@@ -186,7 +183,6 @@ class Main : AppCompatActivity() {
             super.onPageSelected(position)
             updateNavigationBarColors(position)
         }
-
         private fun updateNavigationBarColors(position: Int) {
             if (PREFS.navBarColor != 2) {
                 val (startColor, searchColor) = when {
@@ -219,12 +215,12 @@ class Main : AppCompatActivity() {
         Utils.unregisterPackageReceiver(this, packageReceiver)
     }
 
-
     fun configureViewPagerScroll(enabled: Boolean) {
         binding.mainPager.isUserInputEnabled = enabled
     }
 
     private suspend fun setMainViewModel() {
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         val list = Utils.setUpApps(this)
         mainViewModel.setAppList(list)
         regenerateIcons(list)
@@ -352,8 +348,6 @@ class Main : AppCompatActivity() {
     }
 
     private fun setupNavigationBar() {
-        if (bottomViewReady) return
-        bottomViewReady = true
         binding.mainBottomBar.navigationFrame.setBackgroundColor(getNavBarColor())
         configureBottomBar()
     }
@@ -403,7 +397,7 @@ class Main : AppCompatActivity() {
         var isDarkMode: Boolean = false
     }
 
-    inner class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
+    class WinAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
         override fun getItemCount(): Int = if (PREFS.isAllAppsEnabled) 2 else 1
 

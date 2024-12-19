@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             app:fontFamily="@font/manrope_light"
-            android:text="@string/app_info"
+            android:text="@string/app_info_label"
             android:textColor="?attr/colorSurface"
             android:textSize="25sp" />
     </com.google.android.material.card.MaterialCardView>

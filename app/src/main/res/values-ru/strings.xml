@@ -102,7 +102,7 @@
     <string name="bsods_tip">Если на телефоне недостаточно места, может быть сохранено меньше проблем.</string>
     <string name="more_info">сведения</string>
     <string name="online_content">контент в Интернете</string>
-    <string name="reset_your_launcher">сброс настроек</string>
+    <string name="reset_your_launcher_label">сброс настроек</string>
     <string name="phone_information">сведения о телефоне</string>
     <string name="help_contacts">поддержка</string>
     <string name="get_help">Получить помощь: github.com/queuejw/metrophonelauncher/issues</string>
@@ -153,7 +153,7 @@
     <string name="icon_packs">наборы значков</string>
     <string name="iconPackNotSelectedSub">сделайте значки ещё лучше</string>
     <string name="updates_disabled">Обновления недоступны для вас. Подробнее: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
-    <string name="app_info">о приложении</string>
+    <string name="app_info_label">о приложении</string>
     <string name="pin_to_start">на рабочий стол</string>
     <string name="newAppsToStart">Включите, если хотите, чтобы новые приложения автоматически появлялись на рабочем столе</string>
     <string name="newAppsToStart_sub">Закреплять новые приложения автоматически</string>

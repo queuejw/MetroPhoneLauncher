@@ -11,8 +11,9 @@ import ru.queuejw.mpl.content.data.tile.TileData
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val icons: SparseArrayCompat<Bitmap?> = SparseArrayCompat<Bitmap?>()
-    private val tileDao: TileDao = TileData.getTileData(application.applicationContext).getTileDao()
     private var appList: MutableList<App> = ArrayList()
+
+    private val tileDao: TileDao by lazy { TileData.getTileData(application.applicationContext).getTileDao() }
 
     fun addIconToCache(appPackage: String, bitmap: Bitmap?) {
         icons.append(appPackage.hashCode(), bitmap)
@@ -38,7 +39,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         appList = list
     }
 
-    fun getTileDao(): TileDao {
+    fun getViewModelTileDao(): TileDao {
         return tileDao
     }
 }

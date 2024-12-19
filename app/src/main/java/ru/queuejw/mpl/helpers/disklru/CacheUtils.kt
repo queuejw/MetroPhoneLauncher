@@ -11,6 +11,8 @@ import java.security.MessageDigest
 
 class CacheUtils {
     companion object {
+        private val md by lazy { MessageDigest.getInstance("MD5") }
+
         private fun getDiskCacheDir(context: Context): File {
             val cachePath = context.cacheDir.path
             return File(cachePath + File.separator + "icons")
@@ -46,24 +48,22 @@ class CacheUtils {
         }
 
         private fun String.toMd5(): String {
-            val md = MessageDigest.getInstance("MD5")
             return md.digest(toByteArray())
                 .joinToString("") { "%02x".format(it) }
         }
 
         fun loadIconFromDiskCache(diskLruCache: DiskLruCache, key: String): Bitmap? {
             val snapshot = diskLruCache.get(key.toMd5()) ?: return null
-            val inputStream = snapshot.getInputStream(0)
-            return BitmapFactory.decodeStream(inputStream)
+            return BitmapFactory.decodeStream(snapshot.getInputStream(0))
         }
 
         fun closeDiskCache(diskLruCache: DiskLruCache): Boolean {
-            try {
+            return try {
                 diskLruCache.close()
-                return true
+                true
             } catch (e: IOException) {
                 e.printStackTrace()
-                return false
+                false
             }
         }
     }

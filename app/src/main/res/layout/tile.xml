@@ -27,30 +27,23 @@
     app:cardCornerRadius="0dp"
     app:strokeWidth="0dp">
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true">
+    <ImageView
+        android:id="@+id/tileIcon"
+        android:layout_width="92dp"
+        android:layout_height="92dp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/tile_icon"
+        android:scaleType="fitCenter"/>
 
-        <ImageView
-            android:id="@+id/tileIcon"
-            android:layout_width="92dp"
-            android:layout_height="92dp"
-            android:layout_gravity="center"
-            android:contentDescription="@string/tile_icon"
-            android:scaleType="fitCenter" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tileLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:fontFamily="@font/manrope_medium"/>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tileLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|start"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            app:fontFamily="@font/manrope_medium"/>
-    </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

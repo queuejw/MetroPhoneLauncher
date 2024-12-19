@@ -235,7 +235,6 @@ class Utils {
                 val item = App()
                 item.apply {
                     id = i
-                    type = 0
                     appPackage = packageName
                     appLabel = label
                 }

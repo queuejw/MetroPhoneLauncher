@@ -151,9 +151,7 @@ class DiskLruCache private constructor(
         ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, LinkedBlockingQueue())
     private val cleanupCallable: Callable<Void> = Callable {
         synchronized(this@DiskLruCache) {
-            if (journalWriter == null) {
-                return@Callable null // Closed.
-            }
+            if (journalWriter == null) return@Callable null // Closed.
             trimToSize()
             if (journalRebuildRequired()) {
                 rebuildJournal()
@@ -213,10 +211,7 @@ class DiskLruCache private constructor(
     @Throws(IOException::class)
     private fun readJournalLine(line: String) {
         val firstSpace = line.indexOf(' ')
-        if (firstSpace == -1) {
-            throw IOException("unexpected journal line: $line")
-        }
-
+        if (firstSpace == -1) throw IOException("unexpected journal line: $line")
         val keyBegin = firstSpace + 1
         val secondSpace = line.indexOf(' ', keyBegin)
         val key: String
@@ -240,9 +235,11 @@ class DiskLruCache private constructor(
             val parts =
                 line.substring(secondSpace + 1).split(" ".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray()
-            entry.readable = true
-            entry.currentEditor = null
-            entry.setLengths(parts)
+            entry.apply {
+                readable = true
+                currentEditor = null
+                setLengths(parts)
+            }
         } else if (secondSpace == -1 && firstSpace == DIRTY.length && line.startsWith(DIRTY)) {
             entry.currentEditor = Editor(entry)
         } else if (secondSpace == -1 && firstSpace == READ.length && line.startsWith(READ)) {
@@ -288,33 +285,24 @@ class DiskLruCache private constructor(
     @Synchronized
     @Throws(IOException::class)
     private fun rebuildJournal() {
-        if (journalWriter != null) {
-            journalWriter!!.close()
-        }
-
+        if (journalWriter != null) journalWriter!!.close()
         BufferedWriter(
             OutputStreamWriter(FileOutputStream(journalFileTmp), DiskLruUtil.US_ASCII)
         ).use { writer ->
-            writer.write(MAGIC)
-            writer.write("\n")
-            writer.write(VERSION_1)
-            writer.write("\n")
-            writer.write(appVersion.toString())
-            writer.write("\n")
-            writer.write(valueCount.toString())
-            writer.write("\n")
-            writer.write("\n")
-            for (entry in lruEntries.values) {
-                if (entry!!.currentEditor != null) {
-                    writer.write(DIRTY + ' ' + entry.key + '\n')
-                } else {
-                    writer.write(CLEAN + ' ' + entry.key + entry.getLengths() + '\n')
-                }
+            writer.apply {
+                write(MAGIC)
+                write("\n")
+                write(VERSION_1)
+                write("\n")
+                write(appVersion.toString())
+                write("\n")
+                write(valueCount.toString())
+                write("\n")
+                write("\n")
             }
+            for (entry in lruEntries.values) writer.write(if (entry!!.currentEditor != null) DIRTY + ' ' + entry.key + '\n' else CLEAN + ' ' + entry.key + entry.getLengths() + '\n')
         }
-        if (journalFile.exists()) {
-            renameTo(journalFile, journalFileBackup, true)
-        }
+        if (journalFile.exists()) renameTo(journalFile, journalFileBackup, true)
         renameTo(journalFileTmp, journalFile, false)
         journalFileBackup.delete()
 
@@ -335,9 +323,7 @@ class DiskLruCache private constructor(
         validateKey(key)
         val entry = lruEntries[key] ?: return null
 
-        if (!entry.readable) {
-            return null
-        }
+        if (!entry.readable) return null
 
         // Open all streams eagerly to guarantee that we see a single published
         // snapshot. If we opened streams lazily then the streams could come
@@ -365,9 +351,7 @@ class DiskLruCache private constructor(
 
         redundantOpCount++
         journalWriter!!.append("$READ $key\n")
-        if (journalRebuildRequired()) {
-            executorService.submit(cleanupCallable)
-        }
+        if (journalRebuildRequired()) executorService.submit(cleanupCallable)
 
         return Snapshot(key, entry.sequenceNumber, ins, entry.lengths)
     }
@@ -512,9 +496,7 @@ class DiskLruCache private constructor(
         checkNotClosed()
         validateKey(key)
         val entry = lruEntries[key]
-        if (entry == null || entry.currentEditor != null) {
-            return false
-        }
+        if (entry == null || entry.currentEditor != null) return false
 
         for (i in 0 until valueCount) {
             val file = entry.getCleanFile(i)
@@ -529,9 +511,7 @@ class DiskLruCache private constructor(
         journalWriter!!.append("$REMOVE $key\n")
         lruEntries.remove(key)
 
-        if (journalRebuildRequired()) {
-            executorService.submit(cleanupCallable)
-        }
+        if (journalRebuildRequired()) executorService.submit(cleanupCallable)
 
         return true
     }
@@ -558,9 +538,7 @@ class DiskLruCache private constructor(
     @Synchronized
     @Throws(IOException::class)
     override fun close() {
-        if (journalWriter == null) {
-            return  // Already closed.
-        }
+        if (journalWriter == null) return  // Already closed.
         for (entry in ArrayList(lruEntries.values)) {
             if (entry!!.currentEditor != null) {
                 entry.currentEditor?.abort()
@@ -633,9 +611,7 @@ class DiskLruCache private constructor(
         }
 
         override fun close() {
-            for (`in` in ins) {
-                DiskLruUtil.closeQuietly(`in`)
-            }
+            for (`in` in ins) DiskLruUtil.closeQuietly(`in`)
         }
     }
 
@@ -655,9 +631,7 @@ class DiskLruCache private constructor(
         fun newInputStream(index: Int): InputStream? {
             synchronized(this@DiskLruCache) {
                 check(entry.currentEditor == this)
-                if (!entry.readable) {
-                    return null
-                }
+                if (!entry.readable) return null
                 return try {
                     FileInputStream(entry.getCleanFile(index))
                 } catch (_: FileNotFoundException) {
@@ -692,9 +666,7 @@ class DiskLruCache private constructor(
             }
             synchronized(this@DiskLruCache) {
                 check(entry.currentEditor == this)
-                if (!entry.readable) {
-                    written!![index] = true
-                }
+                if (!entry.readable) written!![index] = true
                 val dirtyFile = entry.getDirtyFile(index)
                 val outputStream = try {
                     FileOutputStream(dirtyFile)

@@ -66,9 +66,7 @@ internal class StrictLineReader(`in`: InputStream?, capacity: Int, charset: Char
      * or the specified charset is not supported.
      */
     init {
-        if (`in` == null || charset == null) {
-            throw NullPointerException()
-        }
+        if (`in` == null || charset == null) throw NullPointerException()
         require(capacity >= 0) { "capacity <= 0" }
         require(charset == DiskLruUtil.US_ASCII) { "Unsupported encoding" }
 
@@ -104,15 +102,11 @@ internal class StrictLineReader(`in`: InputStream?, capacity: Int, charset: Char
     @Throws(IOException::class)
     fun readLine(): String {
         synchronized(`in`) {
-            if (buf == null) {
-                throw IOException("LineReader is closed")
-            }
+            if (buf == null) throw IOException("LineReader is closed")
             // Read more data if we are at the end of the buffered data.
             // Though it's an error to read after an exception, we will let {@code fillBuf()}
             // throw again if that happens; thus we need to handle end == -1 as well as end == pos.
-            if (pos >= end) {
-                fillBuf()
-            }
+            if (pos >= end) fillBuf()
             // Try to find LF in the buffered data and return the line if successful.
             for (i in pos until end) {
                 if (buf!![i] == LF) {

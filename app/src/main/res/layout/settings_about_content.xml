@@ -112,7 +112,7 @@
             android:textSize="18sp" />
 
         <com.google.android.material.button.MaterialButton
-                android:text="@string/reset_your_launcher"
+                android:text="@string/reset_your_launcher_label"
                 android:layout_gravity="center"
                 android:layout_marginEnd="4dp"
                 android:layout_marginTop="48dp"

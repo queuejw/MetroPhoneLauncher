@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -65,6 +64,7 @@ import ru.queuejw.mpl.helpers.dragndrop.ItemTouchCallback
 import ru.queuejw.mpl.helpers.dragndrop.ItemTouchHelperAdapter
 import ru.queuejw.mpl.helpers.dragndrop.ItemTouchHelperViewHolder
 import ru.queuejw.mpl.helpers.receivers.PackageChangesReceiver
+import ru.queuejw.mpl.helpers.ui.MetroRecyclerView
 import ru.queuejw.mpl.helpers.utils.Utils
 import kotlin.random.Random
 
@@ -88,9 +88,11 @@ class Start : Fragment() {
 
     private var screenLoaded = false
 
-    private val backCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            mAdapter?.let { if (it.isEditMode) it.disableEditMode() }
+    private val backCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                mAdapter?.let { if (it.isEditMode) it.disableEditMode() }
+            }
         }
     }
     private val marginDecor by lazy {
@@ -108,11 +110,15 @@ class Start : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = LauncherStartScreenBinding.inflate(inflater, container, false)
-        mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         binding.startTiles.setOnClickListener {
             mAdapter?.let { if (it.isEditMode) it.disableEditMode() }
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.startTiles) { view, insets ->
+        setRecyclerViewInsets(binding.startTiles)
+        return binding.root
+    }
+
+    private fun setRecyclerViewInsets(view: MetroRecyclerView) {
+        ViewCompat.setOnApplyWindowInsetsListener(view) { view, insets ->
             val systemBarInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(
                 bottom = systemBarInsets.bottom,
@@ -122,14 +128,14 @@ class Start : Fragment() {
             )
             insets
         }
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (context != null) {
             viewLifecycleOwner.lifecycleScope.launch(defaultDispatcher) {
-                tiles = mainViewModel.getTileDao().getTilesList()
+                mainViewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+                tiles = mainViewModel.getViewModelTileDao().getTilesList()
                 setupRecyclerViewLayoutManager(requireContext())
                 setupAdapter()
                 withContext(mainDispatcher) {
@@ -148,8 +154,8 @@ class Start : Fragment() {
      * @see onViewCreated
      */
     private fun observe() {
-        if (!screenLoaded || mainViewModel.getTileDao().getTilesLiveData().hasActiveObservers()) return
-        mainViewModel.getTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
+        if (!screenLoaded || mainViewModel.getViewModelTileDao().getTilesLiveData().hasActiveObservers()) return
+        mainViewModel.getViewModelTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
             mAdapter ?: return@observe
             if (mAdapter!!.list != it) {
                 Log.w("obs", "set new data")
@@ -161,7 +167,7 @@ class Start : Fragment() {
      * Stops the data observer
      */
     private fun stopObserver() {
-        mainViewModel.getTileDao().getTilesLiveData().removeObservers(viewLifecycleOwner)
+        mainViewModel.getViewModelTileDao().getTilesLiveData().removeObservers(viewLifecycleOwner)
     }
 
     override fun onDestroyView() {
@@ -358,7 +364,7 @@ class Start : Fragment() {
         packageName.apply {
             Log.d("Start", "update list by broadcaster")
             CoroutineScope(ioDispatcher).launch {
-                var newList = mainViewModel.getTileDao().getTilesList()
+                var newList = mainViewModel.getViewModelTileDao().getTilesList()
                 if (isDelete) {
                     newList.forEach {
                         if (it.tilePackage == packageName) {
@@ -366,7 +372,7 @@ class Start : Fragment() {
                             destroyTile(it)
                         }
                     }
-                    newList = mainViewModel.getTileDao().getTilesList()
+                    newList = mainViewModel.getViewModelTileDao().getTilesList()
                 }
                 withContext(mainDispatcher) {
                     mAdapter?.setData(newList)
@@ -398,7 +404,7 @@ class Start : Fragment() {
                         ?.loadLabel(requireActivity().packageManager!!).toString(),
                     tilePackage = packageName
                 )
-                mainViewModel.getTileDao().addTile(item)
+                mainViewModel.getViewModelTileDao().addTile(item)
             }
         }
     }
@@ -433,7 +439,7 @@ class Start : Fragment() {
             tileColor = -1
             tileLabel = ""
             id = this.id!! / 2
-            mainViewModel.getTileDao().updateTile(this)
+            mainViewModel.getViewModelTileDao().updateTile(this)
         }
     }
 
@@ -526,6 +532,22 @@ class Start : Fragment() {
 
         private val accentColor: Int by lazy { Utils.launcherAccentColor(requireActivity().theme) }
 
+        private val tileSmallSize by lazy {
+            context.resources.getDimensionPixelSize(
+                R.dimen.tile_small
+            )
+        }
+        private val tileMediumSize by lazy {
+            context.resources.getDimensionPixelSize(
+                R.dimen.tile_medium
+            )
+        }
+        private val tileBigSize by lazy {
+            context.resources.getDimensionPixelSize(
+                R.dimen.tile_big
+            )
+        }
+
         var isEditMode = false
 
         init {
@@ -603,7 +625,6 @@ class Start : Fragment() {
             val inflater = LayoutInflater.from(parent.context)
             return when (viewType) {
                 defaultTileType -> TileViewHolder(TileBinding.inflate(inflater, parent, false))
-                spaceType -> SpaceViewHolder(SpaceTileBinding.inflate(inflater, parent, false))
                 else -> SpaceViewHolder(SpaceTileBinding.inflate(inflater, parent, false))
             }
         }
@@ -634,11 +655,11 @@ class Start : Fragment() {
          * @see onBindViewHolder
          */
         private fun bindDefaultTile(holder: TileViewHolder, item: Tile, position: Int) {
-            setTileSize(item, holder.binding.tileLabel)
-            setTileIconSize(holder.binding.tileIcon, item.tileSize, context.resources)
             setTileColor(holder, item)
-            setTileIcon(holder.binding.tileIcon, item)
+            setTileSize(item, holder.binding.tileLabel)
+            setTileIconSize(holder.binding.tileIcon, item.tileSize)
             setTileText(holder.binding.tileLabel, item)
+            setTileIcon(holder.binding.tileIcon, item)
             setTileAnimation(holder.itemView, position)
         }
 
@@ -670,7 +691,7 @@ class Start : Fragment() {
         }
 
         /**
-         * Sets the application icon to the tile from the “cache”. Removes tiles in case of a problem.
+         * Sets the application icon to the tile from the “cache”.
          * @param imageView ImageView
          * @param item Tile object
          * @see bindDefaultTile
@@ -686,36 +707,22 @@ class Start : Fragment() {
          * @param res Context.resources
          * @see bindDefaultTile
          */
-        private fun setTileIconSize(imageView: ImageView, tileSize: String, res: Resources) {
+        private fun setTileIconSize(imageView: ImageView, tileSize: String) {
             imageView.layoutParams.apply {
                 when (tileSize) {
                     "small" -> {
-                        val size = res.getDimensionPixelSize(
-                                R.dimen.tile_small_moreTiles_off
-                            )
-                        width = size
-                        height = size
-                    }
-
-                    "medium" -> {
-                        val size = res.getDimensionPixelSize(
-                                R.dimen.tile_medium_moreTiles_off
-                            )
-                        width = size
-                        height = size
+                        width = tileSmallSize
+                        height = tileSmallSize
                     }
 
                     "big" -> {
-                        val size = res.getDimensionPixelSize(
-                                R.dimen.tile_big_moreTiles_off
-                            )
-                        width = size
-                        height = size
+                        width = tileBigSize
+                        height = tileBigSize
                     }
 
                     else -> {
-                        width = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
-                        height = res.getDimensionPixelSize(R.dimen.tile_medium_moreTiles_off)
+                        width = tileMediumSize
+                        height = tileMediumSize
                     }
                 }
             }
@@ -728,16 +735,12 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
-            if (item.tileColor != -1) {
-                holder.binding.container.setBackgroundColor(
-                    Utils.getTileColorFromPrefs(
-                        item.tileColor!!,
-                        context
-                    )
-                )
-            } else {
-                holder.binding.container.setBackgroundColor(Utils.accentColorFromPrefs(context))
-            }
+            holder.binding.cardContainer.setBackgroundColor(if(item.tileColor != -1)
+                Utils.getTileColorFromPrefs(
+                item.tileColor!!,
+                context)
+            else
+                accentColor)
         }
         /**
          * Sets the size of the application icon on the tile
@@ -746,18 +749,14 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
-            mTextView.apply {
-                when (item.tileSize) {
-                    "small" -> visibility = View.GONE
-                    "medium" -> visibility = View.VISIBLE
-                    "big" -> visibility = View.VISIBLE
-                }
+            mTextView.visibility = when(item.tileSize) {
+                "small" -> View.GONE
+                else -> View.VISIBLE
             }
         }
 
         override fun getItemViewType(position: Int): Int {
             return when (list[position].tileType) {
-                -1 -> spaceType
                 0 -> defaultTileType
                 else -> spaceType
             }
@@ -792,7 +791,7 @@ class Start : Fragment() {
                     item.tilePosition = i
                     newData.add(item)
                 }
-                mainViewModel.getTileDao().updateAllTiles(newData)
+                mainViewModel.getViewModelTileDao().updateAllTiles(newData)
                 withContext(mainDispatcher) {
                     startEditModeAnim()
                 }
@@ -906,7 +905,7 @@ class Start : Fragment() {
                     "medium" -> item.tileSize = "big"
                     "big" -> item.tileSize = "small"
                 }
-                mainViewModel.getTileDao().updateTile(item)
+                mainViewModel.getViewModelTileDao().updateTile(item)
                 withContext(mainDispatcher) {
                     notifyItemChanged(position)
                 }
@@ -1001,20 +1000,20 @@ class Start : Fragment() {
                 lifecycleScope.launch(ioDispatcher) {
                     item.tileLabel =
                         if (editor.text.toString() == "") originalLabel else editor.text.toString()
-                    mainViewModel.getTileDao().updateTile(item)
+                    mainViewModel.getViewModelTileDao().updateTile(item)
                 }
                 bottomSheet.dismiss()
             }
             removeColor.setOnClickListener {
                 lifecycleScope.launch(ioDispatcher) {
                     item.tileColor = -1
-                    mainViewModel.getTileDao().updateTile(item)
+                    mainViewModel.getViewModelTileDao().updateTile(item)
                 }
                 bottomSheet.dismiss()
             }
             changeColor.setOnClickListener {
                 val dialog = AccentDialog()
-                dialog.configure(item, this@NewStartAdapter, mainViewModel.getTileDao())
+                dialog.configure(item, this@NewStartAdapter, mainViewModel.getViewModelTileDao())
                 dialog.show(childFragmentManager, "accentDialog")
                 bottomSheet.dismiss()
             }
@@ -1045,8 +1044,6 @@ class Start : Fragment() {
             init {
                 binding.cardContainer.apply {
                     if (PREFS.coloredStroke) strokeColor = accentColor
-                }
-                binding.container.apply {
                     alpha = PREFS.tilesTransparency
                     setOnClickListener {
                         handleClick()
@@ -1088,18 +1085,6 @@ class Start : Fragment() {
             override fun onItemSelected() {}
             override fun onItemClear() {}
         }
-
-        /**inner class WeatherTileViewHolder(v: View) : RecyclerView.ViewHolder(v), ItemTouchHelperViewHolder {
-        val mCardContainer: MaterialCardView = v.findViewById(R.id.cardContainer)
-        val mContainer: FrameLayout = v.findViewById(R.id.container)
-        val mTextViewAppTitle: TextView = v.findViewById(android.R.id.text1)
-        val mTextViewTempValue: TextView = v.findViewById(R.id.weatherTempValue)
-        val mTextViewValue: TextView = v.findViewById(R.id.weatherValue)
-        val mTextViewCity: TextView = v.findViewById(android.R.id.text2)
-
-        override fun onItemSelected() {}
-        override fun onItemClear() {}
-        }**/
 
         /**
          * Placeholder tile

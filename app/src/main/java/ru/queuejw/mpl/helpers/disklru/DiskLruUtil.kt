@@ -34,12 +34,8 @@ internal object DiskLruUtil {
     fun deleteContents(dir: File) {
         val files = dir.listFiles() ?: throw IOException("not a readable directory: $dir")
         for (file in files) {
-            if (file.isDirectory) {
-                deleteContents(file)
-            }
-            if (!file.delete()) {
-                throw IOException("failed to delete file: $file")
-            }
+            if (file.isDirectory) deleteContents(file)
+            if (!file.delete()) throw IOException("failed to delete file: $file")
         }
     }
 

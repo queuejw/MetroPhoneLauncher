@@ -547,7 +547,7 @@ class AllApps : Fragment() {
 
             var isAppAlreadyPinned = false
             lifecycleScope.launch(Dispatchers.Default) {
-                val dbList = mainViewModel.getTileDao().getTilesList()
+                val dbList = mainViewModel.getViewModelTileDao().getTilesList()
                 dbList.forEach {
                     if (it.tilePackage == app.appPackage) {
                         isAppAlreadyPinned = true
@@ -665,7 +665,7 @@ class AllApps : Fragment() {
 
         private fun insertNewApp(app: App) {
             lifecycleScope.launch(Dispatchers.Default) {
-                val dataList = mainViewModel.getTileDao().getTilesList()
+                val dataList = mainViewModel.getViewModelTileDao().getTilesList()
                 dataList.forEach {
                     if (it.tilePackage == app.appPackage) {
                         //db already has this app. we must stop this
@@ -687,7 +687,7 @@ class AllApps : Fragment() {
                     tileLabel = app.appLabel!!,
                     tilePackage = app.appPackage!!
                 )
-                mainViewModel.getTileDao().addTile(item)
+                mainViewModel.getViewModelTileDao().addTile(item)
             }
         }
 

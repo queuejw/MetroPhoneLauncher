@@ -101,7 +101,7 @@
     <string name="bsods_tip">Your phone may save fewer issues if there isn\'t enough space</string>
     <string name="more_info">more info</string>
     <string name="online_content">online content</string>
-    <string name="reset_your_launcher">reset your launcher</string>
+    <string name="reset_your_launcher_label">reset your launcher</string>
     <string name="phone_information">phone information</string>
     <string name="help_contacts">help contacts</string>
     <string name="get_help">Get help: github.com/queuejw/metrophonelauncher/issues</string>
@@ -152,7 +152,7 @@
     <string name="icon_packs">icon packs</string>
     <string name="iconPackNotSelectedSub">make the icons even better.</string>
     <string name="updates_disabled">Updates are not available to you. Read more: github.com/queuejw/MetroPhoneLauncher/wiki/Updates-are-not-available-to-you</string>
-    <string name="app_info">app info</string>
+    <string name="app_info_label">app info</string>
     <string name="pin_to_start">pin to start</string>
     <string name="newAppsToStart">Enable if you want new apps to be automatically pinned to your desktop</string>
     <string name="newAppsToStart_sub">Pin new apps automatically</string>
