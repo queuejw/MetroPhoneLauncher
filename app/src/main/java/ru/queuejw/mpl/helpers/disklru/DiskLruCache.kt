@@ -724,7 +724,8 @@ class DiskLruCache private constructor(
             if (!committed) {
                 try {
                     abort()
-                } catch (_: IOException) { }
+                } catch (_: IOException) {
+                }
             }
         }
 

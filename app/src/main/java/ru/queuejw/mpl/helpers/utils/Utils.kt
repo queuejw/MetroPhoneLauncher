@@ -222,7 +222,12 @@ class Utils {
         fun setUpApps(context: Context): MutableList<App> {
             val pManager = context.packageManager
             val appList = ArrayList<App>()
-            val allApps = pManager.queryIntentActivities(Intent(Intent.ACTION_MAIN, null).addCategory(Intent.CATEGORY_LAUNCHER), 0)
+            val allApps = pManager.queryIntentActivities(
+                Intent(
+                    Intent.ACTION_MAIN,
+                    null
+                ).addCategory(Intent.CATEGORY_LAUNCHER), 0
+            )
             for (i in 0..<allApps.size) {
                 val packageName = allApps[i].activityInfo.packageName
                 val label = allApps[i].loadLabel(pManager).toString()
@@ -369,6 +374,7 @@ class Utils {
                 false
             }
         }
+
         suspend fun generatePlaceholder(call: TileDao, value: Int) {
             val size = value
             val startFrom = call.getTilesList().size
@@ -384,6 +390,7 @@ class Utils {
                 call.addTile(placeholder)
             }
         }
+
         fun checkStoragePermissions(context: Context): Boolean {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 Environment.isExternalStorageManager()

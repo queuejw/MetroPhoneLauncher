@@ -54,7 +54,12 @@ class AboutSettingsActivity : AppCompatActivity() {
 
     private fun setupLayout() {
         binding.settingsInclude.phoneinfo.text =
-            getString(R.string.phone_info, "${Utils.MANUFACTURER} ${Utils.PRODUCT}", Utils.MODEL, Utils.VERSION_NAME)
+            getString(
+                R.string.phone_info,
+                "${Utils.MANUFACTURER} ${Utils.PRODUCT}",
+                Utils.MODEL,
+                Utils.VERSION_NAME
+            )
         binding.settingsInclude.moreInfobtn.setOnClickListener {
             binding.settingsInclude.phoneinfoMore.text = getString(
                 R.string.phone_moreinfo,

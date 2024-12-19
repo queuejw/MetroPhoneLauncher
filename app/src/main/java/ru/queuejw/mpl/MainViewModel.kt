@@ -13,7 +13,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val icons: SparseArrayCompat<Bitmap?> = SparseArrayCompat<Bitmap?>()
     private var appList: MutableList<App> = ArrayList()
 
-    private val tileDao: TileDao by lazy { TileData.getTileData(application.applicationContext).getTileDao() }
+    private val tileDao: TileDao by lazy {
+        TileData.getTileData(application.applicationContext).getTileDao()
+    }
 
     fun addIconToCache(appPackage: String, bitmap: Bitmap?) {
         icons.append(appPackage.hashCode(), bitmap)

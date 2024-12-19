@@ -154,7 +154,9 @@ class Start : Fragment() {
      * @see onViewCreated
      */
     private fun observe() {
-        if (!screenLoaded || mainViewModel.getViewModelTileDao().getTilesLiveData().hasActiveObservers()) return
+        if (!screenLoaded || mainViewModel.getViewModelTileDao().getTilesLiveData()
+                .hasActiveObservers()
+        ) return
         mainViewModel.getViewModelTileDao().getTilesLiveData().observe(viewLifecycleOwner) {
             mAdapter ?: return@observe
             if (mAdapter!!.list != it) {
@@ -163,6 +165,7 @@ class Start : Fragment() {
             }
         }
     }
+
     /**
      * Stops the data observer
      */
@@ -475,9 +478,9 @@ class Start : Fragment() {
             val holder = binding.startTiles.findViewHolderForAdapterPosition(i) ?: continue
             holder.itemView.animate().rotationY(-90f).translationX(-1000f).translationY(-100f)
                 .setInterpolator(interpolator).setDuration(duration).withEndAction {
-                binding.startTiles.isScrollEnabled = true
-                startApp(packageName)
-            }.start()
+                    binding.startTiles.isScrollEnabled = true
+                    startApp(packageName)
+                }.start()
         }
     }
 
@@ -615,10 +618,12 @@ class Start : Fragment() {
             val rad = 5
             val randomX = Random.nextFloat() * 2 * rad - rad
             val randomY = Random.nextFloat() * 2 * rad - rad
-            if (view.scaleX != 0.9f) view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start()
-            view.animate().setDuration(1000).translationX(randomX).translationY(randomY).withEndAction {
-                animateItemEditMode(view, position)
-            }.start()
+            if (view.scaleX != 0.9f) view.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300)
+                .start()
+            view.animate().setDuration(1000).translationX(randomX).translationY(randomY)
+                .withEndAction {
+                    animateItemEditMode(view, position)
+                }.start()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -735,13 +740,17 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
-            holder.binding.cardContainer.setBackgroundColor(if(item.tileColor != -1)
-                Utils.getTileColorFromPrefs(
-                item.tileColor!!,
-                context)
-            else
-                accentColor)
+            holder.binding.cardContainer.setBackgroundColor(
+                if (item.tileColor != -1)
+                    Utils.getTileColorFromPrefs(
+                        item.tileColor!!,
+                        context
+                    )
+                else
+                    accentColor
+            )
         }
+
         /**
          * Sets the size of the application icon on the tile
          * @param item Tile object
@@ -749,7 +758,7 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileSize(item: Tile, mTextView: MaterialTextView) {
-            mTextView.visibility = when(item.tileSize) {
+            mTextView.visibility = when (item.tileSize) {
                 "small" -> View.GONE
                 else -> View.VISIBLE
             }
@@ -898,6 +907,7 @@ class Start : Fragment() {
                 }
             }
         }
+
         private fun resizeTile(item: Tile, position: Int) {
             lifecycleScope.launch(ioDispatcher) {
                 when (item.tileSize) {
@@ -911,6 +921,7 @@ class Start : Fragment() {
                 }
             }
         }
+
         /**
          * The bottom panel with tile settings, which rises from the bottom
          * @param item Tile object
@@ -1053,7 +1064,9 @@ class Start : Fragment() {
                         true
                     }
                 }
-                if (PREFS.customFontInstalled) Application.customFont?.let { binding.tileLabel.typeface = it }
+                if (PREFS.customFontInstalled) Application.customFont?.let {
+                    binding.tileLabel.typeface = it
+                }
             }
 
             /**

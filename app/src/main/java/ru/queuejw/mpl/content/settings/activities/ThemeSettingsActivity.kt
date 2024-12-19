@@ -239,6 +239,7 @@ class ThemeSettingsActivity : AppCompatActivity() {
         super.onResume()
         enterAnimation(false)
     }
+
     private fun applyTheme() {
         binding.settingsInclude.chooseTheme.apply {
             text = when (PREFS.appTheme) {

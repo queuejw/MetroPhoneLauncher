@@ -114,7 +114,7 @@ class IconSettingsActivity : AppCompatActivity() {
     private fun setIconPacks() {
         isError = false
         iconPackArrayList = iconPackManager.getAvailableIconPacks(true)
-        isIconPackListEmpty = iconPackArrayList.isEmpty()
+        isIconPackListEmpty = iconPackArrayList.isEmpty
         setUi()
         appList.clear()
         if (iconPackArrayList.isNotEmpty()) {

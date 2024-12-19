@@ -183,6 +183,7 @@ class Main : AppCompatActivity() {
             super.onPageSelected(position)
             updateNavigationBarColors(position)
         }
+
         private fun updateNavigationBarColors(position: Int) {
             if (PREFS.navBarColor != 2) {
                 val (startColor, searchColor) = when {

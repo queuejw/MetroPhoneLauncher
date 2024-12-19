@@ -243,9 +243,7 @@ class AllApps : Fragment() {
     }
 
     override fun onPause() {
-        if (isSearching && !PREFS.showKeyboardWhenOpeningAllApps) {
-            disableSearch()
-        }
+        if (isSearching && !PREFS.showKeyboardWhenOpeningAllApps) disableSearch()
         if (appAdapter?.isWindowVisible == true) {
             appAdapter?.popupWindow?.dismiss()
             appAdapter?.popupWindow = null
@@ -447,6 +445,7 @@ class AllApps : Fragment() {
                     true
                 }
             }
+
             private fun click() {
                 if (PREFS.isAAllAppsAnimEnabled) {
                     startDismissAnim(list[absoluteAdapterPosition])
