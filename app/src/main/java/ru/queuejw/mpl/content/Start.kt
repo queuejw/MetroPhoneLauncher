@@ -505,7 +505,7 @@ class Start : Fragment() {
         Application.isAppOpened = true
         if (activity != null) {
             val intent = when (packageName) {
-                "ru.dimon6018.metrolauncher" -> Intent(
+                context?.packageName -> Intent(
                     requireActivity(),
                     SettingsActivity::class.java
                 )
@@ -740,7 +740,7 @@ class Start : Fragment() {
          * @see bindDefaultTile
          */
         private fun setTileColor(holder: TileViewHolder, item: Tile) {
-            holder.binding.cardContainer.setBackgroundColor(
+            holder.binding.cardContainer.setCardBackgroundColor(
                 if (item.tileColor != -1)
                     Utils.getTileColorFromPrefs(
                         item.tileColor!!,

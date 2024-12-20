@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="CustomDialog" parent="@style/Base.Theme">
-        <item name="android:windowAnimationStyle">@style/dialogWindowAnim</item>
-    </style>
-
-    <style name="CustomDialogTop" parent="@style/Base.Theme">
-        <item name="android:windowAnimationStyle">@style/dialogWindowAnimTop</item>
-    </style>
-    <style name="Base.Theme" parent="@android:style/Theme.Holo.Light.Dialog" >
+    <style name="WPDialog.Theme" parent="@android:style/Theme.Holo.Light.Dialog" >
         <item name="android:windowFrame">@null</item><!--边框-->
         <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
         <item name="android:windowIsTranslucent">false</item><!--半透明-->
@@ -16,17 +9,14 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:background">#00000000</item>
+        <item name="android:windowAnimationStyle">@style/dialogWindowAnim</item>
     </style>
 
     <style name="dialogWindowAnim" parent="android:Animation" mce_bogus="1">
-        <item name="android:windowEnterAnimation">@anim/wpd_enter</item>
+        <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@anim/wpd_exit</item>
     </style>
 
-    <style name="dialogWindowAnimTop" parent="android:Animation" mce_bogus="1">
-        <item name="android:windowEnterAnimation">@anim/wpd_top_enter</item>
-        <item name="android:windowExitAnimation">@anim/d_top_exit</item>
-    </style>
     <style name="ShapeAppearance" parent="ShapeAppearance.Material3.LargeComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">0dp</item>

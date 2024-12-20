@@ -44,30 +44,6 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/colorBackground">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/back"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:text="@string/back" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:text="@string/next" />
-        </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout

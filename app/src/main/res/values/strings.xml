@@ -230,4 +230,8 @@
     <string name="remove_bold_font">remove bold font</string>
     <string name="all_apps_keyboard_action_label">Open first app when pressing action button on keyboard</string>
     <string name="image" translatable="false">image</string>
+    <string name="accept_label">accept</string>
+    <string name="reject_label">reject</string>
+    <string name="icon_packs_label">Icon packs</string>
+    <string name="terms_of_use_label">Terms of Use</string>
 </resources>

@@ -29,7 +29,7 @@ import ru.queuejw.mpl.content.AllApps
 import ru.queuejw.mpl.content.Start
 import ru.queuejw.mpl.content.data.app.App
 import ru.queuejw.mpl.content.data.bsod.BSOD
-import ru.queuejw.mpl.content.oobe.WelcomeActivity
+import ru.queuejw.mpl.content.oobe.OOBEActivity
 import ru.queuejw.mpl.databinding.LauncherMainScreenBinding
 import ru.queuejw.mpl.helpers.disklru.CacheUtils
 import ru.queuejw.mpl.helpers.disklru.DiskLruCache
@@ -101,7 +101,7 @@ class Main : AppCompatActivity() {
     }
 
     private fun runOOBE() {
-        val intent = Intent(this, WelcomeActivity::class.java).apply {
+        val intent = Intent(this, OOBEActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         finishAffinity()
@@ -156,7 +156,6 @@ class Main : AppCompatActivity() {
 
     /**
      * Creates OnBackPressedCallback, which is needed to move to the previous ViewPager screen by pressing/gesturing backwards.
-     * Or disables the search
      */
     private fun setupBackPressedDispatcher() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -294,10 +293,12 @@ class Main : AppCompatActivity() {
         isLandscape = newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
     }
 
-    private fun otherTasks() {
-        if (PREFS.prefs.getBoolean("tip1Enabled", true)) {
-            showTipDialog()
-            PREFS.prefs.edit().putBoolean("tip1Enabled", false).apply()
+    private suspend fun otherTasks() {
+        withContext(Dispatchers.Main) {
+            if (PREFS.prefs.getBoolean("tip1Enabled", true)) {
+                showTipDialog()
+                PREFS.prefs.edit().putBoolean("tip1Enabled", false).apply()
+            }
         }
         crashCheck()
     }
@@ -313,18 +314,16 @@ class Main : AppCompatActivity() {
     }
 
     // If 5 seconds after the crash is successful, display an error message
-    private fun crashCheck() {
+    private suspend fun crashCheck() {
         if (PREFS.prefs.getBoolean("app_crashed", false)) {
-            lifecycleScope.launch(Dispatchers.Default) {
-                delay(5000)
-                PREFS.prefs.edit().apply {
-                    putBoolean("app_crashed", false)
-                    putInt("crashCounter", 0)
-                    apply()
-                }
-                if (PREFS.isFeedbackEnabled) {
-                    handleCrashFeedback()
-                }
+            delay(5000)
+            PREFS.prefs.edit().apply {
+                putBoolean("app_crashed", false)
+                putInt("crashCounter", 0)
+                apply()
+            }
+            if (PREFS.isFeedbackEnabled) {
+                handleCrashFeedback()
             }
         }
     }

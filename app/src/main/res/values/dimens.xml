@@ -7,4 +7,5 @@
     <dimen name="tile_small">64dp</dimen>
     <dimen name="tile_medium">84dp</dimen>
     <dimen name="tile_big">84dp</dimen>
+    <dimen name="oobe_bottom_bar_slide_dp">64dp</dimen>
 </resources>

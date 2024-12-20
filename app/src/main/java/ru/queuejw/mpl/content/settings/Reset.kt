@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import ru.queuejw.mpl.Application.Companion.PREFS
 import ru.queuejw.mpl.content.data.bsod.BSOD
 import ru.queuejw.mpl.content.data.tile.TileData
-import ru.queuejw.mpl.content.oobe.WelcomeActivity
+import ru.queuejw.mpl.content.oobe.OOBEActivity
 import ru.queuejw.mpl.databinding.ResetScreenBinding
 import ru.queuejw.mpl.helpers.utils.Utils.Companion.applyWindowInsets
 import kotlin.system.exitProcess
@@ -28,7 +28,7 @@ class Reset : AppCompatActivity() {
         dbApps = TileData.getTileData(this)
         dbBsod = BSOD.getData(this)
         applyWindowInsets(binding.root)
-        intent = Intent(this, WelcomeActivity::class.java)
+        intent = Intent(this, OOBEActivity::class.java)
         resetPart2()
     }
 

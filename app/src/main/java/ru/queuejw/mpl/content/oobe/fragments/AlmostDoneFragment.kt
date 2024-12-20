@@ -9,9 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.queuejw.mpl.Application.Companion.PREFS
 import ru.queuejw.mpl.R
-import ru.queuejw.mpl.content.oobe.WelcomeActivity
+import ru.queuejw.mpl.content.oobe.OOBEActivity
 import ru.queuejw.mpl.databinding.OobeFragmentAlmostdoneBinding
-import kotlin.system.exitProcess
 
 class AlmostDoneFragment : Fragment() {
 
@@ -28,10 +27,11 @@ class AlmostDoneFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = OobeFragmentAlmostdoneBinding.inflate(inflater, container, false)
-        (requireActivity() as WelcomeActivity).setText(getString(R.string.welcomeAlmostDone))
-        binding.next.setOnClickListener {
-            PREFS.launcherState = 1
-            exitProcess(0)
+        (requireActivity() as OOBEActivity).apply {
+            nextFragment = 7
+            blockBottomBarButton(false)
+            setText(getString(R.string.welcomeAlmostDone))
+            animateBottomBarFromFragment()
         }
         return binding.root
     }

@@ -19,7 +19,7 @@ import ru.queuejw.mpl.databinding.WpdialogLayoutBinding
 class WPDialog(private val mContext: Context) {
     private var wp: Dialog? = null
     private val isDarkMode = mContext.resources.getBoolean(R.bool.isDark) && PREFS.appTheme != 2
-    private var defStyle: Int
+    private var defStyle: Int = R.style.WPDialog_Theme
     private var title = ""
     private var messageText = ""
     private var okText = ""
@@ -55,19 +55,12 @@ class WPDialog(private val mContext: Context) {
         return this
     }
 
-    init {
-        defStyle = R.style.CustomDialog
-    }
-
     //创建
     private inner class Builder {
 
         private lateinit var binding: WpdialogLayoutBinding
 
         init {
-            if (onTop) {
-                defStyle = R.style.CustomDialogTop
-            }
             wp = Dialog(mContext, defStyle)
             wp?.apply {
                 binding = WpdialogLayoutBinding.inflate(this.layoutInflater)
@@ -77,8 +70,8 @@ class WPDialog(private val mContext: Context) {
                         WindowManager.LayoutParams.FLAG_BLUR_BEHIND
                     )
                 }
-                this.setContentView(binding.root)
                 val dialogWindow = this.window
+                this.setContentView(binding.root)
                 val d = mContext.resources.displayMetrics
                 val p = dialogWindow!!.attributes
                 val gravity: Int = if (!onTop) {
@@ -90,6 +83,11 @@ class WPDialog(private val mContext: Context) {
                 p.width = (d.widthPixels * 1.0).toInt()
                 dialogWindow.attributes = p
                 setCustomView(this)
+                this.setOnShowListener {
+                    binding.root.rotationX = -90f
+                    binding.root.alpha = 0f
+                    binding.root.animate().rotationX(0f).alpha(1f).setDuration(200).start()
+                }
                 this.setCanceledOnTouchOutside(cancelable)
                 this.setCancelable(cancelable)
             }
@@ -160,6 +158,7 @@ class WPDialog(private val mContext: Context) {
     mView = view
     return this
     } **/
+
     fun setDismissListener(listener: DialogInterface.OnDismissListener?): WPDialog {
         dismissListener = listener
         return this

@@ -1,7 +1,5 @@
 package ru.queuejw.mpl.content.oobe.fragments
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -10,32 +8,31 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.collection.SparseArrayCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.queuejw.mpl.Application.Companion.PREFS
 import ru.queuejw.mpl.R
 import ru.queuejw.mpl.content.data.app.App
 import ru.queuejw.mpl.content.data.tile.Tile
-import ru.queuejw.mpl.content.data.tile.TileDao
 import ru.queuejw.mpl.content.data.tile.TileData
-import ru.queuejw.mpl.content.oobe.WelcomeActivity
+import ru.queuejw.mpl.content.oobe.OOBEActivity
 import ru.queuejw.mpl.databinding.OobeAppItemBinding
 import ru.queuejw.mpl.databinding.OobeFragmentAppsBinding
 import ru.queuejw.mpl.helpers.iconpack.IconPackManager
-import ru.queuejw.mpl.helpers.ui.WPDialog
 import ru.queuejw.mpl.helpers.utils.Utils
+import ru.queuejw.mpl.helpers.utils.Utils.Companion.generatePlaceholder
 import ru.queuejw.mpl.helpers.utils.Utils.Companion.setUpApps
 import kotlin.random.Random
 
 class AppsFragment : Fragment() {
 
     private val hashCache = SparseArrayCompat<Drawable?>()
+    private val saveAppsCoroutine = CoroutineScope(Dispatchers.IO)
 
     private var _binding: OobeFragmentAppsBinding? = null
     private val binding get() = _binding!!
@@ -45,8 +42,11 @@ class AppsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = OobeFragmentAppsBinding.inflate(inflater, container, false)
-        (requireActivity() as WelcomeActivity).setText(getString(R.string.configureApps))
         binding.oobeAppsLoadingBar.showProgressBar()
+        lifecycleScope.launch(Dispatchers.IO) {
+            PREFS.prefs.edit().putBoolean("placeholdersGenerated", true).apply()
+            generatePlaceholder(TileData.getTileData(requireContext()).getTileDao(), 64)
+        }
         return binding.root
     }
 
@@ -58,7 +58,6 @@ class AppsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (context == null) activity?.recreate()
-        val call = TileData.getTileData(requireContext()).getTileDao()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList<App>()
             val appList = setUpApps(requireContext())
@@ -87,36 +86,6 @@ class AppsFragment : Fragment() {
                     layoutManager = lm
                     adapter = mAdapter
                 }
-                binding.back.setOnClickListener {
-                    lifecycleScope.launch {
-                        enterAnimation(true)
-                        delay(200)
-                        requireActivity().supportFragmentManager.commit {
-                            replace(R.id.fragment_container_view, ConfigureFragment(), "oobe")
-                        }
-                    }
-                }
-                binding.next.setOnClickListener {
-                    if (selectedItems!!.isEmpty()) {
-                        WPDialog(requireContext()).apply {
-                            setTopDialog(true)
-                            setTitle(getString(R.string.reset_warning_title))
-                            setMessage(getString(R.string.oobe_apps_warn))
-                            setPositiveButton(getString(R.string.no)) {
-                                dismiss()
-                            }
-                            setNegativeButton(getString(R.string.yes)) {
-                                addApps(call)
-                                enterAnimation(true)
-                                dismiss()
-                            }
-                            show()
-                        }
-                    } else {
-                        addApps(call)
-                        enterAnimation(true)
-                    }
-                }
                 binding.oobeSelectAll.setOnClickListener {
                     mAdapter.selectAll()
                 }
@@ -129,10 +98,22 @@ class AppsFragment : Fragment() {
                 }
             }
         }
+        (requireActivity() as OOBEActivity).apply {
+            nextFragment = 5
+            previousFragment = 2
+            updateNextButtonText(this.getString(R.string.next))
+            updatePreviousButtonText(this.getString(R.string.back))
+            enableAllButtons()
+            animateBottomBarFromFragment()
+            setText(getString(R.string.configureApps))
+        }
     }
 
-    private fun addApps(call: TileDao) {
-        lifecycleScope.launch(Dispatchers.Default) {
+    private fun addApps() {
+        selectedItems ?: return
+        if(selectedItems!!.isEmpty()) return
+        saveAppsCoroutine.launch {
+            val call = TileData.getTileData(requireContext()).getTileDao()
             var pos = 0
             for (i in selectedItems!!) {
                 val id = Random.nextLong(1000, 2000000)
@@ -146,35 +127,12 @@ class AppsFragment : Fragment() {
                 call.updateTile(entity)
                 pos += 1
             }
-            withContext(Dispatchers.Main) {
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, AlmostDoneFragment(), "oobe")
-                }
-            }
         }
     }
 
-    private fun enterAnimation(exit: Boolean) {
-        val main = binding.root
-        val animatorSet = AnimatorSet()
-        if (exit) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
-            )
-        } else {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
-            )
-        }
-        animatorSet.setDuration(300)
-        animatorSet.start()
-    }
-
-    override fun onResume() {
-        enterAnimation(false)
-        super.onResume()
+    override fun onStop() {
+        super.onStop()
+        addApps()
     }
 
     companion object {
@@ -203,9 +161,7 @@ class AppsFragment : Fragment() {
         fun selectAll() {
             adapterApps.forEach {
                 it.selected = true
-                if (!selectedItems!!.contains(it)) {
-                    selectedItems!!.add(it)
-                }
+                if (!selectedItems!!.contains(it)) selectedItems!!.add(it)
             }
             notifyDataSetChanged()
         }
@@ -214,9 +170,7 @@ class AppsFragment : Fragment() {
         fun removeAll() {
             adapterApps.forEach {
                 it.selected = false
-                if (selectedItems!!.contains(it)) {
-                    selectedItems!!.remove(it)
-                }
+                if (selectedItems!!.contains(it)) selectedItems!!.remove(it)
             }
             notifyDataSetChanged()
         }
@@ -230,14 +184,10 @@ class AppsFragment : Fragment() {
                 latestItem = position
                 if (isChecked) {
                     item.selected = true
-                    if (!selectedItems!!.contains(item)) {
-                        selectedItems!!.add(item)
-                    }
+                    if (!selectedItems!!.contains(item)) selectedItems!!.add(item)
                 } else {
                     item.selected = false
-                    if (selectedItems!!.contains(item)) {
-                        selectedItems!!.remove(item)
-                    }
+                    if (selectedItems!!.contains(item)) selectedItems!!.remove(item)
                 }
             }
             holder.binding.appCheckbox.isChecked = adapterApps[position].selected

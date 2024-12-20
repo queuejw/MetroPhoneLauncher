@@ -1,18 +1,12 @@
 package ru.queuejw.mpl.content.oobe.fragments
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import ru.queuejw.mpl.R
-import ru.queuejw.mpl.content.oobe.WelcomeActivity
+import ru.queuejw.mpl.content.oobe.OOBEActivity
 import ru.queuejw.mpl.databinding.OobeFragmentConfBinding
 
 class ConfigureFragment : Fragment() {
@@ -25,32 +19,27 @@ class ConfigureFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = OobeFragmentConfBinding.inflate(inflater, container, false)
-        (requireActivity() as WelcomeActivity).setText(getString(R.string.configurePhone))
-        binding.back.setOnClickListener {
-            lifecycleScope.launch {
-                enterAnimation(true)
-                delay(200)
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, WelcomeFragment(), "oobe")
-                }
-            }
+        (requireActivity() as OOBEActivity).apply {
+            previousFragment = 1
+            enableAllButtons()
+            updateNextButtonText(this.getString(R.string.next))
+            updatePreviousButtonText(this.getString(R.string.back))
+            blockBottomBarButton(true)
+            animateBottomBarFromFragment()
+            setText(getString(R.string.configurePhone))
         }
         binding.custom.setOnClickListener {
-            lifecycleScope.launch {
-                enterAnimation(true)
-                delay(200)
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, CustomSettingsFragment(), "oobe")
-                }
+            (requireActivity() as OOBEActivity).apply {
+                nextFragment = 4
+                animateBottomBar(true)
+                setFragment(nextFragment)
             }
         }
         binding.recommended.setOnClickListener {
-            lifecycleScope.launch {
-                enterAnimation(true)
-                delay(200)
-                requireActivity().supportFragmentManager.commit {
-                    replace(R.id.fragment_container_view, AppsFragment(), "oobe")
-                }
+            (requireActivity() as OOBEActivity).apply {
+                nextFragment = 3
+                animateBottomBar(true)
+                setFragment(nextFragment)
             }
         }
         return binding.root
@@ -59,28 +48,5 @@ class ConfigureFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private fun enterAnimation(exit: Boolean) {
-        val main = binding.root
-        val animatorSet = AnimatorSet()
-        if (exit) {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 0f, -1000f),
-                ObjectAnimator.ofFloat(main, "alpha", 1f, 0f),
-            )
-        } else {
-            animatorSet.playTogether(
-                ObjectAnimator.ofFloat(main, "translationX", 1000f, 0f),
-                ObjectAnimator.ofFloat(main, "alpha", 0f, 1f),
-            )
-        }
-        animatorSet.setDuration(300)
-        animatorSet.start()
-    }
-
-    override fun onResume() {
-        enterAnimation(false)
-        super.onResume()
     }
 }

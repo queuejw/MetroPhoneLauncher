@@ -91,7 +91,7 @@
             android:exported="true">
         </activity>
         <activity
-            android:name="ru.queuejw.mpl.content.oobe.WelcomeActivity"
+            android:name="ru.queuejw.mpl.content.oobe.OOBEActivity"
             android:exported="true">
         </activity>
         <activity

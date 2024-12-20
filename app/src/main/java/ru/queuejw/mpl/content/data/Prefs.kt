@@ -143,7 +143,6 @@ class Prefs(context: Context) {
         get() = prefs.getInt(launcherStatePref, 0)
         // 0 - OOBE
         // 1 - nothing
-        // 2 - OOBE - selecting the type of settings (recommended or customize)
         // 3 - waiting for reset (after recovery)
         set(value) = prefs.edit().putInt(launcherStatePref, value).apply()
 

@@ -7,31 +7,32 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.queuejw.mpl.R
 import ru.queuejw.mpl.content.oobe.OOBEActivity
-import ru.queuejw.mpl.databinding.OobeFragmentCustomPrefsBinding
+import ru.queuejw.mpl.databinding.OobeFragmentTermsofuseBinding
 
-class CustomSettingsFragment : Fragment() {
+class TermsOfUseFragment: Fragment() {
 
-    private var _binding: OobeFragmentCustomPrefsBinding? = null
+    private var _binding: OobeFragmentTermsofuseBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = OobeFragmentCustomPrefsBinding.inflate(inflater, container, false)
+    ): View? {
+        _binding = OobeFragmentTermsofuseBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as OOBEActivity).apply {
-            nextFragment = 3
-            previousFragment = 2
+            nextFragment = 2
+            previousFragment = 0
+            setText(getString(R.string.terms_of_use_label))
             enableAllButtons()
-            updateNextButtonText(this.getString(R.string.next))
-            updatePreviousButtonText(this.getString(R.string.back))
+            updateNextButtonText(this.getString(R.string.accept_label))
+            updatePreviousButtonText(this.getString(R.string.reject_label))
             animateBottomBarFromFragment()
-            setText(getString(R.string.configureApps))
         }
     }
     override fun onDestroyView() {
