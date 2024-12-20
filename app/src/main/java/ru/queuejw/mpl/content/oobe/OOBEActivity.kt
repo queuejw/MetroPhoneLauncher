@@ -2,6 +2,7 @@ package ru.queuejw.mpl.content.oobe
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -61,9 +62,17 @@ class OOBEActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
     fun setFragment(value: Int) {
-        supportFragmentManager.commit {
-            replace(binding.fragmentContainerView.id, getCurrentFragment(value), "oobe")
-        }
+        binding.oobeView.animate().translationX(-500f).alpha(0.15f).setDuration(200).setInterpolator(
+            DecelerateInterpolator()).withEndAction {
+            binding.oobeView.apply {
+                translationX = 500f
+            }
+            supportFragmentManager.commit {
+                replace(binding.fragmentContainerView.id, getCurrentFragment(value), "oobe")
+            }
+            binding.oobeView.animate().translationX(0f).alpha(1f).setDuration(200).setInterpolator(
+                DecelerateInterpolator()).start()
+        }.start()
     }
     private fun getCurrentFragment(value: Int): Fragment {
         return when (value) {
