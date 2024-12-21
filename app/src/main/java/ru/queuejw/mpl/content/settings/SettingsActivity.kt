@@ -3,7 +3,6 @@ package ru.queuejw.mpl.content.settings
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -42,8 +41,8 @@ import kotlin.random.Random
 
 class SettingsActivity : AppCompatActivity() {
 
-    private var isDialogEnabled = true
     private var isEnter = false
+    private var isTipDialogShown = false
 
     private lateinit var binding: LauncherSettingsMainBinding
     private var job: Job? = null
@@ -99,7 +98,6 @@ class SettingsActivity : AppCompatActivity() {
             binding.settingsInclude.expSub
         )
     }
-    private var dialogActivated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         when (PREFS.appTheme) {
@@ -114,9 +112,8 @@ class SettingsActivity : AppCompatActivity() {
         confTouchAnim()
         setOnClickers()
         Utils.applyWindowInsets(binding.root)
-        checkHome()
-        prepareMessage()
         prepareTip()
+        checkHome()
         setupFont()
     }
 
@@ -143,8 +140,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun checkHome() {
-        if (!isHomeApp() && isDialogEnabled && Random.nextFloat() < 0.2 && !dialogActivated) {
-            isDialogEnabled = false
+        if (!isTipDialogShown && !isHomeApp() && Random.nextFloat() < 0.25) {
             WPDialog(this).setTopDialog(false)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.setAsDefaultLauncher))
@@ -155,58 +151,9 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun prepareMessage() {
-        if (!PREFS.prefs.getBoolean(
-                "tipSettingsEnabled",
-                true
-            ) && Random.nextFloat() < 0.05 && PREFS.prefs.getBoolean("messageEnabled", true)
-        ) {
-            dialogActivated = true
-            WPDialog(this).apply {
-                setTopDialog(true)
-                setTitle(getString(R.string.developer))
-                setMessage(getString(R.string.dev_p1))
-                setPositiveButton(getString(R.string.no), null)
-                setNegativeButton(getString(R.string.yes)) {
-                    donateDialog()
-                    dismiss()
-                }
-                setNeutralButton(getString(R.string.not_show_again)) {
-                    PREFS.prefs.edit().putBoolean("messageEnabled", false).apply()
-                    dismiss()
-                }
-                setDismissListener {
-                    dialogActivated = false
-                }
-                show()
-            }
-        }
-    }
-
-    private fun donateDialog() {
-        WPDialog(this).apply {
-            setTopDialog(true)
-            setTitle(getString(R.string.developer))
-            setMessage(getString(R.string.dev_p2))
-            setPositiveButton(getString(R.string.hide)) {
-                PREFS.prefs.edit().putBoolean("messageEnabled", false).apply()
-                dismiss()
-            }
-            setNegativeButton(getString(R.string.support)) {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://donationalerts.com/r/queuejw")
-                    )
-                )
-                dismiss()
-            }
-            show()
-        }
-    }
-
     private fun prepareTip() {
         if (PREFS.prefs.getBoolean("tipSettingsEnabled", true)) {
+            isTipDialogShown = true
             WPDialog(this).setTopDialog(true)
                 .setTitle(getString(R.string.tip))
                 .setMessage(getString(R.string.tipSettings))

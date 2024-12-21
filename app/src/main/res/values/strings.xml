@@ -75,7 +75,7 @@
     <string name="recommended">recommended</string>
     <string name="custom">custom</string>
     <string name="customise_your_phone_settings">Customise your phone settings</string>
-    <string name="recommended_tip">Choose recommended settings to enable mobile data and automatically download launcher update. Recommended settings will also send phone info and launcher usage information to improve MPL.</string>
+    <string name="recommended_tip">Choose the recommended settings to set recommended settings and automatically download launcher updates. The recommended settings will also send information about your phone and launcher usage to improve MPL.</string>
     <string name="oobe_done">You have finished setting up the launcher. Thank you for deciding to give MPL a try. Enjoy using it! \n MPL will be restarted.</string>
     <string name="recovry_browser_subtitle">Find information about the bug on the Internet</string>
     <string name="recovry_browser_title">Open browser</string>
@@ -197,13 +197,7 @@
     <string name="support_devs_text">Support developers: https://donationalerts.com/r/queuejw</string>
     <string name="tipSettings">These are the settings. Here you can change and make the launcher more convenient and pleasant to use. Click on \'start+theme\'.</string>
     <string name="tipSettingsTheme">Here you can change the theme of the app and the interaction with the tiles on your start screen. Try this</string>
-    <string name="developer">Developer</string>
-    <string name="dev_p1">Hi, are you not busy right now?</string>
-    <string name="not_show_again">Hide</string>
-    <string name="dev_p2">"I just wanted to say thank you for using my launcher. I'm glad that my app is useful to other people. I appreciate it. If you have the desire and opportunity, then, you can support me by donating. I will be very, very pleased &#60;3, but it is not necessary. I hope you really like my app. Bye!</string>
-    <string name="support">Support</string>
     <string name="tipSettingsUpdates">From this screen, you can check for updates for MPL to get fixes and new features.</string>
-    <string name="oobe_apps_warn">You have not selected any applications. Do you want to continue?</string>
     <string name="later">Later</string>
     <string name="keyboard_when_searching">Show keyboard when searching</string>
     <string name="auto_show_keyboard_allapps">Automatically enable search when you open the All Apps screen.</string>
@@ -232,6 +226,6 @@
     <string name="image" translatable="false">image</string>
     <string name="accept_label">accept</string>
     <string name="reject_label">reject</string>
-    <string name="icon_packs_label">Icon packs</string>
     <string name="terms_of_use_label">Terms of Use</string>
+    <string name="terms_of_use">By tapping Accept, you agree that</string>
 </resources>

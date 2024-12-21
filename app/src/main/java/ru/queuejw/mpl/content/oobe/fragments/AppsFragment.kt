@@ -57,7 +57,6 @@ class AppsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (context == null) activity?.recreate()
         lifecycleScope.launch(Dispatchers.Default) {
             selectedItems = ArrayList<App>()
             val appList = setUpApps(requireContext())
@@ -99,7 +98,7 @@ class AppsFragment : Fragment() {
             }
         }
         (requireActivity() as OOBEActivity).apply {
-            nextFragment = 5
+            nextFragment = 6
             previousFragment = 2
             updateNextButtonText(this.getString(R.string.next))
             updatePreviousButtonText(this.getString(R.string.back))

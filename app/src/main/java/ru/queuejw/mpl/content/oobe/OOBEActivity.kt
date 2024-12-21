@@ -18,7 +18,6 @@ import ru.queuejw.mpl.content.oobe.fragments.AlmostDoneFragment
 import ru.queuejw.mpl.content.oobe.fragments.AppsFragment
 import ru.queuejw.mpl.content.oobe.fragments.ConfigureFragment
 import ru.queuejw.mpl.content.oobe.fragments.CustomSettingsFragment
-import ru.queuejw.mpl.content.oobe.fragments.IconPackFragment
 import ru.queuejw.mpl.content.oobe.fragments.RestartFragment
 import ru.queuejw.mpl.content.oobe.fragments.TermsOfUseFragment
 import ru.queuejw.mpl.content.oobe.fragments.WelcomeFragment
@@ -29,6 +28,7 @@ class OOBEActivity : AppCompatActivity() {
 
     private lateinit var binding: OobeMainScreenBinding
     private val slideDp by lazy { this.resources.getDimensionPixelSize(R.dimen.oobe_bottom_bar_slide_dp).toFloat() }
+    private val animationDuration = 400L
 
     var nextFragment = 1
     var previousFragment = 0
@@ -43,7 +43,6 @@ class OOBEActivity : AppCompatActivity() {
         binding = OobeMainScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setUi()
-        blockBottomBarButton(false)
         setFragment(0)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {}
@@ -62,17 +61,18 @@ class OOBEActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
     fun setFragment(value: Int) {
-        binding.oobeView.animate().translationX(-500f).alpha(0.15f).setDuration(200).setInterpolator(
-            DecelerateInterpolator()).withEndAction {
-            binding.oobeView.apply {
-                translationX = 500f
-            }
+        lifecycleScope.launch {
+            binding.oobeView.animate().translationX(-1000f).alpha(0f).setDuration(animationDuration).setInterpolator(DecelerateInterpolator()).start()
+            delay(animationDuration / 2)
             supportFragmentManager.commit {
                 replace(binding.fragmentContainerView.id, getCurrentFragment(value), "oobe")
             }
-            binding.oobeView.animate().translationX(0f).alpha(1f).setDuration(200).setInterpolator(
+            binding.oobeView.apply {
+                translationX = 500f
+            }
+            binding.oobeView.animate().translationX(0f).alpha(1f).setDuration(animationDuration).setInterpolator(
                 DecelerateInterpolator()).start()
-        }.start()
+        }
     }
     private fun getCurrentFragment(value: Int): Fragment {
         return when (value) {
@@ -80,7 +80,6 @@ class OOBEActivity : AppCompatActivity() {
             2 -> ConfigureFragment()
             3 -> AppsFragment()
             4 -> CustomSettingsFragment()
-            5 -> IconPackFragment()
             6 -> AlmostDoneFragment()
             7 -> RestartFragment()
             else -> WelcomeFragment()

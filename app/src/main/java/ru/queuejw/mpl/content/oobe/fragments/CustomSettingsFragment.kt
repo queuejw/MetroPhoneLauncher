@@ -31,7 +31,7 @@ class CustomSettingsFragment : Fragment() {
             updateNextButtonText(this.getString(R.string.next))
             updatePreviousButtonText(this.getString(R.string.back))
             animateBottomBarFromFragment()
-            setText(getString(R.string.configureApps))
+            setText(getString(R.string.configureCustomPhone))
         }
     }
     override fun onDestroyView() {

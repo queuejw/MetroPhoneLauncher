@@ -76,7 +76,7 @@
     <string name="recommended">рекомендуемый</string>
     <string name="custom">настроить</string>
     <string name="customise_your_phone_settings">Настроить телефон</string>
-    <string name="recommended_tip">Выберите рекомендуемые настройки, чтобы использовать передачу данных по сотовой сети и автоматически загружать обновления лаунчера. Рекомендуемые настройки также будут отправлять информацию о телефоне и использовании лаунчера для улучшения MPL.</string>
+    <string name="recommended_tip">Выберите рекомендуемые настройки, чтобы установить стандартные параметры и автоматически загружать обновления лаунчера. Рекомендуемые настройки также будут отправлять информацию о телефоне и использовании лаунчера для улучшения MPL.</string>
     <string name="oobe_done">Вы закончили настройку лаунчера. Спасибо, что решили попробовать MPL. Приятного использования! \n MPL будет перезапущен.</string>
     <string name="recovry_browser_subtitle">Найдите информацию об ошибке в Интернете</string>
     <string name="recovry_browser_title">Открыть браузер</string>
@@ -198,13 +198,7 @@
     <string name="support_devs_text">Поддержать разработчиков: https://donationalerts.com/r/queuejw</string>
     <string name="tipSettings">Это настройки. Здесь вы сможете изменить и сделать лаунчер удобнее и приятнее для использования. Нажмите на \'рабочий стол+тема\'.</string>
     <string name="tipSettingsTheme">Здесь вы можете изменить тему приложения и взаимодействие с плитками на рабочем столе. Попробуйте.</string>
-    <string name="developer">Разработчик</string>
-    <string name="dev_p1">Привет, найдется минутка?</string>
-    <string name="not_show_again">Скрыть</string>
-    <string name="dev_p2">"Я просто хотел сказать спасибо за то, что используешь мой лаунчер. Я рад, что моё приложение полезно другим людям. Я ценю это. Если у тебя есть желание и возможность, то, можешь поддержать меня донатом. Мне будет очень-очень приятно &#60;3, но это не обязательно. Надеюсь, что тебе правда нравится моё приложение. Пока!</string>
-    <string name="support">Поддержать</string>
     <string name="tipSettingsUpdates">На этом экране вы можете проверить наличие обновлений для лаунчера, чтобы получить исправления и новые функции.</string>
-    <string name="oobe_apps_warn">Вы не выбрали никаких приложений. Хотите продолжить?</string>
     <string name="later">Позже</string>
     <string name="keyboard_when_searching">Показывать клавиатуру при поиске</string>
     <string name="auto_show_keyboard_allapps">Автоматически открывать поиск при открытии экрана Все приложения.</string>
@@ -232,6 +226,6 @@
     <string name="all_apps_keyboard_action_label">Открывать первое приложение при нажатии кнопки действия на клавиатуре</string>
     <string name="accept_label">принять</string>
     <string name="reject_label">отклонить</string>
-    <string name="icon_packs_label">Наборы значков</string>
     <string name="terms_of_use_label">Условия использования</string>
+    <string name="terms_of_use">Касание кнопки Принять означает, что вы согласны с</string>
 </resources>
